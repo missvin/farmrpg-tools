@@ -178,6 +178,12 @@ a {
   font-weight: 600;
 }
 
+.button--active {
+  background: #e6eef8;
+  border-color: #486581;
+  font-weight: 600;
+}
+
 .status-message {
   color: #243b53;
 }
@@ -226,6 +232,27 @@ a {
   font-size: 1rem;
 }
 
+.table-scroll {
+  overflow-x: auto;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.summary-table th,
+.summary-table td {
+  border: 1px solid #d9e2ec;
+  padding: 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.summary-table th {
+  background: #f8fbff;
+}
+
 .data-list {
   list-style: none;
   margin: 0;
@@ -243,6 +270,39 @@ a {
   border: 1px solid #d9e2ec;
   border-radius: 0.5rem;
   background: #ffffff;
+}
+
+.subtle-text {
+  margin: 0.25rem 0 0;
+  color: #52606d;
+}
+
+.progress-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.progress-list__item {
+  border: 1px solid #d9e2ec;
+  border-radius: 0.5rem;
+  padding: 0.85rem;
+  background: #ffffff;
+}
+
+.progress-list__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.progress-list__meta,
+.progress-list__notes {
+  margin: 0.5rem 0 0;
+  color: #52606d;
 }
 
 .debug-list {
@@ -276,6 +336,11 @@ a {
   }
 
   .data-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .progress-list__header {
     flex-direction: column;
     align-items: flex-start;
   }

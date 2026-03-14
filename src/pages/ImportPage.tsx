@@ -105,6 +105,7 @@ export function ImportPage() {
         rawText: parsedText,
         masteryByItem: parseResult.masteryByItem,
         parseSummary: parseResult.parseSummary,
+        parsedRows: parseResult.parsedRows,
       });
 
       setSaveMessage('Snapshot saved locally. The pasted text is still here if you want to review it.');

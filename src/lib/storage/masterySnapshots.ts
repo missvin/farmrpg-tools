@@ -1,4 +1,4 @@
-import type { ParseSummary } from '../parseMasteryPaste';
+import type { ParsedRow, ParseSummary } from '../parseMasteryPaste';
 
 export type MasterySnapshot = {
   snapshotId: string;
@@ -6,6 +6,7 @@ export type MasterySnapshot = {
   rawText: string;
   masteryByItem: Record<string, number>;
   parseSummary: ParseSummary;
+  parsedRows?: ParsedRow[];
 };
 
 const DB_NAME = 'farmrpg-tools';

@@ -6,6 +6,13 @@ vi.mock('./lib/storage/masterySnapshots', () => ({
   getLatestSnapshot: vi.fn().mockResolvedValue(null),
 }));
 
+vi.mock('./lib/loadMasteryDifficulty', () => ({
+  loadMasteryDifficulty: vi.fn().mockResolvedValue({
+    entries: [],
+    byCanonicalKey: {},
+  }),
+}));
+
 import App from './App';
 
 describe('App shell', () => {
