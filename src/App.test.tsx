@@ -1,10 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { vi } from 'vitest';
+
+vi.mock('./lib/storage/masterySnapshots', () => ({
+  getLatestSnapshot: vi.fn().mockResolvedValue(null),
+}));
 
 import App from './App';
 
 describe('App shell', () => {
-  it('renders the dashboard and navigation links', () => {
+  it('renders the dashboard and navigation links', async () => {
     render(
       <MemoryRouter
         initialEntries={['/']}
@@ -17,7 +22,7 @@ describe('App shell', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Import' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument();
   });
