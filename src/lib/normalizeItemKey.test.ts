@@ -16,7 +16,7 @@ describe('normalizeName', () => {
   });
 
   it('normalizes smart apostrophes and quotes', () => {
-    expect(normalizeName('Farmer’s “Delight”')).toBe(`farmer's "delight"`);
+    expect(normalizeName('Farmer\u2019s \u201cDelight\u201d')).toBe(`farmer's "delight"`);
   });
 });
 
