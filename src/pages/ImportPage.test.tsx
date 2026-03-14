@@ -31,8 +31,11 @@ describe('ImportPage', () => {
     );
     await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
 
-    expect(screen.getByText('1')).toBeInTheDocument();
-    expect(screen.getByText('1,000,000')).toBeInTheDocument();
+    expect(screen.getByText('Items parsed')).toBeInTheDocument();
+    expect(screen.getByText('Tiers detected')).toBeInTheDocument();
+    expect(screen.getByText('Unique canonical items')).toBeInTheDocument();
+    expect(screen.getByText('Total parsed rows')).toBeInTheDocument();
+    expect(screen.getByText('Gold Cucumber')).toBeInTheDocument();
     expect(saveButton).toBeEnabled();
 
     await user.click(saveButton);
@@ -53,5 +56,22 @@ describe('ImportPage', () => {
       screen.getByText('No mastery items were detected in that paste. Check that you copied the mastery export.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save Snapshot' })).toBeDisabled();
+  });
+
+  it('filters parsed rows by raw item name or canonical key', async () => {
+    const user = userEvent.setup();
+
+    render(<ImportPage />);
+
+    await user.type(
+      screen.getByLabelText('Raw mastery export'),
+      'Gold Cucumber\n967,174 / 1,000,000 Progress\n96.7174%\n\nRed Diamond Fish\n8,835 / 10,000 Progress\n88.35%',
+    );
+    await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
+
+    await user.type(screen.getByLabelText('Filter parsed rows'), 'diamond');
+
+    expect(screen.queryByText('Gold Cucumber')).not.toBeInTheDocument();
+    expect(screen.getByText('Red Diamond Fish')).toBeInTheDocument();
   });
 });

@@ -7,9 +7,18 @@ export type ParseSummary = {
   warnings: string[];
 };
 
+export type ParsedRow = {
+  rawItemName: string;
+  canonicalKey: string;
+  count: number;
+  targetTier: number | 'INF';
+  sourceLineIndex: number;
+};
+
 export type ParseResult = {
   masteryByItem: Record<string, number>;
   parseSummary: ParseSummary;
+  parsedRows: ParsedRow[];
 };
 
 const INFINITY_TARGET_RE = /^(?:\u221e|infinity)$/i;
@@ -48,11 +57,11 @@ function addParsedItem(
   warnings: string[],
   itemName: string,
   count: number,
-): void {
+): string | null {
   const canonicalKey = toCanonicalItemKey(itemName);
 
   if (!canonicalKey) {
-    return;
+    return null;
   }
 
   const existingCount = masteryByItem[canonicalKey];
@@ -60,10 +69,11 @@ function addParsedItem(
     const resolvedCount = Math.max(existingCount, count);
     masteryByItem[canonicalKey] = resolvedCount;
     warnings.push(`Duplicate mastery row for "${itemName}" resolved using max count (${resolvedCount}).`);
-    return;
+    return canonicalKey;
   }
 
   masteryByItem[canonicalKey] = count;
+  return canonicalKey;
 }
 
 function sortDetectedTiers(tiers: Set<number | 'INF'>): Array<number | 'INF'> {
@@ -84,6 +94,7 @@ export function parseMasteryPaste(rawText: string): ParseResult {
   const masteryByItem: Record<string, number> = {};
   const warnings: string[] = [];
   const tiersDetected = new Set<number | 'INF'>();
+  const parsedRows: ParsedRow[] = [];
   const lines = rawText.split(/\r?\n/).map((line) => line.trim());
 
   for (let index = 0; index < lines.length; index += 1) {
@@ -109,8 +120,19 @@ export function parseMasteryPaste(rawText: string): ParseResult {
 
     const count = parseCount(match.groups.count);
     const targetTier = parseTierTarget(match.groups.target);
+    const canonicalKey = addParsedItem(masteryByItem, warnings, line, count);
 
-    addParsedItem(masteryByItem, warnings, line, count);
+    if (!canonicalKey) {
+      continue;
+    }
+
+    parsedRows.push({
+      rawItemName: line,
+      canonicalKey,
+      count,
+      targetTier,
+      sourceLineIndex: index,
+    });
     tiersDetected.add(targetTier);
 
     const percentLineIndex = findNextNonEmptyLine(lines, progressLineIndex + 1);
@@ -129,5 +151,6 @@ export function parseMasteryPaste(rawText: string): ParseResult {
       unknownItemsCount: 0,
       warnings,
     },
+    parsedRows,
   };
 }

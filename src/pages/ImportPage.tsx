@@ -14,9 +14,14 @@ function formatTierList(tiers: Array<number | 'INF'>): string {
   return tiers.map((tier) => (tier === 'INF' ? 'INF' : tier.toLocaleString())).join(', ');
 }
 
+function formatTierLabel(tier: number | 'INF'): string {
+  return tier === 'INF' ? 'INF' : tier.toLocaleString();
+}
+
 export function ImportPage() {
   const [rawText, setRawText] = useState('');
   const [parsedText, setParsedText] = useState('');
+  const [debugFilter, setDebugFilter] = useState('');
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -28,6 +33,38 @@ export function ImportPage() {
         .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
         .slice(0, PREVIEW_LIMIT)
     : [];
+  const filteredParsedRows = parseResult
+    ? parseResult.parsedRows.filter((row) => {
+        const filterValue = debugFilter.trim().toLowerCase();
+
+        if (!filterValue) {
+          return true;
+        }
+
+        return (
+          row.rawItemName.toLowerCase().includes(filterValue) ||
+          row.canonicalKey.toLowerCase().includes(filterValue)
+        );
+      })
+    : [];
+  const tierDebugCounts = parseResult
+    ? parseResult.parsedRows.reduce<Record<string, number>>((counts, row) => {
+        const key = formatTierLabel(row.targetTier);
+        counts[key] = (counts[key] ?? 0) + 1;
+        return counts;
+      }, {})
+    : {};
+  const tierDebugEntries = Object.entries(tierDebugCounts).sort(([left], [right]) => {
+    if (left === 'INF') {
+      return 1;
+    }
+
+    if (right === 'INF') {
+      return -1;
+    }
+
+    return Number(left.replace(/,/g, '')) - Number(right.replace(/,/g, ''));
+  });
 
   const hasParsedItems = (parseResult?.parseSummary.itemsParsed ?? 0) > 0;
 
@@ -177,6 +214,68 @@ export function ImportPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            <div className="page-stack">
+              <h3 className="section-title">Temporary Parser Debug</h3>
+              <p className="supporting-text">
+                Use this temporary view to inspect exactly which rows were parsed from the pasted export.
+              </p>
+
+              <dl className="summary-grid">
+                <div className="summary-grid__item">
+                  <dt>Total parsed rows</dt>
+                  <dd>{parseResult.parsedRows.length.toLocaleString()}</dd>
+                </div>
+                <div className="summary-grid__item">
+                  <dt>Unique canonical items</dt>
+                  <dd>{parseResult.parseSummary.itemsParsed.toLocaleString()}</dd>
+                </div>
+                <div className="summary-grid__item">
+                  <dt>Tier row groups</dt>
+                  <dd>{tierDebugEntries.map(([tier, count]) => `${tier}: ${count}`).join(', ') || 'None'}</dd>
+                </div>
+              </dl>
+
+              <div className="page-stack page-stack--tight">
+                <label className="field-label" htmlFor="parsed-row-filter">
+                  Filter parsed rows
+                </label>
+                <input
+                  id="parsed-row-filter"
+                  className="text-input"
+                  type="text"
+                  value={debugFilter}
+                  onChange={(event) => setDebugFilter(event.target.value)}
+                  placeholder="Filter by raw item name or canonical key"
+                />
+              </div>
+
+              {filteredParsedRows.length === 0 ? (
+                <p className="empty-state">No parsed rows match the current filter.</p>
+              ) : (
+                <ul className="debug-list">
+                  {filteredParsedRows.map((row, rowIndex) => (
+                    <li
+                      key={`${row.sourceLineIndex}-${row.canonicalKey}-${rowIndex}`}
+                      className="debug-list__item"
+                    >
+                      <p>
+                        <strong>Raw item:</strong> {row.rawItemName}
+                      </p>
+                      <p>
+                        <strong>Canonical key:</strong> {row.canonicalKey}
+                      </p>
+                      <p>
+                        <strong>Count:</strong> {row.count.toLocaleString()}
+                      </p>
+                      <p>
+                        <strong>Target tier:</strong> {formatTierLabel(row.targetTier)}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </>
         )}

@@ -14,6 +14,15 @@ describe('parseMasteryPaste', () => {
       'gold cucumber': 967174,
     });
     expect(result.parseSummary.tiersDetected).toEqual([1000000]);
+    expect(result.parsedRows).toEqual([
+      {
+        rawItemName: 'Gold Cucumber',
+        canonicalKey: 'gold cucumber',
+        count: 967174,
+        targetTier: 1000000,
+        sourceLineIndex: 1,
+      },
+    ]);
   });
 
   it('parses an item and progress block without a percent line', () => {
@@ -26,6 +35,7 @@ describe('parseMasteryPaste', () => {
       board: 272829930,
     });
     expect(result.parseSummary.tiersDetected).toEqual(['INF']);
+    expect(result.parsedRows[0]?.targetTier).toBe('INF');
   });
 
   it('ignores a junk header line before a valid block', () => {
@@ -90,6 +100,7 @@ describe('parseMasteryPaste', () => {
     });
     expect(result.parseSummary.warnings).toHaveLength(1);
     expect(result.parseSummary.warnings[0]).toContain('Duplicate mastery row');
+    expect(result.parsedRows).toHaveLength(2);
   });
 
   it('returns tiers in ascending order with INF last', () => {
