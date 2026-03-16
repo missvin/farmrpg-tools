@@ -2,14 +2,14 @@
 
 This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for the detailed backlog.
 
-## v1.5 (Current)
+## v1.5 (Complete)
 
 - Tower requirements support
   - Load `tower_requirements.csv`
   - Join against the latest saved snapshot by normalized item name
   - Add a simple read-only Tower view with requirement status and non-fatal unmatched handling
 
-## v1.6 (Next)
+## v1.6 (Current)
 
 - Strengthen item identity beyond normalized names
   - Canonical key formalization

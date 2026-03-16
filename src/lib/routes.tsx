@@ -6,6 +6,7 @@ import { HistoryPage } from '../pages/HistoryPage';
 import { ImportPage } from '../pages/ImportPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { SortedPage } from '../pages/SortedPage';
+import { TowerPage } from '../pages/TowerPage';
 
 type AppRoute = {
   path: string;
@@ -28,6 +29,11 @@ export const appRoutes: AppRoute[] = [
     path: '/sorted',
     label: 'Sorted',
     element: <SortedPage />,
+  },
+  {
+    path: '/tower',
+    label: 'Tower',
+    element: <TowerPage />,
   },
   {
     path: '/history',
