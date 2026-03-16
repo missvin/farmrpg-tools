@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -55,7 +55,7 @@ describe('ImportPage', () => {
     await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
 
     expect(screen.getByText('Items parsed')).toBeInTheDocument();
-    expect(screen.queryByText('Import Validation Warning')).not.toBeInTheDocument();
+    expect(screen.queryByText('Import Warning')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Import anyway' })).not.toBeInTheDocument();
     expect(saveButton).toBeEnabled();
   });
@@ -75,8 +75,11 @@ describe('ImportPage', () => {
     fireEvent.change(screen.getByLabelText('Raw mastery export'), { target: { value: missingTierTwoExport } });
     await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
 
-    expect(screen.getByText('Import Validation Warning')).toBeInTheDocument();
-    expect(screen.getByText(/Tier II appears to be missing/)).toBeInTheDocument();
+    const importSection = screen.getByRole('heading', { name: 'Paste Export' }).closest('section');
+    expect(importSection).not.toBeNull();
+    expect(within(importSection as HTMLElement).getByRole('alert')).toBeInTheDocument();
+    expect(within(importSection as HTMLElement).getByText('Import Warning')).toBeInTheDocument();
+    expect(within(importSection as HTMLElement).getByText(/Tier II appears to be missing/)).toBeInTheDocument();
   });
 
   it('does not warn that Tier II is missing when Tier II rows are present', async () => {
@@ -95,8 +98,10 @@ describe('ImportPage', () => {
     fireEvent.change(screen.getByLabelText('Raw mastery export'), { target: { value: exportWithTierTwoRows } });
     await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
 
-    expect(screen.getByText('Import Validation Warning')).toBeInTheDocument();
-    expect(screen.getByText(/Only 40 rows were detected/)).toBeInTheDocument();
+    const importSection = screen.getByRole('heading', { name: 'Paste Export' }).closest('section');
+    expect(importSection).not.toBeNull();
+    expect(within(importSection as HTMLElement).getByRole('alert')).toBeInTheDocument();
+    expect(within(importSection as HTMLElement).getByText(/Only 40 rows were detected/)).toBeInTheDocument();
     expect(screen.queryByText(/Tier II appears to be missing/)).not.toBeInTheDocument();
     expect(screen.queryByText(/the following tiers appear to be missing/)).not.toBeInTheDocument();
   });
@@ -114,8 +119,10 @@ describe('ImportPage', () => {
     fireEvent.change(screen.getByLabelText('Raw mastery export'), { target: { value: missingMultipleTiersExport } });
     await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
 
-    expect(screen.getByText(/Tier II, Tier III \(M\)/)).toBeInTheDocument();
-    expect(screen.getByText(/No Tier/)).toBeInTheDocument();
+    const importSection = screen.getByRole('heading', { name: 'Paste Export' }).closest('section');
+    expect(importSection).not.toBeNull();
+    expect(within(importSection as HTMLElement).getByText(/Tier II, Tier III \(M\)/)).toBeInTheDocument();
+    expect(within(importSection as HTMLElement).getByText(/No Tier/)).toBeInTheDocument();
   });
 
   it('still allows saving when warnings exist after choosing import anyway', async () => {
@@ -130,7 +137,9 @@ describe('ImportPage', () => {
     });
     await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
 
-    expect(screen.getByText('Import Validation Warning')).toBeInTheDocument();
+    const importSection = screen.getByRole('heading', { name: 'Paste Export' }).closest('section');
+    expect(importSection).not.toBeNull();
+    expect(within(importSection as HTMLElement).getByText('Import Warning')).toBeInTheDocument();
     expect(saveButton).toBeDisabled();
 
     await user.click(screen.getByRole('button', { name: 'Import anyway' }));
@@ -157,6 +166,17 @@ describe('ImportPage', () => {
       screen.getByText('No mastery items were detected in that paste. Check that you copied the mastery export.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save Snapshot' })).toBeDisabled();
+  });
+
+  it('shows realistic raw export guidance near the textarea', () => {
+    render(<ImportPage />);
+
+    expect(screen.getByPlaceholderText(/Farm RPG/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Item Mastery/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/967,174 \/ 1,000,000 Progress/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Extra header, navigation, or other unrelated lines are okay\./),
+    ).toBeInTheDocument();
   });
 
   it('filters parsed rows by raw item name or canonical key', async () => {

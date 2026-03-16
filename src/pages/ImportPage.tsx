@@ -6,6 +6,17 @@ import { createSnapshotId, saveSnapshot } from '../lib/storage/masterySnapshots'
 
 const PREVIEW_LIMIT = 10;
 const MIN_EXPECTED_IMPORT_ROWS = 50;
+const IMPORT_PLACEHOLDER = `Farm RPG
+Back
+Item Mastery
+
+Gold Cucumber
+967,174 / 1,000,000 Progress
+96.7174%
+
+Red Diamond Fish
+8,835 / 10,000 Progress
+88.35%`;
 const EXPECTED_MASTERY_TIERS = [
   { targetTier: 10, label: 'No Tier' },
   { targetTier: 1_000, label: 'Tier II' },
@@ -196,9 +207,26 @@ export function ImportPage() {
           className="text-area"
           value={rawText}
           onChange={(event) => setRawText(event.target.value)}
-          placeholder={'Gold Cucumber\n967,174 / 1,000,000 Progress\n96.7174%'}
+          placeholder={IMPORT_PLACEHOLDER}
           rows={14}
         />
+        <p className="supporting-text">
+          Extra header, navigation, or other unrelated lines are okay. The importer will ignore lines that are not
+          mastery item rows.
+        </p>
+
+        {importValidationWarning ? (
+          <div className="status-alert status-alert--warning page-stack" role="alert" aria-live="polite">
+            <div>
+              <h3 className="section-title">Import Warning</h3>
+              <p className="status-message">{importValidationWarning}</p>
+            </div>
+            <p className="supporting-text">
+              Review the warning, expand all mastery tiers in FarmRPG if needed, then re-copy the export. You can
+              still choose Import anyway if this partial import is intentional.
+            </p>
+          </div>
+        ) : null}
 
         <div className="button-row">
           <button type="button" className="button" onClick={handleParsePreview}>
@@ -265,13 +293,6 @@ export function ImportPage() {
                     <li key={warning}>{warning}</li>
                   ))}
                 </ul>
-              </div>
-            ) : null}
-
-            {importValidationWarning ? (
-              <div className="page-stack">
-                <h3 className="section-title">Import Validation Warning</h3>
-                <p className="status-message">{importValidationWarning}</p>
               </div>
             ) : null}
 

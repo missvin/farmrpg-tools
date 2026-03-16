@@ -18,7 +18,7 @@ This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/l
 
 - Detect collapsed mastery export sections during import and warn the user
 
-## v1.5.3 (Import UX polish)
+## v1.5.3 (Complete)
 
 - Make incomplete-import warnings more visually prominent
 - Use a more realistic raw export example on the import screen
