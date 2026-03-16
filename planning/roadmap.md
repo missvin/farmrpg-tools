@@ -9,6 +9,11 @@ This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/l
   - Join against the latest saved snapshot by normalized item name
   - Add a simple read-only Tower view with requirement status and non-fatal unmatched handling
 
+## v1.5.1 (QoL)
+
+- Tower page quality-of-life pass
+  - Add accordion/collapse behavior for completed tower levels so the next relevant requirements are easier to scan
+
 ## v1.6 (Current)
 
 - Strengthen item identity beyond normalized names
