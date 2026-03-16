@@ -19,6 +19,11 @@ This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/l
 - Tower range grouping follow-up
   - Group by `tower_level_range` and collect fully completed range groups under `Completed ranges`
 
+## v1.5.6 (Planned)
+
+- Tower detail cleanup follow-up
+  - Simplify the default detail table for planning and add clearer per-item completion cues
+
 ## v1.5.2 (Complete)
 
 - Detect collapsed mastery export sections during import and warn the user
