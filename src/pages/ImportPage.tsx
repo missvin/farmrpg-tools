@@ -5,6 +5,8 @@ import { parseMasteryPaste } from '../lib/parseMasteryPaste';
 import { createSnapshotId, saveSnapshot } from '../lib/storage/masterySnapshots';
 
 const PREVIEW_LIMIT = 10;
+const MIN_EXPECTED_IMPORT_ROWS = 50;
+const EXPECTED_MASTERY_TIERS = ['No Tier', 'Tier II', 'Tier III (M)', 'Tier IV (GM)', 'Tier V (MM)'] as const;
 
 function formatTierList(tiers: Array<number | 'INF'>): string {
   if (tiers.length === 0) {
@@ -18,16 +20,78 @@ function formatTierLabel(tier: number | 'INF'): string {
   return tier === 'INF' ? 'INF' : tier.toLocaleString();
 }
 
+function getMasteryTierLabel(targetTier: number | 'INF'): (typeof EXPECTED_MASTERY_TIERS)[number] | null {
+  if (targetTier === 10) {
+    return 'No Tier';
+  }
+
+  if (targetTier === 100) {
+    return 'Tier II';
+  }
+
+  if (targetTier === 10_000) {
+    return 'Tier III (M)';
+  }
+
+  if (targetTier === 100_000) {
+    return 'Tier IV (GM)';
+  }
+
+  if (targetTier === 1_000_000 || targetTier === 'INF') {
+    return 'Tier V (MM)';
+  }
+
+  return null;
+}
+
+function buildImportValidationWarning(parseResult: ReturnType<typeof parseMasteryPaste>): string | null {
+  const tierCounts = parseResult.parsedRows.reduce<Record<string, number>>((counts, row) => {
+    const tierLabel = getMasteryTierLabel(row.targetTier);
+
+    if (tierLabel) {
+      counts[tierLabel] = (counts[tierLabel] ?? 0) + 1;
+    }
+
+    return counts;
+  }, {});
+  const missingTiers = EXPECTED_MASTERY_TIERS.filter((tierLabel) => (tierCounts[tierLabel] ?? 0) === 0);
+  const totalRows = parseResult.parsedRows.length;
+
+  if (missingTiers.length === 0 && totalRows >= MIN_EXPECTED_IMPORT_ROWS) {
+    return null;
+  }
+
+  const messageParts = [`This mastery import may be incomplete. Only ${totalRows.toLocaleString()} rows were detected`];
+
+  if (missingTiers.length === 1) {
+    messageParts.push(`, and ${missingTiers[0]} appears to be missing.`);
+  } else if (missingTiers.length > 1) {
+    messageParts.push(`, and the following tiers appear to be missing: ${missingTiers.join(', ')}.`);
+  } else {
+    messageParts.push('.');
+  }
+
+  if (missingTiers.length > 0) {
+    messageParts.push(
+      ' This often happens if the mastery page sections were collapsed before copying. Please expand all tiers and copy again.',
+    );
+  }
+
+  return messageParts.join('');
+}
+
 export function ImportPage() {
   const [rawText, setRawText] = useState('');
   const [parsedText, setParsedText] = useState('');
   const [debugFilter, setDebugFilter] = useState('');
+  const [importValidationAcknowledged, setImportValidationAcknowledged] = useState(false);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const parseResult = parsedText ? parseMasteryPaste(parsedText) : null;
+  const importValidationWarning = parseResult ? buildImportValidationWarning(parseResult) : null;
   const previewEntries = parseResult
     ? Object.entries(parseResult.masteryByItem)
         .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
@@ -67,10 +131,12 @@ export function ImportPage() {
   });
 
   const hasParsedItems = (parseResult?.parseSummary.itemsParsed ?? 0) > 0;
+  const requiresImportOverride = Boolean(importValidationWarning) && !importValidationAcknowledged;
 
   function handleParsePreview(): void {
     setSaveMessage(null);
     setSaveError(null);
+    setImportValidationAcknowledged(false);
 
     if (!rawText.trim()) {
       setParsedText('');
@@ -153,10 +219,19 @@ export function ImportPage() {
             onClick={() => {
               void handleSaveSnapshot();
             }}
-            disabled={!hasParsedItems || isSaving}
+            disabled={!hasParsedItems || isSaving || requiresImportOverride}
           >
             {isSaving ? 'Saving...' : 'Save Snapshot'}
           </button>
+          {requiresImportOverride ? (
+            <button
+              type="button"
+              className="button"
+              onClick={() => setImportValidationAcknowledged(true)}
+            >
+              Import anyway
+            </button>
+          ) : null}
         </div>
 
         {validationMessage ? <p className="status-message">{validationMessage}</p> : null}
@@ -199,6 +274,13 @@ export function ImportPage() {
                     <li key={warning}>{warning}</li>
                   ))}
                 </ul>
+              </div>
+            ) : null}
+
+            {importValidationWarning ? (
+              <div className="page-stack">
+                <h3 className="section-title">Import Validation Warning</h3>
+                <p className="status-message">{importValidationWarning}</p>
               </div>
             ) : null}
 

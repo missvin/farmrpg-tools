@@ -14,6 +14,10 @@ This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/l
 - Tower page quality-of-life pass
   - Add accordion/collapse behavior for completed tower levels so the next relevant requirements are easier to scan
 
+## v1.5.2 (Bugfix)
+
+- Detect collapsed mastery export sections during import and warn the user
+
 ## v1.6 (Current)
 
 - Strengthen item identity beyond normalized names
