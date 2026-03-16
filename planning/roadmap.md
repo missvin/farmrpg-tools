@@ -26,6 +26,7 @@ This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/l
   - Early item registry groundwork
 - Improve import and reference-data maintenance workflows
   - Import validation report
+  - Mastery export help page with an import-screen link
   - Unmatched reference data polish
   - Tower data validation
 
