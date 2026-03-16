@@ -17,6 +17,10 @@ function formatRequirementLabel(requiredThreshold: number): string {
   return 'Requires Mega Mastered (>= 1,000,000)';
 }
 
+function getLevelKey(towerLevelRange: string, towerLevel: number): string {
+  return `${towerLevelRange}:${towerLevel}`;
+}
+
 export function TowerPage() {
   const [towerState, setTowerState] = useState<{
     isLoading: boolean;
@@ -104,6 +108,14 @@ export function TowerPage() {
     towerState.derivedTowerRequirements?.rows.filter((row) => row.achieved).length ?? 0;
   const unmatchedSnapshotItemCount =
     towerState.derivedTowerRequirements?.rows.filter((row) => !row.matchedSnapshotRow).length ?? 0;
+  const firstIncompleteLevelKey = towerState.derivedTowerRequirements?.groups
+    .flatMap((rangeGroup) =>
+      rangeGroup.levels.map((levelGroup) => ({
+        key: getLevelKey(rangeGroup.towerLevelRange, levelGroup.towerLevel),
+        isCompleted: levelGroup.rows.every((row) => row.achieved),
+      })),
+    )
+    .find((levelGroup) => !levelGroup.isCompleted)?.key;
 
   return (
     <div className="page-stack">
@@ -176,47 +188,93 @@ export function TowerPage() {
               <div key={rangeGroup.towerLevelRange} className="page-stack">
                 <h3 className="section-title">Tower Levels {rangeGroup.towerLevelRange}</h3>
 
-                {rangeGroup.levels.map((levelGroup) => (
-                  <div key={levelGroup.towerLevel} className="page-stack">
-                    <h4 className="section-title">Tower Level {levelGroup.towerLevel}</h4>
-                    <div className="table-scroll">
-                      <table className="summary-table">
-                        <thead>
-                          <tr>
-                            <th scope="col">Level</th>
-                            <th scope="col">Slot</th>
-                            <th scope="col">Item</th>
-                            <th scope="col">Requirement</th>
-                            <th scope="col">Current mastery</th>
-                            <th scope="col">Remaining</th>
-                            <th scope="col">Notes</th>
-                            <th scope="col">Match</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {levelGroup.rows.map((row) => (
-                            <tr key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}-${row.requiredThreshold}`}>
-                              <td>{row.towerLevel}</td>
-                              <td>{row.slotIndex}</td>
-                              <td>{row.itemName}</td>
-                              <td>{formatRequirementLabel(row.requiredThreshold)}</td>
-                              <td>{row.currentMastery.toLocaleString()}</td>
-                              <td>{row.remainingToRequirement.toLocaleString()}</td>
-                              <td>{row.notes ?? '—'}</td>
-                              <td>
-                                {row.matchedSnapshotRow ? (
-                                  'Matched'
-                                ) : (
-                                  <span className="status-message">Unmatched in latest snapshot</span>
-                                )}
-                              </td>
+                {rangeGroup.levels.map((levelGroup) => {
+                  const levelKey = getLevelKey(rangeGroup.towerLevelRange, levelGroup.towerLevel);
+                  const isCompleted = levelGroup.rows.every((row) => row.achieved);
+                  const nextBlockingRowIndex = levelGroup.rows.findIndex((row) => !row.achieved);
+                  const remainingCount = levelGroup.rows.filter((row) => !row.achieved).length;
+                  const isNextRelevantLevel = firstIncompleteLevelKey === levelKey;
+
+                  return (
+                    <details
+                      key={levelGroup.towerLevel}
+                      className={`tower-level-card${isNextRelevantLevel ? ' tower-level-card--next' : ''}`}
+                      open={!isCompleted}
+                    >
+                      <summary className="tower-level-summary">
+                        <div className="tower-level-summary__text">
+                          <h4 className="section-title">Tower Level {levelGroup.towerLevel}</h4>
+                          <p className="subtle-text">
+                            {isCompleted
+                              ? 'Completed level'
+                              : `${remainingCount.toLocaleString()} requirement${
+                                  remainingCount === 1 ? '' : 's'
+                                } remaining`}
+                            {isNextRelevantLevel ? ' · Next relevant level' : ''}
+                          </p>
+                        </div>
+                        <span
+                          className={`tower-level-summary__badge${
+                            isCompleted ? ' tower-level-summary__badge--complete' : ''
+                          }`}
+                        >
+                          {isCompleted ? 'Completed' : 'In Progress'}
+                        </span>
+                      </summary>
+
+                      {isNextRelevantLevel && nextBlockingRowIndex >= 0 ? (
+                        <p className="subtle-text">
+                          Next blocking requirement: {levelGroup.rows[nextBlockingRowIndex].itemName} (
+                          {formatRequirementLabel(levelGroup.rows[nextBlockingRowIndex].requiredThreshold)})
+                        </p>
+                      ) : null}
+
+                      <div className="table-scroll">
+                        <table className="summary-table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Level</th>
+                              <th scope="col">Slot</th>
+                              <th scope="col">Item</th>
+                              <th scope="col">Requirement</th>
+                              <th scope="col">Current mastery</th>
+                              <th scope="col">Remaining</th>
+                              <th scope="col">Notes</th>
+                              <th scope="col">Match</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                ))}
+                          </thead>
+                          <tbody>
+                            {levelGroup.rows.map((row, rowIndex) => (
+                              <tr
+                                key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}-${row.requiredThreshold}`}
+                                className={
+                                  isNextRelevantLevel && rowIndex === nextBlockingRowIndex
+                                    ? 'summary-table__row--highlight'
+                                    : undefined
+                                }
+                              >
+                                <td>{row.towerLevel}</td>
+                                <td>{row.slotIndex}</td>
+                                <td>{row.itemName}</td>
+                                <td>{formatRequirementLabel(row.requiredThreshold)}</td>
+                                <td>{row.currentMastery.toLocaleString()}</td>
+                                <td>{row.remainingToRequirement.toLocaleString()}</td>
+                                <td>{row.notes ?? '—'}</td>
+                                <td>
+                                  {row.matchedSnapshotRow ? (
+                                    'Matched'
+                                  ) : (
+                                    <span className="status-message">Unmatched in latest snapshot</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </details>
+                  );
+                })}
               </div>
             ))}
           </section>
