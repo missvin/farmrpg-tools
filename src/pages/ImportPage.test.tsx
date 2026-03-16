@@ -30,7 +30,7 @@ function buildTierRows(
 function buildFullExport(): string {
   return [
     ...buildTierRows('No Tier', 10, 12, 1),
-    ...buildTierRows('Tier II', 100, 12, 101),
+    ...buildTierRows('Tier II', 1_000, 12, 101),
     ...buildTierRows('Tier III', 10_000, 12, 201),
     ...buildTierRows('Tier IV', 100_000, 12, 301),
     ...buildTierRows('Tier V', 1_000_000, 12, 401),
@@ -77,6 +77,28 @@ describe('ImportPage', () => {
 
     expect(screen.getByText('Import Validation Warning')).toBeInTheDocument();
     expect(screen.getByText(/Tier II appears to be missing/)).toBeInTheDocument();
+  });
+
+  it('does not warn that Tier II is missing when Tier II rows are present', async () => {
+    const user = userEvent.setup();
+
+    render(<ImportPage />);
+
+    const exportWithTierTwoRows = [
+      ...buildTierRows('No Tier', 10, 8, 1),
+      ...buildTierRows('Tier II', 1_000, 8, 101),
+      ...buildTierRows('Tier III', 10_000, 8, 201),
+      ...buildTierRows('Tier IV', 100_000, 8, 301),
+      ...buildTierRows('Tier V', 1_000_000, 8, 401),
+    ].join('\n\n');
+
+    fireEvent.change(screen.getByLabelText('Raw mastery export'), { target: { value: exportWithTierTwoRows } });
+    await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
+
+    expect(screen.getByText('Import Validation Warning')).toBeInTheDocument();
+    expect(screen.getByText(/Only 40 rows were detected/)).toBeInTheDocument();
+    expect(screen.queryByText(/Tier II appears to be missing/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/the following tiers appear to be missing/)).not.toBeInTheDocument();
   });
 
   it('shows a warning listing multiple missing tiers', async () => {

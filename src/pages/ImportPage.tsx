@@ -6,7 +6,13 @@ import { createSnapshotId, saveSnapshot } from '../lib/storage/masterySnapshots'
 
 const PREVIEW_LIMIT = 10;
 const MIN_EXPECTED_IMPORT_ROWS = 50;
-const EXPECTED_MASTERY_TIERS = ['No Tier', 'Tier II', 'Tier III (M)', 'Tier IV (GM)', 'Tier V (MM)'] as const;
+const EXPECTED_MASTERY_TIERS = [
+  { targetTier: 10, label: 'No Tier' },
+  { targetTier: 1_000, label: 'Tier II' },
+  { targetTier: 10_000, label: 'Tier III (M)' },
+  { targetTier: 100_000, label: 'Tier IV (GM)' },
+  { targetTier: 1_000_000, label: 'Tier V (MM)' },
+] as const;
 
 function formatTierList(tiers: Array<number | 'INF'>): string {
   if (tiers.length === 0) {
@@ -20,41 +26,26 @@ function formatTierLabel(tier: number | 'INF'): string {
   return tier === 'INF' ? 'INF' : tier.toLocaleString();
 }
 
-function getMasteryTierLabel(targetTier: number | 'INF'): (typeof EXPECTED_MASTERY_TIERS)[number] | null {
-  if (targetTier === 10) {
-    return 'No Tier';
-  }
-
-  if (targetTier === 100) {
-    return 'Tier II';
-  }
-
-  if (targetTier === 10_000) {
-    return 'Tier III (M)';
-  }
-
-  if (targetTier === 100_000) {
-    return 'Tier IV (GM)';
-  }
-
-  if (targetTier === 1_000_000 || targetTier === 'INF') {
-    return 'Tier V (MM)';
-  }
-
-  return null;
+function getMasteryTierLabel(targetTier: number): string | null {
+  return EXPECTED_MASTERY_TIERS.find((tier) => tier.targetTier === targetTier)?.label ?? null;
 }
 
 function buildImportValidationWarning(parseResult: ReturnType<typeof parseMasteryPaste>): string | null {
-  const tierCounts = parseResult.parsedRows.reduce<Record<string, number>>((counts, row) => {
-    const tierLabel = getMasteryTierLabel(row.targetTier);
+  const tierCounts = parseResult.parsedRows.reduce<Record<number, number>>((counts, row) => {
+    if (row.targetTier === 'INF') {
+      return counts;
+    }
 
+    const tierLabel = getMasteryTierLabel(row.targetTier);
     if (tierLabel) {
-      counts[tierLabel] = (counts[tierLabel] ?? 0) + 1;
+      counts[row.targetTier] = (counts[row.targetTier] ?? 0) + 1;
     }
 
     return counts;
   }, {});
-  const missingTiers = EXPECTED_MASTERY_TIERS.filter((tierLabel) => (tierCounts[tierLabel] ?? 0) === 0);
+  const missingTiers = EXPECTED_MASTERY_TIERS.filter((tier) => (tierCounts[tier.targetTier] ?? 0) === 0).map(
+    (tier) => tier.label,
+  );
   const totalRows = parseResult.parsedRows.length;
 
   if (missingTiers.length === 0 && totalRows >= MIN_EXPECTED_IMPORT_ROWS) {
