@@ -20,6 +20,20 @@ export type MasteryDifficultyData = {
   byCanonicalKey: Record<string, MasteryDifficultyEntry>;
 };
 
+export const MASTERY_DIFFICULTY_COLUMNS = [
+  'item_name',
+  'difficulty',
+  'method',
+  'notes',
+  'tags',
+  'passive_craftworks_info',
+  'farmrpg_item_id',
+  'buddy_item_id',
+  'buddy_slug',
+  'source_sheet',
+  'source_row',
+] as const;
+
 function parseCsvRow(line: string): string[] {
   const values: string[] = [];
   let currentValue = '';

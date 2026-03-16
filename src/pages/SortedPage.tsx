@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveMasteryDifficultyStats } from '../lib/deriveMasteryDifficultyStats';
+import { downloadMissingMasteryDifficultyCsv } from '../lib/exportMissingMasteryDifficultyCsv';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
 
@@ -16,6 +17,8 @@ function formatRemainingLabel(mode: SortedMode): string {
 export function SortedPage() {
   const [mode, setMode] = useState<SortedMode>('gm');
   const [filterText, setFilterText] = useState('');
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
   const [sortedState, setSortedState] = useState<{
     isLoading: boolean;
     snapshotError: string | null;
@@ -107,6 +110,21 @@ export function SortedPage() {
       items: group.items.filter((item) => item.itemName.toLowerCase().includes(normalizedFilter)),
     }))
     .filter((group) => group.items.length > 0);
+
+  function handleExportMissingItemsCsv(): void {
+    if (!sortedState.derivedStats || sortedState.derivedStats.unmatchedItems.length === 0) {
+      return;
+    }
+
+    try {
+      downloadMissingMasteryDifficultyCsv(sortedState.derivedStats.unmatchedItems);
+      setExportError(null);
+      setExportMessage('Missing-items CSV downloaded for manual review and append.');
+    } catch (error) {
+      setExportMessage(null);
+      setExportError(error instanceof Error ? error.message : 'Unable to export missing-items CSV.');
+    }
+  }
 
   return (
     <div className="page-stack">
@@ -229,6 +247,20 @@ export function SortedPage() {
               Items missing from mastery difficulty data:{' '}
               {sortedState.derivedStats.unmatchedItemCount.toLocaleString()}
             </p>
+
+            <div className="button-row">
+              <button
+                type="button"
+                className="button"
+                onClick={handleExportMissingItemsCsv}
+                disabled={sortedState.derivedStats.unmatchedItems.length === 0}
+              >
+                Export Missing Items CSV
+              </button>
+            </div>
+
+            {exportMessage ? <p className="status-message status-message--success">{exportMessage}</p> : null}
+            {exportError ? <p className="status-message status-message--error">{exportError}</p> : null}
 
             {sortedState.derivedStats.unmatchedItems.length === 0 ? (
               <p className="empty-state">No unmatched items in the latest snapshot.</p>
