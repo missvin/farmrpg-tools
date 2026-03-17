@@ -101,4 +101,31 @@ Chef's Hat 2`,
       configurable: true,
     });
   });
+
+  it('generates buddy item candidates and surfaces review edge cases', async () => {
+    const user = userEvent.setup();
+
+    render(<MuseumToolsPage />);
+
+    await user.type(
+      screen.getByLabelText('Museum seed CSV'),
+      `museum_category,category,item_name,canonical_key,obtainable
+Items,Item,Bamboo Trellis,bamboo trellis,Y
+Event,Event,Piñata Whop Stick,piñata whop stick,Y`,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Generate Buddy Candidates' }));
+
+    expect(screen.getByText('Candidate rows')).toBeInTheDocument();
+    expect(screen.getByText('Needs review')).toBeInTheDocument();
+    expect(screen.getByText('Piñata Whop Stick')).toBeInTheDocument();
+    expect(screen.getByText('https://buddy.farm/i/pi-ata-whop-stick/')).toBeInTheDocument();
+    expect(screen.getByText('pi-ata-whop-stick')).toBeInTheDocument();
+    expect(screen.getByText('pinata-whop-stick')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Contains non-ASCII or diacritic characters; verify the generated slug manually\./),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Export Candidate CSV' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Export Review CSV' })).toBeEnabled();
+  });
 });
