@@ -93,6 +93,18 @@ a {
   padding: 1rem;
 }
 
+.scroll-to-top-bar {
+  width: min(100%, 72rem);
+  margin: 0 auto;
+  padding: 0 1rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.scroll-to-top-button {
+  white-space: nowrap;
+}
+
 .page-stack {
   display: grid;
   gap: 1rem;
@@ -400,6 +412,10 @@ a {
   .site-header__inner,
   .page-container {
     padding: 0.75rem;
+  }
+
+  .scroll-to-top-bar {
+    padding: 0 0.75rem 0.75rem;
   }
 
   .nav-link {
