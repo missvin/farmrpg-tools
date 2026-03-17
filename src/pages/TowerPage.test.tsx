@@ -204,4 +204,59 @@ describe('TowerPage', () => {
       screen.getByText('Next blocking requirement: Gold Cucumber (Requires Mega Mastered (>= 1,000,000))'),
     ).toBeInTheDocument();
   });
+
+  it('uses compact default requirement labels and planning-oriented columns in the detail table', async () => {
+    getLatestSnapshotMock.mockResolvedValue({
+      snapshotId: 'snapshot-3',
+      createdAt: '2026-03-16T00:00:00.000Z',
+      rawText: '',
+      masteryByItem: {
+        board: 1_500_000,
+      },
+      parseSummary: {
+        itemsParsed: 1,
+        tiersDetected: [1_000_000],
+        unknownItemsCount: 0,
+        warnings: [],
+      },
+      parsedRows: [],
+    });
+
+    loadTowerRequirementsMock.mockResolvedValue({
+      entries: [
+        {
+          towerLevel: 202,
+          towerLevelRange: '201-220',
+          slotIndex: 1,
+          itemName: 'Board',
+          canonicalKey: 'board',
+          masteryLevelNeeded: 'MM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: 'Passive source',
+          sourceSheet: null,
+          sourceRow: null,
+        },
+      ],
+      byCanonicalKey: {
+        board: [],
+      },
+    });
+
+    render(<TowerPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Tower Requirement Status')).toBeInTheDocument();
+    });
+
+    expect(screen.getAllByText('MM').length).toBeGreaterThan(0);
+    expect(screen.getByText('% complete')).toBeInTheDocument();
+    expect(screen.queryByText('Match')).not.toBeInTheDocument();
+    expect(screen.queryByText('Slot')).not.toBeInTheDocument();
+    expect(screen.queryByText('Notes')).not.toBeInTheDocument();
+    expect(screen.getByText('Slot 1')).toBeInTheDocument();
+    expect(screen.getByText('Note: Passive source')).toBeInTheDocument();
+    expect(screen.getByText('100%')).toBeInTheDocument();
+    expect(screen.queryByText('Requires Mega Mastered (>= 1,000,000)')).not.toBeInTheDocument();
+  });
 });

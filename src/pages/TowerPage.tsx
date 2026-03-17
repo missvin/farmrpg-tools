@@ -17,12 +17,34 @@ function formatRequirementLabel(requiredThreshold: number): string {
   return 'Requires Mega Mastered (>= 1,000,000)';
 }
 
+function formatCompactRequirementLabel(requiredThreshold: number): 'M' | 'GM' | 'MM' {
+  if (requiredThreshold === 10_000) {
+    return 'M';
+  }
+
+  if (requiredThreshold === 100_000) {
+    return 'GM';
+  }
+
+  return 'MM';
+}
+
 function getLevelKey(towerLevelRange: string, towerLevel: number): string {
   return `${towerLevelRange}:${towerLevel}`;
 }
 
 function formatLevelSummary(remainingCount: number, totalCount: number): string {
   return `${remainingCount.toLocaleString()}/${totalCount.toLocaleString()} items remaining`;
+}
+
+function formatPercentComplete(currentMastery: number, requiredThreshold: number): string {
+  const percent = Math.min(100, (currentMastery / requiredThreshold) * 100);
+
+  if (Number.isNaN(percent) || !Number.isFinite(percent)) {
+    return '0%';
+  }
+
+  return `${percent.toFixed(percent >= 100 ? 0 : 1)}%`;
 }
 
 export function TowerPage() {
@@ -263,13 +285,11 @@ export function TowerPage() {
                                   <thead>
                                     <tr>
                                       <th scope="col">Level</th>
-                                      <th scope="col">Slot</th>
                                       <th scope="col">Item</th>
                                       <th scope="col">Requirement</th>
+                                      <th scope="col">% complete</th>
                                       <th scope="col">Current mastery</th>
                                       <th scope="col">Remaining</th>
-                                      <th scope="col">Notes</th>
-                                      <th scope="col">Match</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -283,19 +303,18 @@ export function TowerPage() {
                                         }
                                       >
                                         <td>{row.towerLevel}</td>
-                                        <td>{row.slotIndex}</td>
-                                        <td>{row.itemName}</td>
-                                        <td>{formatRequirementLabel(row.requiredThreshold)}</td>
+                                        <td>
+                                          <strong>{row.itemName}</strong>
+                                          <p className="subtle-text">Slot {row.slotIndex}</p>
+                                          {row.notes ? <p className="subtle-text">Note: {row.notes}</p> : null}
+                                          {!row.matchedSnapshotRow ? (
+                                            <p className="subtle-text">Unmatched in latest snapshot</p>
+                                          ) : null}
+                                        </td>
+                                        <td>{formatCompactRequirementLabel(row.requiredThreshold)}</td>
+                                        <td>{formatPercentComplete(row.currentMastery, row.requiredThreshold)}</td>
                                         <td>{row.currentMastery.toLocaleString()}</td>
                                         <td>{row.remainingToRequirement.toLocaleString()}</td>
-                                        <td>{row.notes ?? '—'}</td>
-                                        <td>
-                                          {row.matchedSnapshotRow ? (
-                                            'Matched'
-                                          ) : (
-                                            <span className="status-message">Unmatched in latest snapshot</span>
-                                          )}
-                                        </td>
                                       </tr>
                                     ))}
                                   </tbody>
@@ -358,13 +377,11 @@ export function TowerPage() {
                                 <thead>
                                   <tr>
                                     <th scope="col">Level</th>
-                                    <th scope="col">Slot</th>
                                     <th scope="col">Item</th>
                                     <th scope="col">Requirement</th>
+                                    <th scope="col">% complete</th>
                                     <th scope="col">Current mastery</th>
                                     <th scope="col">Remaining</th>
-                                    <th scope="col">Notes</th>
-                                    <th scope="col">Match</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -373,19 +390,18 @@ export function TowerPage() {
                                       key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}-${row.requiredThreshold}`}
                                     >
                                       <td>{row.towerLevel}</td>
-                                      <td>{row.slotIndex}</td>
-                                      <td>{row.itemName}</td>
-                                      <td>{formatRequirementLabel(row.requiredThreshold)}</td>
+                                      <td>
+                                        <strong>{row.itemName}</strong>
+                                        <p className="subtle-text">Slot {row.slotIndex}</p>
+                                        {row.notes ? <p className="subtle-text">Note: {row.notes}</p> : null}
+                                        {!row.matchedSnapshotRow ? (
+                                          <p className="subtle-text">Unmatched in latest snapshot</p>
+                                        ) : null}
+                                      </td>
+                                      <td>{formatCompactRequirementLabel(row.requiredThreshold)}</td>
+                                      <td>{formatPercentComplete(row.currentMastery, row.requiredThreshold)}</td>
                                       <td>{row.currentMastery.toLocaleString()}</td>
                                       <td>{row.remainingToRequirement.toLocaleString()}</td>
-                                      <td>{row.notes ?? '—'}</td>
-                                      <td>
-                                        {row.matchedSnapshotRow ? (
-                                          'Matched'
-                                        ) : (
-                                          <span className="status-message">Unmatched in latest snapshot</span>
-                                        )}
-                                      </td>
                                     </tr>
                                   ))}
                                 </tbody>

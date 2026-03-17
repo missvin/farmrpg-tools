@@ -19,7 +19,7 @@ This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/l
 - Tower range grouping follow-up
   - Group by `tower_level_range` and collect fully completed range groups under `Completed ranges`
 
-## v1.5.6 (Planned)
+## v1.5.6 (Complete)
 
 - Tower detail cleanup follow-up
   - Simplify the default detail table for planning, including compact M/GM/MM requirement labels
