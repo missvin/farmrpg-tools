@@ -22,7 +22,7 @@ This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/l
 ## v1.5.6 (Planned)
 
 - Tower detail cleanup follow-up
-  - Simplify the default detail table for planning and add clearer per-item completion cues
+  - Simplify the default detail table for planning, including compact M/GM/MM requirement labels
 
 ## v1.5.2 (Complete)
 
