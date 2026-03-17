@@ -199,6 +199,7 @@ export function MuseumToolsPage() {
                   <thead>
                     <tr>
                       <th scope="col">Category</th>
+                      <th scope="col">Derived type</th>
                       <th scope="col">Header counts</th>
                       <th scope="col">Parsed items</th>
                       <th scope="col">Validation</th>
@@ -208,6 +209,7 @@ export function MuseumToolsPage() {
                     {parseResult.categories.map((category) => (
                       <tr key={category.categoryName}>
                         <td>{category.categoryName}</td>
+                        <td>{category.items[0] ? parseResult.uniqueItems.find((item) => item.categoryName === category.categoryName)?.category ?? '-' : '-'}</td>
                         <td>
                           {formatExpectedCounts(category.expectedOwnedCount, category.expectedTotalCount)}
                         </td>
@@ -230,8 +232,20 @@ export function MuseumToolsPage() {
                   <ul className="data-list">
                     {category.items.map((item) => (
                       <li key={`${category.categoryName}-${item.canonicalKey}`}>
-                        <span>{item.itemName}</span>
-                        <span>{item.canonicalKey}</span>
+                        <div>
+                          <strong>{item.itemName}</strong>
+                          <p className="subtle-text">
+                            {item.canonicalKey}
+                            {' | '}Obtainable: {item.obtainable ? 'Y' : 'N'}
+                          </p>
+                        </div>
+                        <span>
+                          {parseResult.uniqueItems.find(
+                            (seedItem) =>
+                              seedItem.categoryName === category.categoryName &&
+                              seedItem.canonicalKey === item.canonicalKey,
+                          )?.category ?? '-'}
+                        </span>
                       </li>
                     ))}
                   </ul>

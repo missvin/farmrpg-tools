@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -26,14 +26,20 @@ Yellow Perch`,
 
     expect(screen.getByText('Categories parsed')).toBeInTheDocument();
     expect(screen.getByText('Unique seed items')).toBeInTheDocument();
-    expect(screen.getByText('Fish')).toBeInTheDocument();
     expect(screen.getByText('Matches owned count only')).toBeInTheDocument();
     expect(
       screen.getByText(
         'Fish: parsed 2 items, which matches the owned count but not the total count of 3.',
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText('blue catfish')).toBeInTheDocument();
+    const categorySection = screen.getByRole('heading', { name: 'Parsed Categories' }).closest('section');
+    const fishRow = within(categorySection as HTMLElement).getByRole('cell', { name: '2 / 3' }).closest('tr');
+    expect(fishRow).not.toBeNull();
+    expect(fishRow).toHaveTextContent('Fish');
+    expect(fishRow).toHaveTextContent('2 / 3');
+    expect(fishRow).toHaveTextContent('Matches owned count only');
+    expect(screen.getByText('Blue Catfish')).toBeInTheDocument();
+    expect(screen.getByText(/blue catfish\s+\|\s+obtainable:\s+y/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Export JSON' })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Export CSV' })).toBeEnabled();
   });

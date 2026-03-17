@@ -68,9 +68,11 @@ Blue Catfish
 Yellow Perch`);
 
     expect(toMuseumSeedCsv(result)).toBe(
-      ['museum_category,item_name,canonical_key', 'Fish,Blue Catfish,blue catfish', 'Fish,Yellow Perch,yellow perch'].join(
-        '\n',
-      ),
+      [
+        'museum_category,category,item_name,canonical_key,obtainable',
+        'Fish,Fish,Blue Catfish,blue catfish,Y',
+        'Fish,Fish,Yellow Perch,yellow perch,Y',
+      ].join('\n'),
     );
   });
 
@@ -103,6 +105,43 @@ Tomato Tomato Watermelon Watermelon Wheat Wheat`);
     expect(result.categories[0].items.map((item) => item.itemName)).toContain('Pine Tree');
     expect(result.categories[0].items.map((item) => item.itemName)).toContain('Sugar Cane');
     expect(result.parseSummary.warnings).toEqual([]);
+  });
+
+  it('marks items unobtainable when either duplicated copy is wrapped in double asterisks', () => {
+    const result = parseMuseumExport(`Items Count = 4
+Bamboo Trellis Bamboo Trellis Banana Peel **Banana Peel** Bananas Bananas Bar of Silver Bar of Silver`);
+
+    expect(result.parseSummary.uniqueItemsParsed).toBe(4);
+    expect(result.uniqueItems).toEqual([
+      {
+        itemName: 'Bamboo Trellis',
+        canonicalKey: 'bamboo trellis',
+        categoryName: 'Items',
+        category: 'Item',
+        obtainable: true,
+      },
+      {
+        itemName: 'Banana Peel',
+        canonicalKey: 'banana peel',
+        categoryName: 'Items',
+        category: 'Item',
+        obtainable: false,
+      },
+      {
+        itemName: 'Bananas',
+        canonicalKey: 'bananas',
+        categoryName: 'Items',
+        category: 'Item',
+        obtainable: true,
+      },
+      {
+        itemName: 'Bar of Silver',
+        canonicalKey: 'bar of silver',
+        categoryName: 'Items',
+        category: 'Item',
+        obtainable: true,
+      },
+    ]);
   });
 
   it('stops parsing when the library page ends at Library Home', () => {

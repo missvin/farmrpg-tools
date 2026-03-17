@@ -3,6 +3,7 @@ import { toCanonicalItemKey } from './normalizeItemKey';
 export type MuseumCategorySeedItem = {
   itemName: string;
   canonicalKey: string;
+  obtainable: boolean;
 };
 
 export type MuseumCategorySeed = {
@@ -18,6 +19,8 @@ export type MuseumSeedItem = {
   itemName: string;
   canonicalKey: string;
   categoryName: string;
+  category: string;
+  obtainable: boolean;
 };
 
 export type MuseumParseSummary = {
@@ -76,7 +79,10 @@ function parseCategoryHeader(line: string): {
 
 function tokensMatch(tokens: string[], start: number, phraseLength: number): boolean {
   for (let index = 0; index < phraseLength; index += 1) {
-    if (tokens[start + index] !== tokens[start + phraseLength + index]) {
+    if (
+      tokens[start + index].replace(/\*\*/gu, '') !==
+      tokens[start + phraseLength + index].replace(/\*\*/gu, '')
+    ) {
       return false;
     }
   }
@@ -84,10 +90,44 @@ function tokensMatch(tokens: string[], start: number, phraseLength: number): boo
   return true;
 }
 
-function parseDuplicatedItemArtifactsFromLine(line: string): string[] {
+function cleanMuseumItemName(value: string): string {
+  return normalizeMuseumLine(value.replace(/\*\*/gu, ''));
+}
+
+function deriveMuseumCategory(categoryName: string): string {
+  if (/ items$/iu.test(categoryName)) {
+    return categoryName.replace(/ items$/iu, '');
+  }
+
+  if (categoryName === 'Fish') {
+    return 'Fish';
+  }
+
+  if (/ies$/iu.test(categoryName)) {
+    return categoryName.replace(/ies$/iu, 'y');
+  }
+
+  if (/s$/iu.test(categoryName) && !/ss$/iu.test(categoryName)) {
+    return categoryName.slice(0, -1);
+  }
+
+  return categoryName;
+}
+
+function parseDuplicatedItemArtifactsFromLine(
+  line: string,
+): Array<{
+  itemName: string;
+  obtainable: boolean;
+}> {
   const tokens = line.split(' ').filter(Boolean);
 
-  function walk(start: number): string[] | null {
+  function walk(
+    start: number,
+  ): Array<{
+    itemName: string;
+    obtainable: boolean;
+  }> | null {
     if (start >= tokens.length) {
       return [];
     }
@@ -105,13 +145,22 @@ function parseDuplicatedItemArtifactsFromLine(line: string): string[] {
         continue;
       }
 
-      return [tokens.slice(start, start + phraseLength).join(' '), ...remainder];
+      const leftPhrase = tokens.slice(start, start + phraseLength).join(' ');
+      const rightPhrase = tokens.slice(start + phraseLength, start + phraseLength * 2).join(' ');
+
+      return [
+        {
+          itemName: cleanMuseumItemName(leftPhrase),
+          obtainable: !(leftPhrase.includes('**') || rightPhrase.includes('**')),
+        },
+        ...remainder,
+      ];
     }
 
     return null;
   }
 
-  return walk(0) ?? [line];
+  return walk(0) ?? [{ itemName: cleanMuseumItemName(line), obtainable: !line.includes('**') }];
 }
 
 function isSkippableLine(line: string): boolean {
@@ -123,10 +172,14 @@ function isSkippableLine(line: string): boolean {
 }
 
 function createCsvSeed(uniqueItems: MuseumSeedItem[]): string {
-  const rows = ['museum_category,item_name,canonical_key'];
+  const rows = ['museum_category,category,item_name,canonical_key,obtainable'];
 
   for (const item of uniqueItems) {
-    rows.push([item.categoryName, item.itemName, item.canonicalKey].map(escapeCsvValue).join(','));
+    rows.push(
+      [item.categoryName, item.category, item.itemName, item.canonicalKey, item.obtainable ? 'Y' : 'N']
+        .map(escapeCsvValue)
+        .join(','),
+    );
   }
 
   return rows.join('\n');
@@ -222,8 +275,8 @@ export function parseMuseumExport(rawText: string): MuseumParseResult {
 
     const parsedItems = parseDuplicatedItemArtifactsFromLine(line);
 
-    for (const itemName of parsedItems) {
-      const canonicalKey = toCanonicalItemKey(itemName);
+    for (const parsedItem of parsedItems) {
+      const canonicalKey = toCanonicalItemKey(parsedItem.itemName);
       if (!canonicalKey) {
         continue;
       }
@@ -235,24 +288,31 @@ export function parseMuseumExport(rawText: string): MuseumParseResult {
 
       currentCategorySeenKeys.add(canonicalKey);
       currentCategory.items.push({
-        itemName,
+        itemName: parsedItem.itemName,
         canonicalKey,
+        obtainable: parsedItem.obtainable,
       });
       currentCategory.parsedItemCount += 1;
 
       const existingGlobalItem = uniqueItemsByCanonicalKey.get(canonicalKey);
       if (!existingGlobalItem) {
         uniqueItemsByCanonicalKey.set(canonicalKey, {
-          itemName,
+          itemName: parsedItem.itemName,
           canonicalKey,
           categoryName: currentCategory.categoryName,
+          category: deriveMuseumCategory(currentCategory.categoryName),
+          obtainable: parsedItem.obtainable,
         });
         continue;
       }
 
+      if (!parsedItem.obtainable && existingGlobalItem.obtainable) {
+        existingGlobalItem.obtainable = false;
+      }
+
       if (existingGlobalItem.categoryName !== currentCategory.categoryName) {
         warnings.push(
-          `${itemName} appeared in both ${existingGlobalItem.categoryName} and ${currentCategory.categoryName}; keeping the first category in the global seed list.`,
+          `${parsedItem.itemName} appeared in both ${existingGlobalItem.categoryName} and ${currentCategory.categoryName}; keeping the first category in the global seed list.`,
         );
       }
     }
