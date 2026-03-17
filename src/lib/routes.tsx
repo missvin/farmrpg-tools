@@ -4,6 +4,7 @@ import { ComparePage } from '../pages/ComparePage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { HistoryPage } from '../pages/HistoryPage';
 import { ImportPage } from '../pages/ImportPage';
+import { MuseumToolsPage } from '../pages/MuseumToolsPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { SortedPage } from '../pages/SortedPage';
 import { TowerPage } from '../pages/TowerPage';
@@ -25,6 +26,11 @@ export const appRoutes: AppRoute[] = [
     path: '/import',
     label: 'Import',
     element: <ImportPage />,
+  },
+  {
+    path: '/museum-tools',
+    label: 'Museum Tools',
+    element: <MuseumToolsPage />,
   },
   {
     path: '/sorted',
