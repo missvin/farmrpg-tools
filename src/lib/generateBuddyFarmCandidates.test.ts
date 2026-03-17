@@ -62,4 +62,37 @@ Event,Event,Piñata Whop Stick,piñata whop stick,Y`);
     expect(reviewCsv).not.toContain('Bamboo Trellis');
     expect(reviewCsv).toContain('pi-ata-whop-stick');
   });
+
+  it('keeps apostrophe and trailing-parenthesis slug edge cases aligned with observed buddy URLs', () => {
+    const seedRows = parseMuseumSeedCsv(`museum_category,category,item_name,canonical_key,obtainable
+Meals,Meal,Cecil's Shrimp-a-Plenty,cecil's shrimp-a-plenty,Y
+Event,Event,Pot of Gold (Large),pot of gold (large),Y
+Event,Event,Pot of Gold (Medium),pot of gold (medium),Y
+Event,Event,Pot of Gold (Small),pot of gold (small),Y`);
+
+    const result = generateBuddyFarmCandidates(seedRows);
+
+    expect(result.items).toEqual([
+      expect.objectContaining({
+        itemName: "Cecil's Shrimp-a-Plenty",
+        generatedBuddySlug: 'cecil-s-shrimp-a-plenty',
+        candidateBuddyUrl: 'https://buddy.farm/i/cecil-s-shrimp-a-plenty/',
+      }),
+      expect.objectContaining({
+        itemName: 'Pot of Gold (Large)',
+        generatedBuddySlug: 'pot-of-gold-large-',
+        candidateBuddyUrl: 'https://buddy.farm/i/pot-of-gold-large-/',
+      }),
+      expect.objectContaining({
+        itemName: 'Pot of Gold (Medium)',
+        generatedBuddySlug: 'pot-of-gold-medium-',
+        candidateBuddyUrl: 'https://buddy.farm/i/pot-of-gold-medium-/',
+      }),
+      expect.objectContaining({
+        itemName: 'Pot of Gold (Small)',
+        generatedBuddySlug: 'pot-of-gold-small-',
+        candidateBuddyUrl: 'https://buddy.farm/i/pot-of-gold-small-/',
+      }),
+    ]);
+  });
 });

@@ -112,26 +112,21 @@ function parseObtainable(value: string): boolean {
   throw new Error(`Invalid obtainable value "${value}" in museum seed CSV.`);
 }
 
-function toSlugFromAsciiDrop(itemName: string): string {
-  return itemName
+function toBuddySlugBase(value: string): string {
+  return value
     .trim()
     .toLowerCase()
-    .replace(/['’.]/gu, '')
     .replace(/[^a-z0-9]+/gu, '-')
-    .replace(/^-+|-+$/gu, '')
+    .replace(/^-+/gu, '')
     .replace(/-+/gu, '-');
 }
 
+function toSlugFromAsciiDrop(itemName: string): string {
+  return toBuddySlugBase(itemName);
+}
+
 function toSlugFromDiacriticFold(itemName: string): string {
-  return itemName
-    .normalize('NFKD')
-    .replace(/\p{M}+/gu, '')
-    .trim()
-    .toLowerCase()
-    .replace(/['’.]/gu, '')
-    .replace(/[^a-z0-9]+/gu, '-')
-    .replace(/^-+|-+$/gu, '')
-    .replace(/-+/gu, '-');
+  return toBuddySlugBase(itemName.normalize('NFKD').replace(/\p{M}+/gu, ''));
 }
 
 function hasNonAsciiCharacters(value: string): boolean {
@@ -215,7 +210,7 @@ export function generateBuddyFarmCandidates(seedRows: MuseumSeedCsvRow[]): Buddy
       flags.push('non_ascii_or_diacritic');
     }
 
-    if (/[^A-Za-z0-9\s'’.]/u.test(row.itemName)) {
+    if (/[^A-Za-z0-9\s]/u.test(row.itemName)) {
       flags.push('symbol_cleanup');
     }
 
