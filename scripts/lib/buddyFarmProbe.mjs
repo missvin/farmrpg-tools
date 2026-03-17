@@ -137,8 +137,17 @@ export function parseBuddyCandidateCsv(csvText) {
 }
 
 export function extractHtmlTitle(htmlText) {
-  const match = htmlText.match(/<title>(?<title>.*?)<\/title>/isu);
-  return match?.groups?.title?.replace(/\s+/gu, ' ').trim() ?? null;
+  const titleMatch = htmlText.match(/<title\b[^>]*>(?<title>.*?)<\/title>/isu);
+
+  if (titleMatch?.groups?.title) {
+    return titleMatch.groups.title.replace(/\s+/gu, ' ').trim();
+  }
+
+  const metaTitleMatch = htmlText.match(
+    /<meta\b[^>]*(?:property|name)=["'](?:og:title|twitter:title)["'][^>]*content=["'](?<title>.*?)["'][^>]*>/isu,
+  );
+
+  return metaTitleMatch?.groups?.title?.replace(/\s+/gu, ' ').trim() ?? null;
 }
 
 function normalizeLocation(location, candidateUrl) {

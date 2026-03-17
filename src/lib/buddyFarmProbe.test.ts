@@ -170,6 +170,10 @@ Event,Event,Piñata Whop Stick,piñata whop stick,Y,pi-ata-whop-stick,https://bu
     expect(extractHtmlTitle('<title>Buddy Farm | Bamboo Trellis</title>')).toBe(
       'Buddy Farm | Bamboo Trellis',
     );
+    expect(extractHtmlTitle('<title data-react-helmet="true">10 Gold</title>')).toBe('10 Gold');
+    expect(
+      extractHtmlTitle('<meta property="og:title" content="Buddy Farm | Blue Catfish" />'),
+    ).toBe('Buddy Farm | Blue Catfish');
     expect(extractHtmlTitle('<html></html>')).toBeNull();
   });
 });
