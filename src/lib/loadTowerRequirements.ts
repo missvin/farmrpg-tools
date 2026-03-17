@@ -57,6 +57,10 @@ function validateHeaders(headers: string[]): void {
   throw new Error(`Invalid tower requirements data schema (${details.join('; ')}).`);
 }
 
+function getTowerSlotKey(towerLevelRange: string, towerLevel: number, slotIndex: number): string {
+  return `${towerLevelRange}|${towerLevel}|${slotIndex}`;
+}
+
 function parseCsvRow(line: string): string[] {
   const values: string[] = [];
   let currentValue = '';
@@ -162,17 +166,31 @@ export function parseTowerRequirementsCsv(csvText: string): TowerRequirementsDat
   }, {});
   const entries: TowerRequirementEntry[] = [];
   const byCanonicalKey: Record<string, TowerRequirementEntry[]> = {};
+  const seenTowerSlots = new Set<string>();
 
   for (const line of lines.slice(1)) {
     const values = parseCsvRow(line);
     const itemName = parseRequiredText(readField(values, headerIndex, 'item_name'), 'item_name');
+    const towerLevel = parseRequiredNumber(readField(values, headerIndex, 'tower_level'), 'tower_level', itemName);
+    const towerLevelRange = parseRequiredText(
+      readField(values, headerIndex, 'tower_level_range'),
+      'tower_level_range',
+    );
+    const slotIndex = parseRequiredNumber(readField(values, headerIndex, 'slot_index'), 'slot_index', itemName);
+    const towerSlotKey = getTowerSlotKey(towerLevelRange, towerLevel, slotIndex);
+
+    if (seenTowerSlots.has(towerSlotKey)) {
+      throw new Error(
+        `Duplicate tower requirement slot detected for tower level ${towerLevel} slot ${slotIndex} in range ${towerLevelRange}.`,
+      );
+    }
+
+    seenTowerSlots.add(towerSlotKey);
+
     const entry: TowerRequirementEntry = {
-      towerLevel: parseRequiredNumber(readField(values, headerIndex, 'tower_level'), 'tower_level', itemName),
-      towerLevelRange: parseRequiredText(
-        readField(values, headerIndex, 'tower_level_range'),
-        'tower_level_range',
-      ),
-      slotIndex: parseRequiredNumber(readField(values, headerIndex, 'slot_index'), 'slot_index', itemName),
+      towerLevel,
+      towerLevelRange,
+      slotIndex,
       itemName,
       canonicalKey: toCanonicalItemKey(itemName),
       masteryLevelNeeded: parseMasteryLevelNeeded(

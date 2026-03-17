@@ -57,4 +57,12 @@ describe('parseTowerRequirementsCsv', () => {
 201,1,Board,MM`),
     ).toThrow('Invalid tower requirements data schema');
   });
+
+  it('rejects duplicate tower level and slot combinations', () => {
+    expect(() =>
+      parseTowerRequirementsCsv(`tower_level,tower_level_range,slot_index,item_name,farmrpg_item_id,mastery_level_needed,buddy_slug,notes,source_sheet,source_row
+201,201-210,1,Board,,MM,,,Tower MMs,15
+201,201-210,1,Twine,,MM,,,Tower MMs,16`),
+    ).toThrow('Duplicate tower requirement slot detected for tower level 201 slot 1 in range 201-210.');
+  });
 });
