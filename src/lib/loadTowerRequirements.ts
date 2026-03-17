@@ -34,6 +34,29 @@ export const TOWER_REQUIREMENTS_COLUMNS = [
   'source_row',
 ] as const;
 
+function validateHeaders(headers: string[]): void {
+  const missingColumns = TOWER_REQUIREMENTS_COLUMNS.filter((column) => !headers.includes(column));
+  const unexpectedColumns = headers.filter(
+    (header) => !TOWER_REQUIREMENTS_COLUMNS.includes(header as (typeof TOWER_REQUIREMENTS_COLUMNS)[number]),
+  );
+
+  if (missingColumns.length === 0 && unexpectedColumns.length === 0) {
+    return;
+  }
+
+  const details: string[] = [];
+
+  if (missingColumns.length > 0) {
+    details.push(`missing columns: ${missingColumns.join(', ')}`);
+  }
+
+  if (unexpectedColumns.length > 0) {
+    details.push(`unexpected columns: ${unexpectedColumns.join(', ')}`);
+  }
+
+  throw new Error(`Invalid tower requirements data schema (${details.join('; ')}).`);
+}
+
 function parseCsvRow(line: string): string[] {
   const values: string[] = [];
   let currentValue = '';
@@ -132,6 +155,7 @@ export function parseTowerRequirementsCsv(csvText: string): TowerRequirementsDat
   }
 
   const headers = parseCsvRow(lines[0]).map(normalizeHeader);
+  validateHeaders(headers);
   const headerIndex = headers.reduce<Record<string, number>>((indexByHeader, header, index) => {
     indexByHeader[header] = index;
     return indexByHeader;

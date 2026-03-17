@@ -34,6 +34,29 @@ export const MASTERY_DIFFICULTY_COLUMNS = [
   'source_row',
 ] as const;
 
+function validateHeaders(headers: string[]): void {
+  const missingColumns = MASTERY_DIFFICULTY_COLUMNS.filter((column) => !headers.includes(column));
+  const unexpectedColumns = headers.filter(
+    (header) => !MASTERY_DIFFICULTY_COLUMNS.includes(header as (typeof MASTERY_DIFFICULTY_COLUMNS)[number]),
+  );
+
+  if (missingColumns.length === 0 && unexpectedColumns.length === 0) {
+    return;
+  }
+
+  const details: string[] = [];
+
+  if (missingColumns.length > 0) {
+    details.push(`missing columns: ${missingColumns.join(', ')}`);
+  }
+
+  if (unexpectedColumns.length > 0) {
+    details.push(`unexpected columns: ${unexpectedColumns.join(', ')}`);
+  }
+
+  throw new Error(`Invalid mastery difficulty data schema (${details.join('; ')}).`);
+}
+
 function parseCsvRow(line: string): string[] {
   const values: string[] = [];
   let currentValue = '';
@@ -89,7 +112,11 @@ function parseDifficulty(value: string): number | null {
   }
 
   const parsedValue = Number(trimmedValue);
-  return Number.isFinite(parsedValue) ? parsedValue : null;
+  if (!Number.isFinite(parsedValue)) {
+    throw new Error(`Invalid difficulty "${value}" in mastery difficulty data.`);
+  }
+
+  return parsedValue;
 }
 
 export function parseMasteryDifficultyCsv(csvText: string): MasteryDifficultyData {
@@ -106,6 +133,7 @@ export function parseMasteryDifficultyCsv(csvText: string): MasteryDifficultyDat
   }
 
   const headers = parseCsvRow(lines[0]).map(normalizeHeader);
+  validateHeaders(headers);
   const headerIndex = headers.reduce<Record<string, number>>((indexByHeader, header, index) => {
     indexByHeader[header] = index;
     return indexByHeader;
@@ -118,7 +146,7 @@ export function parseMasteryDifficultyCsv(csvText: string): MasteryDifficultyDat
     const itemName = readField(values, headerIndex, 'item_name').trim();
 
     if (!itemName) {
-      continue;
+      throw new Error('Missing required item_name in mastery difficulty data.');
     }
 
     const entry: MasteryDifficultyEntry = {

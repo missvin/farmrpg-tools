@@ -50,4 +50,11 @@ describe('parseTowerRequirementsCsv', () => {
 401,401-410,1,Board,,BAD,,,,`),
     ).toThrow('Invalid mastery_level_needed "BAD" for tower requirement "Board".');
   });
+
+  it('rejects invalid tower requirements headers', () => {
+    expect(() =>
+      parseTowerRequirementsCsv(`tower_level,slot_index,item_name,mastery_level_needed
+201,1,Board,MM`),
+    ).toThrow('Invalid tower requirements data schema');
+  });
 });
