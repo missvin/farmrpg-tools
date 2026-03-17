@@ -21,6 +21,10 @@ function getLevelKey(towerLevelRange: string, towerLevel: number): string {
   return `${towerLevelRange}:${towerLevel}`;
 }
 
+function formatLevelSummary(remainingCount: number, totalCount: number): string {
+  return `${remainingCount.toLocaleString()}/${totalCount.toLocaleString()} items remaining`;
+}
+
 export function TowerPage() {
   const [towerState, setTowerState] = useState<{
     isLoading: boolean;
@@ -116,6 +120,14 @@ export function TowerPage() {
       })),
     )
     .find((levelGroup) => !levelGroup.isCompleted)?.key;
+  const incompleteRangeGroups =
+    towerState.derivedTowerRequirements?.groups.filter((rangeGroup) =>
+      rangeGroup.levels.some((levelGroup) => levelGroup.rows.some((row) => !row.achieved)),
+    ) ?? [];
+  const completedRangeGroups =
+    towerState.derivedTowerRequirements?.groups.filter((rangeGroup) =>
+      rangeGroup.levels.every((levelGroup) => levelGroup.rows.every((row) => row.achieved)),
+    ) ?? [];
 
   return (
     <div className="page-stack">
@@ -179,104 +191,214 @@ export function TowerPage() {
             <div>
               <h2 id="tower-results-title">Tower Requirement Status</h2>
               <p className="supporting-text">
-                Requirements are grouped by tower level range and then tower level. Unmatched rows stay visible and
-                are treated as current mastery `0`.
+                Requirements are grouped by `tower_level_range`, then tower level. Fully completed range groups move
+                under Completed ranges, while incomplete ranges stay visible by default.
               </p>
             </div>
 
-            {towerState.derivedTowerRequirements.groups.map((rangeGroup) => (
-              <div key={rangeGroup.towerLevelRange} className="page-stack">
-                <h3 className="section-title">Tower Levels {rangeGroup.towerLevelRange}</h3>
+            {incompleteRangeGroups.length > 0 ? (
+              <div className="page-stack">
+                <h3 className="section-title">In-progress ranges</h3>
 
-                {rangeGroup.levels.map((levelGroup) => {
-                  const levelKey = getLevelKey(rangeGroup.towerLevelRange, levelGroup.towerLevel);
-                  const isCompleted = levelGroup.rows.every((row) => row.achieved);
-                  const nextBlockingRowIndex = levelGroup.rows.findIndex((row) => !row.achieved);
-                  const remainingCount = levelGroup.rows.filter((row) => !row.achieved).length;
-                  const isNextRelevantLevel = firstIncompleteLevelKey === levelKey;
+                {incompleteRangeGroups.map((rangeGroup) => {
+                  const remainingLevels = rangeGroup.levels.filter((levelGroup) =>
+                    levelGroup.rows.some((row) => !row.achieved),
+                  ).length;
 
                   return (
-                    <details
-                      key={levelGroup.towerLevel}
-                      className={`tower-level-card${isNextRelevantLevel ? ' tower-level-card--next' : ''}`}
-                      open={!isCompleted}
-                    >
-                      <summary className="tower-level-summary">
-                        <div className="tower-level-summary__text">
-                          <h4 className="section-title">Tower Level {levelGroup.towerLevel}</h4>
+                    <details key={rangeGroup.towerLevelRange} className="tower-range-card" open>
+                      <summary className="tower-range-summary">
+                        <div className="tower-range-summary__text">
+                          <h4 className="section-title">Tower Levels {rangeGroup.towerLevelRange}</h4>
                           <p className="subtle-text">
-                            {isCompleted
-                              ? 'Completed level'
-                              : `${remainingCount.toLocaleString()} requirement${
-                                  remainingCount === 1 ? '' : 's'
-                                } remaining`}
-                            {isNextRelevantLevel ? ' · Next relevant level' : ''}
+                            {remainingLevels.toLocaleString()} level{remainingLevels === 1 ? '' : 's'} remaining
                           </p>
                         </div>
-                        <span
-                          className={`tower-level-summary__badge${
-                            isCompleted ? ' tower-level-summary__badge--complete' : ''
-                          }`}
-                        >
-                          {isCompleted ? 'Completed' : 'In Progress'}
-                        </span>
+                        <span className="tower-level-summary__badge">In Progress</span>
                       </summary>
 
-                      {isNextRelevantLevel && nextBlockingRowIndex >= 0 ? (
-                        <p className="subtle-text">
-                          Next blocking requirement: {levelGroup.rows[nextBlockingRowIndex].itemName} (
-                          {formatRequirementLabel(levelGroup.rows[nextBlockingRowIndex].requiredThreshold)})
-                        </p>
-                      ) : null}
+                      <div className="page-stack">
+                        {rangeGroup.levels.map((levelGroup) => {
+                          const levelKey = getLevelKey(rangeGroup.towerLevelRange, levelGroup.towerLevel);
+                          const isCompleted = levelGroup.rows.every((row) => row.achieved);
+                          const nextBlockingRowIndex = levelGroup.rows.findIndex((row) => !row.achieved);
+                          const remainingCount = levelGroup.rows.filter((row) => !row.achieved).length;
+                          const isNextRelevantLevel = firstIncompleteLevelKey === levelKey;
 
-                      <div className="table-scroll">
-                        <table className="summary-table">
-                          <thead>
-                            <tr>
-                              <th scope="col">Level</th>
-                              <th scope="col">Slot</th>
-                              <th scope="col">Item</th>
-                              <th scope="col">Requirement</th>
-                              <th scope="col">Current mastery</th>
-                              <th scope="col">Remaining</th>
-                              <th scope="col">Notes</th>
-                              <th scope="col">Match</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {levelGroup.rows.map((row, rowIndex) => (
-                              <tr
-                                key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}-${row.requiredThreshold}`}
-                                className={
-                                  isNextRelevantLevel && rowIndex === nextBlockingRowIndex
-                                    ? 'summary-table__row--highlight'
-                                    : undefined
-                                }
-                              >
-                                <td>{row.towerLevel}</td>
-                                <td>{row.slotIndex}</td>
-                                <td>{row.itemName}</td>
-                                <td>{formatRequirementLabel(row.requiredThreshold)}</td>
-                                <td>{row.currentMastery.toLocaleString()}</td>
-                                <td>{row.remainingToRequirement.toLocaleString()}</td>
-                                <td>{row.notes ?? '—'}</td>
-                                <td>
-                                  {row.matchedSnapshotRow ? (
-                                    'Matched'
-                                  ) : (
-                                    <span className="status-message">Unmatched in latest snapshot</span>
-                                  )}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                          return (
+                            <details
+                              key={levelGroup.towerLevel}
+                              className={`tower-level-card${isNextRelevantLevel ? ' tower-level-card--next' : ''}`}
+                              open={!isCompleted}
+                            >
+                              <summary className="tower-level-summary">
+                                <div className="tower-level-summary__text">
+                                  <h4 className="section-title">
+                                    Tower Level {levelGroup.towerLevel} -{' '}
+                                    {formatLevelSummary(remainingCount, levelGroup.rows.length)}
+                                  </h4>
+                                  <p className="subtle-text">
+                                    {isCompleted ? 'Completed level' : 'Needs progress'}
+                                    {isNextRelevantLevel ? ' · Next relevant level' : ''}
+                                  </p>
+                                </div>
+                                <span
+                                  className={`tower-level-summary__badge${
+                                    isCompleted ? ' tower-level-summary__badge--complete' : ''
+                                  }`}
+                                >
+                                  {isCompleted ? 'Completed' : 'In Progress'}
+                                </span>
+                              </summary>
+
+                              {isNextRelevantLevel && nextBlockingRowIndex >= 0 ? (
+                                <p className="subtle-text">
+                                  Next blocking requirement: {levelGroup.rows[nextBlockingRowIndex].itemName} (
+                                  {formatRequirementLabel(levelGroup.rows[nextBlockingRowIndex].requiredThreshold)})
+                                </p>
+                              ) : null}
+
+                              <div className="table-scroll">
+                                <table className="summary-table">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Level</th>
+                                      <th scope="col">Slot</th>
+                                      <th scope="col">Item</th>
+                                      <th scope="col">Requirement</th>
+                                      <th scope="col">Current mastery</th>
+                                      <th scope="col">Remaining</th>
+                                      <th scope="col">Notes</th>
+                                      <th scope="col">Match</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {levelGroup.rows.map((row, rowIndex) => (
+                                      <tr
+                                        key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}-${row.requiredThreshold}`}
+                                        className={
+                                          isNextRelevantLevel && rowIndex === nextBlockingRowIndex
+                                            ? 'summary-table__row--highlight'
+                                            : undefined
+                                        }
+                                      >
+                                        <td>{row.towerLevel}</td>
+                                        <td>{row.slotIndex}</td>
+                                        <td>{row.itemName}</td>
+                                        <td>{formatRequirementLabel(row.requiredThreshold)}</td>
+                                        <td>{row.currentMastery.toLocaleString()}</td>
+                                        <td>{row.remainingToRequirement.toLocaleString()}</td>
+                                        <td>{row.notes ?? '—'}</td>
+                                        <td>
+                                          {row.matchedSnapshotRow ? (
+                                            'Matched'
+                                          ) : (
+                                            <span className="status-message">Unmatched in latest snapshot</span>
+                                          )}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </details>
+                          );
+                        })}
                       </div>
                     </details>
                   );
                 })}
               </div>
-            ))}
+            ) : null}
+
+            {completedRangeGroups.length > 0 ? (
+              <details className="tower-range-group-card">
+                <summary className="tower-range-summary">
+                  <div className="tower-range-summary__text">
+                    <h3 className="section-title">Completed ranges</h3>
+                    <p className="subtle-text">
+                      {completedRangeGroups.length.toLocaleString()} completed range
+                      {completedRangeGroups.length === 1 ? '' : 's'}
+                    </p>
+                  </div>
+                  <span className="tower-level-summary__badge tower-level-summary__badge--complete">Collapsed</span>
+                </summary>
+
+                <div className="page-stack">
+                  {completedRangeGroups.map((rangeGroup) => (
+                    <details key={rangeGroup.towerLevelRange} className="tower-range-card">
+                      <summary className="tower-range-summary">
+                        <div className="tower-range-summary__text">
+                          <h4 className="section-title">Tower Levels {rangeGroup.towerLevelRange}</h4>
+                          <p className="subtle-text">Completed range</p>
+                        </div>
+                        <span className="tower-level-summary__badge tower-level-summary__badge--complete">
+                          Completed
+                        </span>
+                      </summary>
+
+                      <div className="page-stack">
+                        {rangeGroup.levels.map((levelGroup) => (
+                          <details key={levelGroup.towerLevel} className="tower-level-card">
+                            <summary className="tower-level-summary">
+                              <div className="tower-level-summary__text">
+                                <h4 className="section-title">
+                                  Tower Level {levelGroup.towerLevel} -{' '}
+                                  {formatLevelSummary(0, levelGroup.rows.length)}
+                                </h4>
+                                <p className="subtle-text">Completed level</p>
+                              </div>
+                              <span className="tower-level-summary__badge tower-level-summary__badge--complete">
+                                Completed
+                              </span>
+                            </summary>
+
+                            <div className="table-scroll">
+                              <table className="summary-table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Level</th>
+                                    <th scope="col">Slot</th>
+                                    <th scope="col">Item</th>
+                                    <th scope="col">Requirement</th>
+                                    <th scope="col">Current mastery</th>
+                                    <th scope="col">Remaining</th>
+                                    <th scope="col">Notes</th>
+                                    <th scope="col">Match</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {levelGroup.rows.map((row) => (
+                                    <tr
+                                      key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}-${row.requiredThreshold}`}
+                                    >
+                                      <td>{row.towerLevel}</td>
+                                      <td>{row.slotIndex}</td>
+                                      <td>{row.itemName}</td>
+                                      <td>{formatRequirementLabel(row.requiredThreshold)}</td>
+                                      <td>{row.currentMastery.toLocaleString()}</td>
+                                      <td>{row.remainingToRequirement.toLocaleString()}</td>
+                                      <td>{row.notes ?? '—'}</td>
+                                      <td>
+                                        {row.matchedSnapshotRow ? (
+                                          'Matched'
+                                        ) : (
+                                          <span className="status-message">Unmatched in latest snapshot</span>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </details>
+                        ))}
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </details>
+            ) : null}
           </section>
         </>
       ) : null}

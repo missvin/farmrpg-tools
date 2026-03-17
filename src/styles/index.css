@@ -346,11 +346,20 @@ a {
   background: #ffffff;
 }
 
+.tower-range-group-card,
+.tower-range-card {
+  border: 1px solid #d9e2ec;
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  background: #ffffff;
+}
+
 .tower-level-card--next {
   border-color: #b45309;
   background: #fffaf0;
 }
 
+.tower-range-summary,
 .tower-level-summary {
   display: flex;
   justify-content: space-between;
@@ -359,6 +368,7 @@ a {
   cursor: pointer;
 }
 
+.tower-range-summary__text,
 .tower-level-summary__text {
   display: grid;
   gap: 0.25rem;
@@ -402,6 +412,10 @@ a {
   }
 
   .tower-level-summary {
+    flex-direction: column;
+  }
+
+  .tower-range-summary {
     flex-direction: column;
   }
 }

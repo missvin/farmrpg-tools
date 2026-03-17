@@ -14,7 +14,7 @@ This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/l
 - Tower page quality-of-life pass
   - Add accordion/collapse behavior for completed tower levels so the next relevant requirements are easier to scan
 
-## v1.5.5 (Planned)
+## v1.5.5 (Complete)
 
 - Tower range grouping follow-up
   - Group by `tower_level_range` and collect fully completed range groups under `Completed ranges`

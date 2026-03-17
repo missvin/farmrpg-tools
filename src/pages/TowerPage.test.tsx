@@ -20,7 +20,7 @@ describe('TowerPage', () => {
     loadTowerRequirementsMock.mockReset();
   });
 
-  it('collapses completed levels by default and keeps the first incomplete level open', async () => {
+  it('groups completed ranges separately while keeping incomplete ranges visible by default', async () => {
     getLatestSnapshotMock.mockResolvedValue({
       snapshotId: 'snapshot-1',
       createdAt: '2026-03-16T00:00:00.000Z',
@@ -80,6 +80,19 @@ describe('TowerPage', () => {
           sourceSheet: null,
           sourceRow: null,
         },
+        {
+          towerLevel: 221,
+          towerLevelRange: '221-240',
+          slotIndex: 1,
+          itemName: 'Board',
+          canonicalKey: 'board',
+          masteryLevelNeeded: 'MM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: null,
+          sourceSheet: null,
+          sourceRow: null,
+        },
       ],
       byCanonicalKey: {
         board: [],
@@ -94,11 +107,20 @@ describe('TowerPage', () => {
       expect(screen.getByText('Tower Requirement Status')).toBeInTheDocument();
     });
 
-    const completedLevel = screen.getByText('Tower Level 201').closest('details');
-    const incompleteLevel = screen.getByText('Tower Level 202').closest('details');
+    const completedRanges = screen.getByText('Completed ranges').closest('details');
+    const incompleteRange = screen.getByText('Tower Levels 201-220').closest('details');
+    const completedRange = screen.getByText('Tower Levels 221-240').closest('details');
+    const completedLevel = screen.getByText('Tower Level 201 - 0/2 items remaining').closest('details');
+    const incompleteLevel = screen.getByText('Tower Level 202 - 1/1 items remaining').closest('details');
 
+    expect(completedRanges).not.toBeNull();
+    expect(incompleteRange).not.toBeNull();
+    expect(completedRange).not.toBeNull();
     expect(completedLevel).not.toBeNull();
     expect(incompleteLevel).not.toBeNull();
+    expect((completedRanges as HTMLDetailsElement).open).toBe(false);
+    expect((incompleteRange as HTMLDetailsElement).open).toBe(true);
+    expect((completedRange as HTMLDetailsElement).open).toBe(false);
     expect((completedLevel as HTMLDetailsElement).open).toBe(false);
     expect((incompleteLevel as HTMLDetailsElement).open).toBe(true);
     expect(screen.getByText(/Next relevant level/)).toBeInTheDocument();
@@ -107,7 +129,7 @@ describe('TowerPage', () => {
     ).toBeInTheDocument();
   });
 
-  it('highlights the next blocking requirement within the first incomplete level', async () => {
+  it('keeps the next blocking requirement visible and highlighted inside the first incomplete range', async () => {
     getLatestSnapshotMock.mockResolvedValue({
       snapshotId: 'snapshot-2',
       createdAt: '2026-03-16T00:00:00.000Z',
@@ -166,7 +188,11 @@ describe('TowerPage', () => {
       expect(screen.getByText('Tower Requirement Status')).toBeInTheDocument();
     });
 
-    const incompleteLevel = screen.getByText('Tower Level 202').closest('details');
+    const incompleteRange = screen.getByText('Tower Levels 201-220').closest('details');
+    expect(incompleteRange).not.toBeNull();
+    expect((incompleteRange as HTMLDetailsElement).open).toBe(true);
+
+    const incompleteLevel = screen.getByText('Tower Level 202 - 1/2 items remaining').closest('details');
     expect(incompleteLevel).not.toBeNull();
 
     const row = within(incompleteLevel as HTMLElement)
@@ -174,5 +200,8 @@ describe('TowerPage', () => {
       .closest('tr');
 
     expect(row).toHaveClass('summary-table__row--highlight');
+    expect(
+      screen.getByText('Next blocking requirement: Gold Cucumber (Requires Mega Mastered (>= 1,000,000))'),
+    ).toBeInTheDocument();
   });
 });
