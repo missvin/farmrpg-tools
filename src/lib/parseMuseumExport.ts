@@ -36,6 +36,7 @@ export type MuseumParseResult = {
 const CATEGORY_HEADER_PATTERNS = [
   /^(?<name>.+?)\s*\(\s*(?<owned>\d+)\s*\/\s*(?<total>\d+)\s*\)$/u,
   /^(?<name>.+?)\s+(?<owned>\d+)\s*\/\s*(?<total>\d+)$/u,
+  /^(?<name>.+?)\s+Count\s*=\s*(?<total>\d+)$/u,
 ] as const;
 
 const KNOWN_UI_LINES = new Set([
@@ -52,7 +53,7 @@ function normalizeMuseumLine(input: string): string {
 
 function parseCategoryHeader(line: string): {
   categoryName: string;
-  expectedOwnedCount: number;
+  expectedOwnedCount: number | null;
   expectedTotalCount: number;
 } | null {
   for (const pattern of CATEGORY_HEADER_PATTERNS) {
@@ -64,12 +65,52 @@ function parseCategoryHeader(line: string): {
 
     return {
       categoryName: normalizeMuseumLine(match.groups.name ?? ''),
-      expectedOwnedCount: Number(match.groups.owned),
+      expectedOwnedCount: match.groups.owned ? Number(match.groups.owned) : null,
       expectedTotalCount: Number(match.groups.total),
     };
   }
 
   return null;
+}
+
+function tokensMatch(tokens: string[], start: number, phraseLength: number): boolean {
+  for (let index = 0; index < phraseLength; index += 1) {
+    if (tokens[start + index] !== tokens[start + phraseLength + index]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function parseDuplicatedItemArtifactsFromLine(line: string): string[] {
+  const tokens = line.split(' ').filter(Boolean);
+
+  function walk(start: number): string[] | null {
+    if (start >= tokens.length) {
+      return [];
+    }
+
+    const remainingTokens = tokens.length - start;
+    const maxPhraseLength = Math.floor(remainingTokens / 2);
+
+    for (let phraseLength = maxPhraseLength; phraseLength >= 1; phraseLength -= 1) {
+      if (!tokensMatch(tokens, start, phraseLength)) {
+        continue;
+      }
+
+      const remainder = walk(start + phraseLength * 2);
+      if (!remainder) {
+        continue;
+      }
+
+      return [tokens.slice(start, start + phraseLength).join(' '), ...remainder];
+    }
+
+    return null;
+  }
+
+  return walk(0) ?? [line];
 }
 
 function isSkippableLine(line: string): boolean {
@@ -123,7 +164,14 @@ export function parseMuseumExport(rawText: string): MuseumParseResult {
     const { parsedItemCount, expectedOwnedCount, expectedTotalCount } = currentCategory;
 
     if (expectedTotalCount === null || expectedOwnedCount === null) {
-      currentCategory.countValidation = 'unknown';
+      currentCategory.countValidation =
+        expectedTotalCount !== null && parsedItemCount === expectedTotalCount ? 'matches_total' : 'unknown';
+      if (expectedTotalCount !== null && parsedItemCount !== expectedTotalCount) {
+        currentCategory.countValidation = 'mismatch';
+        warnings.push(
+          `${currentCategory.categoryName}: parsed ${parsedItemCount.toLocaleString()} items, but the header shows a total count of ${expectedTotalCount.toLocaleString()}.`,
+        );
+      }
     } else if (parsedItemCount === expectedTotalCount) {
       currentCategory.countValidation = 'matches_total';
     } else if (parsedItemCount === expectedOwnedCount) {
@@ -167,37 +215,41 @@ export function parseMuseumExport(rawText: string): MuseumParseResult {
       continue;
     }
 
-    const canonicalKey = toCanonicalItemKey(line);
-    if (!canonicalKey) {
-      continue;
-    }
+    const parsedItems = parseDuplicatedItemArtifactsFromLine(line);
 
-    if (currentCategorySeenKeys.has(canonicalKey)) {
-      duplicateArtifactsRemoved += 1;
-      continue;
-    }
+    for (const itemName of parsedItems) {
+      const canonicalKey = toCanonicalItemKey(itemName);
+      if (!canonicalKey) {
+        continue;
+      }
 
-    currentCategorySeenKeys.add(canonicalKey);
-    currentCategory.items.push({
-      itemName: line,
-      canonicalKey,
-    });
-    currentCategory.parsedItemCount += 1;
+      if (currentCategorySeenKeys.has(canonicalKey)) {
+        duplicateArtifactsRemoved += 1;
+        continue;
+      }
 
-    const existingGlobalItem = uniqueItemsByCanonicalKey.get(canonicalKey);
-    if (!existingGlobalItem) {
-      uniqueItemsByCanonicalKey.set(canonicalKey, {
-        itemName: line,
+      currentCategorySeenKeys.add(canonicalKey);
+      currentCategory.items.push({
+        itemName,
         canonicalKey,
-        categoryName: currentCategory.categoryName,
       });
-      continue;
-    }
+      currentCategory.parsedItemCount += 1;
 
-    if (existingGlobalItem.categoryName !== currentCategory.categoryName) {
-      warnings.push(
-        `${line} appeared in both ${existingGlobalItem.categoryName} and ${currentCategory.categoryName}; keeping the first category in the global seed list.`,
-      );
+      const existingGlobalItem = uniqueItemsByCanonicalKey.get(canonicalKey);
+      if (!existingGlobalItem) {
+        uniqueItemsByCanonicalKey.set(canonicalKey, {
+          itemName,
+          canonicalKey,
+          categoryName: currentCategory.categoryName,
+        });
+        continue;
+      }
+
+      if (existingGlobalItem.categoryName !== currentCategory.categoryName) {
+        warnings.push(
+          `${itemName} appeared in both ${existingGlobalItem.categoryName} and ${currentCategory.categoryName}; keeping the first category in the global seed list.`,
+        );
+      }
     }
   }
 

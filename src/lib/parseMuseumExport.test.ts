@@ -73,4 +73,35 @@ Yellow Perch`);
       ),
     );
   });
+
+  it('parses Count = N category headers and repeated museum-completion item lines', () => {
+    const result = parseMuseumExport(`Museum Completion
+
+Crops Count = 35
+
+Beet Beet Broccoli Broccoli Cabbage Cabbage Carrot Carrot
+Corn Corn Cotton Cotton Cucumber Cucumber Eggplant Eggplant
+Frozen Cabbage Frozen Cabbage Frozen Corn Frozen Corn Frozen Hops Frozen Hops Frozen Peas Frozen Peas
+Frozen Pine Frozen Pine Frozen Radish Frozen Radish Frozen Tomato Frozen Tomato Gold Carrot Gold Carrot
+Gold Cucumber Gold Cucumber Gold Eggplant Gold Eggplant Gold Peas Gold Peas Gold Peppers Gold Peppers
+Hops Hops Leek Leek Onion Onion Peas Peas
+Peppers Peppers Pine Tree Pine Tree Potato Potato Pumpkin Pumpkin
+Radish Radish Rice Rice Sugar Cane Sugar Cane Sunflower Sunflower
+Tomato Tomato Watermelon Watermelon Wheat Wheat`);
+
+    expect(result.parseSummary.categoriesParsed).toBe(1);
+    expect(result.parseSummary.uniqueItemsParsed).toBe(35);
+    expect(result.parseSummary.duplicateArtifactsRemoved).toBe(0);
+    expect(result.categories[0]).toMatchObject({
+      categoryName: 'Crops',
+      expectedOwnedCount: null,
+      expectedTotalCount: 35,
+      parsedItemCount: 35,
+      countValidation: 'matches_total',
+    });
+    expect(result.categories[0].items.map((item) => item.itemName)).toContain('Frozen Cabbage');
+    expect(result.categories[0].items.map((item) => item.itemName)).toContain('Pine Tree');
+    expect(result.categories[0].items.map((item) => item.itemName)).toContain('Sugar Cane');
+    expect(result.parseSummary.warnings).toEqual([]);
+  });
 });
