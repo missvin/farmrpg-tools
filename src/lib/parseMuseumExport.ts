@@ -55,6 +55,19 @@ function normalizeMuseumLine(input: string): string {
   return input.replace(/\s+/g, ' ').trim();
 }
 
+function stripMuseumDuplicateWrappers(value: string): string {
+  let nextValue = value.trim();
+
+  while (
+    (nextValue.startsWith('(') && nextValue.endsWith(')')) ||
+    (nextValue.startsWith('[') && nextValue.endsWith(']'))
+  ) {
+    nextValue = nextValue.slice(1, -1).trim();
+  }
+
+  return nextValue;
+}
+
 function parseCategoryHeader(line: string): {
   categoryName: string;
   expectedOwnedCount: number | null;
@@ -78,20 +91,25 @@ function parseCategoryHeader(line: string): {
 }
 
 function tokensMatch(tokens: string[], start: number, phraseLength: number): boolean {
-  for (let index = 0; index < phraseLength; index += 1) {
-    if (
-      tokens[start + index].replace(/\*\*/gu, '') !==
-      tokens[start + phraseLength + index].replace(/\*\*/gu, '')
-    ) {
-      return false;
-    }
-  }
+  const leftPhrase = tokens.slice(start, start + phraseLength).join(' ');
+  const rightPhrase = tokens.slice(start + phraseLength, start + phraseLength * 2).join(' ');
 
-  return true;
+  return cleanMuseumItemName(leftPhrase) === cleanMuseumItemName(rightPhrase);
 }
 
 function cleanMuseumItemName(value: string): string {
-  return normalizeMuseumLine(value.replace(/\*\*/gu, ''));
+  return normalizeMuseumLine(stripMuseumDuplicateWrappers(value.replace(/\*\*/gu, '')));
+}
+
+function pickDisplayMuseumItemName(leftPhrase: string, rightPhrase: string): string {
+  const cleanedLeft = cleanMuseumItemName(leftPhrase);
+  const cleanedRight = cleanMuseumItemName(rightPhrase);
+
+  if (cleanedLeft === cleanedRight) {
+    return cleanedRight.length <= cleanedLeft.length ? cleanedRight : cleanedLeft;
+  }
+
+  return cleanedLeft;
 }
 
 function deriveMuseumCategory(categoryName: string): string {
@@ -150,7 +168,7 @@ function parseDuplicatedItemArtifactsFromLine(
 
       return [
         {
-          itemName: cleanMuseumItemName(leftPhrase),
+          itemName: pickDisplayMuseumItemName(leftPhrase, rightPhrase),
           obtainable: !(leftPhrase.includes('**') || rightPhrase.includes('**')),
         },
         ...remainder,

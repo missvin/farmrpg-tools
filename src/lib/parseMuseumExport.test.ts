@@ -144,6 +144,25 @@ Bamboo Trellis Bamboo Trellis Banana Peel **Banana Peel** Bananas Bananas Bar of
     ]);
   });
 
+  it('parses duplicated names with wrapped special-character variants', () => {
+    const result = parseMuseumExport(`Event Items Count = 4
+Pie Pie Pillow Case 01 Pillow Case 01 ((Piñata)) Piñata ((Piñata Whop Stick)) Piñata Whop Stick`);
+
+    expect(result.parseSummary.uniqueItemsParsed).toBe(4);
+    expect(result.categories[0].items.map((item) => item.itemName)).toEqual([
+      'Pie',
+      'Pillow Case 01',
+      'Piñata',
+      'Piñata Whop Stick',
+    ]);
+    expect(result.uniqueItems.map((item) => item.canonicalKey)).toEqual([
+      'pie',
+      'pillow case 01',
+      'piñata',
+      'piñata whop stick',
+    ]);
+  });
+
   it('stops parsing when the library page ends at Library Home', () => {
     const result = parseMuseumExport(`Event Items Count = 2
 Yellow Watermelon Yellow Watermelon
