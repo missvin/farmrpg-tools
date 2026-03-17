@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
@@ -17,12 +17,22 @@ vi.mock('./lib/loadMasteryDifficulty', () => ({
 import App from './App';
 
 describe('App shell', () => {
-  it('renders a shared back-to-top control that scrolls the page', async () => {
+  function setWindowScrollY(value: number): void {
+    Object.defineProperty(window, 'scrollY', {
+      value,
+      writable: true,
+      configurable: true,
+    });
+  }
+
+  it('shows the shared back-to-top control after scrolling and scrolls back to the top', async () => {
     const user = userEvent.setup();
     const scrollToSpy = vi.fn();
+    setWindowScrollY(0);
     Object.defineProperty(window, 'scrollTo', {
       value: scrollToSpy,
       writable: true,
+      configurable: true,
     });
 
     render(
@@ -37,7 +47,15 @@ describe('App shell', () => {
       </MemoryRouter>,
     );
 
-    await user.click(screen.getByRole('button', { name: 'Back to top' }));
+    expect(screen.queryByRole('button', { name: 'Back to top' })).not.toBeInTheDocument();
+
+    await act(async () => {
+      setWindowScrollY(120);
+      window.dispatchEvent(new Event('scroll'));
+    });
+
+    const backToTopButton = await screen.findByRole('button', { name: 'Back to top' });
+    await user.click(backToTopButton);
 
     expect(scrollToSpy).toHaveBeenCalledWith({
       top: 0,
@@ -45,7 +63,36 @@ describe('App shell', () => {
     });
   });
 
+  it('hides the shared back-to-top control again when returning to the top', async () => {
+    setWindowScrollY(160);
+
+    render(
+      <MemoryRouter
+        initialEntries={['/']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('button', { name: 'Back to top' })).toBeInTheDocument();
+
+    await act(async () => {
+      setWindowScrollY(0);
+      window.dispatchEvent(new Event('scroll'));
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: 'Back to top' })).not.toBeInTheDocument();
+    });
+  });
+
   it('renders the dashboard and navigation links', async () => {
+    setWindowScrollY(0);
+
     render(
       <MemoryRouter
         initialEntries={['/']}
