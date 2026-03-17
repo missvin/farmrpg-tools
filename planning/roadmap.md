@@ -44,6 +44,8 @@ This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/l
   - Mastery export help page with an import-screen link
   - Unmatched reference data polish
   - Tower data validation
+- Expand local planning views
+  - Tower progress planning page with unique-item GM/MM counts, difficulty summaries, and progress bars
 
 ## Later
 
