@@ -104,4 +104,22 @@ Tomato Tomato Watermelon Watermelon Wheat Wheat`);
     expect(result.categories[0].items.map((item) => item.itemName)).toContain('Sugar Cane');
     expect(result.parseSummary.warnings).toEqual([]);
   });
+
+  it('stops parsing when the library page ends at Library Home', () => {
+    const result = parseMuseumExport(`Event Items Count = 2
+Yellow Watermelon Yellow Watermelon
+Yule Goat Yule Goat
+Library Home
+2026-03-16 19:37:49 by Lunarific
+Consume a meal
+Mushroom Stew
+Fish and Chips`);
+
+    expect(result.parseSummary.categoriesParsed).toBe(1);
+    expect(result.parseSummary.uniqueItemsParsed).toBe(2);
+    expect(result.categories[0].items.map((item) => item.itemName)).toEqual([
+      'Yellow Watermelon',
+      'Yule Goat',
+    ]);
+  });
 });

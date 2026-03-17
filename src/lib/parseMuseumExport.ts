@@ -46,6 +46,7 @@ const KNOWN_UI_LINES = new Set([
   'donate all',
   'search',
 ]);
+const MUSEUM_EXPORT_END_MARKERS = new Set(['library home']);
 
 function normalizeMuseumLine(input: string): string {
   return input.replace(/\s+/g, ' ').trim();
@@ -194,6 +195,10 @@ export function parseMuseumExport(rawText: string): MuseumParseResult {
   for (const line of lines) {
     if (isSkippableLine(line)) {
       continue;
+    }
+
+    if (MUSEUM_EXPORT_END_MARKERS.has(line.toLowerCase())) {
+      break;
     }
 
     const categoryHeader = parseCategoryHeader(line);
