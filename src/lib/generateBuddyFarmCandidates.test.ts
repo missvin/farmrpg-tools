@@ -95,4 +95,19 @@ Event,Event,Pot of Gold (Small),pot of gold (small),Y`);
       }),
     ]);
   });
+
+  it('preserves trailing punctuation when it is part of the observed buddy slug', () => {
+    const seedRows = parseMuseumSeedCsv(`museum_category,category,item_name,canonical_key,obtainable
+Event,Event,R.O.A.S.,r.o.a.s.,Y`);
+
+    const result = generateBuddyFarmCandidates(seedRows);
+
+    expect(result.items).toEqual([
+      expect.objectContaining({
+        itemName: 'R.O.A.S.',
+        generatedBuddySlug: 'r-o-a-s-',
+        candidateBuddyUrl: 'https://buddy.farm/i/r-o-a-s-/',
+      }),
+    ]);
+  });
 });
