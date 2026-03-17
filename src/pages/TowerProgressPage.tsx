@@ -198,8 +198,10 @@ export function TowerProgressPage() {
             </dl>
 
             <p className="subtle-text">
-              Unmatched tower items in the latest snapshot: {progressState.derivedProgress.unmatchedSnapshotItemCount.toLocaleString()}
-              {' '}· Unrated tower items in mastery difficulty data: {progressState.derivedProgress.unratedItemCount.toLocaleString()}
+              Unmatched tower items in the latest snapshot:{' '}
+              {progressState.derivedProgress.unmatchedSnapshotItemCount.toLocaleString()}
+              {' | '}Unrated tower items in mastery difficulty data:{' '}
+              {progressState.derivedProgress.unratedItemCount.toLocaleString()}
             </p>
           </section>
 
@@ -270,6 +272,7 @@ export function TowerProgressPage() {
                     </div>
                     <p className="progress-list__meta">
                       <span>{item.difficultyLabel}</span>
+                      {' | '}
                       <span>Target: {formatRequirementLabel(item.requiredThreshold)}</span>
                     </p>
                     <progress
@@ -282,6 +285,7 @@ export function TowerProgressPage() {
                     </progress>
                     <p className="progress-list__meta">
                       <span>{formatPercent(item.progressPercent)} complete</span>
+                      {' | '}
                       <span>{item.remainingToTarget.toLocaleString()} remaining</span>
                     </p>
                     {!item.matchedSnapshotRow ? (

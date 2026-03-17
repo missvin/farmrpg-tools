@@ -222,6 +222,7 @@ export function SortedPage() {
                         </div>
                         <p className="progress-list__meta">
                           <span>{formatRemainingLabel(mode)}: {item.remainingToTarget.toLocaleString()}</span>
+                          {' | '}
                           <span>{item.difficultyLabel}</span>
                         </p>
                         {item.method ? <p className="progress-list__meta">Method: {item.method}</p> : null}
