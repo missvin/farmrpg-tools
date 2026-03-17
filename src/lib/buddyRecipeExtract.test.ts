@@ -3,8 +3,13 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   extractBuddyRecipeCandidates,
   extractBuddyRecipePage,
+  filterFoundProbeCandidates,
+  parseBuddyProbeResultsCsv,
+  toBuddyRecipeIngredientsCsv,
+  toBuddyRecipePagesCsv,
   toBuddyRecipeExtractionReviewCsv,
   toBuddyRecipeExtractionSummaryCsv,
+  toBuddyRecipeUsedInCsv,
 } from '../../scripts/lib/buddyRecipeExtract.mjs';
 
 describe('buddyRecipeExtract', () => {
@@ -214,5 +219,29 @@ describe('buddyRecipeExtract', () => {
     expect(toBuddyRecipeExtractionSummaryCsv(extractionResult)).toContain('Fancy Pipe');
     expect(toBuddyRecipeExtractionReviewCsv(extractionResult)).toContain('Broken Page');
     expect(toBuddyRecipeExtractionReviewCsv(extractionResult)).not.toContain('Fancy Pipe');
+    expect(toBuddyRecipePagesCsv(extractionResult)).toContain('Fancy Pipe');
+    expect(toBuddyRecipeIngredientsCsv(extractionResult)).toContain('Wood');
+    expect(toBuddyRecipeUsedInCsv(extractionResult).trim()).toBe(
+      'item_name,item_buddy_url,used_in_item_name,used_in_buddy_url,quantity',
+    );
+  });
+
+  it('parses probe result CSV and filters found candidates for extraction', () => {
+    const probeRows = parseBuddyProbeResultsCsv(`item_name,canonical_key,generated_buddy_slug,candidate_buddy_url,probe_status,http_status,final_url,page_title,attempts,flags,notes
+Fancy Pipe,fancy pipe,fancy-pipe,https://buddy.farm/i/fancy-pipe/,found,200,https://buddy.farm/i/fancy-pipe/,Fancy Pipe,1,,
+Missing Item,missing item,missing-item,https://buddy.farm/i/missing-item/,not_found,404,https://buddy.farm/i/missing-item/,,1,symbol_cleanup,Punctuation or symbols were cleaned during slug generation.`);
+
+    expect(filterFoundProbeCandidates(probeRows)).toEqual([
+      {
+        itemName: 'Fancy Pipe',
+        canonicalKey: 'fancy pipe',
+        generatedBuddySlug: 'fancy-pipe',
+        candidateBuddyUrl: 'https://buddy.farm/i/fancy-pipe/',
+        sourceProbePageTitle: 'Fancy Pipe',
+        sourceProbeHttpStatus: '200',
+        sourceProbeFlags: [],
+        sourceProbeNotes: [],
+      },
+    ]);
   });
 });
