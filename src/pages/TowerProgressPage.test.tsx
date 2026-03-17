@@ -187,6 +187,8 @@ describe('TowerProgressPage', () => {
     expect(unratedRow).not.toBeNull();
     expect(within(difficultyNineRow as HTMLElement).getByText('1 / 1 items remaining')).toBeInTheDocument();
     expect(within(difficultyNineRow as HTMLElement).getByText('50k / 100k mastery remaining')).toBeInTheDocument();
+    expect(within(difficultyNineRow as HTMLElement).getByText('0.0% of items complete')).toBeInTheDocument();
+    expect(within(difficultyNineRow as HTMLElement).getByText('50.0% complete toward target mastery')).toBeInTheDocument();
     expect(within(unratedRow as HTMLElement).getByText('5k / 10k mastery remaining')).toBeInTheDocument();
     expect(screen.getByText('BL-034 remains the follow-up for accordion-style drilldown inside each difficulty bucket.')).toBeInTheDocument();
 

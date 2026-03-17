@@ -188,6 +188,7 @@ describe('deriveTowerProgress', () => {
       remainingItems: 1,
       remainingItemsPercent: 100,
       totalTargetMastery: 100_000,
+      remainingTargetMastery: 100_000,
       remainingMastery: 50_000,
       remainingMasteryPercent: 50,
     });
@@ -195,10 +196,42 @@ describe('deriveTowerProgress', () => {
       totalItems: 1,
       remainingItems: 1,
       totalTargetMastery: 10_000,
+      remainingTargetMastery: 10_000,
       remainingMastery: 5_000,
       remainingMasteryPercent: 50,
     });
     expect(derived.totalMasteryRemaining).toBe(55_000);
+  });
+
+  it('does not count completed items toward remaining target mastery totals', () => {
+    const derived = deriveTowerProgress(
+      createSnapshot({
+        board: 1_500_000,
+        'gold cucumber': 75_000,
+      }),
+      towerRequirementsData,
+      masteryDifficultyData,
+    );
+
+    const difficultyOne = derived.difficultySummary.find((row) => row.label === 'Difficulty 1');
+    const difficultyNine = derived.difficultySummary.find((row) => row.label === 'Difficulty 9');
+
+    expect(difficultyOne).toMatchObject({
+      totalItems: 1,
+      remainingItems: 0,
+      totalTargetMastery: 1_000_000,
+      remainingTargetMastery: 0,
+      remainingMastery: 0,
+      remainingMasteryPercent: 0,
+    });
+    expect(difficultyNine).toMatchObject({
+      totalItems: 1,
+      remainingItems: 1,
+      totalTargetMastery: 100_000,
+      remainingTargetMastery: 100_000,
+      remainingMastery: 25_000,
+      remainingMasteryPercent: 25,
+    });
   });
 
   it('keeps unmatched snapshot items and missing mastery difficulty rows non-fatal', () => {

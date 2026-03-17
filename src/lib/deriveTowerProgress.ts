@@ -28,6 +28,7 @@ export type TowerProgressDifficultySummaryRow = {
   remainingItems: number;
   remainingItemsPercent: number;
   totalTargetMastery: number;
+  remainingTargetMastery: number;
   remainingMastery: number;
   remainingMasteryPercent: number;
 };
@@ -55,6 +56,7 @@ type DifficultySummaryAccumulator = {
   totalItems: number;
   remainingItems: number;
   totalTargetMastery: number;
+  remainingTargetMastery: number;
   remainingMastery: number;
 };
 
@@ -206,6 +208,7 @@ export function deriveTowerProgress(
       totalItems: 0,
       remainingItems: 0,
       totalTargetMastery: 0,
+      remainingTargetMastery: 0,
       remainingMastery: 0,
     };
 
@@ -214,6 +217,7 @@ export function deriveTowerProgress(
 
     if (item.remainingToTarget > 0) {
       bucket.remainingItems += 1;
+      bucket.remainingTargetMastery += item.requiredThreshold;
       bucket.remainingMastery += item.remainingToTarget;
     }
 
@@ -232,8 +236,9 @@ export function deriveTowerProgress(
         remainingItems: bucket.remainingItems,
         remainingItemsPercent: toPercent(bucket.remainingItems, bucket.totalItems),
         totalTargetMastery: bucket.totalTargetMastery,
+        remainingTargetMastery: bucket.remainingTargetMastery,
         remainingMastery: bucket.remainingMastery,
-        remainingMasteryPercent: toPercent(bucket.remainingMastery, bucket.totalTargetMastery),
+        remainingMasteryPercent: toPercent(bucket.remainingMastery, bucket.remainingTargetMastery),
       })),
     gmItemsLeftCount,
     mmItemsLeftCount,

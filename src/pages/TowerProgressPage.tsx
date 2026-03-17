@@ -23,6 +23,14 @@ function formatPercent(value: number): string {
   return `${value.toFixed(value >= 100 ? 0 : 1)}%`;
 }
 
+function toCompletePercent(total: number, remaining: number): number {
+  if (total <= 0) {
+    return 100;
+  }
+
+  return Math.max(0, Math.min(100, ((total - remaining) / total) * 100));
+}
+
 function formatRequirementLabel(requiredThreshold: number): string {
   if (requiredThreshold === 10_000) {
     return 'Mastery (10,000)';
@@ -231,14 +239,19 @@ export function TowerProgressPage() {
                         <strong>
                           {row.remainingItems.toLocaleString()} / {row.totalItems.toLocaleString()} items remaining
                         </strong>
-                        <p className="subtle-text">{formatPercent(row.remainingItemsPercent)} of items</p>
+                        <p className="subtle-text">
+                          {formatPercent(toCompletePercent(row.totalItems, row.remainingItems))} of items complete
+                        </p>
                       </td>
                       <td>
                         <strong>
-                          {formatCompactMastery(row.remainingMastery)} / {formatCompactMastery(row.totalTargetMastery)} mastery
-                          remaining
+                          {formatCompactMastery(row.remainingMastery)} /{' '}
+                          {formatCompactMastery(row.remainingTargetMastery)} mastery remaining
                         </strong>
-                        <p className="subtle-text">{formatPercent(row.remainingMasteryPercent)} of target mastery</p>
+                        <p className="subtle-text">
+                          {formatPercent(toCompletePercent(row.totalTargetMastery, row.remainingMastery))} complete
+                          toward target mastery
+                        </p>
                       </td>
                     </tr>
                   ))}
