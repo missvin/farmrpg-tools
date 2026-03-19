@@ -1,0 +1,819 @@
+# Mastery Acquisition Planning Spec (Draft v1)
+
+## Purpose
+
+Define the planning model for estimating the gameplay cost of FarmRPG mastery goals.
+
+This spec is meant to support future features that answer questions like:
+
+- How much of a given ingredient do I still need for M / GM / MM / Tower goals?
+- What percentage of the lifetime burden for an ingredient have I already completed?
+- Given my current game state, how much stamina, Apple Cider, Lemonade, or Arnold Palmer usage would it take to reach a goal such as Tower 310?
+- How much mastery can I gain immediately from stockpiled sources like pets or prize bags?
+
+This is a domain/spec document, not a UI spec for a single page.
+
+---
+
+## Status
+
+Draft and exploratory.
+
+This document should evolve as more game rules are confirmed and more source classes are modeled.
+
+---
+
+## Goals
+
+- Define the planning domain clearly enough to guide backlog decomposition.
+- Separate reusable calculation layers from view/UI layers.
+- Classify source types, modifier applicability, and planning assumptions.
+- Keep the model local-first and single-profile.
+- Prefer practical, player-usable planning over exhaustive theoretical optimization.
+
+---
+
+## Non-goals
+
+- Fully model every FarmRPG source/mechanic immediately.
+- Commit to a perfect global optimizer in the first implementation.
+- Add backend, sync, or cloud behavior.
+- Treat all theoretically possible sources as equally valid planning inputs.
+- Collapse implementation backlog and domain design into one document.
+
+---
+
+## Planning philosophy
+
+The planner should optimize over **allowed source classes under explicit assumptions**, not over every theoretically possible way to gain mastery.
+
+Default bias:
+- practical
+- deterministic where useful
+- explicit assumptions
+- configurable source eligibility
+- read-only planning first
+
+“Perfect play” should mean:
+> best result under the player’s currently allowed source policy and active modifier assumptions.
+
+It should not mean an unconstrained omniscient solver.
+
+---
+
+## Core planning questions
+
+The system should eventually support questions in four broad categories:
+
+### 1. Goal burden
+What is still needed for a target?
+
+Examples:
+- remaining twine for Tower 300
+- remaining rope for GM
+- total salt still needed for MM
+
+### 2. Lifetime / baseline burden
+What would the total burden be from zero mastery?
+
+Examples:
+- lifetime twine needed for Tower 300
+- lifetime salt needed for MM
+
+### 3. Acquisition burden
+How can the required items actually be obtained?
+
+Examples:
+- from crafting
+- from exploring
+- from AP/Lemonade
+- from owned prize bags
+- from pet inventory
+
+### 4. Progress framing
+How close is the player already?
+
+Examples:
+- “you’re 42% of the way to lifetime twine needed for Tower 300”
+- “you can get 8% more salt mastery immediately from owned stockpiles”
+
+---
+
+## Domain layers
+
+The planning model is layered.
+
+### Layer 1: Goal burden
+How much mastery or effective output is still needed for a target scope.
+
+Goal scopes:
+- M
+- GM
+- MM
+- Tower
+
+Tower should support selected cutoffs/targets such as:
+- Tower 200
+- Tower 300
+- Tower 310
+
+### Layer 2: Recursive crafting burden
+How target outputs expand backward through recipe chains into ingredient burden.
+
+Examples:
+- twine needed directly for twine mastery
+- twine needed indirectly through rope, fishing net, large net, etc.
+
+This layer must distinguish:
+- effective outputs
+- craft operations
+- recursive ingredient burden
+
+### Layer 3: Acquisition modeling
+How those required items can be obtained in-game.
+
+Examples:
+- manual exploring
+- Apple Cider
+- Lemonade
+- Arnold Palmer
+- direct crafting
+- owned containers
+- pet collection
+
+### Layer 4: Source policy
+Which source classes are allowed or excluded for planning.
+
+Examples:
+- exclude Flea Market
+- exclude Exchange Center
+- exclude Tower rewards by default
+- include owned containers and pets
+
+### Layer 5: Optimization / strategy assumptions
+How the planner chooses among allowed sources.
+
+Examples:
+- use stockpiles first
+- best zone for explore-based acquisition
+- AP as allowed source
+- report immediate vs future availability separately
+
+---
+
+## Source taxonomy
+
+Sources should be modeled by class.
+
+## A. Crafting
+
+Player crafts an item directly.
+
+Properties:
+- repeatable
+- ingredient-dependent
+- affected by crafting modifiers
+- can create mastery through crafted output
+- subject to crafting-specific overflow rules
+
+Notes:
+- resource saver applies here
+- crafting overflow does not produce extra crafted-item mastery
+
+---
+
+## B. Manual exploring
+
+Player explores directly using stamina.
+
+Properties:
+- stamina-based
+- zone-dependent
+- affected by explore stamina modifiers
+- uses normal zone drop rates
+
+---
+
+## C. Apple Cider
+
+Click-reduction explore source that performs many explores at once.
+
+Properties:
+- stamina-based
+- zone-dependent
+- affected by Exploring Effectiveness and cider-specific perks
+- changes drop-rate behavior
+- not automatically the most efficient strategy
+
+Notes:
+- should be modeled separately from manual exploring
+
+---
+
+## D. Lemonade
+
+Fixed-yield instant-drop exploring consumable.
+
+Properties:
+- fixed yield
+- no Exploring Effectiveness interaction
+- perk-sensitive
+- not stamina-based in the same way as manual/cider explore
+
+---
+
+## E. Arnold Palmer
+
+Fixed-yield instant-drop exploring consumable crafted from Iced Tea + Lemonade.
+
+Properties:
+- fixed yield at use time
+- crafted source at supply time
+- no Exploring Effectiveness interaction
+- affected by AP-specific perk/meal modifiers
+- sits at the boundary between crafting and exploring
+
+Notes:
+- should be modeled both:
+  - as a direct acquisition source when used
+  - as a crafted object with recipe/resource cost
+
+---
+
+## F. Owned containers / owned stockpile items
+
+Already-owned bags, chests, or similar sources that can yield items/mastery.
+
+Examples:
+- corn prize bags
+- chests already owned
+
+Properties:
+- finite
+- user-state dependent
+- immediately usable
+- not generally stamina-based
+
+---
+
+## G. Pet collection
+
+Distinct source class with two subtypes:
+
+### G1. Stored pet inventory
+Items already accumulated and currently waiting to be collected.
+
+Properties:
+- finite
+- immediately available
+- user-state dependent
+- practical early target for planning
+
+### G2. Future pet production
+Items that pets could still generate over time.
+
+Properties:
+- time-dependent
+- renewable over time
+- subject to seasonality and offline caps
+- should be reported separately from stored pet inventory
+
+---
+
+## H. One-time rewards
+
+Examples:
+- Tower rewards
+- one-time unlock rewards
+
+Properties:
+- not repeatable
+- usually poor fit for practical planning
+- excluded by default unless explicitly enabled later
+
+---
+
+## I. Impractical / excluded sources
+
+Examples:
+- Flea Market
+- Exchange Center
+
+Properties:
+- technically possible
+- not useful for practical planning
+- excluded by default
+
+---
+
+## Default source policy
+
+### Include by default
+- crafting
+- manual exploring
+- Apple Cider
+- Lemonade
+- Arnold Palmer
+- owned containers
+- stored pet inventory
+
+### Include later / separately
+- simple future pet production estimates
+
+### Exclude by default
+- Flea Market
+- Exchange Center
+- one-time Tower rewards
+
+Rationale:
+The planner should model practical play, not every theoretical path.
+
+---
+
+## Modifier taxonomy
+
+Modifiers should be associated with source classes and/or calculation layers.
+
+## A. Crafting modifiers
+
+Examples:
+- Resource Saver I / II / III
+- event resource saver bonus
+
+Affects:
+- effective crafted output
+- required crafts per target output
+
+Notes:
+- additive within the resource saver family
+- deterministic expected-value interpretation for planning
+
+---
+
+## B. Mastery gain modifiers
+
+Examples:
+- Mushroom Stew
+- event mastery bonuses
+
+Affects:
+- mastery gained from eligible actions/sources
+
+Notes:
+- not quantity multipliers
+- should remain distinct from resource saver and source-yield effects
+
+---
+
+## C. Source-specific quantity modifiers
+
+Examples:
+- Crunchy Omelette for pet collection
+- Lemon Squeezer for Lemonade/AP
+- Quandary Chowder for Lemonade/AP
+- Lemon Seltzer for AP
+
+Affects:
+- source quantity
+- not generic mastery multipliers
+
+---
+
+## D. Exploring / cider modifiers
+
+Examples:
+- Wanderer
+- Cinnamon Sticks
+- Sprint Shoes
+- Neigh
+- Exploring Effectiveness
+
+Affects:
+- stamina efficiency
+- explores per cider
+- zone acquisition efficiency
+
+---
+
+## Known confirmed rules and assumptions
+
+## Crafting
+
+- Resource Saver I = +10% crafted output
+- Resource Saver II = +15% crafted output
+- Resource Saver III = +20% crafted output
+- Resource saver is additive across these sources
+- planning interpretation is deterministic expected value
+- example: +45% saver means 100 crafts yields 145 effective outputs
+
+### Crafting overflow
+- if crafting would exceed inventory max, blocked crafted output is not received
+- resources are refunded
+- blocked crafted output does not produce additional crafted-item mastery
+
+---
+
+## Mastery bonuses
+
+- Mushroom Stew = +10% mastery for 5 minutes
+- Mushroom Stew applies broadly to mastery
+- event mastery bonuses may exist and are variable
+- event resource saver bonuses may exist and are variable
+
+---
+
+## Manual exploring
+
+### Wanderer
+Known tiers:
+- I = 4%
+- II = 7%
+- III = 9%
+- IV = 13%
+
+Planning interpretation:
+- store both perk tiers and effective percent
+- treat as expected-value stamina reduction
+
+### Exploring Primer
+- only affects Exploring XP
+- out of scope for first-pass acquisition planning
+
+### Energy Drink
+- passive stamina refill over time
+- out of scope for first-pass acquisition planning
+
+---
+
+## Apple Cider
+
+### Base behavior
+- without perks/upgrades, performs 1010 explores
+- cannot be used unless player has at least 1010 stamina
+- costs 40 apples to craft
+- sets drop-rate behavior to 0.40 in every zone
+
+### Cinnamon Sticks
+- increases cider explores by 25%
+- baseline rises from 1010 to 1263
+- each EE point adds 12.5 explores instead of 10, rounded as needed
+
+### Exploring Effectiveness (EE)
+Without Cinnamon Sticks:
+- effectively adds 10 explores per EE point
+
+With Cinnamon Sticks:
+- effectively adds 12.5 explores per EE point, rounded as needed
+
+### Sprint Shoes
+- increase effective EE
+- should be modeled as transforming effective EE rather than as a separate yield multiplier
+
+### Neigh
+- reduces cider stamina cost by 20%
+- stacks multiplicatively with Wanderer
+
+### Cabbage Stew
+- allows 5 ciders per click
+- throughput/click effect only for now, not baseline efficiency math
+
+### Cider optimization note
+Cider should not be assumed globally optimal.
+Its value depends on:
+- zone
+- perks
+- meals
+- Exploring Effectiveness
+- opportunity cost of apples
+
+---
+
+## Lemonade
+
+- normally gives 10 items instantly while exploring
+- with Lemon Squeezer, gives 20
+- gives Exploring XP when used, but XP is out of scope for first-pass planning
+- should be treated as a fixed-yield exploring consumable
+- does not interact with Exploring Effectiveness
+
+---
+
+## Arnold Palmer
+
+- crafted from 1 Iced Tea + 20 Lemonade
+- requires Crafting level 92
+- normally gives 200 items
+- with Lemon Squeezer, gives 500 items
+- should be treated as both:
+  - a direct source class when used
+  - a crafted item with recipe/resource burden
+
+### AP-related modifiers
+
+#### Quandary Chowder
+- +10% Lemonade/AP effectiveness
+- user-toggleable
+- quantity modifier, not mastery modifier
+
+#### Lemon Seltzer
+- +50% AP items for 50 uses
+- action-limited, not time-limited
+- stacks multiplicatively with Quandary Chowder
+- first-pass planning should ignore bounded-use complications and treat this as out of scope or simplified
+
+#### Lemon Cream Pie
+- multi-use / throughput effect
+- not baseline efficiency math in first pass
+
+---
+
+## Owned containers / stockpile conversion
+
+Examples:
+- corn prize bags
+- owned chests
+
+Properties:
+- finite
+- immediate
+- should generally be modeled as “available now” sources
+- should be separable from future acquisition
+
+---
+
+## Pets
+
+### Core rules
+- pets return 1 item per pet level per hour
+- each pet can hold up to inventory max of each item it can gather
+- pets stop producing after 48 hours offline
+
+### Seasonal pets
+- only produce during their active two-month period
+- stored items remain collectible at any time
+- future production depends on whether the pet is currently in season
+
+### Special-case pets
+Pet-specific exceptions should be represented as source-specific override rules in the source catalog.
+
+Example:
+- Owl at level 6+ gives double honey
+
+### Pet modifiers
+#### Crunchy Omelette
+- 1.5x collected pet quantity
+- quantity modifier
+
+#### Mushroom Stew
+- applies to mastery gained from pet collection
+- mastery modifier
+
+### Planning direction
+- support stored pet inventory
+- support simple future pet production estimates, reported separately
+- pet inventory should ideally be entered via manual import parser, not only item-by-item manual entry
+
+---
+
+## Source / modifier applicability summary
+
+### Manual Explore
+Affected by:
+- Wanderer
+- zone drop rates
+
+Not affected by:
+- EE
+- Lemon Squeezer
+- resource saver
+
+### Apple Cider
+Affected by:
+- Wanderer
+- Cinnamon Sticks
+- EE
+- Sprint Shoes (through EE)
+- Neigh
+
+Not affected by:
+- Lemon Squeezer
+- AP/Lemonade modifiers
+- resource saver directly
+
+### Lemonade
+Affected by:
+- Lemon Squeezer
+- Quandary Chowder
+
+Not affected by:
+- EE
+- Wanderer
+- resource saver directly
+
+### Arnold Palmer
+Affected at use time by:
+- Lemon Squeezer
+- Quandary Chowder
+- potentially Lemon Seltzer
+
+Affected at production/supply time by:
+- crafting/resource burden
+- resource saver indirectly
+
+### Crafting
+Affected by:
+- Resource Saver
+- event resource saver bonus
+- Mushroom Stew where mastery interpretation is relevant
+
+### Owned Containers
+Affected by:
+- mastery multipliers where the source grants mastery
+
+### Pet Collection
+Affected by:
+- Crunchy Omelette (quantity)
+- Mushroom Stew (mastery)
+- seasonality for future production only
+
+---
+
+## Availability tiers
+
+Certain source classes, especially Cider, Lemonade, and AP, should be modeled by availability tier.
+
+### A. Owned now
+Already in inventory and immediately usable.
+
+### B. Craftable now
+Not yet owned in final form, but craftable immediately from current resources.
+
+### C. Future craftable
+Only producible after future farming/acquisition.
+
+Planning recommendation:
+Do not silently combine these into one “available” pool.
+
+The planner should keep them distinct so it can answer:
+- what can I do right now?
+- what can I convert right now?
+- what is only possible after future farming?
+
+---
+
+## Pet planning recommendation
+
+Pet planning should be split conceptually into:
+
+### 1. Stored pet inventory conversion
+- immediate
+- practical
+- should support import parsing
+
+### 2. Simple future pet production
+- separate from stored inventory
+- use simple assumptions like “x days left in active season”
+- avoid full schedule/calendar optimization at first
+
+---
+
+## Consumable planning recommendation
+
+For Cider, Lemonade, and AP, the planner should distinguish:
+
+- owned consumables
+- craftable-now consumables
+- future craftable consumables
+
+And for AP specifically:
+- model as both a source and a crafted object
+- expose recipe burden when useful
+
+---
+
+## User-state inputs needed
+
+## Current mastery / goal state
+- current mastery snapshot
+- current goal scope / target
+- tower target/cutoff
+
+## Crafting state
+- unlocked resource saver perks/artifacts
+- event resource saver bonus
+- Mushroom Stew
+- other crafting/mastery modifiers as needed
+
+## Exploring state
+- Wanderer tiers and effective percent
+- Cinnamon Sticks yes/no
+- Neigh yes/no
+- Sprint Shoes yes/no
+- effective/base EE by zone
+- whether manual explore / cider / Lemonade / AP are allowed
+
+## Instant-drop consumable state
+- Lemon Squeezer yes/no
+- Quandary Chowder yes/no
+- Lemon Seltzer yes/no
+- Lemon Cream Pie yes/no
+
+## Owned stockpile state
+- owned containers / prize bags / chests
+- stored pet inventory
+- owned Cider / Lemonade / AP if tracked
+- craftable-now quantities if later surfaced
+
+## Pet future-production state
+- owned pets
+- pet levels
+- active season context / days left
+- stored items vs future production kept distinct
+
+## Source policy
+- included/excluded source classes
+- whether one-time sources are allowed
+- whether future pet production is allowed
+- whether immediate-only vs long-horizon planning is being used
+
+---
+
+## Planning outputs
+
+The system may eventually produce:
+
+### Burden outputs
+- remaining burden
+- lifetime baseline burden
+- percent complete
+
+### Acquisition outputs
+- stamina needed
+- Cider needed
+- Lemonade needed
+- AP needed
+- source breakdown
+
+### Explanation outputs
+- provenance / contributor breakdown
+- source-class breakdown
+- immediate stockpile conversion vs future acquisition
+- “why this result” explanations
+
+---
+
+## Backlog-facing workstreams
+
+These are workstreams, not necessarily final item names.
+
+### A. Goal burden and recursive ingredient burden
+Already emerging from recipe/planning work.
+
+### B. Baseline lifetime totals
+Fixed denominators from zero mastery.
+
+### C. Source catalog
+Model source classes, applicability, overrides, seasonality, and default inclusion policy.
+
+### D. User-provided source state
+Model owned stockpiles, pet inventory, consumable state, and source toggles.
+
+### E. Owned-source conversion engines
+Examples:
+- bags/chests
+- stored pet inventory
+
+### F. Exploring acquisition model and engine
+Manual explore, cider, Lemonade, AP.
+
+### G. Future pet production estimator
+Simple “days left” style estimates.
+
+### H. Unified acquisition planner
+Combine goal burden, recursive ingredient burden, source policy, and acquisition engines.
+
+---
+
+## Open questions
+
+- What format should be parsed for pet inventory import?
+- Should the first AP planner compare AP against manual/cider only on item yield, or also on full recipe burden?
+- How should bounded-use effects like Lemon Seltzer be surfaced later?
+- Should future pet production assume ideal collection cadence, or a simpler default?
+- Which buddy.farm values are trustworthy enough to seed local formulas versus requiring explicit local data?
+- Which source classes should be user-toggleable versus hard-excluded?
+- How should one-time rewards be surfaced, if at all?
+
+---
+
+## Summary
+
+This planning domain should be treated as a layered system:
+
+1. goal burden
+2. recursive crafting burden
+3. source-class acquisition modeling
+4. user state and source policy
+5. planning/optimization outputs
+
+The backlog should contain implementation slices derived from this model, but this spec should remain the source of truth for domain assumptions and planning philosophy.
