@@ -197,4 +197,37 @@ describe('ImportPage', () => {
     expect(screen.queryByText('Gold Cucumber')).not.toBeInTheDocument();
     expect(screen.getByText('Red Diamond Fish')).toBeInTheDocument();
   });
+
+  it('shows an import validation report for duplicate rows and ignored lines', async () => {
+    const user = userEvent.setup();
+
+    render(<ImportPage />);
+
+    fireEvent.change(screen.getByLabelText('Raw mastery export'), {
+      target: {
+        value: `Farm RPG
+Back
+
+Gold Cucumber
+967,174 / 1,000,000 Progress
+96.7174%
+
+Gold Cucumber
+967,200 / 1,000,000 Progress
+96.72%
+
+Settings`,
+      },
+    });
+    await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
+
+    expect(screen.getByRole('heading', { name: 'Import Validation Report' })).toBeInTheDocument();
+    expect(screen.getByText('Duplicate rows')).toBeInTheDocument();
+    expect(screen.getByText('Ignored lines')).toBeInTheDocument();
+    expect(screen.getByText(/1 duplicate row was merged using the highest parsed count/)).toBeInTheDocument();
+    expect(screen.getByText(/3 non-item lines were ignored during parsing/)).toBeInTheDocument();
+    expect(screen.getByText('Line 1: Farm RPG')).toBeInTheDocument();
+    expect(screen.getByText('Line 2: Back')).toBeInTheDocument();
+    expect(screen.getByText('Line 12: Settings')).toBeInTheDocument();
+  });
 });

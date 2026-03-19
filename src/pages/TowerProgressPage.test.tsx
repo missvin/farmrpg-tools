@@ -38,7 +38,11 @@ describe('TowerProgressPage', () => {
       },
       parseSummary: {
         itemsParsed: 3,
+        parsedRowsCount: 0,
         tiersDetected: [10_000, 100_000, 1_000_000],
+        duplicateRowsCount: 0,
+        skippedNonItemLinesCount: 0,
+        skippedNonItemLineSamples: [],
         unknownItemsCount: 0,
         warnings: [],
       },
@@ -209,7 +213,11 @@ describe('TowerProgressPage', () => {
       },
       parseSummary: {
         itemsParsed: 1,
+        parsedRowsCount: 0,
         tiersDetected: [1_000_000],
+        duplicateRowsCount: 0,
+        skippedNonItemLinesCount: 0,
+        skippedNonItemLineSamples: [],
         unknownItemsCount: 0,
         warnings: [],
       },

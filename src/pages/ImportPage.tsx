@@ -41,6 +41,10 @@ function getMasteryTierLabel(targetTier: number): string | null {
   return EXPECTED_MASTERY_TIERS.find((tier) => tier.targetTier === targetTier)?.label ?? null;
 }
 
+function formatCountLabel(count: number, singular: string, plural: string): string {
+  return `${count.toLocaleString()} ${count === 1 ? singular : plural}`;
+}
+
 function buildImportValidationWarning(parseResult: ReturnType<typeof parseMasteryPaste>): string | null {
   const tierCounts = parseResult.parsedRows.reduce<Record<number, number>>((counts, row) => {
     if (row.targetTier === 'INF') {
@@ -134,6 +138,16 @@ export function ImportPage() {
 
   const hasParsedItems = (parseResult?.parseSummary.itemsParsed ?? 0) > 0;
   const requiresImportOverride = Boolean(importValidationWarning) && !importValidationAcknowledged;
+  const validationSummaryFindings = parseResult
+    ? [
+        parseResult.parseSummary.duplicateRowsCount > 0
+          ? `${formatCountLabel(parseResult.parseSummary.duplicateRowsCount, 'duplicate row was', 'duplicate rows were')} merged using the highest parsed count.`
+          : null,
+        parseResult.parseSummary.skippedNonItemLinesCount > 0
+          ? `${formatCountLabel(parseResult.parseSummary.skippedNonItemLinesCount, 'non-item line was', 'non-item lines were')} ignored during parsing.`
+          : null,
+      ].filter((finding): finding is string => Boolean(finding))
+    : [];
 
   function handleParsePreview(): void {
     setSaveMessage(null);
@@ -276,18 +290,65 @@ export function ImportPage() {
                 <dd>{parseResult.parseSummary.itemsParsed.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
+                <dt>Duplicate rows</dt>
+                <dd>{parseResult.parseSummary.duplicateRowsCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Ignored lines</dt>
+                <dd>{parseResult.parseSummary.skippedNonItemLinesCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
                 <dt>Tiers detected</dt>
                 <dd>{formatTierList(parseResult.parseSummary.tiersDetected)}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Warnings</dt>
-                <dd>{parseResult.parseSummary.warnings.length.toLocaleString()}</dd>
+                <dt>Suspicious outcomes</dt>
+                <dd>{validationSummaryFindings.length.toLocaleString()}</dd>
               </div>
             </dl>
 
+            <div className="page-stack">
+              <h3 className="section-title">Import Validation Report</h3>
+              <p className="supporting-text">
+                This read-only summary shows what the parser kept, what it ignored, and anything worth checking
+                before you save.
+              </p>
+
+              {validationSummaryFindings.length > 0 ? (
+                <ul className="data-list">
+                  {validationSummaryFindings.map((finding) => (
+                    <li key={finding}>
+                      <span>{finding}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="empty-state">No skipped lines, duplicate rows, or suspicious parsing outcomes were detected.</p>
+              )}
+
+              {parseResult.parseSummary.skippedNonItemLineSamples.length > 0 ? (
+                <div className="page-stack page-stack--tight">
+                  <h4 className="section-title">Ignored line samples</h4>
+                  <p className="supporting-text">
+                    These non-item lines were ignored on purpose and can help explain why the skipped-line count is
+                    higher than the number of parsed rows.
+                  </p>
+                  <ul className="data-list">
+                    {parseResult.parseSummary.skippedNonItemLineSamples.map((sample) => (
+                      <li key={`${sample.lineNumber}-${sample.text}`}>
+                        <span>
+                          Line {sample.lineNumber}: {sample.text}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+
             {parseResult.parseSummary.warnings.length > 0 ? (
               <div className="page-stack">
-                <h3 className="section-title">Warnings</h3>
+                <h3 className="section-title">Detailed Warnings</h3>
                 <ul className="data-list">
                   {parseResult.parseSummary.warnings.map((warning) => (
                     <li key={warning}>{warning}</li>
@@ -312,15 +373,15 @@ export function ImportPage() {
             </div>
 
             <div className="page-stack">
-              <h3 className="section-title">Temporary Parser Debug</h3>
+              <h3 className="section-title">Parsed Row Details</h3>
               <p className="supporting-text">
-                Use this temporary view to inspect exactly which rows were parsed from the pasted export.
+                Use this detail view to inspect exactly which rows were parsed from the pasted export.
               </p>
 
               <dl className="summary-grid">
                 <div className="summary-grid__item">
                   <dt>Total parsed rows</dt>
-                  <dd>{parseResult.parsedRows.length.toLocaleString()}</dd>
+                  <dd>{parseResult.parseSummary.parsedRowsCount.toLocaleString()}</dd>
                 </div>
                 <div className="summary-grid__item">
                   <dt>Unique canonical items</dt>

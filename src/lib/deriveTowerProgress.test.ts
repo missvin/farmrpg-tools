@@ -13,7 +13,11 @@ function createSnapshot(masteryByItem: Record<string, number>): MasterySnapshot 
     masteryByItem,
     parseSummary: {
       itemsParsed: Object.keys(masteryByItem).length,
+      parsedRowsCount: 0,
       tiersDetected: [],
+      duplicateRowsCount: 0,
+      skippedNonItemLinesCount: 0,
+      skippedNonItemLineSamples: [],
       unknownItemsCount: 0,
       warnings: [],
     },

@@ -2,7 +2,14 @@ import { toCanonicalItemKey } from './normalizeItemKey';
 
 export type ParseSummary = {
   itemsParsed: number;
+  parsedRowsCount: number;
   tiersDetected: Array<number | 'INF'>;
+  duplicateRowsCount: number;
+  skippedNonItemLinesCount: number;
+  skippedNonItemLineSamples: Array<{
+    lineNumber: number;
+    text: string;
+  }>;
   unknownItemsCount: number;
   warnings: string[];
 };
@@ -19,6 +26,11 @@ export type ParseResult = {
   masteryByItem: Record<string, number>;
   parseSummary: ParseSummary;
   parsedRows: ParsedRow[];
+};
+
+type AddParsedItemResult = {
+  canonicalKey: string | null;
+  wasDuplicate: boolean;
 };
 
 const INFINITY_TARGET_RE = /^(?:\u221e|infinity)$/i;
@@ -57,11 +69,11 @@ function addParsedItem(
   warnings: string[],
   itemName: string,
   count: number,
-): string | null {
+): AddParsedItemResult {
   const canonicalKey = toCanonicalItemKey(itemName);
 
   if (!canonicalKey) {
-    return null;
+    return { canonicalKey: null, wasDuplicate: false };
   }
 
   const existingCount = masteryByItem[canonicalKey];
@@ -69,11 +81,11 @@ function addParsedItem(
     const resolvedCount = Math.max(existingCount, count);
     masteryByItem[canonicalKey] = resolvedCount;
     warnings.push(`Duplicate mastery row for "${itemName}" resolved using max count (${resolvedCount}).`);
-    return canonicalKey;
+    return { canonicalKey, wasDuplicate: true };
   }
 
   masteryByItem[canonicalKey] = count;
-  return canonicalKey;
+  return { canonicalKey, wasDuplicate: false };
 }
 
 function sortDetectedTiers(tiers: Set<number | 'INF'>): Array<number | 'INF'> {
@@ -95,7 +107,9 @@ export function parseMasteryPaste(rawText: string): ParseResult {
   const warnings: string[] = [];
   const tiersDetected = new Set<number | 'INF'>();
   const parsedRows: ParsedRow[] = [];
+  const consumedLineIndexes = new Set<number>();
   const lines = rawText.split(/\r?\n/).map((line) => line.trim());
+  let duplicateRowsCount = 0;
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
@@ -120,10 +134,14 @@ export function parseMasteryPaste(rawText: string): ParseResult {
 
     const count = parseCount(match.groups.count);
     const targetTier = parseTierTarget(match.groups.target);
-    const canonicalKey = addParsedItem(masteryByItem, warnings, line, count);
+    const { canonicalKey, wasDuplicate } = addParsedItem(masteryByItem, warnings, line, count);
 
     if (!canonicalKey) {
       continue;
+    }
+
+    if (wasDuplicate) {
+      duplicateRowsCount += 1;
     }
 
     parsedRows.push({
@@ -134,20 +152,49 @@ export function parseMasteryPaste(rawText: string): ParseResult {
       sourceLineIndex: index,
     });
     tiersDetected.add(targetTier);
+    consumedLineIndexes.add(index);
+    consumedLineIndexes.add(progressLineIndex);
 
     const percentLineIndex = findNextNonEmptyLine(lines, progressLineIndex + 1);
     index = progressLineIndex;
 
     if (percentLineIndex !== -1 && isStandalonePercentLine(lines[percentLineIndex])) {
+      consumedLineIndexes.add(percentLineIndex);
       index = percentLineIndex;
     }
   }
+
+  const skippedNonItemLineSamples = lines.reduce<Array<{ lineNumber: number; text: string }>>((samples, line, index) => {
+    if (!line || consumedLineIndexes.has(index)) {
+      return samples;
+    }
+
+    if (samples.length < 5) {
+      samples.push({
+        lineNumber: index + 1,
+        text: line,
+      });
+    }
+
+    return samples;
+  }, []);
+  const skippedNonItemLinesCount = lines.reduce((count, line, index) => {
+    if (!line || consumedLineIndexes.has(index)) {
+      return count;
+    }
+
+    return count + 1;
+  }, 0);
 
   return {
     masteryByItem,
     parseSummary: {
       itemsParsed: Object.keys(masteryByItem).length,
+      parsedRowsCount: parsedRows.length,
       tiersDetected: sortDetectedTiers(tiersDetected),
+      duplicateRowsCount,
+      skippedNonItemLinesCount,
+      skippedNonItemLineSamples,
       unknownItemsCount: 0,
       warnings,
     },

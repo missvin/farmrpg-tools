@@ -13,6 +13,9 @@ describe('parseMasteryPaste', () => {
     expect(result.masteryByItem).toEqual({
       'gold cucumber': 967174,
     });
+    expect(result.parseSummary.parsedRowsCount).toBe(1);
+    expect(result.parseSummary.duplicateRowsCount).toBe(0);
+    expect(result.parseSummary.skippedNonItemLinesCount).toBe(0);
     expect(result.parseSummary.tiersDetected).toEqual([1000000]);
     expect(result.parsedRows).toEqual([
       {
@@ -98,9 +101,30 @@ describe('parseMasteryPaste', () => {
     expect(result.masteryByItem).toEqual({
       "farmer's hat": 250,
     });
+    expect(result.parseSummary.duplicateRowsCount).toBe(1);
     expect(result.parseSummary.warnings).toHaveLength(1);
     expect(result.parseSummary.warnings[0]).toContain('Duplicate mastery row');
     expect(result.parsedRows).toHaveLength(2);
+  });
+
+  it('tracks skipped non-item lines for validation reporting', () => {
+    const result = parseMasteryPaste(`Farm RPG
+Back
+Item Mastery
+
+Gold Cucumber
+967,174 / 1,000,000 Progress
+96.7174%
+
+Settings`);
+
+    expect(result.parseSummary.skippedNonItemLinesCount).toBe(4);
+    expect(result.parseSummary.skippedNonItemLineSamples).toEqual([
+      { lineNumber: 1, text: 'Farm RPG' },
+      { lineNumber: 2, text: 'Back' },
+      { lineNumber: 3, text: 'Item Mastery' },
+      { lineNumber: 9, text: 'Settings' },
+    ]);
   });
 
   it('returns tiers in ascending order with INF last', () => {

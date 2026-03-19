@@ -17,7 +17,11 @@ function createSnapshot(): MasterySnapshot {
     },
     parseSummary: {
       itemsParsed: 4,
+      parsedRowsCount: 4,
       tiersDetected: [10000, 100000, 1000000],
+      duplicateRowsCount: 0,
+      skippedNonItemLinesCount: 0,
+      skippedNonItemLineSamples: [],
       unknownItemsCount: 0,
       warnings: [],
     },
