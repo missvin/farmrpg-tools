@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { ComparePage } from '../pages/ComparePage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { HistoryPage } from '../pages/HistoryPage';
+import { IngredientDemandPage } from '../pages/IngredientDemandPage';
 import { ImportPage } from '../pages/ImportPage';
 import { MuseumToolsPage } from '../pages/MuseumToolsPage';
 import { SettingsPage } from '../pages/SettingsPage';
@@ -31,6 +32,11 @@ export const appRoutes: AppRoute[] = [
     path: '/museum-tools',
     label: 'Museum Tools',
     element: <MuseumToolsPage />,
+  },
+  {
+    path: '/ingredient-demand',
+    label: 'Ingredient Lookup',
+    element: <IngredientDemandPage />,
   },
   {
     path: '/sorted',
