@@ -16,6 +16,7 @@ This document summarizes the current runtime architecture of the local-first Far
 - Missing reference-data matches are non-fatal
 - `data/` contains canonical reference data
 - Planning files are project workflow artifacts, not runtime data
+- Narrow exception: `planning/backlog.csv` may be consumed locally for an internal read-only backlog visualization feature only
 
 ## High-Level System Shape
 
@@ -41,6 +42,20 @@ This document summarizes the current runtime architecture of the local-first Far
 - User mastery state comes from the latest locally saved snapshot
 - Derived views are computed at runtime from snapshots plus reference data
 - Planning files under `planning/` are not consumed by the app at runtime
+- Exception: `planning/backlog.csv` may be read by a feature-scoped internal backlog/project-planning view, but that metadata remains non-authoritative presentation/support data rather than gameplay, player-state, or canonical reference truth
+
+## Planning Data Boundary
+
+- Default rule: planning files remain workflow artifacts, not normal runtime inputs
+- Narrow exception: `planning/backlog.csv` may be consumed at runtime only for an internal local-only backlog/project-planning visualization feature
+- Guardrails:
+  - backlog-derived runtime use is opt-in and feature-scoped, not a general rule for all planning files
+  - backlog metadata must not become a dependency for gameplay logic, mastery calculations, import behavior, or canonical reference-data flows
+  - backlog display metadata is presentation/support data, not player-state or game-reference truth
+  - display-oriented backlog fields such as `friendly_title`, `friendly_summary`, and `friendly_description` are optional and should safely fall back to the existing workflow fields when blank
+  - malformed or unavailable backlog metadata should degrade safely and must not break the rest of the app
+  - this exception does not introduce app-side editing of backlog data
+  - this exception does not change the local-first, single-profile, or no-backend constraints
 
 ## Identity Model
 

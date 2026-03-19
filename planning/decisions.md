@@ -131,3 +131,20 @@ FarmRPG uses inconsistent mastery terminology, which can be ambiguous in plannin
 
 Implications:
 Use labels such as `Mastered (>= 10,000)`, `Grand Mastered (>= 100,000)`, and `Mega Mastered (>= 1,000,000)` for achieved status. Use phrasing like `Next target: 100,000 (Grand Mastery)` when describing in-progress thresholds.
+
+## `planning/backlog.csv` may be consumed at runtime only for an internal backlog visualization feature
+
+Status: Accepted
+
+Decision:
+Planning files remain workflow artifacts by default, but `planning/backlog.csv` may be consumed at runtime for a narrow internal local-only backlog/project-planning visualization feature.
+
+Rationale:
+An internal backlog graph or backlog-planning view can be useful inside the app, but that use should not silently turn planning files into general runtime data or weaken the current source-of-truth boundaries around gameplay and canonical reference inputs.
+
+Implications:
+- The exception is feature-scoped and opt-in rather than a new general rule for planning files.
+- Backlog-derived runtime data is non-authoritative presentation/support data, not player-state or gameplay/reference truth.
+- Backlog metadata must not become a dependency for gameplay logic, mastery calculations, import behavior, or canonical `data/` flows.
+- Malformed backlog metadata should degrade safely and should not break the rest of the app.
+- This does not introduce app-side editing of backlog files or change the local-first, single-profile, and no-backend constraints.
