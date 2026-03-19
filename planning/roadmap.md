@@ -45,6 +45,7 @@ This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/l
   - Tower data validation
 - Expand local planning views
   - Tower progress planning page with unique-item GM/MM counts, difficulty summaries, and progress bars
+  - Tower progress difficulty drilldown accordion for row-level inspection inside difficulty buckets
   - Snapshot comparison view with two-snapshot summary deltas and changed-item inspection
 
 ## Later

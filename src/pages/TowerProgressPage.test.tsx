@@ -184,19 +184,22 @@ describe('TowerProgressPage', () => {
     expect(screen.getByText('Items left to Mega Mastery')).toBeInTheDocument();
     expect(screen.getByText('Total mastery remaining')).toBeInTheDocument();
     const difficultySection = screen.getByRole('heading', { name: 'Difficulty Breakdown' }).closest('section');
-    const difficultyNineRow = within(difficultySection as HTMLElement).getAllByText('Difficulty 9')[0].closest('tr');
-    const unratedRow = within(difficultySection as HTMLElement).getAllByText('Unrated')[0].closest('tr');
+    const difficultyNineBucket = within(difficultySection as HTMLElement).getByRole('heading', { name: 'Difficulty 9' }).closest('details');
+    const unratedBucket = within(difficultySection as HTMLElement).getByRole('heading', { name: 'Unrated' }).closest('details');
 
-    expect(difficultyNineRow).not.toBeNull();
-    expect(unratedRow).not.toBeNull();
-    expect(within(difficultyNineRow as HTMLElement).getByText('1 / 1 items remaining')).toBeInTheDocument();
-    expect(within(difficultyNineRow as HTMLElement).getByText('50k / 100k mastery remaining')).toBeInTheDocument();
-    expect(within(difficultyNineRow as HTMLElement).getByText('0.0% of items complete')).toBeInTheDocument();
-    expect(within(difficultyNineRow as HTMLElement).getByText('50.0% complete toward target mastery')).toBeInTheDocument();
-    expect(within(unratedRow as HTMLElement).getByText('5k / 10k mastery remaining')).toBeInTheDocument();
-    expect(screen.getByText('BL-034 remains the follow-up for accordion-style drilldown inside each difficulty bucket.')).toBeInTheDocument();
+    expect(difficultyNineBucket).not.toBeNull();
+    expect(unratedBucket).not.toBeNull();
+    expect(within(difficultyNineBucket as HTMLElement).getByText('1 / 1 items remaining')).toBeInTheDocument();
+    expect(within(difficultyNineBucket as HTMLElement).getByText('50k / 100k mastery remaining')).toBeInTheDocument();
+    expect(within(difficultyNineBucket as HTMLElement).getByText('0.0% of items complete')).toBeInTheDocument();
+    expect(within(difficultyNineBucket as HTMLElement).getByText('50.0% complete toward target mastery')).toBeInTheDocument();
+    expect(within(unratedBucket as HTMLElement).getByText('5k / 10k mastery remaining')).toBeInTheDocument();
+    expect(within(difficultyNineBucket as HTMLElement).getByText('Gold Cucumber')).toBeInTheDocument();
+    expect(within(difficultyNineBucket as HTMLElement).getByText('Range 301-320 | Slot 1')).toBeInTheDocument();
+    expect(within(difficultyNineBucket as HTMLElement).getByText('GM')).toBeInTheDocument();
 
-    const boardItem = screen.getByText('Board').closest('li');
+    const remainingItemsSection = screen.getByRole('heading', { name: 'Remaining Tower Items' }).closest('section');
+    const boardItem = within(remainingItemsSection as HTMLElement).getByText('Board').closest('li');
     expect(boardItem).not.toBeNull();
     expect(within(boardItem as HTMLElement).getByText('150,000 / 1,000,000')).toBeInTheDocument();
     expect(within(boardItem as HTMLElement).getByText('Target: Mega Mastery (1,000,000)')).toBeInTheDocument();
@@ -303,8 +306,113 @@ describe('TowerProgressPage', () => {
     expect(screen.getByText(/Unmatched tower items in the latest snapshot: 1/)).toBeInTheDocument();
     expect(screen.getByText(/Unrated tower items in mastery difficulty data: 1/)).toBeInTheDocument();
     expect(screen.getByText(/These mismatches stay visible and non-fatal/)).toBeInTheDocument();
-    expect(screen.getByText('Gold Flier')).toBeInTheDocument();
-    expect(screen.getByText('Missing from mastery difficulty data; shown as Unrated.')).toBeInTheDocument();
-    expect(screen.getByText('Unmatched in latest snapshot; treated as 0 mastery.')).toBeInTheDocument();
+    const remainingItemsSection = screen.getByRole('heading', { name: 'Remaining Tower Items' }).closest('section');
+    expect(within(remainingItemsSection as HTMLElement).getByText('Gold Flier')).toBeInTheDocument();
+    expect(within(remainingItemsSection as HTMLElement).getByText('Missing from mastery difficulty data; shown as Unrated.')).toBeInTheDocument();
+    expect(within(remainingItemsSection as HTMLElement).getByText('Unmatched in latest snapshot; treated as 0 mastery.')).toBeInTheDocument();
+  });
+
+  it('keeps repeated tower requirement rows independent inside the difficulty drilldown', async () => {
+    getLatestSnapshotMock.mockResolvedValue({
+      snapshotId: 'snapshot-3',
+      createdAt: '2026-03-16T00:00:00.000Z',
+      rawText: '',
+      masteryByItem: {
+        board: 150_000,
+      },
+      parseSummary: {
+        itemsParsed: 1,
+        parsedRowsCount: 0,
+        tiersDetected: [100_000],
+        duplicateRowsCount: 0,
+        skippedNonItemLinesCount: 0,
+        skippedNonItemLineSamples: [],
+        unknownItemsCount: 0,
+        warnings: [],
+      },
+      parsedRows: [],
+    });
+
+    loadTowerRequirementsMock.mockResolvedValue({
+      entries: [
+        {
+          towerLevel: 205,
+          towerLevelRange: '201-220',
+          slotIndex: 1,
+          itemName: 'Board',
+          canonicalKey: 'board',
+          masteryLevelNeeded: 'MM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: null,
+          sourceSheet: null,
+          sourceRow: null,
+        },
+        {
+          towerLevel: 312,
+          towerLevelRange: '301-320',
+          slotIndex: 2,
+          itemName: 'Board',
+          canonicalKey: 'board',
+          masteryLevelNeeded: 'MM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: 'Repeat row',
+          sourceSheet: null,
+          sourceRow: null,
+        },
+      ],
+      byCanonicalKey: {
+        board: [],
+      },
+    });
+
+    loadMasteryDifficultyMock.mockResolvedValue({
+      entries: [
+        {
+          itemName: 'Board',
+          canonicalKey: 'board',
+          difficulty: 1,
+          method: 'Crafting',
+          notes: null,
+          tags: null,
+          passiveCraftworksInfo: null,
+          farmrpgItemId: null,
+          buddyItemId: null,
+          buddySlug: null,
+          sourceSheet: null,
+          sourceRow: null,
+        },
+      ],
+      byCanonicalKey: {
+        board: {
+          itemName: 'Board',
+          canonicalKey: 'board',
+          difficulty: 1,
+          method: 'Crafting',
+          notes: null,
+          tags: null,
+          passiveCraftworksInfo: null,
+          farmrpgItemId: null,
+          buddyItemId: null,
+          buddySlug: null,
+          sourceSheet: null,
+          sourceRow: null,
+        },
+      },
+    });
+
+    render(<TowerProgressPage />);
+
+    const difficultySection = await screen.findByRole('heading', { name: 'Difficulty Breakdown' });
+    const difficultyOneBucket = within(difficultySection.closest('section') as HTMLElement)
+      .getByRole('heading', { name: 'Difficulty 1' })
+      .closest('details');
+
+    expect(difficultyOneBucket).not.toBeNull();
+    expect(within(difficultyOneBucket as HTMLElement).getAllByText('Board')).toHaveLength(2);
+    expect(within(difficultyOneBucket as HTMLElement).getByText('Range 201-220 | Slot 1')).toBeInTheDocument();
+    expect(within(difficultyOneBucket as HTMLElement).getByText('Range 301-320 | Slot 2')).toBeInTheDocument();
+    expect(within(difficultyOneBucket as HTMLElement).getByText('Notes: Repeat row')).toBeInTheDocument();
   });
 });

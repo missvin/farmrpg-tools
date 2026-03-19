@@ -177,6 +177,11 @@ export function TowerProgressPage() {
 
       {!progressState.isLoading && progressState.snapshot && progressState.derivedProgress ? (
         <>
+          {(() => {
+            const derivedProgress = progressState.derivedProgress;
+
+            return (
+              <>
           <section className="page-card page-stack" aria-labelledby="tower-progress-summary-title">
             <div>
               <h2 id="tower-progress-summary-title">Planning Summary</h2>
@@ -228,28 +233,27 @@ export function TowerProgressPage() {
               </p>
             </div>
 
-            <div className="table-scroll">
-              <table className="summary-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Difficulty</th>
-                    <th scope="col">Items remaining</th>
-                    <th scope="col">Mastery remaining</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {progressState.derivedProgress.difficultySummary.map((row) => (
-                    <tr key={row.label}>
-                      <td>{row.label}</td>
-                      <td>
-                        <strong>
-                          {row.remainingItems.toLocaleString()} / {row.totalItems.toLocaleString()} items remaining
-                        </strong>
+            <div className="page-stack">
+              {derivedProgress.difficultySummary.map((row) => {
+                const drilldownGroup = derivedProgress.difficultyDrilldown.find(
+                  (group) => group.label === row.label,
+                );
+                const hasDrilldownRows = (drilldownGroup?.rows.length ?? 0) > 0;
+
+                return (
+                  <details
+                    key={row.label}
+                    className="tower-range-card"
+                    open={row.remainingItems > 0 && row.remainingItems <= 2}
+                  >
+                    <summary className="tower-range-summary">
+                      <div className="tower-range-summary__text">
+                        <h3 className="section-title">{row.label}</h3>
                         <p className="subtle-text">
-                          {formatPercent(toCompletePercent(row.totalItems, row.remainingItems))} of items complete
+                          {row.remainingItems.toLocaleString()} / {row.totalItems.toLocaleString()} items remaining
                         </p>
-                      </td>
-                      <td>
+                      </div>
+                      <div className="tower-range-summary__text">
                         <strong>
                           {formatCompactMastery(row.remainingMastery)} /{' '}
                           {formatCompactMastery(row.remainingTargetMastery)} mastery remaining
@@ -258,16 +262,64 @@ export function TowerProgressPage() {
                           {formatPercent(toCompletePercent(row.totalTargetMastery, row.remainingMastery))} complete
                           toward target mastery
                         </p>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      </div>
+                    </summary>
 
-            <p className="subtle-text">
-              BL-034 remains the follow-up for accordion-style drilldown inside each difficulty bucket.
-            </p>
+                    <p className="subtle-text">
+                      {formatPercent(toCompletePercent(row.totalItems, row.remainingItems))} of items complete
+                    </p>
+
+                    {hasDrilldownRows ? (
+                      <div className="table-scroll">
+                        <table className="summary-table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Level</th>
+                              <th scope="col">Item</th>
+                              <th scope="col">Requirement</th>
+                              <th scope="col">% complete</th>
+                              <th scope="col">Current mastery</th>
+                              <th scope="col">Remaining</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {drilldownGroup?.rows.map((detailRow) => (
+                              <tr
+                                key={`${detailRow.towerLevel}-${detailRow.slotIndex}-${detailRow.canonicalKey}-${detailRow.requiredThreshold}`}
+                              >
+                                <td>{detailRow.towerLevel}</td>
+                                <td>
+                                  <strong>{detailRow.itemName}</strong>
+                                  <p className="subtle-text">
+                                    Range {detailRow.towerLevelRange} | Slot {detailRow.slotIndex}
+                                  </p>
+                                  {!detailRow.matchedSnapshotRow ? (
+                                    <p className="subtle-text">Unmatched in latest snapshot; treated as 0 mastery.</p>
+                                  ) : null}
+                                  {!detailRow.matchedDifficultyRow ? (
+                                    <p className="subtle-text">Missing from mastery difficulty data; shown as Unrated.</p>
+                                  ) : null}
+                                  {detailRow.method ? <p className="subtle-text">Method: {detailRow.method}</p> : null}
+                                  {detailRow.notes ? <p className="subtle-text">Notes: {detailRow.notes}</p> : null}
+                                </td>
+                                <td>{detailRow.masteryLevelLabel}</td>
+                                <td>{formatPercent(detailRow.progressPercent)}</td>
+                                <td>{detailRow.currentMastery.toLocaleString()}</td>
+                                <td>{detailRow.remainingToRequirement.toLocaleString()}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <p className="empty-state">
+                        No outstanding tower rows remain in this difficulty bucket.
+                      </p>
+                    )}
+                  </details>
+                );
+              })}
+            </div>
           </section>
 
           <section className="page-card page-stack" aria-labelledby="tower-progress-items-title">
@@ -320,6 +372,9 @@ export function TowerProgressPage() {
               </ul>
             )}
           </section>
+              </>
+            );
+          })()}
         </>
       ) : null}
     </div>

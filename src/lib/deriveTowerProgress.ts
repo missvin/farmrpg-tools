@@ -33,10 +33,36 @@ export type TowerProgressDifficultySummaryRow = {
   remainingMasteryPercent: number;
 };
 
+export type TowerProgressDifficultyDrilldownRow = {
+  towerLevel: number;
+  towerLevelRange: string;
+  slotIndex: number;
+  itemName: string;
+  canonicalKey: string;
+  currentMastery: number;
+  requiredThreshold: number;
+  remainingToRequirement: number;
+  progressPercent: number;
+  masteryLevelLabel: 'M' | 'GM' | 'MM';
+  difficulty: DifficultyBucket;
+  difficultyLabel: string;
+  matchedSnapshotRow: boolean;
+  matchedDifficultyRow: boolean;
+  method: string | null;
+  notes: string | null;
+};
+
+export type TowerProgressDifficultyDrilldownGroup = {
+  difficulty: DifficultyBucket;
+  label: string;
+  rows: TowerProgressDifficultyDrilldownRow[];
+};
+
 export type DerivedTowerProgress = {
   items: TowerProgressItem[];
   remainingItems: TowerProgressItem[];
   difficultySummary: TowerProgressDifficultySummaryRow[];
+  difficultyDrilldown: TowerProgressDifficultyDrilldownGroup[];
   gmItemsLeftCount: number;
   mmItemsLeftCount: number;
   totalMasteryRemaining: number;
@@ -58,6 +84,12 @@ type DifficultySummaryAccumulator = {
   totalTargetMastery: number;
   remainingTargetMastery: number;
   remainingMastery: number;
+};
+
+type DifficultyDrilldownAccumulator = {
+  difficulty: DifficultyBucket;
+  label: string;
+  rows: TowerProgressDifficultyDrilldownRow[];
 };
 
 function getMasteryLevelLabel(requiredThreshold: number): 'M' | 'GM' | 'MM' {
@@ -150,6 +182,7 @@ export function deriveTowerProgress(
 ): DerivedTowerProgress {
   const aggregatedItems = buildAggregatedTowerItems(towerRequirementsData);
   const difficultySummaryByLabel = new Map<string, DifficultySummaryAccumulator>();
+  const difficultyDrilldownByLabel = new Map<string, DifficultyDrilldownAccumulator>();
   const items: TowerProgressItem[] = [];
   let gmItemsLeftCount = 0;
   let mmItemsLeftCount = 0;
@@ -224,6 +257,46 @@ export function deriveTowerProgress(
     difficultySummaryByLabel.set(difficultyLabel, bucket);
   }
 
+  for (const entry of towerRequirementsData.entries) {
+    const matchedDifficultyEntry: MasteryDifficultyEntry | undefined = masteryDifficultyData.byCanonicalKey[entry.canonicalKey];
+    const currentMastery = snapshot.masteryByItem[entry.canonicalKey] ?? 0;
+    const requiredThreshold = getTowerRequirementThreshold(entry.masteryLevelNeeded);
+    const remainingToRequirement = currentMastery >= requiredThreshold ? 0 : requiredThreshold - currentMastery;
+
+    if (remainingToRequirement <= 0) {
+      continue;
+    }
+
+    const difficulty = matchedDifficultyEntry?.difficulty ?? null;
+    const difficultyLabel = getDifficultyLabel(difficulty);
+    const bucket = difficultyDrilldownByLabel.get(difficultyLabel) ?? {
+      difficulty,
+      label: difficultyLabel,
+      rows: [],
+    };
+
+    bucket.rows.push({
+      towerLevel: entry.towerLevel,
+      towerLevelRange: entry.towerLevelRange,
+      slotIndex: entry.slotIndex,
+      itemName: entry.itemName,
+      canonicalKey: entry.canonicalKey,
+      currentMastery,
+      requiredThreshold,
+      remainingToRequirement,
+      progressPercent: toProgressPercent(currentMastery, requiredThreshold),
+      masteryLevelLabel: getMasteryLevelLabel(requiredThreshold),
+      difficulty,
+      difficultyLabel,
+      matchedSnapshotRow: entry.canonicalKey in snapshot.masteryByItem,
+      matchedDifficultyRow: Boolean(matchedDifficultyEntry),
+      method: matchedDifficultyEntry?.method ?? null,
+      notes: entry.notes ?? matchedDifficultyEntry?.notes ?? null,
+    });
+
+    difficultyDrilldownByLabel.set(difficultyLabel, bucket);
+  }
+
   return {
     items: [...items].sort(compareAllItems),
     remainingItems: items.filter((item) => item.remainingToTarget > 0).sort(compareItems),
@@ -239,6 +312,23 @@ export function deriveTowerProgress(
         remainingTargetMastery: bucket.remainingTargetMastery,
         remainingMastery: bucket.remainingMastery,
         remainingMasteryPercent: toPercent(bucket.remainingMastery, bucket.remainingTargetMastery),
+      })),
+    difficultyDrilldown: [...difficultyDrilldownByLabel.values()]
+      .sort((left, right) => compareDifficulty(left.difficulty, right.difficulty))
+      .map((bucket) => ({
+        difficulty: bucket.difficulty,
+        label: bucket.label,
+        rows: [...bucket.rows].sort((left, right) => {
+          if (left.towerLevel !== right.towerLevel) {
+            return left.towerLevel - right.towerLevel;
+          }
+
+          if (left.remainingToRequirement !== right.remainingToRequirement) {
+            return left.remainingToRequirement - right.remainingToRequirement;
+          }
+
+          return left.slotIndex - right.slotIndex;
+        }),
       })),
     gmItemsLeftCount,
     mmItemsLeftCount,
