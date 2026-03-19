@@ -21,6 +21,23 @@ type RelatedNodeEntry = {
   relationshipLabel: string;
 };
 
+function normalizeStatusValue(status: string): string {
+  return status.trim().toLowerCase();
+}
+
+function getBacklogNodeStatusClassName(status: string): string {
+  switch (normalizeStatusValue(status)) {
+    case 'shipped':
+      return 'backlog-node-card--status-shipped';
+    case 'in_progress':
+      return 'backlog-node-card--status-in-progress';
+    case 'inbox':
+      return 'backlog-node-card--status-inbox';
+    default:
+      return 'backlog-node-card--status-unknown';
+  }
+}
+
 function compareNodes(left: BacklogGraphNode, right: BacklogGraphNode): number {
   return left.displayTitle.localeCompare(right.displayTitle);
 }
@@ -240,10 +257,16 @@ function RelatedNodeButton({
   isSelected: boolean;
   onSelect: (nodeId: string) => void;
 }) {
+  const statusClassName = getBacklogNodeStatusClassName(node.status);
+
   return (
     <button
       type="button"
-      className={isSelected ? 'backlog-node-card backlog-node-card--selected' : 'backlog-node-card'}
+      className={
+        isSelected
+          ? `backlog-node-card ${statusClassName} backlog-node-card--selected`
+          : `backlog-node-card ${statusClassName}`
+      }
       onClick={() => onSelect(node.id)}
     >
       <span className="backlog-node-card__relationship">{relationshipLabel}</span>
@@ -387,6 +410,8 @@ export function BacklogGraphPage() {
     setAreaFilter('');
     setStatusFilter('');
   }
+
+  const selectedNodeStatusClassName = selectedNode ? getBacklogNodeStatusClassName(selectedNode.status) : '';
 
   return (
     <div className="page-stack">
@@ -570,7 +595,7 @@ export function BacklogGraphPage() {
                 <h3 id="backlog-graph-selected-title" className="section-title">
                   Selected
                 </h3>
-                <article className="backlog-node-card backlog-node-card--selected">
+                <article className={`backlog-node-card ${selectedNodeStatusClassName} backlog-node-card--selected`}>
                   <strong>{selectedNode.displayTitle}</strong>
                   <div className="backlog-node-card__meta">
                     <MetaPill label={selectedNode.id} />
