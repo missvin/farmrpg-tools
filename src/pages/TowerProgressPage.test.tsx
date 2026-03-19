@@ -413,6 +413,5 @@ describe('TowerProgressPage', () => {
     expect(within(difficultyOneBucket as HTMLElement).getAllByText('Board')).toHaveLength(2);
     expect(within(difficultyOneBucket as HTMLElement).getByText('Range 201-220 | Slot 1')).toBeInTheDocument();
     expect(within(difficultyOneBucket as HTMLElement).getByText('Range 301-320 | Slot 2')).toBeInTheDocument();
-    expect(within(difficultyOneBucket as HTMLElement).getByText('Notes: Repeat row')).toBeInTheDocument();
   });
 });

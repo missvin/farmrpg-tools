@@ -300,7 +300,6 @@ export function TowerProgressPage() {
                                     <p className="subtle-text">Missing from mastery difficulty data; shown as Unrated.</p>
                                   ) : null}
                                   {detailRow.method ? <p className="subtle-text">Method: {detailRow.method}</p> : null}
-                                  {detailRow.notes ? <p className="subtle-text">Notes: {detailRow.notes}</p> : null}
                                 </td>
                                 <td>{detailRow.masteryLevelLabel}</td>
                                 <td>{formatPercent(detailRow.progressPercent)}</td>
