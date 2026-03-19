@@ -414,6 +414,12 @@ a {
   gap: 0.75rem;
 }
 
+.backlog-graph-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+}
+
 .backlog-graph-column {
   display: grid;
   gap: 0.5rem;

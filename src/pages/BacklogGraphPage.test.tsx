@@ -104,13 +104,105 @@ const GRAPH_FIXTURE = {
         releaseNotes: 'Added a local backlog graph loader.',
       },
     },
+    {
+      id: 'BL-056',
+      parentId: 'BL-055',
+      title: 'Internal backlog dependency graph page',
+      displayTitle: 'Backlog Graph Page',
+      displaySummary: 'Show a read-only graph view with selected-item detail.',
+      displayDescription: 'Add a readable internal backlog graph page.',
+      type: 'feature',
+      status: 'shipped',
+      priority: 'medium',
+      effort: 'm',
+      area: 'planning',
+      targetVersion: 'future',
+      source: 'chat',
+      detail: {
+        title: 'Internal backlog dependency graph page',
+        friendlyTitle: 'Backlog Graph Page',
+        friendlySummary: 'Show a read-only graph view with selected-item detail.',
+        friendlyDescription: 'Add a readable internal backlog graph page.',
+        userValue: 'Make backlog dependency structure easier to inspect.',
+        proposedSolution: 'Add a first graph page.',
+        scopeV1: 'Read-only graph page',
+        dependenciesText: 'BL-055',
+        targetVersion: 'future',
+        source: 'chat',
+        notes: 'Keep the first graph page modest and readable.',
+        releaseNotes: 'Added a read-only internal backlog graph page.',
+      },
+    },
+    {
+      id: 'BL-999',
+      parentId: null,
+      title: 'External workflow note',
+      displayTitle: 'External Workflow Note',
+      displaySummary: 'Non-planning row used to verify filters.',
+      displayDescription: 'A non-planning row for test coverage.',
+      type: 'tooling',
+      status: 'inbox',
+      priority: 'low',
+      effort: 's',
+      area: 'reference_data',
+      targetVersion: 'future',
+      source: 'chat',
+      detail: {
+        title: 'External workflow note',
+        friendlyTitle: 'External Workflow Note',
+        friendlySummary: 'Non-planning row used to verify filters.',
+        friendlyDescription: 'A non-planning row for test coverage.',
+        userValue: 'Verify graph filters.',
+        proposedSolution: 'Add a distinct area/status row to the fixture.',
+        scopeV1: 'Test fixture only',
+        dependenciesText: '',
+        targetVersion: 'future',
+        source: 'chat',
+        notes: 'Used only in tests.',
+        releaseNotes: '',
+      },
+    },
+    {
+      id: 'BL-057',
+      parentId: 'BL-056',
+      title: 'Backlog graph focus and filter controls',
+      displayTitle: 'Graph Focus Controls',
+      displaySummary: 'Add small focus controls to keep the graph readable.',
+      displayDescription: 'Add lightweight filters and focus controls for the graph page.',
+      type: 'ux',
+      status: 'inbox',
+      priority: 'low',
+      effort: 's',
+      area: 'planning',
+      targetVersion: 'future',
+      source: 'chat',
+      detail: {
+        title: 'Backlog graph focus and filter controls',
+        friendlyTitle: 'Graph Focus Controls',
+        friendlySummary: 'Add small focus controls to keep the graph readable.',
+        friendlyDescription: 'Add lightweight filters and focus controls for the graph page.',
+        userValue: 'Make the graph more readable as the backlog grows.',
+        proposedSolution: 'Add small focus and filter controls.',
+        scopeV1: 'Lightweight focus/filter UI only',
+        dependenciesText: 'BL-056',
+        targetVersion: 'future',
+        source: 'chat',
+        notes: 'Keep this modest and local-only.',
+        releaseNotes: '',
+      },
+    },
   ],
   edges: [
     { from: 'BL-053', to: 'BL-054', relationship: 'parent_child' as const },
     { from: 'BL-053', to: 'BL-055', relationship: 'parent_child' as const },
+    { from: 'BL-055', to: 'BL-056', relationship: 'parent_child' as const },
+    { from: 'BL-056', to: 'BL-057', relationship: 'parent_child' as const },
     { from: 'BL-053', to: 'BL-054', relationship: 'dependency' as const },
     { from: 'BL-053', to: 'BL-055', relationship: 'dependency' as const },
     { from: 'BL-054', to: 'BL-055', relationship: 'dependency' as const },
+    { from: 'BL-055', to: 'BL-056', relationship: 'dependency' as const },
+    { from: 'BL-056', to: 'BL-057', relationship: 'dependency' as const },
+    { from: 'BL-999', to: 'BL-053', relationship: 'dependency' as const },
   ],
   byId: {} as Record<string, (typeof GRAPH_FIXTURE.nodes)[number]>,
   warnings: [],
@@ -135,8 +227,9 @@ describe('BacklogGraphPage', () => {
       screen.getAllByText('Allow a small internal backlog view to read backlog metadata locally.'),
     ).toHaveLength(2);
     expect(screen.getByText('Document the narrow exception for internal backlog visualization.')).toBeInTheDocument();
-    expect(screen.getAllByText('Friendly Backlog Labels').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Backlog Graph Loader').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Friendly Backlog Labels')).toHaveLength(1);
+    expect(screen.getAllByText('Backlog Graph Loader')).toHaveLength(1);
+    expect(screen.getAllByText('Child + Dependent')).toHaveLength(2);
     expect(screen.getByText('Runtime backlog metadata boundary exception')).toBeInTheDocument();
     expect(screen.getByText('Document a narrow runtime exception.')).toBeInTheDocument();
   });
@@ -158,6 +251,42 @@ describe('BacklogGraphPage', () => {
     const selectedSection = screen.getByRole('heading', { name: 'Selected' }).closest('section') as HTMLElement;
     expect(within(selectedSection).getByText('Backlog Graph Loader')).toBeInTheDocument();
     expect(screen.getByText('Parse backlog rows into nodes, edges, and warnings.')).toBeInTheDocument();
+  });
+
+  it('supports expanded focus mode for recursive ancestry and descendants', async () => {
+    const user = userEvent.setup();
+    loadBacklogGraphMock.mockResolvedValue(GRAPH_FIXTURE);
+
+    render(<BacklogGraphPage />);
+
+    await screen.findByRole('heading', { name: 'Dependency Neighborhood' });
+    await user.selectOptions(screen.getByLabelText('Backlog item'), 'BL-055');
+    await user.selectOptions(screen.getByLabelText('Focus mode'), 'expanded');
+
+    expect(screen.getByText('Expanded ancestry + descendants')).toBeInTheDocument();
+    expect(screen.getAllByText('Ancestor')).toHaveLength(1);
+    expect(screen.getAllByText('Descendant')).toHaveLength(1);
+    expect(screen.getByText('Backlog Graph Page')).toBeInTheDocument();
+    expect(screen.getByText('External Workflow Note')).toBeInTheDocument();
+  });
+
+  it('filters the graph by area and resets back to the full view', async () => {
+    const user = userEvent.setup();
+    loadBacklogGraphMock.mockResolvedValue(GRAPH_FIXTURE);
+
+    render(<BacklogGraphPage />);
+
+    await screen.findByRole('heading', { name: 'Dependency Neighborhood' });
+    await user.selectOptions(screen.getByLabelText('Area filter'), 'reference_data');
+
+    expect(screen.getByText('Showing 1 backlog item in immediate neighborhood mode.')).toBeInTheDocument();
+    expect(screen.getByLabelText('Backlog item')).toHaveValue('BL-999');
+    expect(screen.getByText('No immediate downstream relationships.')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Reset graph view' }));
+
+    expect(screen.getByText('Showing 6 backlog items in immediate neighborhood mode.')).toBeInTheDocument();
+    expect(screen.getByLabelText('Area filter')).toHaveValue('');
   });
 
   it('shows backlog warnings without failing the page', async () => {

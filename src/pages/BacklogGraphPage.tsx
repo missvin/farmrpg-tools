@@ -4,22 +4,74 @@ import { PageIntro } from '../components/PageIntro';
 import {
   loadBacklogGraph,
   type BacklogGraphData,
+  type BacklogGraphEdge,
   type BacklogGraphNode,
   type BacklogGraphWarning,
 } from '../lib/loadBacklogGraph';
 
+type FocusMode = 'neighborhood' | 'expanded';
+
 type RelationshipGroups = {
-  parent: BacklogGraphNode | null;
-  dependencies: BacklogGraphNode[];
-  children: BacklogGraphNode[];
-  dependents: BacklogGraphNode[];
+  upstream: RelatedNodeEntry[];
+  downstream: RelatedNodeEntry[];
+};
+
+type RelatedNodeEntry = {
+  node: BacklogGraphNode;
+  relationshipLabel: string;
 };
 
 function compareNodes(left: BacklogGraphNode, right: BacklogGraphNode): number {
   return left.displayTitle.localeCompare(right.displayTitle);
 }
 
-function buildRelationshipGroups(graph: BacklogGraphData, selectedNodeId: string): RelationshipGroups {
+function mergeRelatedNodes(
+  relatedNodes: Array<{ node: BacklogGraphNode; relationshipLabel: string }>,
+): RelatedNodeEntry[] {
+  const byNodeId = new Map<string, RelatedNodeEntry>();
+
+  for (const { node, relationshipLabel } of relatedNodes) {
+    const existingEntry = byNodeId.get(node.id);
+
+    if (!existingEntry) {
+      byNodeId.set(node.id, {
+        node,
+        relationshipLabel,
+      });
+      continue;
+    }
+
+    const existingLabels = existingEntry.relationshipLabel.split(' + ');
+
+    if (!existingLabels.includes(relationshipLabel)) {
+      existingEntry.relationshipLabel = `${existingEntry.relationshipLabel} + ${relationshipLabel}`;
+    }
+  }
+
+  return Array.from(byNodeId.values()).sort((left, right) => compareNodes(left.node, right.node));
+}
+
+function matchesFilters(
+  node: BacklogGraphNode,
+  filters: {
+    area: string;
+    status: string;
+  },
+): boolean {
+  return (!filters.area || node.area === filters.area) && (!filters.status || node.status === filters.status);
+}
+
+function collectFilterOptions(nodes: BacklogGraphNode[], field: 'area' | 'status'): string[] {
+  return Array.from(
+    new Set(
+      nodes
+        .map((node) => node[field].trim())
+        .filter(Boolean),
+    ),
+  ).sort((left, right) => left.localeCompare(right));
+}
+
+function buildImmediateRelationshipGroups(graph: BacklogGraphData, selectedNodeId: string): RelationshipGroups {
   const parentEdge = graph.edges.find(
     (edge) => edge.relationship === 'parent_child' && edge.to === selectedNodeId,
   );
@@ -43,10 +95,125 @@ function buildRelationshipGroups(graph: BacklogGraphData, selectedNodeId: string
     .sort(compareNodes);
 
   return {
-    parent: parentEdge ? graph.byId[parentEdge.from] ?? null : null,
-    dependencies: dependencyNodes,
-    children: childNodes,
-    dependents: dependentNodes,
+    upstream: mergeRelatedNodes([
+      ...(parentEdge && graph.byId[parentEdge.from]
+        ? [{ node: graph.byId[parentEdge.from], relationshipLabel: 'Parent' }]
+        : []),
+      ...dependencyNodes.map((node) => ({
+        node,
+        relationshipLabel: 'Dependency',
+      })),
+    ]),
+    downstream: mergeRelatedNodes([
+      ...childNodes.map((node) => ({
+        node,
+        relationshipLabel: 'Child',
+      })),
+      ...dependentNodes.map((node) => ({
+        node,
+        relationshipLabel: 'Dependent',
+      })),
+    ]),
+  };
+}
+
+function collectExpandedRelatedNodes(
+  graph: BacklogGraphData,
+  selectedNodeId: string,
+  direction: 'upstream' | 'downstream',
+): RelatedNodeEntry[] {
+  const queue: Array<{ nodeId: string; relationshipLabel: string }> = [];
+  const exploredNodeIds = new Set<string>();
+  const relatedNodes: Array<{ node: BacklogGraphNode; relationshipLabel: string }> = [];
+
+  function addDirectEdge(edge: BacklogGraphEdge): void {
+    if (direction === 'upstream' && edge.to === selectedNodeId) {
+      queue.push({
+        nodeId: edge.from,
+        relationshipLabel: edge.relationship === 'parent_child' ? 'Parent' : 'Dependency',
+      });
+    }
+
+    if (direction === 'downstream' && edge.from === selectedNodeId) {
+      queue.push({
+        nodeId: edge.to,
+        relationshipLabel: edge.relationship === 'parent_child' ? 'Child' : 'Dependent',
+      });
+    }
+  }
+
+  for (const edge of graph.edges) {
+    addDirectEdge(edge);
+  }
+
+  while (queue.length > 0) {
+    const currentEntry = queue.shift();
+
+    if (!currentEntry) {
+      continue;
+    }
+
+    const currentNode = graph.byId[currentEntry.nodeId];
+
+    if (!currentNode) {
+      continue;
+    }
+
+    relatedNodes.push({
+      node: currentNode,
+      relationshipLabel: currentEntry.relationshipLabel,
+    });
+
+    if (exploredNodeIds.has(currentNode.id)) {
+      continue;
+    }
+
+    exploredNodeIds.add(currentNode.id);
+
+    for (const edge of graph.edges) {
+      if (direction === 'upstream' && edge.to === currentNode.id) {
+        queue.push({
+          nodeId: edge.from,
+          relationshipLabel: 'Ancestor',
+        });
+      }
+
+      if (direction === 'downstream' && edge.from === currentNode.id) {
+        queue.push({
+          nodeId: edge.to,
+          relationshipLabel: 'Descendant',
+        });
+      }
+    }
+  }
+
+  return mergeRelatedNodes(relatedNodes);
+}
+
+function buildExpandedRelationshipGroups(graph: BacklogGraphData, selectedNodeId: string): RelationshipGroups {
+  return {
+    upstream: collectExpandedRelatedNodes(graph, selectedNodeId, 'upstream'),
+    downstream: collectExpandedRelatedNodes(graph, selectedNodeId, 'downstream'),
+  };
+}
+
+function buildRelationshipGroups(
+  graph: BacklogGraphData,
+  selectedNodeId: string,
+  focusMode: FocusMode,
+  filters: {
+    area: string;
+    status: string;
+  },
+): RelationshipGroups {
+  const relationshipGroups =
+    focusMode === 'expanded'
+      ? buildExpandedRelationshipGroups(graph, selectedNodeId)
+      : buildImmediateRelationshipGroups(graph, selectedNodeId);
+
+  return {
+    upstream: relationshipGroups.upstream.filter(({ node }) => matchesFilters(node, filters)),
+    downstream: relationshipGroups.downstream.filter(({ node }) => matchesFilters(node, filters)),
   };
 }
 
@@ -99,6 +266,9 @@ export function BacklogGraphPage() {
     graph: null,
   });
   const [selectedNodeId, setSelectedNodeId] = useState('');
+  const [focusMode, setFocusMode] = useState<FocusMode>('neighborhood');
+  const [areaFilter, setAreaFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   useEffect(() => {
     let isMounted = true;
@@ -134,21 +304,89 @@ export function BacklogGraphPage() {
     };
   }, []);
 
+  const filterOptions = useMemo(() => {
+    if (!graphState.graph) {
+      return {
+        areas: [],
+        statuses: [],
+      };
+    }
+
+    return {
+      areas: collectFilterOptions(graphState.graph.nodes, 'area'),
+      statuses: collectFilterOptions(graphState.graph.nodes, 'status'),
+    };
+  }, [graphState.graph]);
+
+  const filteredNodes = useMemo(() => {
+    if (!graphState.graph) {
+      return [];
+    }
+
+    return graphState.graph.nodes
+      .filter((node) =>
+        matchesFilters(node, {
+          area: areaFilter,
+          status: statusFilter,
+        }),
+      )
+      .sort(compareNodes);
+  }, [areaFilter, graphState.graph, statusFilter]);
+
+  useEffect(() => {
+    if (!graphState.graph) {
+      return;
+    }
+
+    const filteredNodeIds = new Set(filteredNodes.map((node) => node.id));
+
+    if (filteredNodes.length === 0) {
+      if (selectedNodeId) {
+        setSelectedNodeId('');
+      }
+      return;
+    }
+
+    if (!selectedNodeId || !filteredNodeIds.has(selectedNodeId)) {
+      setSelectedNodeId(filteredNodes[0].id);
+    }
+  }, [filteredNodes, graphState.graph, selectedNodeId]);
+
   const selectedNode = useMemo(() => {
     if (!graphState.graph || !selectedNodeId) {
       return null;
     }
 
-    return graphState.graph.byId[selectedNodeId] ?? null;
-  }, [graphState.graph, selectedNodeId]);
+    const node = graphState.graph.byId[selectedNodeId] ?? null;
+
+    if (!node) {
+      return null;
+    }
+
+    return matchesFilters(node, { area: areaFilter, status: statusFilter }) ? node : null;
+  }, [areaFilter, graphState.graph, selectedNodeId, statusFilter]);
 
   const relationshipGroups = useMemo(() => {
     if (!graphState.graph || !selectedNode) {
       return null;
     }
 
-    return buildRelationshipGroups(graphState.graph, selectedNode.id);
-  }, [graphState.graph, selectedNode]);
+    return buildRelationshipGroups(
+      graphState.graph,
+      selectedNode.id,
+      focusMode,
+      {
+        area: areaFilter,
+        status: statusFilter,
+      },
+    );
+  }, [areaFilter, focusMode, graphState.graph, selectedNode, statusFilter]);
+
+  function resetGraphView(): void {
+    setFocusMode('neighborhood');
+    setAreaFilter('');
+    setStatusFilter('');
+  }
 
   return (
     <div className="page-stack">
@@ -161,8 +399,8 @@ export function BacklogGraphPage() {
         <div>
           <h2 id="backlog-graph-controls-title">Select Backlog Item</h2>
           <p className="supporting-text">
-            Choose one item to inspect its immediate dependency neighborhood. This first version stays intentionally
-            readable instead of rendering the whole backlog as a dense hairball.
+            Choose one item to inspect its dependency neighborhood. Lightweight focus and filter controls keep the
+            page readable without turning it into a heavy graph tool.
           </p>
         </div>
 
@@ -176,24 +414,94 @@ export function BacklogGraphPage() {
 
         {graphState.graph && graphState.graph.nodes.length > 0 ? (
           <div className="page-stack page-stack--tight">
-            <label className="field-label" htmlFor="backlog-graph-select">
-              Backlog item
-            </label>
-            <select
-              id="backlog-graph-select"
-              className="text-input"
-              value={selectedNodeId}
-              onChange={(event) => setSelectedNodeId(event.target.value)}
-            >
-              {graphState.graph.nodes
-                .slice()
-                .sort(compareNodes)
-                .map((node) => (
-                  <option key={node.id} value={node.id}>
-                    {node.displayTitle} ({node.id})
-                  </option>
-                ))}
-            </select>
+            <div className="backlog-graph-controls">
+              <div className="page-stack page-stack--tight">
+                <label className="field-label" htmlFor="backlog-graph-select">
+                  Backlog item
+                </label>
+                <select
+                  id="backlog-graph-select"
+                  className="text-input"
+                  value={selectedNodeId}
+                  onChange={(event) => setSelectedNodeId(event.target.value)}
+                  disabled={filteredNodes.length === 0}
+                >
+                  {filteredNodes.map((node) => (
+                    <option key={node.id} value={node.id}>
+                      {node.displayTitle} ({node.id})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="page-stack page-stack--tight">
+                <label className="field-label" htmlFor="backlog-graph-focus-mode">
+                  Focus mode
+                </label>
+                <select
+                  id="backlog-graph-focus-mode"
+                  className="text-input"
+                  value={focusMode}
+                  onChange={(event) => setFocusMode(event.target.value as FocusMode)}
+                >
+                  <option value="neighborhood">Immediate neighborhood</option>
+                  <option value="expanded">Expanded ancestry + descendants</option>
+                </select>
+              </div>
+
+              <div className="page-stack page-stack--tight">
+                <label className="field-label" htmlFor="backlog-graph-area-filter">
+                  Area filter
+                </label>
+                <select
+                  id="backlog-graph-area-filter"
+                  className="text-input"
+                  value={areaFilter}
+                  onChange={(event) => setAreaFilter(event.target.value)}
+                >
+                  <option value="">All areas</option>
+                  {filterOptions.areas.map((area) => (
+                    <option key={area} value={area}>
+                      {area}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="page-stack page-stack--tight">
+                <label className="field-label" htmlFor="backlog-graph-status-filter">
+                  Status filter
+                </label>
+                <select
+                  id="backlog-graph-status-filter"
+                  className="text-input"
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                >
+                  <option value="">All statuses</option>
+                  {filterOptions.statuses.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="button-row">
+              <button type="button" className="button" onClick={resetGraphView}>
+                Reset graph view
+              </button>
+            </div>
+
+            <p className="supporting-text">
+              Showing {filteredNodes.length} backlog item{filteredNodes.length === 1 ? '' : 's'} in{' '}
+              {focusMode === 'expanded' ? 'expanded focus mode' : 'immediate neighborhood mode'}.
+            </p>
+
+            {filteredNodes.length === 0 ? (
+              <p className="empty-state">No backlog items match the current filters.</p>
+            ) : null}
           </div>
         ) : null}
       </section>
@@ -226,8 +534,9 @@ export function BacklogGraphPage() {
             <div>
               <h2 id="backlog-graph-map-title">Dependency Neighborhood</h2>
               <p className="supporting-text">
-                The selected item sits in the middle, with immediate upstream work on the left and downstream work on
-                the right.
+                {focusMode === 'expanded'
+                  ? 'The selected item sits in the middle, with expanded upstream ancestry on the left and downstream descendants on the right.'
+                  : 'The selected item sits in the middle, with immediate upstream work on the left and downstream work on the right.'}
               </p>
             </div>
 
@@ -237,27 +546,22 @@ export function BacklogGraphPage() {
                   Upstream
                 </h3>
                 <div className="backlog-graph-column__stack">
-                  {relationshipGroups.parent ? (
+                  {relationshipGroups.upstream.map(({ node, relationshipLabel }) => (
                     <RelatedNodeButton
-                      node={relationshipGroups.parent}
-                      relationshipLabel="Parent"
-                      isSelected={relationshipGroups.parent.id === selectedNode.id}
-                      onSelect={setSelectedNodeId}
-                    />
-                  ) : null}
-
-                  {relationshipGroups.dependencies.map((node) => (
-                    <RelatedNodeButton
-                      key={`dependency-${node.id}`}
+                      key={`upstream-${node.id}`}
                       node={node}
-                      relationshipLabel="Dependency"
+                      relationshipLabel={relationshipLabel}
                       isSelected={node.id === selectedNode.id}
                       onSelect={setSelectedNodeId}
                     />
                   ))}
 
-                  {!relationshipGroups.parent && relationshipGroups.dependencies.length === 0 ? (
-                    <p className="empty-state">No immediate upstream relationships.</p>
+                  {relationshipGroups.upstream.length === 0 ? (
+                    <p className="empty-state">
+                      {focusMode === 'expanded'
+                        ? 'No upstream items matched the current focus and filters.'
+                        : 'No immediate upstream relationships.'}
+                    </p>
                   ) : null}
                 </div>
               </section>
@@ -286,28 +590,22 @@ export function BacklogGraphPage() {
                   Downstream
                 </h3>
                 <div className="backlog-graph-column__stack">
-                  {relationshipGroups.children.map((node) => (
+                  {relationshipGroups.downstream.map(({ node, relationshipLabel }) => (
                     <RelatedNodeButton
-                      key={`child-${node.id}`}
+                      key={`downstream-${node.id}`}
                       node={node}
-                      relationshipLabel="Child"
+                      relationshipLabel={relationshipLabel}
                       isSelected={node.id === selectedNode.id}
                       onSelect={setSelectedNodeId}
                     />
                   ))}
 
-                  {relationshipGroups.dependents.map((node) => (
-                    <RelatedNodeButton
-                      key={`dependent-${node.id}`}
-                      node={node}
-                      relationshipLabel="Dependent"
-                      isSelected={node.id === selectedNode.id}
-                      onSelect={setSelectedNodeId}
-                    />
-                  ))}
-
-                  {relationshipGroups.children.length === 0 && relationshipGroups.dependents.length === 0 ? (
-                    <p className="empty-state">No immediate downstream relationships.</p>
+                  {relationshipGroups.downstream.length === 0 ? (
+                    <p className="empty-state">
+                      {focusMode === 'expanded'
+                        ? 'No downstream items matched the current focus and filters.'
+                        : 'No immediate downstream relationships.'}
+                    </p>
                   ) : null}
                 </div>
               </section>
