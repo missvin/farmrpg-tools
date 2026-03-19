@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 
+import { BacklogGraphPage } from '../pages/BacklogGraphPage';
 import { ComparePage } from '../pages/ComparePage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { HistoryPage } from '../pages/HistoryPage';
@@ -32,6 +33,11 @@ export const appRoutes: AppRoute[] = [
     path: '/museum-tools',
     label: 'Museum Tools',
     element: <MuseumToolsPage />,
+  },
+  {
+    path: '/backlog-graph',
+    label: 'Backlog Graph',
+    element: <BacklogGraphPage />,
   },
   {
     path: '/ingredient-demand',

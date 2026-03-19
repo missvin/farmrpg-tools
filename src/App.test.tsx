@@ -108,6 +108,7 @@ describe('App shell', () => {
     expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Import' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Museum Tools' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Backlog Graph' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Ingredient Lookup' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Tower Progress' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument();
