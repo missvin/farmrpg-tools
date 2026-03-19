@@ -211,6 +211,12 @@ export function TowerProgressPage() {
               {' | '}Unrated tower items in mastery difficulty data:{' '}
               {progressState.derivedProgress.unratedItemCount.toLocaleString()}
             </p>
+
+            <p className="subtle-text">
+              These mismatches stay visible and non-fatal. Missing snapshot matches are treated as 0 mastery, while
+              missing mastery difficulty matches stay in the planning view as Unrated for later reference-data
+              maintenance.
+            </p>
           </section>
 
           <section className="page-card page-stack" aria-labelledby="tower-progress-difficulty-title">

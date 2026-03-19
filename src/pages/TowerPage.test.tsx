@@ -128,6 +128,7 @@ describe('TowerPage', () => {
     expect((completedLevel as HTMLDetailsElement).open).toBe(false);
     expect((incompleteLevel as HTMLDetailsElement).open).toBe(true);
     expect(screen.getByText(/Next relevant level/)).toBeInTheDocument();
+    expect(screen.getByText(/Missing latest-snapshot matches are non-fatal/)).toBeInTheDocument();
     expect(
       screen.getByText('Next blocking requirement: Red Diamond Fish (Requires Mastered (>= 10,000))'),
     ).toBeInTheDocument();

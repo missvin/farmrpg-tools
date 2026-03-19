@@ -110,6 +110,7 @@ export function SortedPage() {
       items: group.items.filter((item) => item.itemName.toLowerCase().includes(normalizedFilter)),
     }))
     .filter((group) => group.items.length > 0);
+  const unmatchedCount = sortedState.derivedStats?.unmatchedItemCount ?? 0;
 
   function handleExportMissingItemsCsv(): void {
     if (!sortedState.derivedStats || sortedState.derivedStats.unmatchedItems.length === 0) {
@@ -240,13 +241,25 @@ export function SortedPage() {
               <h2 id="unmatched-items-title">Items Missing From Mastery Difficulty Data</h2>
               <p className="supporting-text">
                 These items were parsed from the latest snapshot but do not currently match the local mastery
-                difficulty data.
+                difficulty data. They stay visible as Unrated in the sorted lists, and the export downloads
+                append-ready template rows for `mastery_difficulty.csv`.
               </p>
             </div>
 
-            <p className="status-message">
-              Items missing from mastery difficulty data:{' '}
-              {sortedState.derivedStats.unmatchedItemCount.toLocaleString()}
+            <dl className="summary-grid">
+              <div className="summary-grid__item">
+                <dt>Unmatched snapshot items</dt>
+                <dd>{unmatchedCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Export-ready CSV rows</dt>
+                <dd>{unmatchedCount.toLocaleString()}</dd>
+              </div>
+            </dl>
+
+            <p className="subtle-text">
+              Missing mastery difficulty matches are non-fatal. Review the item names below, then export the CSV if
+              you want template rows for local reference-data maintenance.
             </p>
 
             <div className="button-row">

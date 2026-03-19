@@ -185,7 +185,8 @@ export function TowerPage() {
               <h2 id="tower-summary-title">Tower Summary</h2>
               <p className="supporting-text">
                 Each tower requirement row is shown independently, even when the same item appears in multiple
-                levels or tiers.
+                levels or tiers. Rows that do not match the latest snapshot stay visible and are treated as 0
+                mastery instead of failing the page.
               </p>
             </div>
 
@@ -203,10 +204,15 @@ export function TowerPage() {
                 <dd>{(totalRequirements - completedRequirements).toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Unmatched snapshot item count</dt>
+                <dt>Requirement rows missing from latest snapshot</dt>
                 <dd>{unmatchedSnapshotItemCount.toLocaleString()}</dd>
               </div>
             </dl>
+
+            <p className="subtle-text">
+              Missing latest-snapshot matches are non-fatal. Keep these rows visible so naming drift, import coverage,
+              or tower-reference maintenance issues are easier to spot and review.
+            </p>
           </section>
 
           <section className="page-card page-stack" aria-labelledby="tower-results-title">

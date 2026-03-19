@@ -167,10 +167,15 @@ export function DashboardPage() {
                 <dd>{dashboardState.derivedStats.achievedStatusSummary.megaMasteredCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Items missing from mastery difficulty data</dt>
+                <dt>Unmatched snapshot items</dt>
                 <dd>{dashboardState.derivedStats.unmatchedItemCount.toLocaleString()}</dd>
               </div>
             </dl>
+
+            <p className="subtle-text">
+              Snapshot items missing from mastery difficulty data stay non-fatal. They appear as Unrated in the
+              derived views so you can review and maintain the local reference data without losing progress visibility.
+            </p>
           </section>
 
           <section className="page-card page-stack" aria-labelledby="difficulty-summary-title">
