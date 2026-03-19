@@ -3,10 +3,21 @@ import type { ParsedRow, ParseSummary } from '../parseMasteryPaste';
 export type MasterySnapshot = {
   snapshotId: string;
   createdAt: string;
+  savedAt?: string;
+  importedAt?: string;
   rawText: string;
   masteryByItem: Record<string, number>;
   parseSummary: ParseSummary;
   parsedRows?: ParsedRow[];
+};
+
+export type MasterySnapshotSummary = {
+  snapshotId: string;
+  createdAt: string;
+  savedAt: string;
+  importedAt: string;
+  itemCount: number;
+  parsedRowsCount: number;
 };
 
 const DB_NAME = 'farmrpg-tools';
@@ -15,6 +26,31 @@ const SNAPSHOT_STORE_NAME = 'masterySnapshots';
 
 function createStorageError(): Error {
   return new Error('IndexedDB is not available in this browser.');
+}
+
+function normalizeSnapshot(snapshot: MasterySnapshot): MasterySnapshot {
+  const savedAt = snapshot.savedAt ?? snapshot.createdAt;
+  const importedAt = snapshot.importedAt ?? savedAt;
+
+  return {
+    ...snapshot,
+    createdAt: savedAt,
+    savedAt,
+    importedAt,
+  };
+}
+
+function toSnapshotSummary(snapshot: MasterySnapshot): MasterySnapshotSummary {
+  const normalizedSnapshot = normalizeSnapshot(snapshot);
+
+  return {
+    snapshotId: normalizedSnapshot.snapshotId,
+    createdAt: normalizedSnapshot.createdAt,
+    savedAt: normalizedSnapshot.savedAt ?? normalizedSnapshot.createdAt,
+    importedAt: normalizedSnapshot.importedAt ?? normalizedSnapshot.createdAt,
+    itemCount: normalizedSnapshot.parseSummary.itemsParsed,
+    parsedRowsCount: normalizedSnapshot.parseSummary.parsedRowsCount,
+  };
 }
 
 function getIndexedDb(): IDBFactory {
@@ -87,7 +123,17 @@ function runStoreRequest<T>(
 }
 
 function sortSnapshotsNewestFirst(snapshots: MasterySnapshot[]): MasterySnapshot[] {
-  return [...snapshots].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+  return [...snapshots]
+    .map(normalizeSnapshot)
+    .sort((left, right) => {
+      const savedAtComparison = (right.savedAt ?? right.createdAt).localeCompare(left.savedAt ?? left.createdAt);
+
+      if (savedAtComparison !== 0) {
+        return savedAtComparison;
+      }
+
+      return right.snapshotId.localeCompare(left.snapshotId);
+    });
 }
 
 export function createSnapshotId(): string {
@@ -99,12 +145,22 @@ export function createSnapshotId(): string {
 }
 
 export async function saveSnapshot(snapshot: MasterySnapshot): Promise<void> {
-  await runStoreRequest('readwrite', (store) => store.put(snapshot));
+  await runStoreRequest('readwrite', (store) => store.put(normalizeSnapshot(snapshot)));
 }
 
 export async function listSnapshots(): Promise<MasterySnapshot[]> {
   const snapshots = await runStoreRequest('readonly', (store) => store.getAll());
   return sortSnapshotsNewestFirst(snapshots);
+}
+
+export async function listSnapshotSummaries(): Promise<MasterySnapshotSummary[]> {
+  const snapshots = await listSnapshots();
+  return snapshots.map(toSnapshotSummary);
+}
+
+export async function getSnapshot(snapshotId: string): Promise<MasterySnapshot | null> {
+  const snapshot = await runStoreRequest('readonly', (store) => store.get(snapshotId));
+  return snapshot ? normalizeSnapshot(snapshot) : null;
 }
 
 export async function getLatestSnapshot(): Promise<MasterySnapshot | null> {
