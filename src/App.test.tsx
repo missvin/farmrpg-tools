@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 
+import { APP_THEME_STORAGE_KEY } from './lib/themePreference';
+
 vi.mock('./lib/storage/masterySnapshots', () => ({
   getLatestSnapshot: vi.fn().mockResolvedValue(null),
 }));
@@ -17,6 +19,11 @@ vi.mock('./lib/loadMasteryDifficulty', () => ({
 import App from './App';
 
 describe('App shell', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    delete document.documentElement.dataset.theme;
+  });
+
   function setWindowScrollY(value: number): void {
     Object.defineProperty(window, 'scrollY', {
       value,
@@ -112,5 +119,74 @@ describe('App shell', () => {
     expect(screen.getByRole('link', { name: 'Ingredient Lookup' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Tower Progress' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument();
+  });
+
+  it('defaults to light theme when no saved preference exists and toggles to dark mode', async () => {
+    const user = userEvent.setup();
+    setWindowScrollY(0);
+
+    render(
+      <MemoryRouter
+        initialEntries={['/']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(document.documentElement.dataset.theme).toBe('light');
+    expect(window.localStorage.getItem(APP_THEME_STORAGE_KEY)).toBe('light');
+
+    await user.click(screen.getByRole('button', { name: 'Switch to dark mode' }));
+
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(window.localStorage.getItem(APP_THEME_STORAGE_KEY)).toBe('dark');
+    expect(screen.getByRole('button', { name: 'Switch to light mode' })).toBeInTheDocument();
+  });
+
+  it('applies a persisted dark theme preference on initial render', async () => {
+    setWindowScrollY(0);
+    window.localStorage.setItem(APP_THEME_STORAGE_KEY, 'dark');
+
+    render(
+      <MemoryRouter
+        initialEntries={['/']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(screen.getByRole('button', { name: 'Switch to light mode' })).toBeInTheDocument();
+  });
+
+  it('falls back safely to light theme for an invalid stored preference', async () => {
+    setWindowScrollY(0);
+    window.localStorage.setItem(APP_THEME_STORAGE_KEY, 'sepia');
+
+    render(
+      <MemoryRouter
+        initialEntries={['/']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(document.documentElement.dataset.theme).toBe('light');
+    expect(window.localStorage.getItem(APP_THEME_STORAGE_KEY)).toBe('light');
   });
 });

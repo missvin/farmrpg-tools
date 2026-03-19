@@ -1,9 +1,15 @@
 import { useEffect, useState, type PropsWithChildren } from 'react';
 
+import {
+  getInitialAppTheme,
+  persistAppTheme,
+  type AppTheme,
+} from '../lib/themePreference';
 import { TopNav } from './TopNav';
 
 export function AppShell({ children }: PropsWithChildren) {
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const [theme, setTheme] = useState<AppTheme>(() => getInitialAppTheme());
 
   useEffect(() => {
     function updateScrollToTopVisibility(): void {
@@ -18,6 +24,11 @@ export function AppShell({ children }: PropsWithChildren) {
     };
   }, []);
 
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    persistAppTheme(theme);
+  }, [theme]);
+
   function handleScrollToTop(): void {
     window.scrollTo({
       top: 0,
@@ -25,16 +36,31 @@ export function AppShell({ children }: PropsWithChildren) {
     });
   }
 
+  function handleThemeToggle(): void {
+    setTheme((currentTheme) => (currentTheme === 'light' ? 'dark' : 'light'));
+  }
+
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-theme={theme}>
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
       <header className="site-header">
         <div className="site-header__inner">
-          <div>
-            <p className="site-title">FarmRPG Mastery Tracker</p>
-            <p className="site-tagline">Local-first snapshot tools for mastery progress.</p>
+          <div className="site-header__top">
+            <div>
+              <p className="site-title">FarmRPG Mastery Tracker</p>
+              <p className="site-tagline">Local-first snapshot tools for mastery progress.</p>
+            </div>
+            <button
+              type="button"
+              className="button site-theme-toggle"
+              onClick={handleThemeToggle}
+              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+              aria-pressed={theme === 'dark'}
+            >
+              {theme === 'light' ? 'Dark mode' : 'Light mode'}
+            </button>
           </div>
           <TopNav />
         </div>
