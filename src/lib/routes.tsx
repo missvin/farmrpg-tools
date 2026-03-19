@@ -4,6 +4,7 @@ import { BacklogGraphPage } from '../pages/BacklogGraphPage';
 import { ComparePage } from '../pages/ComparePage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { HistoryPage } from '../pages/HistoryPage';
+import { IngredientDemandListPage } from '../pages/IngredientDemandListPage';
 import { IngredientDemandPage } from '../pages/IngredientDemandPage';
 import { ImportPage } from '../pages/ImportPage';
 import { MuseumToolsPage } from '../pages/MuseumToolsPage';
@@ -43,6 +44,11 @@ export const appRoutes: AppRoute[] = [
     path: '/ingredient-demand',
     label: 'Ingredient Lookup',
     element: <IngredientDemandPage />,
+  },
+  {
+    path: '/ingredient-demand-list',
+    label: 'Ingredient List',
+    element: <IngredientDemandListPage />,
   },
   {
     path: '/sorted',
