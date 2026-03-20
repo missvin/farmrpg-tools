@@ -574,6 +574,58 @@ a {
   gap: 0.75rem;
 }
 
+.backlog-overview-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.backlog-overview-viewport {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background:
+    linear-gradient(var(--color-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border) 1px, transparent 1px),
+    var(--color-surface-muted);
+  background-size: 2rem 2rem, 2rem 2rem, auto;
+  min-height: 34rem;
+  touch-action: none;
+  cursor: grab;
+}
+
+.backlog-overview-viewport:active {
+  cursor: grabbing;
+}
+
+.backlog-overview-stage {
+  position: relative;
+  transform-origin: top left;
+  will-change: transform;
+}
+
+.backlog-overview-stage__edges {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.backlog-overview-edge {
+  fill: none;
+  stroke: var(--color-border-emphasis);
+  stroke-width: 2;
+}
+
+.backlog-overview-edge--dependency {
+  stroke-dasharray: 7 5;
+}
+
+.backlog-overview-edge--parent {
+  opacity: 0.75;
+}
+
 .backlog-graph-column {
   display: grid;
   gap: 0.5rem;
@@ -594,6 +646,11 @@ a {
   padding: 0.85rem;
   background: var(--color-surface);
   color: var(--color-text-strong);
+}
+
+.backlog-node-card--overview {
+  position: absolute;
+  box-shadow: 0 0.35rem 0.75rem rgb(15 23 42 / 0.08);
 }
 
 .backlog-node-card--status-shipped {

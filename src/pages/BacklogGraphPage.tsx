@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type PointerEvent as ReactPointerEvent } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import {
@@ -10,6 +10,7 @@ import {
 } from '../lib/loadBacklogGraph';
 
 type FocusMode = 'neighborhood' | 'expanded';
+type GraphMode = 'focused' | 'overview';
 
 type RelationshipGroups = {
   upstream: RelatedNodeEntry[];
@@ -19,6 +20,28 @@ type RelationshipGroups = {
 type RelatedNodeEntry = {
   node: BacklogGraphNode;
   relationshipLabel: string;
+};
+
+type OverviewLayoutNode = {
+  node: BacklogGraphNode;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+type OverviewLayoutEdge = {
+  from: string;
+  to: string;
+  relationship: BacklogGraphEdge['relationship'];
+};
+
+type OverviewLayout = {
+  nodes: OverviewLayoutNode[];
+  edges: OverviewLayoutEdge[];
+  width: number;
+  height: number;
+  initialZoom: number;
 };
 
 function normalizeStatusValue(status: string): string {
@@ -234,6 +257,129 @@ function buildRelationshipGroups(
   };
 }
 
+function buildOverviewLayout(graph: BacklogGraphData, visibleNodes: BacklogGraphNode[]): OverviewLayout {
+  const visibleNodeIds = new Set(visibleNodes.map((node) => node.id));
+  const visibleEdges = graph.edges.filter(
+    (edge) => visibleNodeIds.has(edge.from) && visibleNodeIds.has(edge.to),
+  );
+
+  const outgoingByNodeId = new Map<string, string[]>();
+  const indegreeByNodeId = new Map<string, number>();
+  const levelByNodeId = new Map<string, number>();
+
+  for (const node of visibleNodes) {
+    outgoingByNodeId.set(node.id, []);
+    indegreeByNodeId.set(node.id, 0);
+    levelByNodeId.set(node.id, 0);
+  }
+
+  for (const edge of visibleEdges) {
+    outgoingByNodeId.get(edge.from)?.push(edge.to);
+    indegreeByNodeId.set(edge.to, (indegreeByNodeId.get(edge.to) ?? 0) + 1);
+  }
+
+  const queue = visibleNodes
+    .filter((node) => (indegreeByNodeId.get(node.id) ?? 0) === 0)
+    .sort(compareNodes)
+    .map((node) => node.id);
+
+  const processedNodeIds = new Set<string>();
+
+  while (queue.length > 0) {
+    const currentNodeId = queue.shift();
+
+    if (!currentNodeId) {
+      continue;
+    }
+
+    processedNodeIds.add(currentNodeId);
+
+    for (const nextNodeId of outgoingByNodeId.get(currentNodeId) ?? []) {
+      const nextLevel = (levelByNodeId.get(currentNodeId) ?? 0) + 1;
+      levelByNodeId.set(nextNodeId, Math.max(levelByNodeId.get(nextNodeId) ?? 0, nextLevel));
+
+      const nextIndegree = (indegreeByNodeId.get(nextNodeId) ?? 0) - 1;
+      indegreeByNodeId.set(nextNodeId, nextIndegree);
+
+      if (nextIndegree === 0) {
+        queue.push(nextNodeId);
+        queue.sort((left, right) => compareNodes(graph.byId[left], graph.byId[right]));
+      }
+    }
+  }
+
+  const highestAssignedLevel = Math.max(0, ...Array.from(levelByNodeId.values()));
+  let overflowLevel = highestAssignedLevel + 1;
+
+  for (const node of visibleNodes.sort(compareNodes)) {
+    if (processedNodeIds.has(node.id)) {
+      continue;
+    }
+
+    levelByNodeId.set(node.id, overflowLevel);
+    overflowLevel += 1;
+  }
+
+  const nodesByLevel = new Map<number, BacklogGraphNode[]>();
+
+  for (const node of visibleNodes) {
+    const level = levelByNodeId.get(node.id) ?? 0;
+    const levelNodes = nodesByLevel.get(level) ?? [];
+    levelNodes.push(node);
+    nodesByLevel.set(level, levelNodes);
+  }
+
+  for (const levelNodes of nodesByLevel.values()) {
+    levelNodes.sort(compareNodes);
+  }
+
+  const nodeWidth = 220;
+  const nodeHeight = 92;
+  const columnGap = 120;
+  const rowGap = 36;
+  const padding = 24;
+  const maxLevel = Math.max(0, ...Array.from(nodesByLevel.keys()));
+  const maxRows = Math.max(1, ...Array.from(nodesByLevel.values()).map((levelNodes) => levelNodes.length));
+  const layoutNodes: OverviewLayoutNode[] = [];
+
+  for (const [level, levelNodes] of Array.from(nodesByLevel.entries()).sort((left, right) => left[0] - right[0])) {
+    levelNodes.forEach((node, index) => {
+      layoutNodes.push({
+        node,
+        x: padding + level * (nodeWidth + columnGap),
+        y: padding + index * (nodeHeight + rowGap),
+        width: nodeWidth,
+        height: nodeHeight,
+      });
+    });
+  }
+
+  const width = padding * 2 + (maxLevel + 1) * nodeWidth + maxLevel * columnGap;
+  const height = padding * 2 + maxRows * nodeHeight + Math.max(0, maxRows - 1) * rowGap;
+
+  let initialZoom = 1;
+
+  if (width > 1800) {
+    initialZoom = 0.55;
+  } else if (width > 1400) {
+    initialZoom = 0.65;
+  } else if (width > 1100) {
+    initialZoom = 0.8;
+  }
+
+  return {
+    nodes: layoutNodes,
+    edges: visibleEdges.map((edge) => ({
+      from: edge.from,
+      to: edge.to,
+      relationship: edge.relationship,
+    })),
+    width,
+    height,
+    initialZoom,
+  };
+}
+
 function formatWarningLabel(warning: BacklogGraphWarning): string {
   if (!warning.backlogId) {
     return warning.message;
@@ -289,9 +435,19 @@ export function BacklogGraphPage() {
     graph: null,
   });
   const [selectedNodeId, setSelectedNodeId] = useState('');
+  const [graphMode, setGraphMode] = useState<GraphMode>('focused');
   const [focusMode, setFocusMode] = useState<FocusMode>('neighborhood');
   const [areaFilter, setAreaFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [overviewZoom, setOverviewZoom] = useState(1);
+  const [overviewPan, setOverviewPan] = useState({ x: 0, y: 0 });
+  const [dragState, setDragState] = useState<{
+    pointerId: number;
+    originClientX: number;
+    originClientY: number;
+    originPanX: number;
+    originPanY: number;
+  } | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -405,10 +561,75 @@ export function BacklogGraphPage() {
     );
   }, [areaFilter, focusMode, graphState.graph, selectedNode, statusFilter]);
 
+  const overviewLayout = useMemo(() => {
+    if (!graphState.graph || filteredNodes.length === 0) {
+      return null;
+    }
+
+    return buildOverviewLayout(graphState.graph, filteredNodes);
+  }, [filteredNodes, graphState.graph]);
+
+  useEffect(() => {
+    if (!overviewLayout) {
+      return;
+    }
+
+    setOverviewZoom(overviewLayout.initialZoom);
+    setOverviewPan({ x: 0, y: 0 });
+  }, [graphMode, overviewLayout]);
+
   function resetGraphView(): void {
+    setGraphMode('focused');
     setFocusMode('neighborhood');
     setAreaFilter('');
     setStatusFilter('');
+    if (overviewLayout) {
+      setOverviewZoom(overviewLayout.initialZoom);
+    } else {
+      setOverviewZoom(1);
+    }
+    setOverviewPan({ x: 0, y: 0 });
+  }
+
+  function zoomOverview(nextZoom: number): void {
+    setOverviewZoom(Math.min(1.6, Math.max(0.45, Math.round(nextZoom * 100) / 100)));
+  }
+
+  function panOverview(deltaX: number, deltaY: number): void {
+    setOverviewPan((currentPan) => ({
+      x: currentPan.x + deltaX,
+      y: currentPan.y + deltaY,
+    }));
+  }
+
+  function handleOverviewPointerDown(event: ReactPointerEvent<HTMLDivElement>): void {
+    if (event.pointerType === 'mouse' && event.button !== 0) {
+      return;
+    }
+
+    setDragState({
+      pointerId: event.pointerId,
+      originClientX: event.clientX,
+      originClientY: event.clientY,
+      originPanX: overviewPan.x,
+      originPanY: overviewPan.y,
+    });
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  }
+
+  function handleOverviewPointerMove(event: ReactPointerEvent<HTMLDivElement>): void {
+    if (!dragState || dragState.pointerId !== event.pointerId) {
+      return;
+    }
+
+    setOverviewPan({
+      x: dragState.originPanX + (event.clientX - dragState.originClientX),
+      y: dragState.originPanY + (event.clientY - dragState.originClientY),
+    });
+  }
+
+  function clearDragState(): void {
+    setDragState(null);
   }
 
   const selectedNodeStatusClassName = selectedNode ? getBacklogNodeStatusClassName(selectedNode.status) : '';
@@ -424,8 +645,8 @@ export function BacklogGraphPage() {
         <div>
           <h2 id="backlog-graph-controls-title">Select Backlog Item</h2>
           <p className="supporting-text">
-            Choose one item to inspect its dependency neighborhood. Lightweight focus and filter controls keep the
-            page readable without turning it into a heavy graph tool.
+            Choose one item to inspect either its focused dependency neighborhood or a zoomable whole-backlog overview.
+            Lightweight controls keep the page readable without turning it into a heavy graph tool.
           </p>
         </div>
 
@@ -440,6 +661,21 @@ export function BacklogGraphPage() {
         {graphState.graph && graphState.graph.nodes.length > 0 ? (
           <div className="page-stack page-stack--tight">
             <div className="backlog-graph-controls">
+              <div className="page-stack page-stack--tight">
+                <label className="field-label" htmlFor="backlog-graph-mode">
+                  Graph mode
+                </label>
+                <select
+                  id="backlog-graph-mode"
+                  className="text-input"
+                  value={graphMode}
+                  onChange={(event) => setGraphMode(event.target.value as GraphMode)}
+                >
+                  <option value="focused">Focused graph</option>
+                  <option value="overview">Whole-backlog overview</option>
+                </select>
+              </div>
+
               <div className="page-stack page-stack--tight">
                 <label className="field-label" htmlFor="backlog-graph-select">
                   Backlog item
@@ -468,6 +704,7 @@ export function BacklogGraphPage() {
                   className="text-input"
                   value={focusMode}
                   onChange={(event) => setFocusMode(event.target.value as FocusMode)}
+                  disabled={graphMode !== 'focused'}
                 >
                   <option value="neighborhood">Immediate neighborhood</option>
                   <option value="expanded">Expanded ancestry + descendants</option>
@@ -521,7 +758,12 @@ export function BacklogGraphPage() {
 
             <p className="supporting-text">
               Showing {filteredNodes.length} backlog item{filteredNodes.length === 1 ? '' : 's'} in{' '}
-              {focusMode === 'expanded' ? 'expanded focus mode' : 'immediate neighborhood mode'}.
+              {graphMode === 'overview'
+                ? 'whole-backlog overview mode'
+                : focusMode === 'expanded'
+                  ? 'expanded focus mode'
+                  : 'immediate neighborhood mode'}
+              .
             </p>
 
             {filteredNodes.length === 0 ? (
@@ -553,89 +795,218 @@ export function BacklogGraphPage() {
         </section>
       ) : null}
 
-      {selectedNode && relationshipGroups ? (
+      {selectedNode && (graphMode === 'overview' || relationshipGroups) ? (
         <>
-          <section className="page-card page-stack" aria-labelledby="backlog-graph-map-title">
-            <div>
-              <h2 id="backlog-graph-map-title">Dependency Neighborhood</h2>
-              <p className="supporting-text">
-                {focusMode === 'expanded'
-                  ? 'The selected item sits in the middle, with expanded upstream ancestry on the left and downstream descendants on the right.'
-                  : 'The selected item sits in the middle, with immediate upstream work on the left and downstream work on the right.'}
-              </p>
-            </div>
+          {graphMode === 'focused' && relationshipGroups ? (
+            <section className="page-card page-stack" aria-labelledby="backlog-graph-map-title">
+              <div>
+                <h2 id="backlog-graph-map-title">Dependency Neighborhood</h2>
+                <p className="supporting-text">
+                  {focusMode === 'expanded'
+                    ? 'The selected item sits in the middle, with expanded upstream ancestry on the left and downstream descendants on the right.'
+                    : 'The selected item sits in the middle, with immediate upstream work on the left and downstream work on the right.'}
+                </p>
+              </div>
 
-            <div className="backlog-graph-layout">
-              <section className="backlog-graph-column" aria-labelledby="backlog-graph-upstream-title">
-                <h3 id="backlog-graph-upstream-title" className="section-title">
-                  Upstream
-                </h3>
-                <div className="backlog-graph-column__stack">
-                  {relationshipGroups.upstream.map(({ node, relationshipLabel }) => (
-                    <RelatedNodeButton
-                      key={`upstream-${node.id}`}
-                      node={node}
-                      relationshipLabel={relationshipLabel}
-                      isSelected={node.id === selectedNode.id}
-                      onSelect={setSelectedNodeId}
-                    />
-                  ))}
+              <div className="backlog-graph-layout">
+                <section className="backlog-graph-column" aria-labelledby="backlog-graph-upstream-title">
+                  <h3 id="backlog-graph-upstream-title" className="section-title">
+                    Upstream
+                  </h3>
+                  <div className="backlog-graph-column__stack">
+                    {relationshipGroups.upstream.map(({ node, relationshipLabel }) => (
+                      <RelatedNodeButton
+                        key={`upstream-${node.id}`}
+                        node={node}
+                        relationshipLabel={relationshipLabel}
+                        isSelected={node.id === selectedNode.id}
+                        onSelect={setSelectedNodeId}
+                      />
+                    ))}
 
-                  {relationshipGroups.upstream.length === 0 ? (
-                    <p className="empty-state">
-                      {focusMode === 'expanded'
-                        ? 'No upstream items matched the current focus and filters.'
-                        : 'No immediate upstream relationships.'}
-                    </p>
-                  ) : null}
-                </div>
-              </section>
-
-              <section className="backlog-graph-column" aria-labelledby="backlog-graph-selected-title">
-                <h3 id="backlog-graph-selected-title" className="section-title">
-                  Selected
-                </h3>
-                <article className={`backlog-node-card ${selectedNodeStatusClassName} backlog-node-card--selected`}>
-                  <strong>{selectedNode.displayTitle}</strong>
-                  <div className="backlog-node-card__meta">
-                    <MetaPill label={selectedNode.id} />
-                    <MetaPill label={selectedNode.status} />
-                    <MetaPill label={selectedNode.type} />
-                    <MetaPill label={selectedNode.area} />
-                    <MetaPill label={selectedNode.priority} />
+                    {relationshipGroups.upstream.length === 0 ? (
+                      <p className="empty-state">
+                        {focusMode === 'expanded'
+                          ? 'No upstream items matched the current focus and filters.'
+                          : 'No immediate upstream relationships.'}
+                      </p>
+                    ) : null}
                   </div>
-                  {selectedNode.displaySummary ? (
-                    <p className="subtle-text">{selectedNode.displaySummary}</p>
-                  ) : null}
-                </article>
-              </section>
+                </section>
 
-              <section className="backlog-graph-column" aria-labelledby="backlog-graph-downstream-title">
-                <h3 id="backlog-graph-downstream-title" className="section-title">
-                  Downstream
-                </h3>
-                <div className="backlog-graph-column__stack">
-                  {relationshipGroups.downstream.map(({ node, relationshipLabel }) => (
-                    <RelatedNodeButton
-                      key={`downstream-${node.id}`}
-                      node={node}
-                      relationshipLabel={relationshipLabel}
-                      isSelected={node.id === selectedNode.id}
-                      onSelect={setSelectedNodeId}
-                    />
-                  ))}
+                <section className="backlog-graph-column" aria-labelledby="backlog-graph-selected-title">
+                  <h3 id="backlog-graph-selected-title" className="section-title">
+                    Selected
+                  </h3>
+                  <article className={`backlog-node-card ${selectedNodeStatusClassName} backlog-node-card--selected`}>
+                    <strong>{selectedNode.displayTitle}</strong>
+                    <div className="backlog-node-card__meta">
+                      <MetaPill label={selectedNode.id} />
+                      <MetaPill label={selectedNode.status} />
+                      <MetaPill label={selectedNode.type} />
+                      <MetaPill label={selectedNode.area} />
+                      <MetaPill label={selectedNode.priority} />
+                    </div>
+                    {selectedNode.displaySummary ? (
+                      <p className="subtle-text">{selectedNode.displaySummary}</p>
+                    ) : null}
+                  </article>
+                </section>
 
-                  {relationshipGroups.downstream.length === 0 ? (
-                    <p className="empty-state">
-                      {focusMode === 'expanded'
-                        ? 'No downstream items matched the current focus and filters.'
-                        : 'No immediate downstream relationships.'}
-                    </p>
-                  ) : null}
+                <section className="backlog-graph-column" aria-labelledby="backlog-graph-downstream-title">
+                  <h3 id="backlog-graph-downstream-title" className="section-title">
+                    Downstream
+                  </h3>
+                  <div className="backlog-graph-column__stack">
+                    {relationshipGroups.downstream.map(({ node, relationshipLabel }) => (
+                      <RelatedNodeButton
+                        key={`downstream-${node.id}`}
+                        node={node}
+                        relationshipLabel={relationshipLabel}
+                        isSelected={node.id === selectedNode.id}
+                        onSelect={setSelectedNodeId}
+                      />
+                    ))}
+
+                    {relationshipGroups.downstream.length === 0 ? (
+                      <p className="empty-state">
+                        {focusMode === 'expanded'
+                          ? 'No downstream items matched the current focus and filters.'
+                          : 'No immediate downstream relationships.'}
+                      </p>
+                    ) : null}
+                  </div>
+                </section>
+              </div>
+            </section>
+          ) : null}
+
+          {graphMode === 'overview' && overviewLayout ? (
+            <section className="page-card page-stack" aria-labelledby="backlog-graph-overview-title">
+              <div>
+                <h2 id="backlog-graph-overview-title">Whole-Backlog Overview</h2>
+                <p className="supporting-text">
+                  Inspect the full filtered backlog at once. Drag to pan, use the zoom controls to move between a
+                  whole-project overview and easier node reading, and click any node to drive the shared detail panel.
+                </p>
+              </div>
+
+              <div className="backlog-overview-toolbar">
+                <div className="button-row">
+                  <button type="button" className="button" onClick={() => zoomOverview(overviewZoom - 0.15)}>
+                    Zoom out
+                  </button>
+                  <button type="button" className="button" onClick={() => zoomOverview(overviewZoom + 0.15)}>
+                    Zoom in
+                  </button>
+                  <button
+                    type="button"
+                    className="button"
+                    onClick={() => {
+                      setOverviewZoom(overviewLayout.initialZoom);
+                      setOverviewPan({ x: 0, y: 0 });
+                    }}
+                  >
+                    Reset overview
+                  </button>
+                  <button type="button" className="button" onClick={() => panOverview(0, -60)}>
+                    Pan up
+                  </button>
+                  <button type="button" className="button" onClick={() => panOverview(-60, 0)}>
+                    Pan left
+                  </button>
+                  <button type="button" className="button" onClick={() => panOverview(60, 0)}>
+                    Pan right
+                  </button>
+                  <button type="button" className="button" onClick={() => panOverview(0, 60)}>
+                    Pan down
+                  </button>
                 </div>
-              </section>
-            </div>
-          </section>
+                <p className="supporting-text" data-testid="backlog-overview-zoom-value">
+                  Zoom: {Math.round(overviewZoom * 100)}%
+                </p>
+              </div>
+
+              <div
+                className="backlog-overview-viewport"
+                onPointerDown={handleOverviewPointerDown}
+                onPointerMove={handleOverviewPointerMove}
+                onPointerUp={clearDragState}
+                onPointerLeave={clearDragState}
+                onPointerCancel={clearDragState}
+              >
+                <div
+                  className="backlog-overview-stage"
+                  data-testid="backlog-overview-stage"
+                  style={{
+                    width: `${overviewLayout.width}px`,
+                    height: `${overviewLayout.height}px`,
+                    transform: `translate(${overviewPan.x}px, ${overviewPan.y}px) scale(${overviewZoom})`,
+                  }}
+                >
+                  <svg
+                    className="backlog-overview-stage__edges"
+                    width={overviewLayout.width}
+                    height={overviewLayout.height}
+                    aria-hidden="true"
+                  >
+                    {overviewLayout.edges.map((edge) => {
+                      const fromNode = overviewLayout.nodes.find((node) => node.node.id === edge.from);
+                      const toNode = overviewLayout.nodes.find((node) => node.node.id === edge.to);
+
+                      if (!fromNode || !toNode) {
+                        return null;
+                      }
+
+                      return (
+                        <line
+                          key={`${edge.relationship}-${edge.from}-${edge.to}`}
+                          x1={fromNode.x + fromNode.width}
+                          y1={fromNode.y + fromNode.height / 2}
+                          x2={toNode.x}
+                          y2={toNode.y + toNode.height / 2}
+                          className={
+                            edge.relationship === 'dependency'
+                              ? 'backlog-overview-edge backlog-overview-edge--dependency'
+                              : 'backlog-overview-edge backlog-overview-edge--parent'
+                          }
+                        />
+                      );
+                    })}
+                  </svg>
+
+                  {overviewLayout.nodes.map(({ node, x, y, width, height }) => {
+                    const statusClassName = getBacklogNodeStatusClassName(node.status);
+                    const className =
+                      node.id === selectedNode.id
+                        ? `backlog-node-card backlog-node-card--overview ${statusClassName} backlog-node-card--selected`
+                        : `backlog-node-card backlog-node-card--overview ${statusClassName}`;
+
+                    return (
+                      <button
+                        key={node.id}
+                        type="button"
+                        aria-label={`${node.displayTitle} (${node.id})`}
+                        className={className}
+                        style={{
+                          left: `${x}px`,
+                          top: `${y}px`,
+                          width: `${width}px`,
+                          minHeight: `${height}px`,
+                        }}
+                        onClick={() => setSelectedNodeId(node.id)}
+                      >
+                        <strong>{node.displayTitle}</strong>
+                        <span className="subtle-text">
+                          {node.id} | {node.status} | {node.type}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          ) : null}
 
           <section className="page-card page-stack" aria-labelledby="backlog-graph-detail-title">
             <div>

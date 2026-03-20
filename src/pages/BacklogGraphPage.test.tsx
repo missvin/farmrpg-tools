@@ -331,6 +331,70 @@ describe('BacklogGraphPage', () => {
     expect(screen.getByText('External Workflow Note')).toBeInTheDocument();
   });
 
+  it('switches into whole-backlog overview mode and renders the full filtered graph', async () => {
+    const user = userEvent.setup();
+    loadBacklogGraphMock.mockResolvedValue(GRAPH_FIXTURE);
+
+    render(<BacklogGraphPage />);
+
+    await screen.findByRole('heading', { name: 'Dependency Neighborhood' });
+    await user.selectOptions(screen.getByLabelText('Graph mode'), 'overview');
+
+    expect(screen.getByRole('heading', { name: 'Whole-Backlog Overview' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Dependency Neighborhood' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Backlog Runtime Boundary (BL-053)' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Graph Focus Controls (BL-057)' })).toBeInTheDocument();
+    expect(screen.getByText('Showing 8 backlog items in whole-backlog overview mode.')).toBeInTheDocument();
+  });
+
+  it('keeps shared selection and detail behavior when selecting nodes in overview mode', async () => {
+    const user = userEvent.setup();
+    loadBacklogGraphMock.mockResolvedValue(GRAPH_FIXTURE);
+
+    render(<BacklogGraphPage />);
+
+    await screen.findByRole('heading', { name: 'Dependency Neighborhood' });
+    await user.selectOptions(screen.getByLabelText('Graph mode'), 'overview');
+    await user.click(screen.getByRole('button', { name: 'Status Color Nodes (BL-058)' }));
+
+    const detailSection = screen.getByRole('heading', { name: 'Selected Item Detail' }).closest('section') as HTMLElement;
+
+    expect(detailSection).toBeInTheDocument();
+    expect(within(detailSection).getByText('Status Color Nodes')).toBeInTheDocument();
+    expect(
+      within(detailSection).getByText('Apply a small status-to-color mapping in backlog graph UI code.'),
+    ).toBeInTheDocument();
+    expect(within(detailSection).getByText('Map statuses to visual node treatments in app code.')).toBeInTheDocument();
+  });
+
+  it('supports practical zoom controls and overview reset behavior', async () => {
+    const user = userEvent.setup();
+    loadBacklogGraphMock.mockResolvedValue(GRAPH_FIXTURE);
+
+    render(<BacklogGraphPage />);
+
+    await screen.findByRole('heading', { name: 'Dependency Neighborhood' });
+    await user.selectOptions(screen.getByLabelText('Graph mode'), 'overview');
+
+    const zoomValue = screen.getByTestId('backlog-overview-zoom-value');
+    const stage = screen.getByTestId('backlog-overview-stage');
+    const initialTransform = stage.getAttribute('style') ?? '';
+    const initialZoomText = zoomValue.textContent;
+
+    await user.click(screen.getByRole('button', { name: 'Zoom in' }));
+    expect(zoomValue.textContent).not.toBe(initialZoomText);
+    expect((stage.getAttribute('style') ?? '')).not.toBe(initialTransform);
+
+    await user.click(screen.getByRole('button', { name: 'Pan right' }));
+    await user.click(screen.getByRole('button', { name: 'Pan down' }));
+
+    expect((stage.getAttribute('style') ?? '')).toContain('translate(60px, 60px)');
+
+    await user.click(screen.getByRole('button', { name: 'Reset overview' }));
+    expect(zoomValue).toHaveTextContent(/^Zoom: \d+%$/);
+    expect((stage.getAttribute('style') ?? '')).toContain('translate(0px, 0px)');
+  });
+
   it('filters the graph by area and resets back to the full view', async () => {
     const user = userEvent.setup();
     loadBacklogGraphMock.mockResolvedValue(GRAPH_FIXTURE);
