@@ -7,11 +7,121 @@ import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
 
 type SortedMode = 'gm' | 'mm';
+type TierBucketKey = 'no-tier' | 'mastered' | 'grand-mastered';
+type TierBucket = {
+  key: TierBucketKey;
+  label: string;
+  items: Array<ReturnType<typeof buildBucketItem>>;
+};
+
+const MASTERY_TARGET = 10_000;
+const GRAND_MASTERY_TARGET = 100_000;
 
 function formatRemainingLabel(mode: SortedMode): string {
   return mode === 'gm'
     ? 'Remaining to Grand Mastery (100,000)'
     : 'Remaining to Mega Mastery (1,000,000)';
+}
+
+function buildBucketItem(group: { label: string }, item: {
+  itemName: string;
+  canonicalKey: string;
+  currentMastery: number;
+  remainingToTarget: number;
+  difficultyLabel: string;
+  method: string | null;
+  notes: string | null;
+}) {
+  return {
+    ...item,
+    groupLabel: group.label,
+  };
+}
+
+function getTierBucketMeta(currentMastery: number): { key: TierBucketKey; label: string; order: number } {
+  if (currentMastery >= GRAND_MASTERY_TARGET) {
+    return {
+      key: 'grand-mastered',
+      label: 'Grand Mastered',
+      order: 2,
+    };
+  }
+
+  if (currentMastery >= MASTERY_TARGET) {
+    return {
+      key: 'mastered',
+      label: 'Mastered',
+      order: 1,
+    };
+  }
+
+  return {
+    key: 'no-tier',
+    label: 'No Tier Yet',
+    order: 0,
+  };
+}
+
+function buildTierBuckets(
+  groups: Array<{
+    label: string;
+    items: Array<{
+      itemName: string;
+      canonicalKey: string;
+      currentMastery: number;
+      remainingToTarget: number;
+      difficultyLabel: string;
+      method: string | null;
+      notes: string | null;
+    }>;
+  }>,
+): TierBucket[] {
+  const bucketMap = new Map<
+    TierBucketKey,
+    {
+      key: TierBucketKey;
+      label: string;
+      order: number;
+      difficultyGroups: Map<string, TierBucket['items']>;
+    }
+  >();
+
+  for (const group of groups) {
+    for (const item of group.items) {
+      const tierBucketMeta = getTierBucketMeta(item.currentMastery);
+      const tierBucket =
+        bucketMap.get(tierBucketMeta.key) ??
+        {
+          key: tierBucketMeta.key,
+          label: tierBucketMeta.label,
+          order: tierBucketMeta.order,
+          difficultyGroups: new Map(),
+        };
+      const bucketItems = tierBucket.difficultyGroups.get(group.label) ?? [];
+
+      bucketItems.push(buildBucketItem(group, item));
+      tierBucket.difficultyGroups.set(group.label, bucketItems);
+      bucketMap.set(tierBucketMeta.key, tierBucket);
+    }
+  }
+
+  return [...bucketMap.values()]
+    .sort((left, right) => left.order - right.order)
+    .map((bucket) => ({
+      key: bucket.key,
+      label: bucket.label,
+      items: [...bucket.difficultyGroups.entries()]
+        .sort((left, right) => left[0].localeCompare(right[0]))
+        .flatMap(([, items]) =>
+          [...items].sort((left, right) => {
+            if (left.remainingToTarget !== right.remainingToTarget) {
+              return left.remainingToTarget - right.remainingToTarget;
+            }
+
+            return left.itemName.localeCompare(right.itemName);
+          }),
+        ),
+    }));
 }
 
 export function SortedPage() {
@@ -110,6 +220,7 @@ export function SortedPage() {
       items: group.items.filter((item) => item.itemName.toLowerCase().includes(normalizedFilter)),
     }))
     .filter((group) => group.items.length > 0);
+  const tierBuckets = buildTierBuckets(filteredGroups);
   const unmatchedCount = sortedState.derivedStats?.unmatchedItemCount ?? 0;
 
   function handleExportMissingItemsCsv(): void {
@@ -209,30 +320,67 @@ export function SortedPage() {
             {filteredGroups.length === 0 ? (
               <p className="empty-state">No items match the current filter.</p>
             ) : (
-              filteredGroups.map((group) => (
-                <div key={group.label} className="page-stack">
-                  <h3 className="section-title">
-                    {group.label} ({group.items.length.toLocaleString()})
-                  </h3>
-                  <ul className="progress-list">
-                    {group.items.map((item) => (
-                      <li key={`${item.canonicalKey}-${mode}`} className="progress-list__item">
-                        <div className="progress-list__header">
-                          <strong>{item.itemName}</strong>
-                          <span>{item.currentMastery.toLocaleString()}</span>
-                        </div>
-                        <p className="progress-list__meta">
-                          <span>{formatRemainingLabel(mode)}: {item.remainingToTarget.toLocaleString()}</span>
-                          {' | '}
-                          <span>{item.difficultyLabel}</span>
-                        </p>
-                        {item.method ? <p className="progress-list__meta">Method: {item.method}</p> : null}
-                        {item.notes ? <p className="progress-list__notes">Notes: {item.notes}</p> : null}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))
+              tierBuckets.map((bucket, bucketIndex) => {
+                const difficultyGroupEntries = filteredGroups.filter((group) =>
+                  group.items.some((item) => getTierBucketMeta(item.currentMastery).key === bucket.key),
+                );
+
+                return (
+                  <details key={bucket.key} className="sorted-rollup-card" open={bucketIndex === 0}>
+                    <summary className="sorted-rollup-summary">
+                      <span className="sorted-rollup-summary__title">{bucket.label}</span>
+                      <span className="sorted-rollup-summary__meta">
+                        {bucket.items.length.toLocaleString()} items
+                      </span>
+                    </summary>
+
+                    <div className="page-stack">
+                      {difficultyGroupEntries.map((group, groupIndex) => {
+                        const tierItems = group.items.filter(
+                          (item) => getTierBucketMeta(item.currentMastery).key === bucket.key,
+                        );
+
+                        if (tierItems.length === 0) {
+                          return null;
+                        }
+
+                        return (
+                          <details
+                            key={`${bucket.key}-${group.label}`}
+                            className="sorted-rollup-card sorted-rollup-card--nested"
+                            open={bucketIndex === 0 && groupIndex === 0}
+                          >
+                            <summary className="sorted-rollup-summary">
+                              <span className="sorted-rollup-summary__title">{group.label}</span>
+                              <span className="sorted-rollup-summary__meta">
+                                {tierItems.length.toLocaleString()} items
+                              </span>
+                            </summary>
+
+                            <ul className="progress-list">
+                              {tierItems.map((item) => (
+                                <li key={`${item.canonicalKey}-${mode}`} className="progress-list__item">
+                                  <div className="progress-list__header">
+                                    <strong>{item.itemName}</strong>
+                                    <span>{item.currentMastery.toLocaleString()}</span>
+                                  </div>
+                                  <p className="progress-list__meta">
+                                    <span>{formatRemainingLabel(mode)}: {item.remainingToTarget.toLocaleString()}</span>
+                                    {' | '}
+                                    <span>{item.difficultyLabel}</span>
+                                  </p>
+                                  {item.method ? <p className="progress-list__meta">Method: {item.method}</p> : null}
+                                  {item.notes ? <p className="progress-list__notes">Notes: {item.notes}</p> : null}
+                                </li>
+                              ))}
+                            </ul>
+                          </details>
+                        );
+                      })}
+                    </div>
+                  </details>
+                );
+              })
             )}
           </section>
 
