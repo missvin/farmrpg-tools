@@ -122,6 +122,40 @@ function runStoreRequest<T>(
   );
 }
 
+function runStoreTransaction(
+  mode: IDBTransactionMode,
+  execute: (store: IDBObjectStore) => void,
+): Promise<void> {
+  return openDatabase().then(
+    (database) =>
+      new Promise((resolve, reject) => {
+        const transaction = database.transaction(SNAPSHOT_STORE_NAME, mode);
+        const store = transaction.objectStore(SNAPSHOT_STORE_NAME);
+
+        try {
+          execute(store);
+        } catch (error) {
+          database.close();
+          reject(error);
+          return;
+        }
+
+        transaction.onabort = () => {
+          reject(transaction.error ?? new Error('Snapshot storage transaction was aborted.'));
+        };
+
+        transaction.onerror = () => {
+          reject(transaction.error ?? new Error('Snapshot storage transaction failed.'));
+        };
+
+        transaction.oncomplete = () => {
+          database.close();
+          resolve();
+        };
+      }),
+  );
+}
+
 function sortSnapshotsNewestFirst(snapshots: MasterySnapshot[]): MasterySnapshot[] {
   return [...snapshots]
     .map(normalizeSnapshot)
@@ -146,6 +180,18 @@ export function createSnapshotId(): string {
 
 export async function saveSnapshot(snapshot: MasterySnapshot): Promise<void> {
   await runStoreRequest('readwrite', (store) => store.put(normalizeSnapshot(snapshot)));
+}
+
+export async function replaceSnapshots(snapshots: MasterySnapshot[]): Promise<void> {
+  const normalizedSnapshots = snapshots.map(normalizeSnapshot);
+
+  await runStoreTransaction('readwrite', (store) => {
+    store.clear();
+
+    normalizedSnapshots.forEach((snapshot) => {
+      store.put(snapshot);
+    });
+  });
 }
 
 export async function listSnapshots(): Promise<MasterySnapshot[]> {

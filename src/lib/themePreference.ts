@@ -26,3 +26,11 @@ export function persistAppTheme(theme: AppTheme): void {
     // Ignore storage failures so theming stays non-fatal.
   }
 }
+
+export function clearStoredAppTheme(): void {
+  try {
+    window.localStorage.removeItem(APP_THEME_STORAGE_KEY);
+  } catch {
+    // Ignore storage failures so theming stays non-fatal.
+  }
+}

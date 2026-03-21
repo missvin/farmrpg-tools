@@ -5,6 +5,7 @@ import {
   getSnapshot,
   listSnapshotSummaries,
   listSnapshots,
+  replaceSnapshots,
   saveSnapshot,
   type MasterySnapshot,
 } from './masterySnapshots';
@@ -60,6 +61,19 @@ class FakeObjectStore {
     });
 
     return request as unknown as IDBRequest<StoredValue | undefined>;
+  }
+
+  clear(): IDBRequest<undefined> {
+    const request = new FakeRequest<undefined>();
+
+    queueMicrotask(() => {
+      this.values.clear();
+      request.result = undefined;
+      request.onsuccess?.call(request as unknown as IDBRequest<undefined>, new Event('success'));
+      this.transaction.finish();
+    });
+
+    return request as unknown as IDBRequest<undefined>;
   }
 }
 
@@ -248,5 +262,29 @@ describe('masterySnapshots storage', () => {
       savedAt: '2026-03-16T09:00:00.000Z',
       importedAt: '2026-03-16T09:00:00.000Z',
     });
+  });
+
+  it('replaces stored snapshots instead of merging them during restore-style writes', async () => {
+    vi.stubGlobal(
+      'indexedDB',
+      createFakeIndexedDb([
+        createSnapshot({
+          snapshotId: 'snapshot-old',
+          createdAt: '2026-03-15T09:00:00.000Z',
+        }),
+      ]),
+    );
+
+    await replaceSnapshots([
+      createSnapshot({
+        snapshotId: 'snapshot-restored',
+        createdAt: '2026-03-19T09:00:00.000Z',
+      }),
+    ]);
+
+    const snapshots = await listSnapshots();
+
+    expect(snapshots).toHaveLength(1);
+    expect(snapshots[0]?.snapshotId).toBe('snapshot-restored');
   });
 });
