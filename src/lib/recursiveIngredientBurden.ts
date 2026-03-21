@@ -4,6 +4,7 @@ import { getTowerRequirementThreshold } from './deriveTowerRequirements';
 import { type TowerRequirementsData, type TowerMasteryLevelNeeded } from './loadTowerRequirements';
 import { type MasterySnapshot } from './storage/masterySnapshots';
 import { type UserCraftingModifierState } from './craftingModifierState';
+import { getCraftingPlanningPolicy, type CraftingPlanningPolicy } from './craftingPlanningPolicy';
 
 export type IngredientBurdenGoalScope = 'M' | 'GM' | 'MM' | 'Tower';
 
@@ -38,7 +39,7 @@ export type IngredientBurdenUnresolvedGoal = {
   currentMastery: number;
   targetMastery: number;
   remainingMastery: number;
-  reason: 'not_craft_recipe' | 'missing_recipe';
+  reason: 'not_craft_recipe' | 'missing_recipe' | 'excluded_recipe_policy';
   towerTarget: TowerIngredientBurdenTarget | null;
 };
 
@@ -224,6 +225,7 @@ function buildMasteryRootGoals(
   input: RecursiveIngredientBurdenInput,
   itemNameLookup: Record<string, string>,
   masteryGainPerEffectiveOutput: number,
+  planningPolicy: CraftingPlanningPolicy,
 ): { rootGoals: IngredientBurdenRootGoal[]; unresolvedGoals: IngredientBurdenUnresolvedGoal[] } {
   const targetMastery = MASTERY_TARGETS[scope];
   const rootGoals: IngredientBurdenRootGoal[] = [];
@@ -251,6 +253,20 @@ function buildMasteryRootGoals(
         targetMastery,
         remainingMastery,
         reason: 'not_craft_recipe',
+        towerTarget: null,
+      });
+      continue;
+    }
+
+    if (planningPolicy.excludedCraftRecipeOutputKeys.has(canonicalKey)) {
+      unresolvedGoals.push({
+        scope,
+        outputCanonicalKey: canonicalKey,
+        outputItemName,
+        currentMastery,
+        targetMastery,
+        remainingMastery,
+        reason: 'excluded_recipe_policy',
         towerTarget: null,
       });
       continue;
@@ -290,6 +306,7 @@ function buildTowerRootGoals(
   input: RecursiveIngredientBurdenInput,
   itemNameLookup: Record<string, string>,
   masteryGainPerEffectiveOutput: number,
+  planningPolicy: CraftingPlanningPolicy,
 ): { rootGoals: IngredientBurdenRootGoal[]; unresolvedGoals: IngredientBurdenUnresolvedGoal[] } {
   const towerEntries = input.towerRequirementsData?.entries ?? [];
   const maxTowerLevel = input.towerTarget?.maxTowerLevel ?? null;
@@ -347,6 +364,22 @@ function buildTowerRootGoals(
       continue;
     }
 
+    if (planningPolicy.excludedCraftRecipeOutputKeys.has(canonicalKey)) {
+      unresolvedGoals.push({
+        scope: 'Tower',
+        outputCanonicalKey: canonicalKey,
+        outputItemName,
+        currentMastery,
+        targetMastery,
+        remainingMastery,
+        reason: 'excluded_recipe_policy',
+        towerTarget: {
+          maxTowerLevel,
+        },
+      });
+      continue;
+    }
+
     const desiredEffectiveOutput = remainingMastery / masteryGainPerEffectiveOutput;
     const craftCalculation = calculateCraftRecipeRequiredCraftCount({
       recipeGraph: input.recipeGraph,
@@ -392,6 +425,7 @@ function buildScopeResult(
   input: RecursiveIngredientBurdenInput,
   itemNameLookup: Record<string, string>,
   craftRecipeTopologicalOrder: string[],
+  planningPolicy: CraftingPlanningPolicy,
 ): IngredientBurdenScopeResult {
   const demandMap = new Map<string, InternalDemandNode>();
 
@@ -411,6 +445,10 @@ function buildScopeResult(
   }
 
   for (const canonicalKey of craftRecipeTopologicalOrder) {
+    if (planningPolicy.excludedCraftRecipeOutputKeys.has(canonicalKey)) {
+      continue;
+    }
+
     const node = demandMap.get(canonicalKey);
 
     if (!node || node.totalRequiredEffectiveOutput <= 0) {
@@ -442,6 +480,10 @@ function buildScopeResult(
     );
 
     for (const recipeInput of input.recipeGraph.byOutputCanonicalKey[canonicalKey].inputs) {
+      if (planningPolicy.autoSuppliedIngredientKeys.has(recipeInput.canonicalKey)) {
+        continue;
+      }
+
       const inputIsCraftable = input.recipeGraph.byOutputCanonicalKey[recipeInput.canonicalKey]?.recipeType === 'craft';
       const childDemand = requiredCraftOperations * recipeInput.quantity;
 
@@ -538,6 +580,7 @@ export function calculateRecursiveIngredientBurden(
 ): RecursiveIngredientBurdenResult {
   const craftRecipeTopologicalOrder = validateAcyclicCraftRecipeGraph(input.recipeGraph);
   const itemNameLookup = buildItemNameLookup(input.recipeGraph, input.towerRequirementsData);
+  const planningPolicy = getCraftingPlanningPolicy(input.modifierState);
   const modifierTotals = getCraftingModifierTotals(input.modifierState);
   const masteryGainPerEffectiveOutput = calculateEffectiveMasteryGain({
     baseMasteryGain: 1,
@@ -550,11 +593,20 @@ export function calculateRecursiveIngredientBurden(
       input,
       itemNameLookup,
       masteryGainPerEffectiveOutput,
+      planningPolicy,
     );
 
     return [
       scope,
-      buildScopeResult(scope, rootGoals, unresolvedGoals, input, itemNameLookup, craftRecipeTopologicalOrder),
+      buildScopeResult(
+        scope,
+        rootGoals,
+        unresolvedGoals,
+        input,
+        itemNameLookup,
+        craftRecipeTopologicalOrder,
+        planningPolicy,
+      ),
     ] as const;
   });
 
@@ -562,6 +614,7 @@ export function calculateRecursiveIngredientBurden(
     input,
     itemNameLookup,
     masteryGainPerEffectiveOutput,
+    planningPolicy,
   );
 
   const scopeResults = Object.fromEntries([
@@ -575,6 +628,7 @@ export function calculateRecursiveIngredientBurden(
         input,
         itemNameLookup,
         craftRecipeTopologicalOrder,
+        planningPolicy,
       ),
     ],
   ]) as Record<IngredientBurdenGoalScope, IngredientBurdenScopeResult>;

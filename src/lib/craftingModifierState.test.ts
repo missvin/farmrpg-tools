@@ -49,6 +49,10 @@ describe('craftingModifierState', () => {
         eventMasteryBonusPercent: 0,
         eventResourceSaverBonusPercent: 0,
       },
+      planning: {
+        includeExcludedRecipes: false,
+        ironDepotActive: false,
+      },
     });
   });
 
@@ -66,6 +70,10 @@ describe('craftingModifierState', () => {
           eventMasteryBonusPercent: '0.17',
           eventResourceSaverBonusPercent: -0.2,
         },
+        planning: {
+          includeExcludedRecipes: 'yes',
+          ironDepotActive: true,
+        },
       }),
     ).toEqual({
       schemaVersion: 1,
@@ -78,6 +86,10 @@ describe('craftingModifierState', () => {
         mushroomStewActive: true,
         eventMasteryBonusPercent: 0.17,
         eventResourceSaverBonusPercent: 0,
+      },
+      planning: {
+        includeExcludedRecipes: false,
+        ironDepotActive: true,
       },
     });
 
@@ -100,6 +112,10 @@ describe('craftingModifierState', () => {
           eventMasteryBonusPercent: 0.17,
           eventResourceSaverBonusPercent: 0.05,
         },
+        planning: {
+          includeExcludedRecipes: true,
+          ironDepotActive: true,
+        },
       },
       storage,
     );
@@ -115,6 +131,10 @@ describe('craftingModifierState', () => {
         mushroomStewActive: true,
         eventMasteryBonusPercent: 0.17,
         eventResourceSaverBonusPercent: 0.05,
+      },
+      planning: {
+        includeExcludedRecipes: true,
+        ironDepotActive: true,
       },
     });
     expect(storage.getItem(CRAFTING_MODIFIER_STATE_STORAGE_KEY)).toBe(
@@ -148,6 +168,10 @@ describe('craftingModifierState', () => {
         mushroomStewActive: true,
         eventMasteryBonusPercent: 0.17,
         eventResourceSaverBonusPercent: 0.05,
+      },
+      planning: {
+        includeExcludedRecipes: false,
+        ironDepotActive: true,
       },
     });
 

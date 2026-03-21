@@ -17,10 +17,16 @@ export type TemporaryCraftingModifierState = {
   eventResourceSaverBonusPercent: number;
 };
 
+export type PlanningCraftingModifierState = {
+  includeExcludedRecipes: boolean;
+  ironDepotActive: boolean;
+};
+
 export type UserCraftingModifierState = {
   schemaVersion: 1;
   persistent: PersistentCraftingModifierState;
   temporary: TemporaryCraftingModifierState;
+  planning: PlanningCraftingModifierState;
 };
 
 export type ActiveCraftingModifierStateEntry = {
@@ -40,6 +46,10 @@ const DEFAULT_USER_CRAFTING_MODIFIER_STATE: UserCraftingModifierState = {
     mushroomStewActive: false,
     eventMasteryBonusPercent: 0,
     eventResourceSaverBonusPercent: 0,
+  },
+  planning: {
+    includeExcludedRecipes: false,
+    ironDepotActive: false,
   },
 };
 
@@ -69,6 +79,7 @@ export function normalizeCraftingModifierState(value: unknown): UserCraftingModi
   const record = value as Partial<UserCraftingModifierState>;
   const persistent = record.persistent && typeof record.persistent === 'object' ? record.persistent : {};
   const temporary = record.temporary && typeof record.temporary === 'object' ? record.temporary : {};
+  const planning = record.planning && typeof record.planning === 'object' ? record.planning : {};
 
   return {
     schemaVersion: 1,
@@ -92,6 +103,14 @@ export function normalizeCraftingModifierState(value: unknown): UserCraftingModi
       ),
       eventResourceSaverBonusPercent: clampPercent(
         (temporary as Partial<TemporaryCraftingModifierState>).eventResourceSaverBonusPercent,
+      ),
+    },
+    planning: {
+      includeExcludedRecipes: toBoolean(
+        (planning as Partial<PlanningCraftingModifierState>).includeExcludedRecipes,
+      ),
+      ironDepotActive: toBoolean(
+        (planning as Partial<PlanningCraftingModifierState>).ironDepotActive,
       ),
     },
   };

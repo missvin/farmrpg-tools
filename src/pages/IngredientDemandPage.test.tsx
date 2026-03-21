@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
@@ -66,19 +66,31 @@ const SNAPSHOT = {
 };
 
 function createBurdenResult(options?: {
+  resourceSaver1Unlocked?: boolean;
+  resourceSaver2Unlocked?: boolean;
+  resourceSaver3Unlocked?: boolean;
   mushroomStewActive?: boolean;
   eventMasteryBonusPercent?: number;
   eventResourceSaverBonusPercent?: number;
+  ironDepotActive?: boolean;
   towerCutoff?: number | null;
 }) {
+  const resourceSaver1Unlocked = options?.resourceSaver1Unlocked ?? false;
+  const resourceSaver2Unlocked = options?.resourceSaver2Unlocked ?? false;
+  const resourceSaver3Unlocked = options?.resourceSaver3Unlocked ?? false;
   const mushroomStewActive = options?.mushroomStewActive ?? false;
   const eventMasteryBonusPercent = options?.eventMasteryBonusPercent ?? 0;
   const eventResourceSaverBonusPercent = options?.eventResourceSaverBonusPercent ?? 0;
+  const ironDepotActive = options?.ironDepotActive ?? false;
   const towerCutoff = options?.towerCutoff ?? null;
 
   const masteryBonusBump = mushroomStewActive ? 2 : 0;
   const eventMasteryBump = eventMasteryBonusPercent > 0 ? 3 : 0;
-  const resourceSaverBump = eventResourceSaverBonusPercent > 0 ? 1 : 0;
+  const permanentSaverBump =
+    (resourceSaver1Unlocked ? 1 : 0) +
+    (resourceSaver2Unlocked ? 2 : 0) +
+    (resourceSaver3Unlocked ? 3 : 0);
+  const resourceSaverBump = (eventResourceSaverBonusPercent > 0 ? 1 : 0) + permanentSaverBump;
   const mValue = 22 + masteryBonusBump + eventMasteryBump;
   const gmValue = 90_003 + masteryBonusBump + resourceSaverBump;
   const mmValue = 2_299_999 + eventMasteryBump + resourceSaverBump;
@@ -201,6 +213,23 @@ function createBurdenResult(options?: {
           },
         },
       },
+      ...(ironDepotActive
+        ? {}
+        : {
+            iron: {
+              canonicalKey: 'iron',
+              itemName: 'Iron',
+              isCraftable: false,
+              totalRequiredEffectiveOutput: 5,
+              totalRequiredCraftOperations: 0,
+              byScope: {
+                M: {
+                  requiredEffectiveOutput: 5,
+                  requiredCraftOperations: 0,
+                },
+              },
+            },
+          }),
       twine: {
         canonicalKey: 'twine',
         itemName: 'Twine',
@@ -258,20 +287,26 @@ describe('IngredientDemandPage', () => {
         eventMasteryBonusPercent: 0,
         eventResourceSaverBonusPercent: 0,
       },
+      planning: {
+        includeExcludedRecipes: false,
+        ironDepotActive: false,
+      },
     });
     calculateRecursiveIngredientBurden.mockImplementation(({ modifierState, towerTarget }) =>
       createBurdenResult({
+        resourceSaver1Unlocked: modifierState.persistent.resourceSaver1Unlocked,
+        resourceSaver2Unlocked: modifierState.persistent.resourceSaver2Unlocked,
+        resourceSaver3Unlocked: modifierState.persistent.resourceSaver3Unlocked,
         mushroomStewActive: modifierState.temporary.mushroomStewActive,
         eventMasteryBonusPercent: modifierState.temporary.eventMasteryBonusPercent,
         eventResourceSaverBonusPercent: modifierState.temporary.eventResourceSaverBonusPercent,
+        ironDepotActive: modifierState.planning.ironDepotActive,
         towerCutoff: towerTarget?.maxTowerLevel ?? null,
       }),
     );
   });
 
   it('supports ingredient search and renders recursive burden grouped by scope', async () => {
-    const user = userEvent.setup();
-
     render(
       <MemoryRouter>
         <IngredientDemandPage />
@@ -279,8 +314,7 @@ describe('IngredientDemandPage', () => {
     );
 
     const ingredientInput = await screen.findByLabelText('Ingredient');
-    await user.clear(ingredientInput);
-    await user.type(ingredientInput, 'Twine');
+    fireEvent.change(ingredientInput, { target: { value: 'Twine' } });
 
     expect(await screen.findByText('Selected ingredient')).toBeInTheDocument();
     expect(screen.getByText('Twine')).toBeInTheDocument();
@@ -293,7 +327,7 @@ describe('IngredientDemandPage', () => {
     expect(screen.getByText('Large Net')).toBeInTheDocument();
   });
 
-  it('wires assumption controls through the existing modifier pipeline', async () => {
+  it('wires permanent saver, temporary bonuses, and Iron Depot through the shared modifier pipeline', async () => {
     const user = userEvent.setup();
 
     render(
@@ -304,16 +338,25 @@ describe('IngredientDemandPage', () => {
 
     await screen.findByLabelText('Ingredient');
 
+    await user.click(screen.getByLabelText('Resource Saver I'));
+    await user.click(screen.getByLabelText('Resource Saver III'));
     await user.selectOptions(screen.getByLabelText('Mushroom Stew active'), 'yes');
     await user.type(screen.getByLabelText('Event mastery bonus %'), '17');
     await user.type(screen.getByLabelText('Event resource saver %'), '5');
+    await user.click(screen.getByLabelText('Iron Depot active'));
 
     await waitFor(() => {
       const latestCall = calculateRecursiveIngredientBurden.mock.calls.at(-1)?.[0];
+      expect(latestCall.modifierState.persistent.resourceSaver1Unlocked).toBe(true);
+      expect(latestCall.modifierState.persistent.resourceSaver2Unlocked).toBe(false);
+      expect(latestCall.modifierState.persistent.resourceSaver3Unlocked).toBe(true);
       expect(latestCall.modifierState.temporary.mushroomStewActive).toBe(true);
       expect(latestCall.modifierState.temporary.eventMasteryBonusPercent).toBeCloseTo(0.17);
       expect(latestCall.modifierState.temporary.eventResourceSaverBonusPercent).toBeCloseTo(0.05);
+      expect(latestCall.modifierState.planning.ironDepotActive).toBe(true);
     });
+
+    expect(screen.queryByText('Iron')).not.toBeInTheDocument();
   });
 
   it('passes Tower cutoff selection through to the burden engine and updates Tower results', async () => {
@@ -326,8 +369,7 @@ describe('IngredientDemandPage', () => {
     );
 
     const ingredientInput = await screen.findByLabelText('Ingredient');
-    await user.clear(ingredientInput);
-    await user.type(ingredientInput, 'Twine');
+    fireEvent.change(ingredientInput, { target: { value: 'Twine' } });
     await user.type(screen.getByLabelText('Tower max level'), '250');
 
     await waitFor(() => {

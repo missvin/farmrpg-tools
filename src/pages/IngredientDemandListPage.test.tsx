@@ -66,16 +66,28 @@ const SNAPSHOT = {
 };
 
 function createBurdenResult(options?: {
+  resourceSaver1Unlocked?: boolean;
+  resourceSaver2Unlocked?: boolean;
+  resourceSaver3Unlocked?: boolean;
   mushroomStewActive?: boolean;
   eventMasteryBonusPercent?: number;
   eventResourceSaverBonusPercent?: number;
+  ironDepotActive?: boolean;
   towerCutoff?: number | null;
 }) {
+  const resourceSaver1Unlocked = options?.resourceSaver1Unlocked ?? false;
+  const resourceSaver2Unlocked = options?.resourceSaver2Unlocked ?? false;
+  const resourceSaver3Unlocked = options?.resourceSaver3Unlocked ?? false;
   const mushroomStewActive = options?.mushroomStewActive ?? false;
   const eventMasteryBonusPercent = options?.eventMasteryBonusPercent ?? 0;
   const eventResourceSaverBonusPercent = options?.eventResourceSaverBonusPercent ?? 0;
+  const ironDepotActive = options?.ironDepotActive ?? false;
   const towerCutoff = options?.towerCutoff ?? null;
 
+  const permanentSaverBump =
+    (resourceSaver1Unlocked ? 1 : 0) +
+    (resourceSaver2Unlocked ? 2 : 0) +
+    (resourceSaver3Unlocked ? 3 : 0);
   const twineMValue = 22 + (mushroomStewActive ? 2 : 0) + (eventMasteryBonusPercent > 0 ? 3 : 0);
   const twineTowerValue = towerCutoff === 250 ? 4 : 8;
 
@@ -128,6 +140,23 @@ function createBurdenResult(options?: {
           },
         },
       },
+      ...(ironDepotActive
+        ? {}
+        : {
+            iron: {
+              canonicalKey: 'iron',
+              itemName: 'Iron',
+              isCraftable: false,
+              totalRequiredEffectiveOutput: 5,
+              totalRequiredCraftOperations: 0,
+              byScope: {
+                M: {
+                  requiredEffectiveOutput: 5,
+                  requiredCraftOperations: 0,
+                },
+              },
+            },
+          }),
       rope: {
         canonicalKey: 'rope',
         itemName: 'Rope',
@@ -150,11 +179,11 @@ function createBurdenResult(options?: {
         itemName: 'Twine',
         isCraftable: true,
         totalRequiredEffectiveOutput: 200 + twineMValue + twineTowerValue,
-        totalRequiredCraftOperations: 180 + twineMValue + twineTowerValue,
+        totalRequiredCraftOperations: 180 + twineMValue + twineTowerValue - permanentSaverBump,
         byScope: {
           M: {
             requiredEffectiveOutput: twineMValue,
-            requiredCraftOperations: twineMValue - 1,
+            requiredCraftOperations: twineMValue - 1 - permanentSaverBump,
           },
           GM: {
             requiredEffectiveOutput: 200,
@@ -198,12 +227,20 @@ describe('IngredientDemandListPage', () => {
         eventMasteryBonusPercent: 0,
         eventResourceSaverBonusPercent: 0,
       },
+      planning: {
+        includeExcludedRecipes: false,
+        ironDepotActive: false,
+      },
     });
     calculateRecursiveIngredientBurden.mockImplementation(({ modifierState, towerTarget }) =>
       createBurdenResult({
+        resourceSaver1Unlocked: modifierState.persistent.resourceSaver1Unlocked,
+        resourceSaver2Unlocked: modifierState.persistent.resourceSaver2Unlocked,
+        resourceSaver3Unlocked: modifierState.persistent.resourceSaver3Unlocked,
         mushroomStewActive: modifierState.temporary.mushroomStewActive,
         eventMasteryBonusPercent: modifierState.temporary.eventMasteryBonusPercent,
         eventResourceSaverBonusPercent: modifierState.temporary.eventResourceSaverBonusPercent,
+        ironDepotActive: modifierState.planning.ironDepotActive,
         towerCutoff: towerTarget?.maxTowerLevel ?? null,
       }),
     );
@@ -222,8 +259,9 @@ describe('IngredientDemandListPage', () => {
 
     const table = screen.getByRole('table');
     const initialRows = within(table).getAllByRole('row');
-    expect(initialRows[1]).toHaveTextContent('Fiber');
-    expect(initialRows[2]).toHaveTextContent('Twine');
+    expect(initialRows[1]).toHaveTextContent('Iron');
+    expect(initialRows[2]).toHaveTextContent('Fiber');
+    expect(initialRows[3]).toHaveTextContent('Twine');
     expect(screen.queryByText('Rope')).not.toBeInTheDocument();
 
     await user.selectOptions(screen.getByLabelText('Sort direction'), 'desc');
@@ -231,9 +269,10 @@ describe('IngredientDemandListPage', () => {
     const descendingRows = within(table).getAllByRole('row');
     expect(descendingRows[1]).toHaveTextContent('Twine');
     expect(descendingRows[2]).toHaveTextContent('Fiber');
+    expect(descendingRows[3]).toHaveTextContent('Iron');
   });
 
-  it('wires assumption controls through the existing modifier pipeline', async () => {
+  it('wires permanent saver, temporary bonuses, and Iron Depot through the existing modifier pipeline', async () => {
     const user = userEvent.setup();
 
     render(
@@ -244,16 +283,22 @@ describe('IngredientDemandListPage', () => {
 
     await screen.findByLabelText('Goal scope');
 
+    await user.click(screen.getByLabelText('Resource Saver II'));
     await user.selectOptions(screen.getByLabelText('Mushroom Stew active'), 'yes');
     await user.type(screen.getByLabelText('Event mastery bonus %'), '17');
     await user.type(screen.getByLabelText('Event resource saver %'), '5');
+    await user.click(screen.getByLabelText('Iron Depot active'));
 
     await waitFor(() => {
       const latestCall = calculateRecursiveIngredientBurden.mock.calls.at(-1)?.[0];
+      expect(latestCall.modifierState.persistent.resourceSaver2Unlocked).toBe(true);
       expect(latestCall.modifierState.temporary.mushroomStewActive).toBe(true);
       expect(latestCall.modifierState.temporary.eventMasteryBonusPercent).toBeCloseTo(0.17);
       expect(latestCall.modifierState.temporary.eventResourceSaverBonusPercent).toBeCloseTo(0.05);
+      expect(latestCall.modifierState.planning.ironDepotActive).toBe(true);
     });
+
+    expect(screen.queryByText('Iron')).not.toBeInTheDocument();
   });
 
   it('supports Tower-specific scope and cutoff handling', async () => {

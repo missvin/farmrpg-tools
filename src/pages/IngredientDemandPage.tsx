@@ -4,6 +4,7 @@ import { PageIntro } from '../components/PageIntro';
 import {
   createDefaultCraftingModifierState,
   loadCraftingModifierState,
+  saveCraftingModifierState,
   type UserCraftingModifierState,
 } from '../lib/craftingModifierState';
 import { loadRecipeGraph, type RecipeGraph } from '../lib/loadRecipeGraph';
@@ -22,9 +23,7 @@ type ItemOption = {
 };
 
 function formatAmount(value: number): string {
-  return Number.isInteger(value)
-    ? value.toLocaleString()
-    : value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  return Math.round(value).toLocaleString();
 }
 
 function formatScopeLabel(scope: IngredientBurdenGoalScope): string {
@@ -91,6 +90,12 @@ export function IngredientDemandPage() {
   const [ingredientQuery, setIngredientQuery] = useState('');
   const [selectedCanonicalKey, setSelectedCanonicalKey] = useState('');
   const [towerCutoffInput, setTowerCutoffInput] = useState('');
+
+  function updateModifierState(
+    updater: (current: UserCraftingModifierState) => UserCraftingModifierState,
+  ): void {
+    setModifierState((current) => saveCraftingModifierState(updater(current)));
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -334,6 +339,61 @@ export function IngredientDemandPage() {
 
             <div className="summary-grid">
               <div className="page-stack page-stack--tight">
+                <span className="field-label">Permanent Resource Saver</span>
+                <label className="checkbox-field" htmlFor="ingredient-demand-resource-saver-1">
+                  <input
+                    id="ingredient-demand-resource-saver-1"
+                    type="checkbox"
+                    checked={modifierState.persistent.resourceSaver1Unlocked}
+                    onChange={(event) =>
+                      updateModifierState((current) => ({
+                        ...current,
+                        persistent: {
+                          ...current.persistent,
+                          resourceSaver1Unlocked: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  <span>Resource Saver I</span>
+                </label>
+                <label className="checkbox-field" htmlFor="ingredient-demand-resource-saver-2">
+                  <input
+                    id="ingredient-demand-resource-saver-2"
+                    type="checkbox"
+                    checked={modifierState.persistent.resourceSaver2Unlocked}
+                    onChange={(event) =>
+                      updateModifierState((current) => ({
+                        ...current,
+                        persistent: {
+                          ...current.persistent,
+                          resourceSaver2Unlocked: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  <span>Resource Saver II</span>
+                </label>
+                <label className="checkbox-field" htmlFor="ingredient-demand-resource-saver-3">
+                  <input
+                    id="ingredient-demand-resource-saver-3"
+                    type="checkbox"
+                    checked={modifierState.persistent.resourceSaver3Unlocked}
+                    onChange={(event) =>
+                      updateModifierState((current) => ({
+                        ...current,
+                        persistent: {
+                          ...current.persistent,
+                          resourceSaver3Unlocked: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  <span>Resource Saver III</span>
+                </label>
+              </div>
+
+              <div className="page-stack page-stack--tight">
                 <label className="field-label" htmlFor="ingredient-demand-mushroom-stew">
                   Mushroom Stew active
                 </label>
@@ -342,7 +402,7 @@ export function IngredientDemandPage() {
                   className="text-input"
                   value={modifierState.temporary.mushroomStewActive ? 'yes' : 'no'}
                   onChange={(event) =>
-                    setModifierState((current) => ({
+                    updateModifierState((current) => ({
                       ...current,
                       temporary: {
                         ...current.temporary,
@@ -368,7 +428,7 @@ export function IngredientDemandPage() {
                   step="0.1"
                   value={modifierState.temporary.eventMasteryBonusPercent === 0 ? '' : modifierState.temporary.eventMasteryBonusPercent * 100}
                   onChange={(event) =>
-                    setModifierState((current) => ({
+                    updateModifierState((current) => ({
                       ...current,
                       temporary: {
                         ...current.temporary,
@@ -392,7 +452,7 @@ export function IngredientDemandPage() {
                   step="0.1"
                   value={modifierState.temporary.eventResourceSaverBonusPercent === 0 ? '' : modifierState.temporary.eventResourceSaverBonusPercent * 100}
                   onChange={(event) =>
-                    setModifierState((current) => ({
+                    updateModifierState((current) => ({
                       ...current,
                       temporary: {
                         ...current.temporary,
@@ -402,6 +462,27 @@ export function IngredientDemandPage() {
                   }
                   placeholder="0"
                 />
+              </div>
+
+              <div className="page-stack page-stack--tight">
+                <span className="field-label">Planning assumptions</span>
+                <label className="checkbox-field" htmlFor="ingredient-demand-iron-depot">
+                  <input
+                    id="ingredient-demand-iron-depot"
+                    type="checkbox"
+                    checked={modifierState.planning.ironDepotActive}
+                    onChange={(event) =>
+                      updateModifierState((current) => ({
+                        ...current,
+                        planning: {
+                          ...current.planning,
+                          ironDepotActive: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  <span>Iron Depot active</span>
+                </label>
               </div>
 
               <div className="page-stack page-stack--tight">
@@ -422,8 +503,9 @@ export function IngredientDemandPage() {
             </div>
 
             <p className="subtle-text">
-              Temporary controls feed the existing modifier model and calculation engine. Resource saver stays separate
-              from mastery bonuses, and Tower burden respects the selected level cutoff when provided.
+              Planner controls feed the shared modifier model and burden engine. Permanent saver perks stack with event
+              saver bonuses, Iron Depot treats Iron as auto-supplied and non-blocking, and dominated craft recipes such
+              as Unpolished Shimmer Stone stay excluded by default in planning.
             </p>
           </>
         ) : null}

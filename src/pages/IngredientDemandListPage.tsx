@@ -4,6 +4,7 @@ import { PageIntro } from '../components/PageIntro';
 import {
   createDefaultCraftingModifierState,
   loadCraftingModifierState,
+  saveCraftingModifierState,
   type UserCraftingModifierState,
 } from '../lib/craftingModifierState';
 import { loadRecipeGraph, type RecipeGraph } from '../lib/loadRecipeGraph';
@@ -28,9 +29,7 @@ type IngredientDemandListRow = {
 type SortDirection = 'asc' | 'desc';
 
 function formatAmount(value: number): string {
-  return Number.isInteger(value)
-    ? value.toLocaleString()
-    : value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  return Math.round(value).toLocaleString();
 }
 
 function formatScopeLabel(scope: IngredientBurdenGoalScope): string {
@@ -111,6 +110,12 @@ export function IngredientDemandListPage() {
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [hideZeroDemand, setHideZeroDemand] = useState(true);
   const [towerCutoffInput, setTowerCutoffInput] = useState('');
+
+  function updateModifierState(
+    updater: (current: UserCraftingModifierState) => UserCraftingModifierState,
+  ): void {
+    setModifierState((current) => saveCraftingModifierState(updater(current)));
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -310,6 +315,61 @@ export function IngredientDemandListPage() {
           <>
             <div className="summary-grid">
               <div className="page-stack page-stack--tight">
+                <span className="field-label">Permanent Resource Saver</span>
+                <label className="checkbox-field" htmlFor="ingredient-demand-list-resource-saver-1">
+                  <input
+                    id="ingredient-demand-list-resource-saver-1"
+                    type="checkbox"
+                    checked={modifierState.persistent.resourceSaver1Unlocked}
+                    onChange={(event) =>
+                      updateModifierState((current) => ({
+                        ...current,
+                        persistent: {
+                          ...current.persistent,
+                          resourceSaver1Unlocked: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  <span>Resource Saver I</span>
+                </label>
+                <label className="checkbox-field" htmlFor="ingredient-demand-list-resource-saver-2">
+                  <input
+                    id="ingredient-demand-list-resource-saver-2"
+                    type="checkbox"
+                    checked={modifierState.persistent.resourceSaver2Unlocked}
+                    onChange={(event) =>
+                      updateModifierState((current) => ({
+                        ...current,
+                        persistent: {
+                          ...current.persistent,
+                          resourceSaver2Unlocked: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  <span>Resource Saver II</span>
+                </label>
+                <label className="checkbox-field" htmlFor="ingredient-demand-list-resource-saver-3">
+                  <input
+                    id="ingredient-demand-list-resource-saver-3"
+                    type="checkbox"
+                    checked={modifierState.persistent.resourceSaver3Unlocked}
+                    onChange={(event) =>
+                      updateModifierState((current) => ({
+                        ...current,
+                        persistent: {
+                          ...current.persistent,
+                          resourceSaver3Unlocked: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  <span>Resource Saver III</span>
+                </label>
+              </div>
+
+              <div className="page-stack page-stack--tight">
                 <label className="field-label" htmlFor="ingredient-demand-list-scope">
                   Goal scope
                 </label>
@@ -350,7 +410,7 @@ export function IngredientDemandListPage() {
                   className="text-input"
                   value={modifierState.temporary.mushroomStewActive ? 'yes' : 'no'}
                   onChange={(event) =>
-                    setModifierState((current) => ({
+                    updateModifierState((current) => ({
                       ...current,
                       temporary: {
                         ...current.temporary,
@@ -380,7 +440,7 @@ export function IngredientDemandListPage() {
                       : modifierState.temporary.eventMasteryBonusPercent * 100
                   }
                   onChange={(event) =>
-                    setModifierState((current) => ({
+                    updateModifierState((current) => ({
                       ...current,
                       temporary: {
                         ...current.temporary,
@@ -408,7 +468,7 @@ export function IngredientDemandListPage() {
                       : modifierState.temporary.eventResourceSaverBonusPercent * 100
                   }
                   onChange={(event) =>
-                    setModifierState((current) => ({
+                    updateModifierState((current) => ({
                       ...current,
                       temporary: {
                         ...current.temporary,
@@ -418,6 +478,27 @@ export function IngredientDemandListPage() {
                   }
                   placeholder="0"
                 />
+              </div>
+
+              <div className="page-stack page-stack--tight">
+                <span className="field-label">Planning assumptions</span>
+                <label className="checkbox-field" htmlFor="ingredient-demand-list-iron-depot">
+                  <input
+                    id="ingredient-demand-list-iron-depot"
+                    type="checkbox"
+                    checked={modifierState.planning.ironDepotActive}
+                    onChange={(event) =>
+                      updateModifierState((current) => ({
+                        ...current,
+                        planning: {
+                          ...current.planning,
+                          ironDepotActive: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  <span>Iron Depot active</span>
+                </label>
               </div>
 
               <div className="page-stack page-stack--tight">
@@ -448,8 +529,9 @@ export function IngredientDemandListPage() {
             </label>
 
             <p className="subtle-text">
-              List values come from the shared recursive burden engine. Resource saver and mastery bonuses still flow
-              through the existing modifier model, and Tower scope respects the selected max level when provided.
+              List values come from the shared recursive burden engine. Permanent saver perks, temporary mastery
+              bonuses, and Iron Depot all flow through the shared planning model, and dominated craft recipes stay
+              excluded by default unless planner policy changes later.
             </p>
           </>
         ) : null}

@@ -46,6 +46,10 @@ describe('craftingMasteryEngine', () => {
         eventMasteryBonusPercent: 0,
         eventResourceSaverBonusPercent: 0,
       },
+      planning: {
+        includeExcludedRecipes: false,
+        ironDepotActive: false,
+      },
     };
 
     const craftedOutput = calculateEffectiveCraftedOutput({
@@ -80,6 +84,10 @@ describe('craftingMasteryEngine', () => {
         mushroomStewActive: false,
         eventMasteryBonusPercent: 0,
         eventResourceSaverBonusPercent: 0.17,
+      },
+      planning: {
+        includeExcludedRecipes: false,
+        ironDepotActive: false,
       },
     };
 
@@ -123,6 +131,10 @@ describe('craftingMasteryEngine', () => {
         eventMasteryBonusPercent: 0.17,
         eventResourceSaverBonusPercent: 0.05,
       },
+      planning: {
+        includeExcludedRecipes: false,
+        ironDepotActive: false,
+      },
     };
 
     const masteryGain = calculateEffectiveMasteryGain({
@@ -151,6 +163,10 @@ describe('craftingMasteryEngine', () => {
         mushroomStewActive: false,
         eventMasteryBonusPercent: 0,
         eventResourceSaverBonusPercent: 0,
+      },
+      planning: {
+        includeExcludedRecipes: false,
+        ironDepotActive: false,
       },
     };
 

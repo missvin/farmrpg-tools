@@ -20,6 +20,31 @@ fishing net,Fishing Net,2,Twine,twine,1
 large net,Large Net,1,Fishing Net,fishing net,2
 large net,Large Net,2,Rope,rope,1`;
 
+const SHIMMER_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url
+Unpolished Shimmer Stone,unpolished shimmer stone,craft,,,,,https://buddy.farm/i/unpolished-shimmer-stone/
+Shimmer Stone,shimmer stone,craft,,,,,https://buddy.farm/i/shimmer-stone/`;
+
+const SHIMMER_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
+unpolished shimmer stone,Unpolished Shimmer Stone,1,Emberstone,emberstone,1
+unpolished shimmer stone,Unpolished Shimmer Stone,2,Sandstone,sandstone,1
+shimmer stone,Shimmer Stone,1,Unpolished Shimmer Stone,unpolished shimmer stone,2`;
+
+const MAGNA_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url
+Magna Core,magna core,craft,,,,,https://buddy.farm/i/magna-core/
+Void Globe,void globe,craft,,,,,https://buddy.farm/i/void-globe/`;
+
+const MAGNA_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
+magna core,Magna Core,1,Seeing Stone,seeing stone,1
+magna core,Magna Core,2,Wishing Well,wishing well,10
+void globe,Void Globe,1,Magna Core,magna core,2`;
+
+const IRON_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url
+Fancy Pipe,fancy pipe,craft,,,,,https://buddy.farm/i/fancy-pipe/`;
+
+const IRON_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
+fancy pipe,Fancy Pipe,1,Wood,wood,10
+fancy pipe,Fancy Pipe,2,Iron,iron,1`;
+
 function createSnapshot(masteryByItem: Record<string, number>): MasterySnapshot {
   return {
     snapshotId: 'snapshot-1',
@@ -115,6 +140,10 @@ describe('calculateRecursiveIngredientBurden', () => {
           eventMasteryBonusPercent: 0,
           eventResourceSaverBonusPercent: 0,
         },
+        planning: {
+          includeExcludedRecipes: false,
+          ironDepotActive: false,
+        },
       },
     });
 
@@ -154,6 +183,177 @@ describe('calculateRecursiveIngredientBurden', () => {
       (result.ingredientBurdenByCanonicalKey.twine.byScope.MM?.requiredEffectiveOutput ?? 0) >
         (result.ingredientBurdenByCanonicalKey.twine.byScope.GM?.requiredEffectiveOutput ?? 0),
     ).toBe(true);
+  });
+
+  it('excludes dominated recipes like Unpolished Shimmer Stone from recursive planning by default', () => {
+    const recipeGraph = buildRecipeGraph(
+      parseRecipesCsv(SHIMMER_RECIPES_CSV),
+      parseRecipeInputsCsv(SHIMMER_RECIPE_INPUTS_CSV),
+    );
+    const snapshot = createSnapshot({
+      'shimmer stone': 9_999,
+      'unpolished shimmer stone': 0,
+    });
+
+    const result = calculateRecursiveIngredientBurden({
+      recipeGraph,
+      snapshot,
+      modifierState: createDefaultCraftingModifierState(),
+    });
+
+    expect(result.scopeResults.M.ingredientBurdenByCanonicalKey['unpolished shimmer stone']).toMatchObject({
+      totalRequiredEffectiveOutput: 2,
+      totalRequiredCraftOperations: 0,
+      isCraftable: true,
+    });
+    expect(result.scopeResults.M.ingredientBurdenByCanonicalKey.emberstone).toBeUndefined();
+    expect(result.scopeResults.M.ingredientBurdenByCanonicalKey.sandstone).toBeUndefined();
+    expect(
+      result.scopeResults.M.unresolvedGoals.find((goal) => goal.outputCanonicalKey === 'unpolished shimmer stone'),
+    ).toMatchObject({
+      reason: 'excluded_recipe_policy',
+    });
+  });
+
+  it('can include an excluded recipe again when planner policy opts in', () => {
+    const recipeGraph = buildRecipeGraph(
+      parseRecipesCsv(SHIMMER_RECIPES_CSV),
+      parseRecipeInputsCsv(SHIMMER_RECIPE_INPUTS_CSV),
+    );
+    const snapshot = createSnapshot({
+      'shimmer stone': 9_999,
+    });
+
+    const result = calculateRecursiveIngredientBurden({
+      recipeGraph,
+      snapshot,
+      modifierState: {
+        ...createDefaultCraftingModifierState(),
+        planning: {
+          includeExcludedRecipes: true,
+          ironDepotActive: false,
+        },
+      },
+    });
+
+    expect(
+      result.scopeResults.M.unresolvedGoals.find((goal) => goal.outputCanonicalKey === 'unpolished shimmer stone'),
+    ).toBeUndefined();
+    expect(result.scopeResults.M.ingredientBurdenByCanonicalKey.emberstone).toMatchObject({
+      totalRequiredEffectiveOutput: 2,
+      isCraftable: false,
+    });
+    expect(result.scopeResults.M.ingredientBurdenByCanonicalKey.sandstone).toMatchObject({
+      totalRequiredEffectiveOutput: 2,
+      isCraftable: false,
+    });
+  });
+
+  it('excludes Magna Core from recursive planning by default', () => {
+    const recipeGraph = buildRecipeGraph(
+      parseRecipesCsv(MAGNA_RECIPES_CSV),
+      parseRecipeInputsCsv(MAGNA_RECIPE_INPUTS_CSV),
+    );
+    const snapshot = createSnapshot({
+      'void globe': 9_999,
+      'magna core': 0,
+    });
+
+    const result = calculateRecursiveIngredientBurden({
+      recipeGraph,
+      snapshot,
+      modifierState: createDefaultCraftingModifierState(),
+    });
+
+    expect(result.scopeResults.M.ingredientBurdenByCanonicalKey['magna core']).toMatchObject({
+      totalRequiredEffectiveOutput: 2,
+      totalRequiredCraftOperations: 0,
+      isCraftable: true,
+    });
+    expect(result.scopeResults.M.ingredientBurdenByCanonicalKey['seeing stone']).toBeUndefined();
+    expect(result.scopeResults.M.ingredientBurdenByCanonicalKey['wishing well']).toBeUndefined();
+    expect(
+      result.scopeResults.M.unresolvedGoals.find((goal) => goal.outputCanonicalKey === 'magna core'),
+    ).toMatchObject({
+      reason: 'excluded_recipe_policy',
+    });
+  });
+
+  it('can include Magna Core again when the shared excluded-recipe override is enabled', () => {
+    const recipeGraph = buildRecipeGraph(
+      parseRecipesCsv(MAGNA_RECIPES_CSV),
+      parseRecipeInputsCsv(MAGNA_RECIPE_INPUTS_CSV),
+    );
+    const snapshot = createSnapshot({
+      'void globe': 9_999,
+    });
+
+    const result = calculateRecursiveIngredientBurden({
+      recipeGraph,
+      snapshot,
+      modifierState: {
+        ...createDefaultCraftingModifierState(),
+        planning: {
+          includeExcludedRecipes: true,
+          ironDepotActive: false,
+        },
+      },
+    });
+
+    expect(
+      result.scopeResults.M.unresolvedGoals.find((goal) => goal.outputCanonicalKey === 'magna core'),
+    ).toBeUndefined();
+    expect(result.scopeResults.M.ingredientBurdenByCanonicalKey['seeing stone']).toMatchObject({
+      totalRequiredEffectiveOutput: 2,
+      isCraftable: false,
+    });
+    expect(result.scopeResults.M.ingredientBurdenByCanonicalKey['wishing well']).toMatchObject({
+      totalRequiredEffectiveOutput: 20,
+      isCraftable: false,
+    });
+  });
+
+  it('treats Iron as auto-supplied and non-blocking when Iron Depot is active', () => {
+    const recipeGraph = buildRecipeGraph(
+      parseRecipesCsv(IRON_RECIPES_CSV),
+      parseRecipeInputsCsv(IRON_RECIPE_INPUTS_CSV),
+    );
+    const snapshot = createSnapshot({
+      'fancy pipe': 9_999,
+    });
+
+    const defaultResult = calculateRecursiveIngredientBurden({
+      recipeGraph,
+      snapshot,
+      modifierState: createDefaultCraftingModifierState(),
+    });
+
+    expect(defaultResult.scopeResults.M.ingredientBurdenByCanonicalKey.iron).toMatchObject({
+      totalRequiredEffectiveOutput: 1,
+      isCraftable: false,
+    });
+    expect(defaultResult.scopeResults.M.ingredientBurdenByCanonicalKey.wood).toMatchObject({
+      totalRequiredEffectiveOutput: 10,
+      isCraftable: false,
+    });
+
+    const ironDepotResult = calculateRecursiveIngredientBurden({
+      recipeGraph,
+      snapshot,
+      modifierState: {
+        ...createDefaultCraftingModifierState(),
+        planning: {
+          includeExcludedRecipes: false,
+          ironDepotActive: true,
+        },
+      },
+    });
+
+    expect(ironDepotResult.scopeResults.M.ingredientBurdenByCanonicalKey.iron).toBeUndefined();
+    expect(ironDepotResult.scopeResults.M.ingredientBurdenByCanonicalKey.wood).toMatchObject({
+      totalRequiredEffectiveOutput: 10,
+      isCraftable: false,
+    });
   });
 
   it('supports Tower cutoff analysis and dedupes repeated tower rows to the highest target per item', () => {
