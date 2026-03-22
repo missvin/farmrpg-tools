@@ -1,36 +1,45 @@
+import { readFileSync } from 'node:fs';
+
 import { describe, expect, it } from 'vitest';
 
 import { parseStoredPetInventoryPaste } from './parseStoredPetInventoryPaste';
 
 describe('parseStoredPetInventoryPaste', () => {
-  it('parses a practical first paste format using item-name and count pairs', () => {
-    expect(
-      parseStoredPetInventoryPaste(`Honey, 12
-3, Large Chest
-Apple\t25`),
-    ).toEqual({
-      entries: [
-        {
-          canonicalItemKey: 'apple',
-          itemName: 'Apple',
-          storedCount: 25,
-        },
-        {
-          canonicalItemKey: 'honey',
-          itemName: 'Honey',
-          storedCount: 12,
-        },
-        {
-          canonicalItemKey: 'large chest',
-          itemName: 'Large Chest',
-          storedCount: 3,
-        },
-      ],
-      warnings: [],
+  it('parses the real pet inventory export sample, aggregates repeated items, and ignores the meals panel', () => {
+    const sampleText = readFileSync('data/pet_inventory_import_sample', 'utf8');
+    const result = parseStoredPetInventoryPaste(sampleText);
+
+    expect(result.warnings).toEqual([]);
+    expect(result.entries.length).toBeGreaterThan(100);
+    expect(result.entries.find((entry) => entry.canonicalItemKey === '3-leaf clover')).toEqual({
+      canonicalItemKey: '3-leaf clover',
+      itemName: '3-leaf Clover',
+      storedCount: 5885,
     });
+    expect(result.entries.find((entry) => entry.canonicalItemKey === 'honey')).toEqual({
+      canonicalItemKey: 'honey',
+      itemName: 'Honey',
+      storedCount: 5307,
+    });
+    expect(result.entries.find((entry) => entry.canonicalItemKey === 'orange juice')).toEqual({
+      canonicalItemKey: 'orange juice',
+      itemName: 'Orange Juice',
+      storedCount: 5191,
+    });
+    expect(result.entries.find((entry) => entry.canonicalItemKey === 'runestone 05')).toEqual({
+      canonicalItemKey: 'runestone 05',
+      itemName: 'Runestone 05',
+      storedCount: 19885,
+    });
+    expect(result.entries.find((entry) => entry.canonicalItemKey === 'steel')).toEqual({
+      canonicalItemKey: 'steel',
+      itemName: 'Steel',
+      storedCount: 18135,
+    });
+    expect(result.entries.find((entry) => entry.canonicalItemKey === 'cabbage stew')).toBeUndefined();
   });
 
-  it('keeps malformed or unknown lines warning-safe and aggregates duplicates', () => {
+  it('keeps the simpler line-pair fallback and warning-safe behavior for malformed or unknown lines', () => {
     const result = parseStoredPetInventoryPaste(
       `Honey, 10
 Honey, 5
@@ -55,7 +64,7 @@ Mystery Relic, 7`,
     ]);
     expect(result.warnings).toEqual([
       'Line 2 duplicated "Honey". Counts were combined.',
-      'Line 3 could not be parsed. Use "Item Name, Count" or "Count, Item Name".',
+      'Line 3 could not be parsed. Use the Pets collected-items export format or "Item Name, Count".',
       'Line 4 item "Mystery Relic" was not found in local reference data and was kept as entered.',
     ]);
   });

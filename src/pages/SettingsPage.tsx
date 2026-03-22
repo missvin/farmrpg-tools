@@ -493,7 +493,7 @@ export function SettingsPage() {
             onChange={(event) => {
               setStoredPetImportText(event.target.value);
             }}
-            placeholder={`Honey, 12\n25, Apple`}
+            placeholder={`Honey\nFrom Owl\n22,528 currently in Inventory\nFound 4,706`}
           />
         </div>
 
@@ -508,8 +508,9 @@ export function SettingsPage() {
         </div>
 
         <p className="supporting-text">
-          Supported paste format: one entry per line using <code>Item Name, Count</code>, <code>Count, Item Name</code>,
-          or tab-separated pairs.
+          Supported paste format: the Pets collected-items export structure with repeating item blocks such as
+          <code> Item Name / From Pet / currently in Inventory / Found N</code>. Simple one-line
+          <code> Item Name, Count</code> pairs still work as a fallback.
         </p>
 
         {storedPetEntries.length > 0 ? (

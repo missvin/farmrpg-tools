@@ -242,18 +242,17 @@ describe('SettingsPage', () => {
     await user.clear(screen.getByLabelText('Paste pet inventory'));
     await user.type(
       screen.getByLabelText('Paste pet inventory'),
-      'Honey, 10{enter}Bad line{enter}Mystery Relic, 7',
+      'Honey{enter}From Bear{enter}22,528 currently in Inventory{enter}Found 601{enter}Honey{enter}From Owl{enter}22,528 currently in Inventory{enter}Found 4,706{enter}Mystery Relic{enter}From Test Pet{enter}0 currently in Inventory{enter}Found 7',
     );
     await user.click(screen.getByRole('button', { name: 'Import Stored Pet Inventory' }));
 
     expect(await screen.findByText('Imported 2 stored pet inventory entries.')).toBeInTheDocument();
-    expect(screen.getByText('Line 2 could not be parsed. Use "Item Name, Count" or "Count, Item Name".')).toBeInTheDocument();
-    expect(screen.getByText('Line 3 item "Mystery Relic" was not found in local reference data and was kept as entered.')).toBeInTheDocument();
+    expect(screen.getByText('Line 9 item "Mystery Relic" was not found in local reference data and was kept as entered.')).toBeInTheDocument();
     expect(loadAcquisitionPlannerInputState().pets.storedInventoryEntries).toEqual([
       {
         canonicalItemKey: 'honey',
         itemName: 'Honey',
-        storedCount: 10,
+        storedCount: 5307,
       },
       {
         canonicalItemKey: 'mystery relic',
