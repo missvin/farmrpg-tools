@@ -1,10 +1,11 @@
 import {
+  loadCraftingModifierState,
   clearCraftingModifierState,
   saveCraftingModifierState,
 } from './craftingModifierState';
-import { isAppBackupPayloadV1, type AppBackupPayloadV1 } from './appBackupSchema';
-import { replaceSnapshots } from './storage/masterySnapshots';
-import { clearStoredAppTheme, persistAppTheme } from './themePreference';
+import { validateAppBackupPayloadV1, type AppBackupPayloadV1 } from './appBackupSchema';
+import { listSnapshots, replaceSnapshots } from './storage/masterySnapshots';
+import { clearStoredAppTheme, persistAppTheme, readStoredAppTheme } from './themePreference';
 
 export async function readAppBackupFile(file: File): Promise<AppBackupPayloadV1> {
   let rawText: string;
@@ -23,26 +24,45 @@ export async function readAppBackupFile(file: File): Promise<AppBackupPayloadV1>
     throw new Error('The selected file is not valid JSON.');
   }
 
-  if (!isAppBackupPayloadV1(parsedValue)) {
-    throw new Error('The selected file is not a supported FarmRPG Tools backup.');
+  const validationResult = validateAppBackupPayloadV1(parsedValue);
+
+  if (!validationResult.ok) {
+    throw new Error(validationResult.message);
   }
 
-  return parsedValue;
+  return validationResult.payload;
 }
 
 export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Promise<void> {
-  await replaceSnapshots(payload.state.snapshots);
+  const currentSnapshots = await listSnapshots();
+  const currentCraftingModifierState = loadCraftingModifierState();
+  const currentThemePreference = readStoredAppTheme();
 
-  if (payload.state.preferences.craftingModifierState) {
-    saveCraftingModifierState(payload.state.preferences.craftingModifierState);
-  } else {
-    clearCraftingModifierState();
-  }
+  try {
+    await replaceSnapshots(payload.state.snapshots);
 
-  if (payload.state.preferences.themePreference) {
-    persistAppTheme(payload.state.preferences.themePreference);
-  } else {
-    clearStoredAppTheme();
+    if (payload.state.preferences.craftingModifierState) {
+      saveCraftingModifierState(payload.state.preferences.craftingModifierState);
+    } else {
+      clearCraftingModifierState();
+    }
+
+    if (payload.state.preferences.themePreference) {
+      persistAppTheme(payload.state.preferences.themePreference);
+    } else {
+      clearStoredAppTheme();
+    }
+  } catch {
+    await replaceSnapshots(currentSnapshots);
+    saveCraftingModifierState(currentCraftingModifierState);
+
+    if (currentThemePreference) {
+      persistAppTheme(currentThemePreference);
+    } else {
+      clearStoredAppTheme();
+    }
+
+    throw new Error('Unable to restore the selected backup file. Your current local state was left unchanged.');
   }
 }
 

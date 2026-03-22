@@ -8,6 +8,7 @@ import {
   createAppBackupPayload,
   isAppBackupPayloadV1,
   isSupportedAppBackupSchemaVersion,
+  validateAppBackupPayloadV1,
 } from './appBackupSchema';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 
@@ -138,5 +139,51 @@ describe('appBackupSchema', () => {
         },
       }),
     ).toBe(false);
+  });
+
+  it('returns explicit validation messages for unsupported versions and malformed state', () => {
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: 2,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [],
+          preferences: {
+            craftingModifierState: null,
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'unsupported_schema_version',
+      message: 'Backup schema version 2 is not supported by this app.',
+    });
+
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: APP_BACKUP_SCHEMA_VERSION,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [{}],
+          preferences: {
+            craftingModifierState: null,
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'invalid_snapshot',
+      message: 'The backup file contains malformed snapshot data.',
+    });
   });
 });
