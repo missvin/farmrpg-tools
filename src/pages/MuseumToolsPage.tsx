@@ -5,6 +5,7 @@ import {
   createMuseumKnownBaseline,
   createMuseumUnresolvedTriageKey,
   deriveMuseumRefreshWorkflow,
+  toMuseumIconCandidateInspectionCsv,
   toMuseumRefreshCandidateReviewCsv,
   toMuseumRefreshActionableCsv,
   toMuseumUnresolvedTriageCsv,
@@ -119,6 +120,21 @@ function formatPlanningReferenceLabel(
       return 'Likely naming mismatch';
     default:
       return 'Truly unresolved';
+  }
+}
+
+function formatIconCandidateStatusLabel(
+  status: MuseumRefreshWorkflowResult['items'][number]['iconCandidateStatus'],
+): string {
+  switch (status) {
+    case 'from_local_item_id':
+      return 'From local item ID';
+    case 'assumed_from_clean_slug':
+      return 'Assumed from clean slug';
+    case 'assumed_from_reviewed_slug':
+      return 'Assumed from reviewed slug';
+    default:
+      return 'Not safely derivable yet';
   }
 }
 
@@ -589,9 +605,38 @@ export function MuseumToolsPage() {
     setExportMessage('Museum unresolved triage CSV downloaded.');
   }
 
+  function handleExportIconCandidateCsv(): void {
+    if (!workflowResult) {
+      return;
+    }
+
+    downloadTextFile(
+      'museum_icon_candidate_inspection.csv',
+      toMuseumIconCandidateInspectionCsv(workflowResult.items),
+      'text/csv;charset=utf-8',
+    );
+    setExportMessage('Museum icon candidate inspection CSV downloaded.');
+  }
+
   const runButtonsDisabled = coverageStatus === 'loading';
   const visibleActiveUnresolvedItems = workflowResult
     ? getVisibleActiveUnresolvedItems(workflowResult.activeUnresolvedItems, unresolvedSortMode, unresolvedCaseFilter)
+    : [];
+  const iconInspectionItems = workflowResult
+    ? [...workflowResult.items]
+        .filter(
+          (item) =>
+            item.iconCandidateStatus !== 'undetermined' ||
+            item.candidateReviewStatus !== 'not_needed' ||
+            item.localFarmrpgItemId !== null,
+        )
+        .sort(
+          (left, right) =>
+            formatIconCandidateStatusLabel(left.iconCandidateStatus).localeCompare(
+              formatIconCandidateStatusLabel(right.iconCandidateStatus),
+            ) || left.itemName.localeCompare(right.itemName),
+        )
+        .slice(0, 12)
     : [];
 
   return (
@@ -835,6 +880,9 @@ export function MuseumToolsPage() {
               >
                 Export Unresolved Triage CSV
               </button>
+              <button type="button" className="button" onClick={handleExportIconCandidateCsv}>
+                Export Icon Candidate CSV
+              </button>
               <button
                 type="button"
                 className="button"
@@ -863,6 +911,75 @@ export function MuseumToolsPage() {
                 </ul>
               </div>
             ) : null}
+
+            <div className="page-stack">
+              <h3 className="section-title">Icon Candidate Inspection</h3>
+              <p className="supporting-text">
+                These icon URLs are exposed for manual inspection only. `farmrpg_item_id`-based candidates are stronger
+                local hints; slug-based icon URLs are explicit assumptions so you can spot-check whether buddy/item slug
+                and icon path actually line up before any broader icon acquisition work.
+              </p>
+              {iconInspectionItems.length === 0 ? (
+                <p className="empty-state">
+                  No reviewable icon candidate URLs are currently surfaced from this museum run.
+                </p>
+              ) : (
+                <div className="table-scroll">
+                  <table className="summary-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Icon candidate status</th>
+                        <th scope="col">Buddy page candidate</th>
+                        <th scope="col">Icon candidate URL</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {iconInspectionItems.map((item) => (
+                        <tr key={`icon-candidate-${item.canonicalKey}`}>
+                          <td>
+                            <strong>{item.itemName}</strong>
+                            <p className="subtle-text">
+                              {item.canonicalKey}
+                              {item.localFarmrpgItemId ? ` | item_id ${item.localFarmrpgItemId}` : ''}
+                            </p>
+                          </td>
+                          <td>
+                            <p>{formatIconCandidateStatusLabel(item.iconCandidateStatus)}</p>
+                            <p className="subtle-text">
+                              {item.iconCandidateStatus === 'from_local_item_id'
+                                ? 'Derived from local farmrpg_item_id metadata.'
+                                : item.iconCandidateStatus === 'assumed_from_clean_slug'
+                                  ? 'Derived from the current clean slug as an explicit assumption.'
+                                  : item.iconCandidateStatus === 'assumed_from_reviewed_slug'
+                                    ? 'Derived from the locally reviewed slug as an explicit assumption.'
+                                    : 'Current local evidence is not strong enough to expose a candidate icon URL safely.'}
+                            </p>
+                          </td>
+                          <td>
+                            <a href={item.candidateBuddyUrl} target="_blank" rel="noreferrer">
+                              {item.candidateBuddyUrl}
+                            </a>
+                          </td>
+                          <td>
+                            {item.candidateIconUrl ? (
+                              <>
+                                <a href={item.candidateIconUrl} target="_blank" rel="noreferrer">
+                                  {item.candidateIconUrl}
+                                </a>
+                                <p className="subtle-text">{item.candidateIconPathname}</p>
+                              </>
+                            ) : (
+                              <span>Not safely derivable yet</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
 
             <div className="page-stack">
               <h3 className="section-title">Unresolved Reconciliation Queue</h3>

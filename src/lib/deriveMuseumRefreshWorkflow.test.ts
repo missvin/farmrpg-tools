@@ -6,6 +6,7 @@ import {
   createMuseumKnownBaseline,
   createMuseumUnresolvedTriageKey,
   deriveMuseumRefreshWorkflow,
+  toMuseumIconCandidateInspectionCsv,
   toMuseumRefreshActionableCsv,
   toMuseumRefreshCandidateReviewCsv,
   toMuseumUnresolvedTriageCsv,
@@ -27,18 +28,21 @@ Mystery Goo Mystery Goo`);
             itemName: 'Fancy Pipe',
             canonicalKey: 'fancy pipe',
             method: 'Crafting',
+            farmrpgItemId: null,
             buddySlug: null,
           },
           {
             itemName: 'Barracuda',
             canonicalKey: 'barracuda',
             method: 'Fishing',
+            farmrpgItemId: null,
             buddySlug: null,
           },
           {
             itemName: 'Glass Eye Urchin',
             canonicalKey: 'glass eye urchin',
             method: null,
+            farmrpgItemId: null,
             buddySlug: null,
           },
         ],
@@ -75,12 +79,14 @@ Mystery Goo Mystery Goo`);
             itemName: '11th Leaf Centerpiece',
             canonicalKey: '11th leaf centerpiece',
             method: null,
+            farmrpgItemId: null,
             buddySlug: null,
           },
           {
             itemName: 'Mystery Goo',
             canonicalKey: 'mystery goo',
             method: 'Crafting',
+            farmrpgItemId: null,
             buddySlug: null,
           },
         ],
@@ -114,6 +120,7 @@ Mystery Goo Mystery Goo`);
             itemName: 'Pot of Gold Large',
             canonicalKey: 'pot of gold large',
             method: null,
+            farmrpgItemId: null,
             buddySlug: null,
           },
         ],
@@ -152,6 +159,7 @@ Mystery Goo Mystery Goo`);
             itemName: 'Pot of Gold Large',
             canonicalKey: 'pot of gold large',
             method: null,
+            farmrpgItemId: null,
             buddySlug: null,
           },
         ],
@@ -208,6 +216,7 @@ PiÃƒÂ±ata Whop Stick PiÃƒÂ±ata Whop Stick`);
             itemName: 'PiÃƒÂ±ata Whop Stick',
             canonicalKey: 'piÃ£Â±ata whop stick',
             method: null,
+            farmrpgItemId: null,
             buddySlug: null,
           },
         ],
@@ -226,6 +235,7 @@ PiÃƒÂ±ata Whop Stick PiÃƒÂ±ata Whop Stick`);
             itemName: 'PiÃƒÂ±ata Whop Stick',
             canonicalKey: 'piÃ£Â±ata whop stick',
             method: null,
+            farmrpgItemId: null,
             buddySlug: null,
           },
         ],
@@ -259,6 +269,7 @@ Pot of Gold (Large) Pot of Gold (Large)`);
             itemName: 'Pot of Gold Large',
             canonicalKey: 'pot of gold large',
             method: null,
+            farmrpgItemId: null,
             buddySlug: null,
           },
         ],
@@ -279,6 +290,44 @@ Pot of Gold (Large) Pot of Gold (Large)`);
     expect(toMuseumUnresolvedTriageCsv(result.unresolvedItems)).toContain('likely_name_mismatch');
   });
 
+  it('exposes explicit icon candidate URLs only when current local evidence is strong enough', () => {
+    const parseResult = parseMuseumExport(`Items Count = 3
+Fancy Pipe Fancy Pipe
+Mystery Goo Mystery Goo
+??? ???`);
+
+    const result = deriveMuseumRefreshWorkflow(
+      parseResult,
+      {
+        masteryEntries: [
+          {
+            itemName: 'Fancy Pipe',
+            canonicalKey: 'fancy pipe',
+            method: 'Crafting',
+            farmrpgItemId: '5885',
+            buddySlug: null,
+          },
+        ],
+        towerEntries: [],
+        recipeRows: [],
+      },
+      null,
+    );
+
+    const fancyPipe = result.items.find((item) => item.canonicalKey === 'fancy pipe');
+    const mysteryGoo = result.items.find((item) => item.canonicalKey === 'mystery goo');
+    const unknown = result.items.find((item) => item.canonicalKey === '???');
+
+    expect(fancyPipe?.iconCandidateStatus).toBe('from_local_item_id');
+    expect(fancyPipe?.candidateIconUrl).toBe('https://farmrpg.com/img/items/5885.png');
+    expect(mysteryGoo?.iconCandidateStatus).toBe('assumed_from_clean_slug');
+    expect(mysteryGoo?.candidateIconUrl).toBe('https://farmrpg.com/img/items/mystery-goo.png');
+    expect(unknown?.iconCandidateStatus).toBe('undetermined');
+    expect(unknown?.candidateIconUrl).toBe(null);
+    expect(toMuseumIconCandidateInspectionCsv(result.items)).toContain('icon_candidate_status');
+    expect(toMuseumIconCandidateInspectionCsv(result.items)).toContain('https://farmrpg.com/img/items/5885.png');
+  });
+
   it('credits recipe source URLs as local buddy slug coverage for known matched items', () => {
     const parseResult = parseMuseumExport(`Items Count = 2
 Bamboo Trellis Bamboo Trellis
@@ -292,12 +341,14 @@ Fancy Pipe Fancy Pipe`);
             itemName: 'Bamboo Trellis',
             canonicalKey: 'bamboo trellis',
             method: null,
+            farmrpgItemId: null,
             buddySlug: null,
           },
           {
             itemName: 'Fancy Pipe',
             canonicalKey: 'fancy pipe',
             method: 'Crafting',
+            farmrpgItemId: null,
             buddySlug: null,
           },
         ],
@@ -353,12 +404,14 @@ PiÃƒÂ±ata Whop Stick PiÃƒÂ±ata Whop Stick`);
             itemName: 'Bamboo Trellis',
             canonicalKey: 'bamboo trellis',
             method: null,
+            farmrpgItemId: null,
             buddySlug: 'bamboo-trellis',
           },
           {
             itemName: 'New Rope',
             canonicalKey: 'new rope',
             method: 'Crafting',
+            farmrpgItemId: null,
             buddySlug: null,
           },
         ],

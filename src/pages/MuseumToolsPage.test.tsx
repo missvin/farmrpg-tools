@@ -6,7 +6,7 @@ import { MuseumToolsPage } from './MuseumToolsPage';
 
 const MASTERY_CSV = `item_name,difficulty,method,notes,tags,passive_craftworks_info,farmrpg_item_id,buddy_item_id,buddy_slug,source_sheet,source_row
 11th Leaf Centerpiece,1,,,,,,,,
-Fancy Pipe,1,Crafting,,,,,,,,
+Fancy Pipe,1,Crafting,,,,5885,,,,
 Pot of Gold Large,1,,,,,,,,
 Barracuda,1,Fishing,,,,,,,,
 `;
@@ -82,7 +82,7 @@ Barracuda Barracuda`,
 
     const actionableSection = screen
       .getByRole('heading', { name: 'Bootstrap Follow-Up Items' })
-      .closest('section') as HTMLElement;
+      .closest('div') as HTMLElement;
 
     expect(within(actionableSection).queryByText('11th Leaf Centerpiece')).not.toBeInTheDocument();
     expect(within(actionableSection).getByText('Fancy Pipe')).toBeInTheDocument();
@@ -199,5 +199,32 @@ Mystery Goo Mystery Goo
 
     expect(within(actionableSection).getAllByText('Missing planning reference').length).toBeGreaterThan(0);
     expect(within(actionableSection).getByText('Not icon-ready yet')).toBeInTheDocument();
+  });
+
+  it('shows candidate icon URLs for manual inspection and leaves unsafe rows explicit', async () => {
+    const user = userEvent.setup();
+
+    render(<MuseumToolsPage />);
+
+    const bootstrapButton = await screen.findByRole('button', { name: 'Run Bootstrap Pass' });
+
+    await user.type(
+      screen.getByLabelText('Raw museum export'),
+      `Items Count = 3
+Fancy Pipe Fancy Pipe
+Mystery Goo Mystery Goo
+??? ???`,
+    );
+
+    await user.click(bootstrapButton);
+
+    const iconSection = screen.getByRole('heading', { name: 'Icon Candidate Inspection' }).closest('div') as HTMLElement;
+
+    expect(within(iconSection).getByText('From local item ID')).toBeInTheDocument();
+    expect(within(iconSection).getByText('Assumed from clean slug')).toBeInTheDocument();
+    expect(within(iconSection).getAllByText('Not safely derivable yet').length).toBeGreaterThan(0);
+    expect(within(iconSection).getByRole('link', { name: 'https://farmrpg.com/img/items/5885.png' })).toBeInTheDocument();
+    expect(within(iconSection).getByRole('link', { name: 'https://farmrpg.com/img/items/mystery-goo.png' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Export Icon Candidate CSV' })).toBeInTheDocument();
   });
 });
