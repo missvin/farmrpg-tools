@@ -5,9 +5,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MuseumToolsPage } from './MuseumToolsPage';
 
 const MASTERY_CSV = `item_name,difficulty,method,notes,tags,passive_craftworks_info,farmrpg_item_id,buddy_item_id,buddy_slug,source_sheet,source_row
-Bamboo Trellis,1,,,,,,,bamboo-trellis,,
-Barracuda,1,Fishing,,,,,,,,
+11th Leaf Centerpiece,1,,,,,,,,
 Fancy Pipe,1,Crafting,,,,,,,,
+Pot of Gold Large,1,,,,,,,,
+Barracuda,1,Fishing,,,,,,,,
 `;
 
 const TOWER_CSV = `tower_level,tower_level_range,slot_index,item_name,farmrpg_item_id,mastery_level_needed,buddy_slug,notes,source_sheet,source_row
@@ -15,10 +16,10 @@ const TOWER_CSV = `tower_level,tower_level_range,slot_index,item_name,farmrpg_it
 `;
 
 const RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url
-Fancy Pipe,fancy pipe,craft,,,,,https://buddy.farm/i/fancy-pipe/`;
+`;
 
 const RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
-fancy pipe,Fancy Pipe,1,Wood,wood,10`;
+`;
 
 describe('MuseumToolsPage', () => {
   beforeEach(() => {
@@ -54,18 +55,17 @@ describe('MuseumToolsPage', () => {
     vi.unstubAllGlobals();
   });
 
-  it('shows truthful bootstrap summary buckets instead of blunt missing totals', async () => {
+  it('shows auto-derived no-review-needed slugs separately from true missing slug gaps', async () => {
     const user = userEvent.setup();
 
     render(<MuseumToolsPage />);
 
     const bootstrapButton = await screen.findByRole('button', { name: 'Run Bootstrap Pass' });
-    expect(bootstrapButton).toBeEnabled();
 
     await user.type(
       screen.getByLabelText('Raw museum export'),
       `Items Count = 3
-Bamboo Trellis Bamboo Trellis
+11th Leaf Centerpiece 11th Leaf Centerpiece
 Fancy Pipe Fancy Pipe
 Barracuda Barracuda`,
     );
@@ -76,92 +76,97 @@ Barracuda Barracuda`,
       .getByRole('heading', { name: 'Bootstrap Workflow Report' })
       .closest('section') as HTMLElement;
 
-    expect(within(reportSection).getByText('Known items with buddy slug coverage')).toBeInTheDocument();
-    expect(within(reportSection).getByText('Expected recipe coverage missing')).toBeInTheDocument();
-    expect(within(reportSection).getByText('Truly actionable follow-up')).toBeInTheDocument();
-    expect(within(reportSection).getAllByText('No recipe expected').length).toBeGreaterThan(0);
+    expect(within(reportSection).getByText('Auto-derived buddy slugs ready')).toBeInTheDocument();
+    expect(within(reportSection).getByText('Locally covered buddy slugs')).toBeInTheDocument();
+    expect(within(reportSection).getByText('Known items missing expected buddy slug')).toBeInTheDocument();
 
     const actionableSection = screen
       .getByRole('heading', { name: 'Bootstrap Follow-Up Items' })
       .closest('section') as HTMLElement;
 
-    const barracudaRow = within(actionableSection).getByText('Barracuda').closest('tr') as HTMLElement;
-    expect(barracudaRow).toBeInTheDocument();
-    expect(within(barracudaRow).getByText('No recipe expected')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: 'Save Bootstrap Baseline' }));
-
-    expect(screen.getByText(/Current museum item set saved as the local bootstrap baseline\./)).toBeInTheDocument();
-    expect(screen.getByText(/Saved baseline: 3 items as of/i)).toBeInTheDocument();
+    expect(within(actionableSection).queryByText('11th Leaf Centerpiece')).not.toBeInTheDocument();
+    expect(within(actionableSection).getByText('Fancy Pipe')).toBeInTheDocument();
+    expect(within(actionableSection).getByText('Auto-derived candidate ready')).toBeInTheDocument();
+    expect(within(actionableSection).getByText('No review needed')).toBeInTheDocument();
   });
 
-  it('keeps non-craftable known items out of actionable follow-up while surfacing unresolved new-item cases', async () => {
+  it('surfaces unresolved reconciliation hints and lets unresolved rows be triaged locally', async () => {
     const user = userEvent.setup();
-
-    window.localStorage.setItem(
-      'farmrpg-tools.museum-known-baseline.v1',
-      JSON.stringify({
-        savedAt: '2026-03-22T12:00:00.000Z',
-        items: [
-          {
-            museumCategory: 'Items',
-            category: 'Item',
-            itemName: 'Bamboo Trellis',
-            canonicalKey: 'bamboo trellis',
-            obtainable: true,
-            generatedBuddySlug: 'bamboo-trellis',
-            alternateBuddySlug: null,
-          },
-          {
-            museumCategory: 'Items',
-            category: 'Item',
-            itemName: 'Fancy Pipe',
-            canonicalKey: 'fancy pipe',
-            obtainable: true,
-            generatedBuddySlug: 'fancy-pipe',
-            alternateBuddySlug: null,
-          },
-          {
-            museumCategory: 'Fish',
-            category: 'Fish',
-            itemName: 'Barracuda',
-            canonicalKey: 'barracuda',
-            obtainable: true,
-            generatedBuddySlug: 'barracuda',
-            alternateBuddySlug: null,
-          },
-        ],
-      }),
-    );
 
     render(<MuseumToolsPage />);
 
-    const incrementalButton = await screen.findByRole('button', { name: 'Run Incremental Refresh' });
-    expect(incrementalButton).toBeEnabled();
+    const bootstrapButton = await screen.findByRole('button', { name: 'Run Bootstrap Pass' });
 
     await user.type(
       screen.getByLabelText('Raw museum export'),
-      `Items Count = 4
-Bamboo Trellis Bamboo Trellis
-Fancy Pipe Fancy Pipe
-Barracuda Barracuda
-PiÃƒÂ±ata Whop Stick PiÃƒÂ±ata Whop Stick`,
+      `Items Count = 2
+Pot of Gold (Large) Pot of Gold (Large)
+Mystery Goo Mystery Goo`,
     );
 
-    await user.click(incrementalButton);
+    await user.click(bootstrapButton);
 
-    expect(screen.getByText('Incremental Refresh Report')).toBeInTheDocument();
-    expect(screen.getByText('Buddy slug status unresolved')).toBeInTheDocument();
+    const unresolvedSection = screen
+      .getByRole('heading', { name: 'Unresolved Reconciliation Queue' })
+      .closest('div') as HTMLElement;
 
-    const actionableSection = screen
-      .getByRole('heading', { name: 'New Or Uncovered Items' })
+    const potOfGoldRow = within(unresolvedSection).getByText('Pot of Gold (Large)').closest('tr') as HTMLElement;
+    expect(potOfGoldRow).toBeInTheDocument();
+    expect(within(potOfGoldRow).getByText('Likely naming mismatch')).toBeInTheDocument();
+    expect(within(unresolvedSection).getByText(/Pot of Gold Large \[mastery\]/i)).toBeInTheDocument();
+    const mysteryGooRow = within(unresolvedSection).getByText('Mystery Goo').closest('tr') as HTMLElement;
+    expect(mysteryGooRow).toBeInTheDocument();
+    expect(within(mysteryGooRow).getByText('Missing local reference')).toBeInTheDocument();
+
+    await user.click(within(potOfGoldRow).getByRole('button', { name: 'Mark Triaged' }));
+
+    expect(screen.getByText(/unresolved triage marks? saved locally/i)).toBeInTheDocument();
+    expect(within(unresolvedSection).getAllByRole('button', { name: 'Mark Triaged' })).toHaveLength(1);
+
+    const triagedSection = screen.getByRole('heading', { name: 'Locally Triaged Unresolved Rows' }).closest('div') as HTMLElement;
+    expect(within(triagedSection).getByText('Pot of Gold (Large)')).toBeInTheDocument();
+    expect(within(triagedSection).getByRole('button', { name: 'Remove Triage Mark' })).toBeInTheDocument();
+
+    const reportSection = screen
+      .getByRole('heading', { name: 'Bootstrap Workflow Report' })
       .closest('section') as HTMLElement;
 
-    expect(within(actionableSection).getByText('Barracuda')).toBeInTheDocument();
-    expect(within(actionableSection).queryByText('Bamboo Trellis')).not.toBeInTheDocument();
-    expect(within(actionableSection).getByText('PiÃƒÂ±ata Whop Stick')).toBeInTheDocument();
-    expect(within(actionableSection).getByText(/Generated buddy candidate needs review/i)).toBeInTheDocument();
-    expect(within(actionableSection).getByText('Status unresolved')).toBeInTheDocument();
-    expect(within(actionableSection).getByText('Expectation unresolved')).toBeInTheDocument();
+    expect(within(reportSection).getByText('Active unresolved triage rows')).toBeInTheDocument();
+    expect(within(reportSection).getByText('Triaged unresolved rows')).toBeInTheDocument();
+  });
+
+  it('supports unresolved case filtering and bulk-marking the visible unresolved rows as triaged', async () => {
+    const user = userEvent.setup();
+
+    render(<MuseumToolsPage />);
+
+    const bootstrapButton = await screen.findByRole('button', { name: 'Run Bootstrap Pass' });
+
+    await user.type(
+      screen.getByLabelText('Raw museum export'),
+      `Items Count = 3
+Pot of Gold (Large) Pot of Gold (Large)
+Fancy Pipe! Fancy Pipe!
+Mystery Goo Mystery Goo`,
+    );
+
+    await user.click(bootstrapButton);
+
+    await user.selectOptions(screen.getByLabelText('Filter unresolved case'), 'likely_name_mismatch');
+
+    const unresolvedSection = screen
+      .getByRole('heading', { name: 'Unresolved Reconciliation Queue' })
+      .closest('div') as HTMLElement;
+
+    expect(within(unresolvedSection).getByText('Pot of Gold (Large)')).toBeInTheDocument();
+    expect(within(unresolvedSection).queryByText('Mystery Goo')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Mark Visible Triaged' }));
+
+    expect(screen.getByText(/unresolved triage marks? saved locally/i)).toBeInTheDocument();
+    expect(within(unresolvedSection).getByText(/No active unresolved rows match the current case filter/i)).toBeInTheDocument();
+
+    const triagedSection = screen.getByRole('heading', { name: 'Locally Triaged Unresolved Rows' }).closest('div') as HTMLElement;
+    expect(within(triagedSection).getByText('Pot of Gold (Large)')).toBeInTheDocument();
   });
 });

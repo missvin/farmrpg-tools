@@ -3,13 +3,15 @@ import { useEffect, useState } from 'react';
 import { PageIntro } from '../components/PageIntro';
 import {
   createMuseumKnownBaseline,
+  createMuseumUnresolvedTriageKey,
   deriveMuseumRefreshWorkflow,
+  toMuseumRefreshCandidateReviewCsv,
   toMuseumRefreshActionableCsv,
+  toMuseumUnresolvedTriageCsv,
   type MuseumCoverageInputs,
   type MuseumRefreshWorkflowResult,
 } from '../lib/deriveMuseumRefreshWorkflow';
 import {
-  toBuddyFarmCandidateReviewCsv,
   toBuddyFarmCandidatesCsv,
   toBuddyFarmCandidatesJson,
 } from '../lib/generateBuddyFarmCandidates';
@@ -21,6 +23,18 @@ import {
   loadMuseumKnownBaseline,
   saveMuseumKnownBaseline,
 } from '../lib/museumKnownBaselineStorage';
+import {
+  clearMuseumCandidateReviewMarks,
+  clearMuseumCandidateReviewedMark,
+  loadMuseumCandidateReviewMarks,
+  markMuseumCandidateReviewed,
+} from '../lib/museumCandidateReviewStorage';
+import {
+  clearMuseumUnresolvedTriagedMark,
+  clearMuseumUnresolvedTriageMarks,
+  loadMuseumUnresolvedTriageMarks,
+  markMuseumUnresolvedTriaged,
+} from '../lib/museumUnresolvedTriageStorage';
 import { parseMuseumExport, toMuseumSeedCsv, toMuseumSeedJson, type MuseumParseResult } from '../lib/parseMuseumExport';
 
 const MUSEUM_PLACEHOLDER = `Farm RPG
@@ -59,16 +73,58 @@ function formatBuddySlugCoverageLabel(
   status: MuseumRefreshWorkflowResult['items'][number]['buddySlugCoverageStatus'],
 ): string {
   switch (status) {
-    case 'covered_known':
-      return 'Covered';
+    case 'covered_local':
+      return 'Locally covered';
+    case 'derived_candidate_ready':
+      return 'Auto-derived candidate ready';
     case 'missing_known_expected':
-      return 'Known item missing slug';
+      return 'True missing expected slug';
     case 'missing_new_item':
       return 'New item follow-up';
+    case 'candidate_review_needed':
+      return 'Candidate needs review';
+    case 'candidate_reviewed':
+      return 'Candidate reviewed';
     default:
       return 'Status unresolved';
   }
 }
+
+function formatCandidateReviewLabel(
+  status: MuseumRefreshWorkflowResult['items'][number]['candidateReviewStatus'],
+  flags: string[],
+): string {
+  if (status === 'review_needed') {
+    return flags.join(', ');
+  }
+
+  if (status === 'reviewed') {
+    return 'Reviewed locally';
+  }
+
+  return 'No review needed';
+}
+
+function formatUnresolvedCaseLabel(
+  status: MuseumRefreshWorkflowResult['items'][number]['unresolvedCaseType'],
+): string {
+  switch (status) {
+    case 'likely_name_mismatch':
+      return 'Likely naming mismatch';
+    case 'collision_or_ambiguity':
+      return 'Collision or ambiguity';
+    case 'slug_edge_case':
+      return 'Slug edge case';
+    case 'likely_new_item':
+      return 'Likely new local item';
+    case 'missing_local_reference':
+      return 'Missing local reference';
+    default:
+      return 'Not unresolved';
+  }
+}
+
+type UnresolvedSortMode = 'case_then_name' | 'name' | 'likely_matches';
 
 function downloadTextFile(filename: string, content: string, mimeType: string): void {
   const blob = new Blob([content], { type: mimeType });
@@ -120,6 +176,12 @@ export function MuseumToolsPage() {
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [baselineMessage, setBaselineMessage] = useState<string | null>(null);
   const [savedBaseline, setSavedBaseline] = useState(() => loadMuseumKnownBaseline());
+  const [reviewedCandidateMarks, setReviewedCandidateMarks] = useState(() => loadMuseumCandidateReviewMarks());
+  const [triagedUnresolvedMarks, setTriagedUnresolvedMarks] = useState(() => loadMuseumUnresolvedTriageMarks());
+  const [unresolvedSortMode, setUnresolvedSortMode] = useState<UnresolvedSortMode>('case_then_name');
+  const [unresolvedCaseFilter, setUnresolvedCaseFilter] = useState<
+    'all' | NonNullable<MuseumRefreshWorkflowResult['items'][number]['unresolvedCaseType']>
+  >('all');
   const [coverage, setCoverage] = useState<MuseumCoverageInputs>(EMPTY_COVERAGE);
   const [coverageStatus, setCoverageStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [coverageMessage, setCoverageMessage] = useState<string | null>(null);
@@ -196,7 +258,12 @@ export function MuseumToolsPage() {
       return;
     }
 
-    setWorkflowResult(deriveMuseumRefreshWorkflow(nextParseResult, coverage, nextBaseline));
+    setWorkflowResult(
+      deriveMuseumRefreshWorkflow(nextParseResult, coverage, nextBaseline, {
+        reviewedCandidateKeys: reviewedCandidateMarks.map((mark) => mark.reviewKey),
+        triagedUnresolvedKeys: triagedUnresolvedMarks.map((mark) => mark.triageKey),
+      }),
+    );
     setValidationMessage(null);
   }
 
@@ -209,7 +276,12 @@ export function MuseumToolsPage() {
     saveMuseumKnownBaseline(nextBaseline);
     setSavedBaseline(nextBaseline);
     setBaselineMessage('Current museum item set saved as the local bootstrap baseline.');
-    setWorkflowResult(deriveMuseumRefreshWorkflow(parseResult, coverage, nextBaseline));
+    setWorkflowResult(
+      deriveMuseumRefreshWorkflow(parseResult, coverage, nextBaseline, {
+        reviewedCandidateKeys: reviewedCandidateMarks.map((mark) => mark.reviewKey),
+        triagedUnresolvedKeys: triagedUnresolvedMarks.map((mark) => mark.triageKey),
+      }),
+    );
   }
 
   function handleClearBaseline(): void {
@@ -227,7 +299,179 @@ export function MuseumToolsPage() {
       return;
     }
 
-    setWorkflowResult(deriveMuseumRefreshWorkflow(parseResult, coverage, null));
+    setWorkflowResult(
+      deriveMuseumRefreshWorkflow(parseResult, coverage, null, {
+        reviewedCandidateKeys: reviewedCandidateMarks.map((mark) => mark.reviewKey),
+        triagedUnresolvedKeys: triagedUnresolvedMarks.map((mark) => mark.triageKey),
+      }),
+    );
+  }
+
+  function handleMarkCandidateReviewed(item: MuseumRefreshWorkflowResult['items'][number]): void {
+    const reviewKey = item.candidateReviewKey;
+    const nextMark = {
+      reviewKey,
+      canonicalKey: item.canonicalKey,
+      itemName: item.itemName,
+      generatedBuddySlug: item.generatedBuddySlug,
+      alternateBuddySlug: item.alternateBuddySlug,
+      flags: item.flags,
+      reviewedAt: new Date().toISOString(),
+    };
+    const nextMarks = [...reviewedCandidateMarks.filter((mark) => mark.reviewKey !== reviewKey), nextMark];
+
+    markMuseumCandidateReviewed(nextMark);
+    setReviewedCandidateMarks(nextMarks);
+
+    if (parseResult) {
+      setWorkflowResult(
+        deriveMuseumRefreshWorkflow(parseResult, coverage, savedBaseline, {
+          reviewedCandidateKeys: nextMarks.map((mark) => mark.reviewKey),
+          triagedUnresolvedKeys: triagedUnresolvedMarks.map((mark) => mark.triageKey),
+        }),
+      );
+    }
+  }
+
+  function handleClearReviewedCandidate(item: MuseumRefreshWorkflowResult['items'][number]): void {
+    const reviewKey = item.candidateReviewKey;
+    const nextMarks = reviewedCandidateMarks.filter((mark) => mark.reviewKey !== reviewKey);
+
+    clearMuseumCandidateReviewedMark(reviewKey);
+    setReviewedCandidateMarks(nextMarks);
+
+    if (parseResult) {
+      setWorkflowResult(
+        deriveMuseumRefreshWorkflow(parseResult, coverage, savedBaseline, {
+          reviewedCandidateKeys: nextMarks.map((mark) => mark.reviewKey),
+          triagedUnresolvedKeys: triagedUnresolvedMarks.map((mark) => mark.triageKey),
+        }),
+      );
+    }
+  }
+
+  function handleClearReviewedCandidates(): void {
+    clearMuseumCandidateReviewMarks();
+    setReviewedCandidateMarks([]);
+
+    if (parseResult) {
+      setWorkflowResult(
+        deriveMuseumRefreshWorkflow(parseResult, coverage, savedBaseline, {
+          reviewedCandidateKeys: [],
+          triagedUnresolvedKeys: triagedUnresolvedMarks.map((mark) => mark.triageKey),
+        }),
+      );
+    }
+  }
+
+  function handleMarkUnresolvedTriaged(item: MuseumRefreshWorkflowResult['items'][number]): void {
+    if (!item.unresolvedCaseType || !item.unresolvedTriageKey) {
+      return;
+    }
+
+    const triageKey = createMuseumUnresolvedTriageKey(item);
+    const nextMark = {
+      triageKey,
+      canonicalKey: item.canonicalKey,
+      itemName: item.itemName,
+      unresolvedCaseType: item.unresolvedCaseType,
+      generatedBuddySlug: item.generatedBuddySlug,
+      alternateBuddySlug: item.alternateBuddySlug,
+      reviewedAt: new Date().toISOString(),
+    };
+    const nextMarks = [...triagedUnresolvedMarks.filter((mark) => mark.triageKey !== triageKey), nextMark];
+
+    markMuseumUnresolvedTriaged(nextMark);
+    setTriagedUnresolvedMarks(nextMarks);
+
+    if (parseResult) {
+      setWorkflowResult(
+        deriveMuseumRefreshWorkflow(parseResult, coverage, savedBaseline, {
+          reviewedCandidateKeys: reviewedCandidateMarks.map((mark) => mark.reviewKey),
+          triagedUnresolvedKeys: nextMarks.map((mark) => mark.triageKey),
+        }),
+      );
+    }
+  }
+
+  function handleClearUnresolvedTriaged(item: MuseumRefreshWorkflowResult['items'][number]): void {
+    if (!item.unresolvedTriageKey) {
+      return;
+    }
+
+    const triageKey = item.unresolvedTriageKey;
+    const nextMarks = triagedUnresolvedMarks.filter((mark) => mark.triageKey !== triageKey);
+
+    clearMuseumUnresolvedTriagedMark(triageKey);
+    setTriagedUnresolvedMarks(nextMarks);
+
+    if (parseResult) {
+      setWorkflowResult(
+        deriveMuseumRefreshWorkflow(parseResult, coverage, savedBaseline, {
+          reviewedCandidateKeys: reviewedCandidateMarks.map((mark) => mark.reviewKey),
+          triagedUnresolvedKeys: nextMarks.map((mark) => mark.triageKey),
+        }),
+      );
+    }
+  }
+
+  function handleClearUnresolvedTriagedMarks(): void {
+    clearMuseumUnresolvedTriageMarks();
+    setTriagedUnresolvedMarks([]);
+
+    if (parseResult) {
+      setWorkflowResult(
+        deriveMuseumRefreshWorkflow(parseResult, coverage, savedBaseline, {
+          reviewedCandidateKeys: reviewedCandidateMarks.map((mark) => mark.reviewKey),
+          triagedUnresolvedKeys: [],
+        }),
+      );
+    }
+  }
+
+  function handleBulkMarkVisibleUnresolvedTriaged(): void {
+    if (!workflowResult) {
+      return;
+    }
+
+    const unresolvedItems = getVisibleActiveUnresolvedItems(workflowResult.activeUnresolvedItems, unresolvedSortMode, unresolvedCaseFilter);
+
+    if (unresolvedItems.length === 0) {
+      return;
+    }
+
+    const newMarks = unresolvedItems
+      .filter((item) => item.unresolvedCaseType && item.unresolvedTriageKey)
+      .map((item) => ({
+        triageKey: item.unresolvedTriageKey!,
+        canonicalKey: item.canonicalKey,
+        itemName: item.itemName,
+        unresolvedCaseType: item.unresolvedCaseType!,
+        generatedBuddySlug: item.generatedBuddySlug,
+        alternateBuddySlug: item.alternateBuddySlug,
+        reviewedAt: new Date().toISOString(),
+      }));
+    const nextMarks = [
+      ...triagedUnresolvedMarks.filter(
+        (mark) => !unresolvedItems.some((item) => item.unresolvedTriageKey === mark.triageKey),
+      ),
+      ...newMarks,
+    ];
+
+    for (const mark of newMarks) {
+      markMuseumUnresolvedTriaged(mark);
+    }
+
+    setTriagedUnresolvedMarks(nextMarks);
+
+    if (parseResult) {
+      setWorkflowResult(
+        deriveMuseumRefreshWorkflow(parseResult, coverage, savedBaseline, {
+          reviewedCandidateKeys: reviewedCandidateMarks.map((mark) => mark.reviewKey),
+          triagedUnresolvedKeys: nextMarks.map((mark) => mark.triageKey),
+        }),
+      );
+    }
   }
 
   function handleExportSeedJson(): void {
@@ -281,7 +525,7 @@ export function MuseumToolsPage() {
 
     downloadTextFile(
       'buddy_item_candidates_review.csv',
-      toBuddyFarmCandidateReviewCsv(workflowResult.candidateResult),
+      toMuseumRefreshCandidateReviewCsv(workflowResult.items),
       'text/csv;charset=utf-8',
     );
     setExportMessage('Buddy candidate review CSV downloaded.');
@@ -300,7 +544,23 @@ export function MuseumToolsPage() {
     setExportMessage('Museum refresh follow-up CSV downloaded.');
   }
 
+  function handleExportUnresolvedTriageCsv(): void {
+    if (!workflowResult) {
+      return;
+    }
+
+    downloadTextFile(
+      'museum_unresolved_triage.csv',
+      toMuseumUnresolvedTriageCsv(workflowResult.unresolvedItems),
+      'text/csv;charset=utf-8',
+    );
+    setExportMessage('Museum unresolved triage CSV downloaded.');
+  }
+
   const runButtonsDisabled = coverageStatus === 'loading';
+  const visibleActiveUnresolvedItems = workflowResult
+    ? getVisibleActiveUnresolvedItems(workflowResult.activeUnresolvedItems, unresolvedSortMode, unresolvedCaseFilter)
+    : [];
 
   return (
     <div className="page-stack">
@@ -380,6 +640,20 @@ export function MuseumToolsPage() {
         )}
         {validationMessage ? <p className="status-message">{validationMessage}</p> : null}
         {baselineMessage ? <p className="status-message status-message--success">{baselineMessage}</p> : null}
+        {reviewedCandidateMarks.length > 0 ? (
+          <p className="status-message status-message--success">
+            {reviewedCandidateMarks.length.toLocaleString()} candidate review mark
+            {reviewedCandidateMarks.length === 1 ? '' : 's'} saved locally. Reviewed rows stay quiet unless their
+            derived candidate changes materially.
+          </p>
+        ) : null}
+        {triagedUnresolvedMarks.length > 0 ? (
+          <p className="status-message status-message--success">
+            {triagedUnresolvedMarks.length.toLocaleString()} unresolved triage mark
+            {triagedUnresolvedMarks.length === 1 ? '' : 's'} saved locally. Triaged unresolved rows stay out of the
+            active queue unless their unresolved signature changes.
+          </p>
+        ) : null}
         {exportMessage ? <p className="status-message status-message--success">{exportMessage}</p> : null}
       </section>
 
@@ -428,6 +702,10 @@ export function MuseumToolsPage() {
                 <dd>{workflowResult.summary.candidateReviewCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
+                <dt>Reviewed candidate rows</dt>
+                <dd>{workflowResult.summary.reviewedCandidateCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
                 <dt>Expected recipe coverage missing</dt>
                 <dd>{workflowResult.summary.recipeMissingExpectedCount.toLocaleString()}</dd>
               </div>
@@ -440,8 +718,12 @@ export function MuseumToolsPage() {
                 <dd>{workflowResult.summary.recipeExpectationUnresolvedCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Known items with buddy slug coverage</dt>
+                <dt>Locally covered buddy slugs</dt>
                 <dd>{workflowResult.summary.knownItemsWithBuddySlugCoverageCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Auto-derived buddy slugs ready</dt>
+                <dd>{workflowResult.summary.autoDerivedBuddySlugReadyCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
                 <dt>Known items missing expected buddy slug</dt>
@@ -454,6 +736,22 @@ export function MuseumToolsPage() {
               <div className="summary-grid__item">
                 <dt>Buddy slug status unresolved</dt>
                 <dd>{workflowResult.summary.unresolvedBuddySlugStatusCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Active unresolved triage rows</dt>
+                <dd>{workflowResult.summary.activeUnresolvedTriageCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Triaged unresolved rows</dt>
+                <dd>{workflowResult.summary.triagedUnresolvedCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Likely naming mismatch hints</dt>
+                <dd>{workflowResult.summary.likelyNameMismatchCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Likely new local items</dt>
+                <dd>{workflowResult.summary.likelyNewItemCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
                 <dt>Truly actionable follow-up</dt>
@@ -478,12 +776,36 @@ export function MuseumToolsPage() {
                 type="button"
                 className="button"
                 onClick={handleExportCandidateReviewCsv}
-                disabled={workflowResult.candidateResult.reviewItems.length === 0}
+                disabled={workflowResult.items.every((item) => item.flags.length === 0)}
               >
                 Export Candidate Review CSV
               </button>
               <button type="button" className="button" onClick={handleExportActionableCsv}>
                 Export Follow-Up CSV
+              </button>
+              <button
+                type="button"
+                className="button"
+                onClick={handleExportUnresolvedTriageCsv}
+                disabled={workflowResult.unresolvedItems.length === 0}
+              >
+                Export Unresolved Triage CSV
+              </button>
+              <button
+                type="button"
+                className="button"
+                onClick={handleClearReviewedCandidates}
+                disabled={reviewedCandidateMarks.length === 0}
+              >
+                Clear Reviewed Candidate Marks
+              </button>
+              <button
+                type="button"
+                className="button"
+                onClick={handleClearUnresolvedTriagedMarks}
+                disabled={triagedUnresolvedMarks.length === 0}
+              >
+                Clear Unresolved Triage Marks
               </button>
             </div>
 
@@ -497,6 +819,167 @@ export function MuseumToolsPage() {
                 </ul>
               </div>
             ) : null}
+
+            <div className="page-stack">
+              <h3 className="section-title">Unresolved Reconciliation Queue</h3>
+              <p className="supporting-text">
+                This queue focuses on unresolved museum items that do not yet reconcile safely against current local
+                mastery, tower, or recipe coverage. Use the case label, likely local match hints, and export to work
+                through unresolved rows intentionally without promoting uncertain matches.
+              </p>
+              <div className="button-row">
+                <label className="field-label" htmlFor="unresolved-sort-mode">
+                  Sort unresolved queue
+                </label>
+                <select
+                  id="unresolved-sort-mode"
+                  className="select-input"
+                  value={unresolvedSortMode}
+                  onChange={(event) => setUnresolvedSortMode(event.target.value as UnresolvedSortMode)}
+                >
+                  <option value="case_then_name">Case then name</option>
+                  <option value="name">Name</option>
+                  <option value="likely_matches">Most likely-match hints first</option>
+                </select>
+                <label className="field-label" htmlFor="unresolved-case-filter">
+                  Filter unresolved case
+                </label>
+                <select
+                  id="unresolved-case-filter"
+                  className="select-input"
+                  value={unresolvedCaseFilter}
+                  onChange={(event) =>
+                    setUnresolvedCaseFilter(
+                      event.target.value as 'all' | NonNullable<MuseumRefreshWorkflowResult['items'][number]['unresolvedCaseType']>,
+                    )
+                  }
+                >
+                  <option value="all">All unresolved cases</option>
+                  <option value="likely_name_mismatch">Likely naming mismatch</option>
+                  <option value="collision_or_ambiguity">Collision or ambiguity</option>
+                  <option value="slug_edge_case">Slug edge case</option>
+                  <option value="likely_new_item">Likely new local item</option>
+                  <option value="missing_local_reference">Missing local reference</option>
+                </select>
+                <button
+                  type="button"
+                  className="button"
+                  onClick={handleBulkMarkVisibleUnresolvedTriaged}
+                  disabled={visibleActiveUnresolvedItems.length === 0}
+                >
+                  Mark Visible Triaged
+                </button>
+              </div>
+              {workflowResult.activeUnresolvedItems.length === 0 ? (
+                <p className="empty-state">
+                  No active unresolved triage rows are currently surfaced. Triaged unresolved rows remain available in
+                  the unresolved export and can reappear if their signatures change.
+                </p>
+              ) : visibleActiveUnresolvedItems.length === 0 ? (
+                <p className="empty-state">
+                  No active unresolved rows match the current case filter.
+                </p>
+              ) : (
+                <div className="table-scroll">
+                  <table className="summary-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Case</th>
+                        <th scope="col">Likely local matches</th>
+                        <th scope="col">Candidate slug</th>
+                        <th scope="col">Triage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {visibleActiveUnresolvedItems.map((item) => (
+                        <tr key={`unresolved-${item.canonicalKey}`}>
+                          <td>
+                            <strong>{item.itemName}</strong>
+                            <p className="subtle-text">
+                              {item.canonicalKey}
+                              {' | '}
+                              {item.category}
+                            </p>
+                          </td>
+                          <td>{formatUnresolvedCaseLabel(item.unresolvedCaseType)}</td>
+                          <td>
+                            {item.likelyReferenceMatches.length === 0 ? (
+                              'No strong local hints'
+                            ) : (
+                              item.likelyReferenceMatches.map((match) => (
+                                <p key={`${item.canonicalKey}-${match.canonicalKey}`} className="subtle-text">
+                                  {match.itemName} [{match.sources.join('/')}]
+                                  {' - '}
+                                  {match.reason}
+                                </p>
+                              ))
+                            )}
+                          </td>
+                          <td>
+                            <p>{item.generatedBuddySlug}</p>
+                            <p className="subtle-text">{item.candidateBuddyUrl}</p>
+                          </td>
+                          <td>
+                            <p>{item.unresolvedTriageStatus === 'active' ? 'Active' : 'Triaged'}</p>
+                            <div className="button-row">
+                              <button type="button" className="button" onClick={() => handleMarkUnresolvedTriaged(item)}>
+                                Mark Triaged
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              {workflowResult.triagedUnresolvedItems.length > 0 ? (
+                <div className="page-stack">
+                  <h4 className="section-title">Locally Triaged Unresolved Rows</h4>
+                  <div className="table-scroll">
+                    <table className="summary-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Item</th>
+                          <th scope="col">Case</th>
+                          <th scope="col">Likely local matches</th>
+                          <th scope="col">Triage</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {workflowResult.triagedUnresolvedItems.map((item) => (
+                          <tr key={`triaged-${item.canonicalKey}`}>
+                            <td>
+                              <strong>{item.itemName}</strong>
+                              <p className="subtle-text">{item.canonicalKey}</p>
+                            </td>
+                            <td>{formatUnresolvedCaseLabel(item.unresolvedCaseType)}</td>
+                            <td>
+                              {item.likelyReferenceMatches.length === 0
+                                ? 'No strong local hints'
+                                : item.likelyReferenceMatches.map((match) => (
+                                    <p key={`${item.canonicalKey}-triaged-${match.canonicalKey}`} className="subtle-text">
+                                      {match.itemName} [{match.sources.join('/')}]
+                                    </p>
+                                  ))}
+                            </td>
+                            <td>
+                              <p>Triaged locally</p>
+                              <div className="button-row">
+                                <button type="button" className="button" onClick={() => handleClearUnresolvedTriaged(item)}>
+                                  Remove Triage Mark
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : null}
+            </div>
 
             <div className="page-stack">
               <h3 className="section-title">
@@ -518,7 +1001,7 @@ export function MuseumToolsPage() {
                         <th scope="col">Match</th>
                         <th scope="col">Buddy slug</th>
                         <th scope="col">Recipe</th>
-                        <th scope="col">Candidate review</th>
+                        <th scope="col">Review state</th>
                         <th scope="col">Follow-up</th>
                       </tr>
                     </thead>
@@ -537,9 +1020,45 @@ export function MuseumToolsPage() {
                           <td>{item.isMatchedKnownItem ? 'Matched known item' : 'Unmatched'}</td>
                           <td>{formatBuddySlugCoverageLabel(item.buddySlugCoverageStatus)}</td>
                           <td>{formatRecipeCoverageLabel(item.recipeCoverageStatus)}</td>
-                          <td>{item.needsCandidateReview ? item.flags.join(', ') : 'No review needed'}</td>
+                          <td>
+                            {formatCandidateReviewLabel(item.candidateReviewStatus, item.flags)}
+                            {item.candidateReviewStatus === 'review_needed' ? (
+                              <div className="button-row">
+                                <button
+                                  type="button"
+                                  className="button"
+                                  onClick={() => handleMarkCandidateReviewed(item)}
+                                >
+                                  Mark Reviewed
+                                </button>
+                              </div>
+                            ) : null}
+                            {item.candidateReviewStatus === 'reviewed' ? (
+                              <div className="button-row">
+                                <button
+                                  type="button"
+                                  className="button"
+                                  onClick={() => handleClearReviewedCandidate(item)}
+                                >
+                                  Remove Reviewed Mark
+                                </button>
+                              </div>
+                            ) : null}
+                          </td>
                           <td>
                             {item.followUpReasons.join(' ')}
+                            {item.buddySlugCoverageStatus === 'derived_candidate_ready' ? (
+                              <p className="subtle-text">
+                                This item already has a clean local auto-derived buddy slug candidate and is no longer
+                                counted as a true missing slug gap.
+                              </p>
+                            ) : null}
+                            {item.buddySlugCoverageStatus === 'candidate_reviewed' ? (
+                              <p className="subtle-text">
+                                This candidate was reviewed locally and will only resurface as fresh review work if the
+                                candidate signature changes.
+                              </p>
+                            ) : null}
                             {item.recipeCoverageStatus === 'not_expected' ? (
                               <p className="subtle-text">
                                 This matched item is currently classified as not expected to have recipe coverage.
@@ -663,4 +1182,36 @@ export function MuseumToolsPage() {
       </section>
     </div>
   );
+}
+
+function compareUnresolvedItems(
+  left: MuseumRefreshWorkflowResult['items'][number],
+  right: MuseumRefreshWorkflowResult['items'][number],
+  sortMode: UnresolvedSortMode,
+): number {
+  if (sortMode === 'name') {
+    return left.itemName.localeCompare(right.itemName);
+  }
+
+  if (sortMode === 'likely_matches') {
+    return (
+      right.likelyReferenceMatches.length - left.likelyReferenceMatches.length ||
+      left.itemName.localeCompare(right.itemName)
+    );
+  }
+
+  return (
+    formatUnresolvedCaseLabel(left.unresolvedCaseType).localeCompare(formatUnresolvedCaseLabel(right.unresolvedCaseType)) ||
+    left.itemName.localeCompare(right.itemName)
+  );
+}
+
+function getVisibleActiveUnresolvedItems(
+  items: MuseumRefreshWorkflowResult['activeUnresolvedItems'],
+  sortMode: UnresolvedSortMode,
+  caseFilter: 'all' | NonNullable<MuseumRefreshWorkflowResult['items'][number]['unresolvedCaseType']>,
+): MuseumRefreshWorkflowResult['activeUnresolvedItems'] {
+  return [...items]
+    .filter((item) => caseFilter === 'all' || item.unresolvedCaseType === caseFilter)
+    .sort((left, right) => compareUnresolvedItems(left, right, sortMode));
 }

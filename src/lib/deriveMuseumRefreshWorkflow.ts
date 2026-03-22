@@ -3,12 +3,13 @@ import { generateBuddyFarmCandidates } from './generateBuddyFarmCandidates';
 import type { MasteryDifficultyEntry } from './loadMasteryDifficulty';
 import type { RecipeRow } from './loadRecipeGraph';
 import type { TowerRequirementEntry } from './loadTowerRequirements';
+import { normalizeName } from './normalizeItemKey';
 import type { MuseumParseResult } from './parseMuseumExport';
 
 export type MuseumCoverageInputs = {
-  masteryEntries: Pick<MasteryDifficultyEntry, 'canonicalKey' | 'buddySlug' | 'method'>[];
-  towerEntries: Pick<TowerRequirementEntry, 'canonicalKey' | 'buddySlug'>[];
-  recipeRows: Pick<RecipeRow, 'outputCanonicalKey' | 'sourceBuddyUrl'>[];
+  masteryEntries: Pick<MasteryDifficultyEntry, 'itemName' | 'canonicalKey' | 'buddySlug' | 'method'>[];
+  towerEntries: Pick<TowerRequirementEntry, 'itemName' | 'canonicalKey' | 'buddySlug'>[];
+  recipeRows: Pick<RecipeRow, 'outputItemName' | 'outputCanonicalKey' | 'sourceBuddyUrl'>[];
 };
 
 export type MuseumKnownBaselineItem = Pick<
@@ -28,13 +29,40 @@ export type MuseumKnownBaseline = {
 };
 
 export type RecipeCoverageStatus = 'covered' | 'missing_expected' | 'not_expected' | 'unresolved';
+export type CandidateReviewStatus = 'not_needed' | 'review_needed' | 'reviewed';
 export type BuddySlugCoverageStatus =
-  | 'covered_known'
+  | 'covered_local'
+  | 'derived_candidate_ready'
   | 'missing_known_expected'
   | 'missing_new_item'
+  | 'candidate_review_needed'
+  | 'candidate_reviewed'
   | 'unresolved';
+export type MuseumReferenceSource = 'mastery' | 'tower' | 'recipe';
+export type MuseumUnresolvedCaseType =
+  | 'likely_name_mismatch'
+  | 'collision_or_ambiguity'
+  | 'slug_edge_case'
+  | 'likely_new_item'
+  | 'missing_local_reference';
+export type MuseumUnresolvedTriageStatus = 'not_applicable' | 'active' | 'triaged';
+
+export type MuseumLikelyReferenceMatch = {
+  itemName: string;
+  canonicalKey: string;
+  sources: MuseumReferenceSource[];
+  reason: string;
+};
+
+type MuseumReferenceCatalogEntry = {
+  itemName: string;
+  canonicalKey: string;
+  sources: MuseumReferenceSource[];
+};
 
 export type MuseumRefreshItem = BuddyFarmCandidate & {
+  candidateReviewKey: string;
+  candidateReviewStatus: CandidateReviewStatus;
   isKnownBaselineItem: boolean;
   isNewSinceBaseline: boolean;
   hasMasteryReferenceCoverage: boolean;
@@ -45,7 +73,12 @@ export type MuseumRefreshItem = BuddyFarmCandidate & {
   localBuddySlug: string | null;
   recipeCoverageStatus: RecipeCoverageStatus;
   buddySlugCoverageStatus: BuddySlugCoverageStatus;
+  unresolvedCaseType: MuseumUnresolvedCaseType | null;
+  unresolvedTriageKey: string | null;
+  unresolvedTriageStatus: MuseumUnresolvedTriageStatus;
+  likelyReferenceMatches: MuseumLikelyReferenceMatch[];
   needsReferenceCoverageFollowUp: boolean;
+  needsUnresolvedTriageFollowUp: boolean;
   needsRecipeCoverageFollowUp: boolean;
   needsBuddySlugFollowUp: boolean;
   needsCandidateReview: boolean;
@@ -59,6 +92,9 @@ export type MuseumRefreshWorkflowResult = {
   items: MuseumRefreshItem[];
   newItems: MuseumRefreshItem[];
   unmatchedItems: MuseumRefreshItem[];
+  unresolvedItems: MuseumRefreshItem[];
+  activeUnresolvedItems: MuseumRefreshItem[];
+  triagedUnresolvedItems: MuseumRefreshItem[];
   actionableItems: MuseumRefreshItem[];
   knownBaselineItemCount: number;
   summary: {
@@ -68,17 +104,31 @@ export type MuseumRefreshWorkflowResult = {
     unmatchedItemsCount: number;
     newItemsCount: number;
     candidateReviewCount: number;
+    reviewedCandidateCount: number;
     recipeCoveredCount: number;
     recipeMissingExpectedCount: number;
     recipeNotExpectedCount: number;
     recipeExpectationUnresolvedCount: number;
     knownItemsWithBuddySlugCoverageCount: number;
+    autoDerivedBuddySlugReadyCount: number;
     knownItemsMissingExpectedBuddySlugCount: number;
     newItemsMissingBuddySlugCount: number;
     unresolvedBuddySlugStatusCount: number;
+    activeUnresolvedTriageCount: number;
+    triagedUnresolvedCount: number;
+    likelyNameMismatchCount: number;
+    unresolvedCollisionCount: number;
+    unresolvedSlugEdgeCaseCount: number;
+    likelyNewItemCount: number;
+    missingLocalReferenceCount: number;
     actionableItemsCount: number;
   };
   warnings: string[];
+};
+
+export type MuseumRefreshWorkflowOptions = {
+  reviewedCandidateKeys?: Iterable<string>;
+  triagedUnresolvedKeys?: Iterable<string>;
 };
 
 function toSeedRows(parseResult: MuseumParseResult): MuseumSeedCsvRow[] {
@@ -121,6 +171,181 @@ function expectsRecipeCoverage(method: string | null): boolean | null {
   return false;
 }
 
+function toLooseComparableValue(value: string): string {
+  return normalizeName(value)
+    .normalize('NFKD')
+    .replace(/\p{M}+/gu, '')
+    .replace(/[^a-z0-9]+/gu, '');
+}
+
+function toSignificantTokens(value: string): string[] {
+  return [...new Set(normalizeName(value).split(/[^a-z0-9]+/u).filter((token) => token.length >= 2))];
+}
+
+function buildReferenceCatalog(coverage: MuseumCoverageInputs): MuseumReferenceCatalogEntry[] {
+  const byCanonicalKey = new Map<string, MuseumReferenceCatalogEntry>();
+
+  function addEntry(itemName: string, canonicalKey: string, source: MuseumReferenceSource): void {
+    const existingEntry = byCanonicalKey.get(canonicalKey);
+
+    if (existingEntry) {
+      if (!existingEntry.sources.includes(source)) {
+        existingEntry.sources.push(source);
+      }
+      return;
+    }
+
+    byCanonicalKey.set(canonicalKey, {
+      itemName,
+      canonicalKey,
+      sources: [source],
+    });
+  }
+
+  for (const entry of coverage.masteryEntries) {
+    addEntry(entry.itemName, entry.canonicalKey, 'mastery');
+  }
+
+  for (const entry of coverage.towerEntries) {
+    addEntry(entry.itemName, entry.canonicalKey, 'tower');
+  }
+
+  for (const row of coverage.recipeRows) {
+    addEntry(row.outputItemName, row.outputCanonicalKey, 'recipe');
+  }
+
+  return [...byCanonicalKey.values()].sort((left, right) => left.itemName.localeCompare(right.itemName));
+}
+
+function findLikelyReferenceMatches(
+  item: Pick<BuddyFarmCandidate, 'itemName' | 'canonicalKey'>,
+  referenceCatalog: MuseumReferenceCatalogEntry[],
+): MuseumLikelyReferenceMatch[] {
+  const itemLoose = toLooseComparableValue(item.itemName);
+  const itemTokens = toSignificantTokens(item.itemName);
+  const scoredMatches = referenceCatalog
+    .filter((entry) => entry.canonicalKey !== item.canonicalKey)
+    .map((entry) => {
+      const entryLoose = toLooseComparableValue(entry.itemName);
+      const entryTokens = toSignificantTokens(entry.itemName);
+      const sharedTokens = itemTokens.filter((token) => entryTokens.includes(token));
+      let score = 0;
+      let reason: string | null = null;
+
+      if (itemLoose && itemLoose === entryLoose) {
+        score = 300;
+        reason = 'Same letters after punctuation or diacritic cleanup.';
+      } else if (
+        itemLoose &&
+        entryLoose &&
+        Math.min(itemLoose.length, entryLoose.length) >= 8 &&
+        (itemLoose.includes(entryLoose) || entryLoose.includes(itemLoose))
+      ) {
+        score = 200;
+        reason = 'One relaxed name contains the other after cleanup.';
+      } else if (sharedTokens.length >= 2) {
+        const overlapRatio = sharedTokens.length / Math.max(itemTokens.length, entryTokens.length);
+
+        if (overlapRatio >= 0.5) {
+          score = 100 + sharedTokens.length;
+          reason = `Shares key tokens with a known local item: ${sharedTokens.join(', ')}.`;
+        }
+      }
+
+      return score > 0
+        ? {
+            itemName: entry.itemName,
+            canonicalKey: entry.canonicalKey,
+            sources: [...entry.sources].sort(),
+            reason,
+            score,
+          }
+        : null;
+    })
+    .filter((match): match is NonNullable<typeof match> => match !== null)
+    .sort((left, right) => right.score - left.score || left.itemName.localeCompare(right.itemName));
+
+  return scoredMatches.slice(0, 3).map(({ itemName, canonicalKey, sources, reason }) => ({
+    itemName,
+    canonicalKey,
+    sources,
+    reason: reason ?? 'Shares similarity with a known local item.',
+  }));
+}
+
+function deriveUnresolvedCaseType(
+  item: Pick<BuddyFarmCandidate, 'flags'> & {
+    isMatchedKnownItem: boolean;
+    isNewSinceBaseline: boolean;
+    candidateReviewStatus: CandidateReviewStatus;
+    likelyReferenceMatches: MuseumLikelyReferenceMatch[];
+  },
+): MuseumUnresolvedCaseType | null {
+  if (item.isMatchedKnownItem) {
+    return null;
+  }
+
+  if (item.flags.includes('slug_collision')) {
+    return 'collision_or_ambiguity';
+  }
+
+  if (item.likelyReferenceMatches.length > 0) {
+    return 'likely_name_mismatch';
+  }
+
+  if (item.candidateReviewStatus !== 'not_needed') {
+    return 'slug_edge_case';
+  }
+
+  if (item.isNewSinceBaseline) {
+    return 'likely_new_item';
+  }
+
+  return 'missing_local_reference';
+}
+
+export function createMuseumCandidateReviewKey(
+  item: Pick<BuddyFarmCandidate, 'canonicalKey' | 'generatedBuddySlug' | 'alternateBuddySlug' | 'flags'>,
+): string {
+  return [
+    item.canonicalKey,
+    item.generatedBuddySlug,
+    item.alternateBuddySlug ?? '',
+    [...item.flags].sort().join(';'),
+  ].join('|');
+}
+
+export function createMuseumUnresolvedTriageKey(
+  item: Pick<
+    MuseumRefreshItem,
+    'canonicalKey' | 'generatedBuddySlug' | 'alternateBuddySlug' | 'flags' | 'unresolvedCaseType' | 'likelyReferenceMatches'
+  >,
+): string {
+  return [
+    item.canonicalKey,
+    item.generatedBuddySlug,
+    item.alternateBuddySlug ?? '',
+    item.unresolvedCaseType ?? '',
+    item.likelyReferenceMatches.map((match) => match.canonicalKey).join(';'),
+    [...item.flags].sort().join(';'),
+  ].join('|');
+}
+
+function describeUnresolvedCaseType(caseType: MuseumUnresolvedCaseType): string {
+  switch (caseType) {
+    case 'likely_name_mismatch':
+      return 'Likely a known local item with a naming or normalization mismatch.';
+    case 'collision_or_ambiguity':
+      return 'Generated slug collides or remains ambiguous and needs manual reconciliation.';
+    case 'slug_edge_case':
+      return 'Slug edge cases still block safe reconciliation.';
+    case 'likely_new_item':
+      return 'Likely a museum item not yet represented in current local reference coverage.';
+    default:
+      return 'No strong local reconciliation hints were found; treat this as missing local reference coverage until reviewed.';
+  }
+}
+
 export function createMuseumKnownBaseline(result: MuseumRefreshWorkflowResult): MuseumKnownBaseline {
   return {
     savedAt: new Date().toISOString(),
@@ -140,10 +365,14 @@ export function deriveMuseumRefreshWorkflow(
   parseResult: MuseumParseResult,
   coverage: MuseumCoverageInputs,
   baseline: MuseumKnownBaseline | null = null,
+  options: MuseumRefreshWorkflowOptions = {},
 ): MuseumRefreshWorkflowResult {
   const seedRows = toSeedRows(parseResult);
   const candidateResult = generateBuddyFarmCandidates(seedRows);
   const knownBaselineKeys = new Set((baseline?.items ?? []).map((item) => item.canonicalKey));
+  const reviewedCandidateKeys = new Set(options.reviewedCandidateKeys ?? []);
+  const triagedUnresolvedKeys = new Set(options.triagedUnresolvedKeys ?? []);
+  const referenceCatalog = buildReferenceCatalog(coverage);
   const masteryByKey = coverage.masteryEntries.reduce<Record<string, MuseumCoverageInputs['masteryEntries'][number]>>(
     (lookup, entry) => {
       lookup[entry.canonicalKey] = entry;
@@ -178,6 +407,7 @@ export function deriveMuseumRefreshWorkflow(
 
   const items = candidateResult.items
     .map<MuseumRefreshItem>((item) => {
+      const candidateReviewKey = createMuseumCandidateReviewKey(item);
       const isKnownBaselineItem = knownBaselineKeys.has(item.canonicalKey);
       const hasMasteryReferenceCoverage = masteryKeys.has(item.canonicalKey);
       const hasTowerReferenceCoverage = towerKeys.has(item.canonicalKey);
@@ -185,10 +415,13 @@ export function deriveMuseumRefreshWorkflow(
       const hasAnyReferenceCoverage = hasMasteryReferenceCoverage || hasTowerReferenceCoverage || hasRecipeCoverage;
       const isMatchedKnownItem = hasAnyReferenceCoverage;
       const isNewSinceBaseline = baseline ? !isKnownBaselineItem : false;
-      const needsCandidateReview = item.flags.length > 0;
+      const candidateReviewStatus: CandidateReviewStatus =
+        item.flags.length === 0 ? 'not_needed' : reviewedCandidateKeys.has(candidateReviewKey) ? 'reviewed' : 'review_needed';
+      const needsCandidateReview = candidateReviewStatus === 'review_needed';
       const localBuddySlug = buddySlugByKey.get(item.canonicalKey) ?? null;
       const masteryEntry = masteryByKey[item.canonicalKey] ?? null;
       const recipeExpectation = hasRecipeCoverage ? true : expectsRecipeCoverage(masteryEntry?.method ?? null);
+      const likelyReferenceMatches = isMatchedKnownItem ? [] : findLikelyReferenceMatches(item, referenceCatalog);
 
       let recipeCoverageStatus: RecipeCoverageStatus;
 
@@ -207,23 +440,49 @@ export function deriveMuseumRefreshWorkflow(
       let buddySlugCoverageStatus: BuddySlugCoverageStatus;
 
       if (localBuddySlug && isMatchedKnownItem) {
-        buddySlugCoverageStatus = 'covered_known';
-      } else if (!localBuddySlug && needsCandidateReview) {
+        buddySlugCoverageStatus = 'covered_local';
+      } else if (!isMatchedKnownItem) {
         buddySlugCoverageStatus = 'unresolved';
-      } else if (!localBuddySlug && !isMatchedKnownItem) {
-        buddySlugCoverageStatus = 'unresolved';
-      } else if (!localBuddySlug && isNewSinceBaseline) {
+      } else if (candidateReviewStatus === 'review_needed') {
+        buddySlugCoverageStatus = 'candidate_review_needed';
+      } else if (candidateReviewStatus === 'reviewed') {
+        buddySlugCoverageStatus = 'candidate_reviewed';
+      } else if (item.generatedBuddySlug) {
+        buddySlugCoverageStatus = 'derived_candidate_ready';
+      } else if (isNewSinceBaseline) {
         buddySlugCoverageStatus = 'missing_new_item';
       } else {
         buddySlugCoverageStatus = 'missing_known_expected';
       }
 
+      const unresolvedCaseType = deriveUnresolvedCaseType({
+        flags: item.flags,
+        isMatchedKnownItem,
+        isNewSinceBaseline,
+        candidateReviewStatus,
+        likelyReferenceMatches,
+      });
+      const unresolvedTriageKey =
+        unresolvedCaseType === null
+          ? null
+          : createMuseumUnresolvedTriageKey({
+              canonicalKey: item.canonicalKey,
+              generatedBuddySlug: item.generatedBuddySlug,
+              alternateBuddySlug: item.alternateBuddySlug,
+              flags: item.flags,
+              unresolvedCaseType,
+              likelyReferenceMatches,
+            } as MuseumRefreshItem);
+      const unresolvedTriageStatus: MuseumUnresolvedTriageStatus =
+        unresolvedTriageKey === null ? 'not_applicable' : triagedUnresolvedKeys.has(unresolvedTriageKey) ? 'triaged' : 'active';
+
       const needsReferenceCoverageFollowUp = !isMatchedKnownItem;
+      const needsUnresolvedTriageFollowUp = unresolvedTriageStatus === 'active';
       const needsRecipeCoverageFollowUp = recipeCoverageStatus === 'missing_expected';
       const needsBuddySlugFollowUp =
         buddySlugCoverageStatus === 'missing_known_expected' || buddySlugCoverageStatus === 'missing_new_item';
       const isActionableFollowUp =
-        needsReferenceCoverageFollowUp ||
+        needsUnresolvedTriageFollowUp ||
         needsRecipeCoverageFollowUp ||
         needsBuddySlugFollowUp ||
         needsCandidateReview;
@@ -237,26 +496,62 @@ export function deriveMuseumRefreshWorkflow(
         followUpReasons.push('Unmatched against current local mastery, tower, and recipe outputs.');
       }
 
+      if (unresolvedCaseType) {
+        followUpReasons.push(describeUnresolvedCaseType(unresolvedCaseType));
+      }
+
+      if (likelyReferenceMatches.length > 0) {
+        followUpReasons.push(
+          `Likely local matches: ${likelyReferenceMatches
+            .map((match) => `${match.itemName} [${match.sources.join('/')}] (${match.reason})`)
+            .join('; ')}.`,
+        );
+      }
+
+      if (unresolvedTriageStatus === 'triaged') {
+        followUpReasons.push(
+          'This unresolved row was marked triaged locally and will stay out of the active unresolved queue unless its signature changes.',
+        );
+      } else if (unresolvedTriageStatus === 'active') {
+        followUpReasons.push('This unresolved row is still in the active local triage queue.');
+      }
+
       if (needsRecipeCoverageFollowUp) {
         followUpReasons.push('Expected recipe coverage is missing for this matched item.');
       } else if (recipeCoverageStatus === 'unresolved') {
         followUpReasons.push('Recipe expectation is unresolved until this item is reconciled more safely.');
       }
 
-      if (buddySlugCoverageStatus === 'missing_known_expected') {
+      if (buddySlugCoverageStatus === 'covered_local') {
+        followUpReasons.push('Local maintained buddy slug coverage already exists for this matched item.');
+      } else if (buddySlugCoverageStatus === 'derived_candidate_ready') {
+        followUpReasons.push(
+          'A clean auto-derived buddy slug candidate exists locally and does not currently need review, but it has not been promoted into maintained local slug coverage.',
+        );
+      } else if (buddySlugCoverageStatus === 'missing_known_expected') {
         followUpReasons.push('Known matched item is missing expected local buddy slug coverage.');
       } else if (buddySlugCoverageStatus === 'missing_new_item') {
         followUpReasons.push('Newly discovered item still needs buddy slug follow-up.');
+      } else if (buddySlugCoverageStatus === 'candidate_review_needed') {
+        followUpReasons.push('Buddy slug candidate exists but still needs review before it should be trusted.');
+      } else if (buddySlugCoverageStatus === 'candidate_reviewed') {
+        followUpReasons.push(
+          'Buddy slug candidate was reviewed locally and will stay quiet unless the derived candidate changes materially.',
+        );
       } else if (buddySlugCoverageStatus === 'unresolved') {
         followUpReasons.push('Buddy slug status is unresolved until this item is reconciled more safely.');
       }
 
       if (needsCandidateReview) {
         followUpReasons.push(`Generated buddy candidate needs review: ${item.flags.join(', ')}.`);
+      } else if (candidateReviewStatus === 'reviewed') {
+        followUpReasons.push('Candidate review flags were marked reviewed locally for this exact derived candidate.');
       }
 
       return {
         ...item,
+        candidateReviewKey,
+        candidateReviewStatus,
         isKnownBaselineItem,
         isNewSinceBaseline,
         hasMasteryReferenceCoverage,
@@ -267,7 +562,12 @@ export function deriveMuseumRefreshWorkflow(
         localBuddySlug,
         recipeCoverageStatus,
         buddySlugCoverageStatus,
+        unresolvedCaseType,
+        unresolvedTriageKey,
+        unresolvedTriageStatus,
+        likelyReferenceMatches,
         needsReferenceCoverageFollowUp,
+        needsUnresolvedTriageFollowUp,
         needsRecipeCoverageFollowUp,
         needsBuddySlugFollowUp,
         needsCandidateReview,
@@ -279,6 +579,9 @@ export function deriveMuseumRefreshWorkflow(
 
   const newItems = items.filter((item) => item.isNewSinceBaseline);
   const unmatchedItems = items.filter((item) => !item.isMatchedKnownItem);
+  const unresolvedItems = items.filter((item) => item.unresolvedCaseType !== null);
+  const activeUnresolvedItems = unresolvedItems.filter((item) => item.unresolvedTriageStatus === 'active');
+  const triagedUnresolvedItems = unresolvedItems.filter((item) => item.unresolvedTriageStatus === 'triaged');
   const actionableItems = items.filter((item) => item.isActionableFollowUp);
   const warnings = [...parseResult.parseSummary.warnings, ...candidateResult.parseSummary.warnings];
 
@@ -294,6 +597,9 @@ export function deriveMuseumRefreshWorkflow(
     items,
     newItems,
     unmatchedItems,
+    unresolvedItems,
+    activeUnresolvedItems,
+    triagedUnresolvedItems,
     actionableItems,
     knownBaselineItemCount: knownBaselineKeys.size,
     summary: {
@@ -302,18 +608,33 @@ export function deriveMuseumRefreshWorkflow(
       matchedKnownItemsCount: items.filter((item) => item.isMatchedKnownItem).length,
       unmatchedItemsCount: unmatchedItems.length,
       newItemsCount: newItems.length,
-      candidateReviewCount: items.filter((item) => item.needsCandidateReview).length,
+      candidateReviewCount: items.filter((item) => item.candidateReviewStatus === 'review_needed').length,
+      reviewedCandidateCount: items.filter((item) => item.candidateReviewStatus === 'reviewed').length,
       recipeCoveredCount: items.filter((item) => item.recipeCoverageStatus === 'covered').length,
       recipeMissingExpectedCount: items.filter((item) => item.recipeCoverageStatus === 'missing_expected').length,
       recipeNotExpectedCount: items.filter((item) => item.recipeCoverageStatus === 'not_expected').length,
       recipeExpectationUnresolvedCount: items.filter((item) => item.recipeCoverageStatus === 'unresolved').length,
-      knownItemsWithBuddySlugCoverageCount: items.filter((item) => item.buddySlugCoverageStatus === 'covered_known')
+      knownItemsWithBuddySlugCoverageCount: items.filter((item) => item.buddySlugCoverageStatus === 'covered_local')
+        .length,
+      autoDerivedBuddySlugReadyCount: items.filter((item) => item.buddySlugCoverageStatus === 'derived_candidate_ready')
         .length,
       knownItemsMissingExpectedBuddySlugCount: items.filter(
         (item) => item.buddySlugCoverageStatus === 'missing_known_expected',
       ).length,
       newItemsMissingBuddySlugCount: items.filter((item) => item.buddySlugCoverageStatus === 'missing_new_item').length,
-      unresolvedBuddySlugStatusCount: items.filter((item) => item.buddySlugCoverageStatus === 'unresolved').length,
+      unresolvedBuddySlugStatusCount: items.filter(
+        (item) =>
+          item.buddySlugCoverageStatus === 'unresolved' || item.buddySlugCoverageStatus === 'candidate_review_needed',
+      ).length,
+      activeUnresolvedTriageCount: activeUnresolvedItems.length,
+      triagedUnresolvedCount: triagedUnresolvedItems.length,
+      likelyNameMismatchCount: unresolvedItems.filter((item) => item.unresolvedCaseType === 'likely_name_mismatch').length,
+      unresolvedCollisionCount: unresolvedItems.filter((item) => item.unresolvedCaseType === 'collision_or_ambiguity')
+        .length,
+      unresolvedSlugEdgeCaseCount: unresolvedItems.filter((item) => item.unresolvedCaseType === 'slug_edge_case').length,
+      likelyNewItemCount: unresolvedItems.filter((item) => item.unresolvedCaseType === 'likely_new_item').length,
+      missingLocalReferenceCount: unresolvedItems.filter((item) => item.unresolvedCaseType === 'missing_local_reference')
+        .length,
       actionableItemsCount: actionableItems.length,
     },
     warnings,
@@ -330,7 +651,7 @@ function escapeCsvValue(value: string): string {
 
 export function toMuseumRefreshActionableCsv(items: MuseumRefreshItem[]): string {
   const rows = [
-    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,is_new_since_baseline,is_matched_known_item,recipe_coverage_status,buddy_slug_coverage_status,needs_reference_follow_up,needs_recipe_follow_up,needs_buddy_slug_follow_up,needs_candidate_review,is_actionable_follow_up,flags,follow_up_reasons',
+    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,candidate_review_key,candidate_review_status,unresolved_case_type,unresolved_triage_key,unresolved_triage_status,likely_reference_matches,is_new_since_baseline,is_matched_known_item,recipe_coverage_status,buddy_slug_coverage_status,needs_reference_follow_up,needs_unresolved_triage_follow_up,needs_recipe_follow_up,needs_buddy_slug_follow_up,needs_candidate_review,is_actionable_follow_up,flags,follow_up_reasons',
   ];
 
   for (const item of items) {
@@ -343,16 +664,89 @@ export function toMuseumRefreshActionableCsv(items: MuseumRefreshItem[]): string
         item.obtainable ? 'Y' : 'N',
         item.generatedBuddySlug,
         item.alternateBuddySlug ?? '',
+        item.candidateReviewKey,
+        item.candidateReviewStatus,
+        item.unresolvedCaseType ?? '',
+        item.unresolvedTriageKey ?? '',
+        item.unresolvedTriageStatus,
+        item.likelyReferenceMatches
+          .map((match) => `${match.itemName} [${match.sources.join('/')}] (${match.reason})`)
+          .join('; '),
         item.isNewSinceBaseline ? 'Y' : 'N',
         item.isMatchedKnownItem ? 'Y' : 'N',
         item.recipeCoverageStatus,
         item.buddySlugCoverageStatus,
         item.needsReferenceCoverageFollowUp ? 'Y' : 'N',
+        item.needsUnresolvedTriageFollowUp ? 'Y' : 'N',
         item.needsRecipeCoverageFollowUp ? 'Y' : 'N',
         item.needsBuddySlugFollowUp ? 'Y' : 'N',
         item.needsCandidateReview ? 'Y' : 'N',
         item.isActionableFollowUp ? 'Y' : 'N',
         item.flags.join('; '),
+        item.followUpReasons.join('; '),
+      ]
+        .map(escapeCsvValue)
+        .join(','),
+    );
+  }
+
+  return rows.join('\n');
+}
+
+export function toMuseumRefreshCandidateReviewCsv(items: MuseumRefreshItem[]): string {
+  const rows = [
+    'museum_category,category,item_name,canonical_key,generated_buddy_slug,alternate_buddy_slug,candidate_buddy_url,candidate_review_key,candidate_review_status,buddy_slug_coverage_status,flags,notes',
+  ];
+
+  for (const item of items.filter((candidate) => candidate.flags.length > 0)) {
+    rows.push(
+      [
+        item.museumCategory,
+        item.category,
+        item.itemName,
+        item.canonicalKey,
+        item.generatedBuddySlug,
+        item.alternateBuddySlug ?? '',
+        item.candidateBuddyUrl,
+        item.candidateReviewKey,
+        item.candidateReviewStatus,
+        item.buddySlugCoverageStatus,
+        item.flags.join('; '),
+        item.notes.join('; '),
+      ]
+        .map(escapeCsvValue)
+        .join(','),
+    );
+  }
+
+  return rows.join('\n');
+}
+
+export function toMuseumUnresolvedTriageCsv(items: MuseumRefreshItem[]): string {
+  const rows = [
+    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,candidate_buddy_url,unresolved_case_type,unresolved_triage_key,unresolved_triage_status,candidate_review_status,flags,is_new_since_baseline,likely_reference_matches,follow_up_reasons',
+  ];
+
+  for (const item of items.filter((candidate) => candidate.unresolvedCaseType !== null)) {
+    rows.push(
+      [
+        item.museumCategory,
+        item.category,
+        item.itemName,
+        item.canonicalKey,
+        item.obtainable ? 'Y' : 'N',
+        item.generatedBuddySlug,
+        item.alternateBuddySlug ?? '',
+        item.candidateBuddyUrl,
+        item.unresolvedCaseType ?? '',
+        item.unresolvedTriageKey ?? '',
+        item.unresolvedTriageStatus,
+        item.candidateReviewStatus,
+        item.flags.join('; '),
+        item.isNewSinceBaseline ? 'Y' : 'N',
+        item.likelyReferenceMatches
+          .map((match) => `${match.itemName} [${match.sources.join('/')}] (${match.reason})`)
+          .join('; '),
         item.followUpReasons.join('; '),
       ]
         .map(escapeCsvValue)
