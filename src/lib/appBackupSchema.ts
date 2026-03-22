@@ -1,3 +1,4 @@
+import type { AcquisitionPlannerInputState } from './acquisitionPlannerState';
 import type { UserCraftingModifierState } from './craftingModifierState';
 import type { AppTheme } from './themePreference';
 import type { MasterySnapshot } from './storage/masterySnapshots';
@@ -14,6 +15,7 @@ export type AppBackupStateV1 = {
   snapshots: MasterySnapshot[];
   preferences: {
     craftingModifierState: UserCraftingModifierState | null;
+    acquisitionPlannerState?: AcquisitionPlannerInputState | null;
     themePreference: AppTheme | null;
   };
 };
@@ -33,6 +35,7 @@ export type CreateAppBackupPayloadInput = {
   exportedAt: string;
   snapshots: MasterySnapshot[];
   craftingModifierState: UserCraftingModifierState | null;
+  acquisitionPlannerState: AcquisitionPlannerInputState | null;
   themePreference: AppTheme | null;
 };
 
@@ -55,7 +58,8 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_snapshot'
   | 'missing_preferences'
   | 'invalid_theme_preference'
-  | 'invalid_modifier_state';
+  | 'invalid_modifier_state'
+  | 'invalid_acquisition_planner_state';
 
 export type AppBackupPayloadValidationResult =
   | { ok: true; payload: AppBackupPayloadV1 }
@@ -99,6 +103,115 @@ function isValidCraftingModifierState(value: unknown): value is UserCraftingModi
     isFiniteNonNegativeNumber(temporary.eventResourceSaverBonusPercent) &&
     isBoolean(planning.includeExcludedRecipes) &&
     isBoolean(planning.ironDepotActive)
+  );
+}
+
+function isValidOwnedNowEntry(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.canonicalItemKey === 'string' &&
+    value.canonicalItemKey.length > 0 &&
+    typeof value.itemName === 'string' &&
+    value.itemName.length > 0 &&
+    isFiniteNonNegativeNumber(value.ownedCount) &&
+    (value.sourceCategory === 'stockpile' || value.sourceCategory === 'container')
+  );
+}
+
+function isValidAcquisitionPlannerState(value: unknown): value is AcquisitionPlannerInputState {
+  if (!isRecord(value) || value.schemaVersion !== 1) {
+    return false;
+  }
+
+  if (!isRecord(value.sourcePolicy) || !isRecord(value.explore) || !isRecord(value.consumables)) {
+    return false;
+  }
+
+  if (!isRecord(value.ownedNow) || !isRecord(value.pets)) {
+    return false;
+  }
+
+  if (
+    value.sourcePolicy.planningHorizon !== 'immediate_only' &&
+    value.sourcePolicy.planningHorizon !== 'include_future'
+  ) {
+    return false;
+  }
+
+  if (!isRecord(value.sourcePolicy.sourceOverrides)) {
+    return false;
+  }
+
+  if (
+    !isBoolean(value.explore.runeCubeActive) ||
+    !isFiniteNonNegativeNumber(value.explore.availableStamina) ||
+    !isFiniteNonNegativeNumber(value.explore.wandererPercent) ||
+    !isFiniteNonNegativeNumber(value.explore.exploringEffectivenessPercent) ||
+    !isBoolean(value.explore.cinnamonSticksActive) ||
+    !isBoolean(value.explore.neighActive)
+  ) {
+    return false;
+  }
+
+  if (!Array.isArray(value.ownedNow.entries) || !value.ownedNow.entries.every((entry) => isValidOwnedNowEntry(entry))) {
+    return false;
+  }
+
+  if (
+    !isRecord(value.pets.futureProduction) ||
+    !isBoolean(value.pets.futureProduction.enabled) ||
+    !isFiniteNonNegativeNumber(value.pets.futureProduction.horizonDays) ||
+    !isStringRecord(value.pets.futureProduction.petLevelsByCanonicalKey) ||
+    !Object.values(value.pets.futureProduction.petLevelsByCanonicalKey).every((entry) =>
+      isFiniteNonNegativeNumber(entry),
+    ) ||
+    !isBoolean(value.pets.futureProduction.respectSeasonality) ||
+    !isFiniteNonNegativeNumber(value.pets.futureProduction.offlineHoursCap)
+  ) {
+    return false;
+  }
+
+  if (!isStringRecord(value.pets.storedInventoryByCanonicalKey)) {
+    return false;
+  }
+
+  if (!Object.values(value.pets.storedInventoryByCanonicalKey).every((entry) => isFiniteNonNegativeNumber(entry))) {
+    return false;
+  }
+
+  const consumableValues = [
+    value.consumables.appleCider,
+    value.consumables.lemonade,
+    value.consumables.arnoldPalmer,
+    value.consumables.orangeJuice,
+  ];
+
+  if (
+    !consumableValues.every((entry) => {
+      return (
+        isRecord(entry) &&
+        isFiniteNonNegativeNumber(entry.ownedCount) &&
+        isFiniteNonNegativeNumber(entry.craftableNowCount) &&
+        isFiniteNonNegativeNumber(entry.futureCraftableCount)
+      );
+    })
+  ) {
+    return false;
+  }
+
+  const lemonade = value.consumables.lemonade as Record<string, unknown>;
+  const arnoldPalmer = value.consumables.arnoldPalmer as Record<string, unknown>;
+
+  return (
+    isBoolean(lemonade.lemonSqueezerActive) &&
+    isBoolean(lemonade.quandaryChowderActive) &&
+    isBoolean(arnoldPalmer.lemonSqueezerActive) &&
+    isBoolean(arnoldPalmer.quandaryChowderActive) &&
+    isFiniteNonNegativeNumber(arnoldPalmer.lemonSeltzerUsesRemaining) &&
+    isBoolean(arnoldPalmer.lemonCreamPieActive)
   );
 }
 
@@ -158,12 +271,13 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
     // v1 restore is intentionally replace-style rather than merge-heavy.
     restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
     state: {
-      snapshots: [...input.snapshots],
-      preferences: {
-        craftingModifierState: input.craftingModifierState,
-        themePreference: input.themePreference,
+        snapshots: [...input.snapshots],
+        preferences: {
+          craftingModifierState: input.craftingModifierState,
+          acquisitionPlannerState: input.acquisitionPlannerState,
+          themePreference: input.themePreference,
+        },
       },
-    },
   };
 }
 
@@ -292,6 +406,19 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       ok: false,
       code: 'invalid_modifier_state',
       message: 'The backup file contains malformed crafting or planner modifier state.',
+    };
+  }
+
+  const acquisitionPlannerState = value.state.preferences.acquisitionPlannerState;
+  if (
+    acquisitionPlannerState !== undefined &&
+    acquisitionPlannerState !== null &&
+    !isValidAcquisitionPlannerState(acquisitionPlannerState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_acquisition_planner_state',
+      message: 'The backup file contains malformed acquisition planner state.',
     };
   }
 

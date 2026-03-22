@@ -1,3 +1,4 @@
+import { loadAcquisitionPlannerInputState } from './acquisitionPlannerState';
 import packageJson from '../../package.json';
 
 import { loadCraftingModifierState } from './craftingModifierState';
@@ -38,6 +39,7 @@ export async function buildCurrentAppBackupPayload(
     exportedAt: options.exportedAt ?? new Date().toISOString(),
     snapshots,
     craftingModifierState: loadCraftingModifierState(),
+    acquisitionPlannerState: loadAcquisitionPlannerInputState(),
     themePreference: readStoredAppTheme(),
   });
 }

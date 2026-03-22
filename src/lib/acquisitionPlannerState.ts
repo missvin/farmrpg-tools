@@ -3,6 +3,9 @@ import {
   type AcquisitionSourceKey,
 } from './acquisitionSourceCatalog';
 import type { UserCraftingModifierState } from './craftingModifierState';
+import { toCanonicalItemKey } from './normalizeItemKey';
+
+export const ACQUISITION_PLANNER_STATE_STORAGE_KEY = 'farmrpg-tools.acquisitionPlannerState';
 
 export type AcquisitionSourcePolicyOverride = 'default' | 'force_included' | 'force_excluded';
 
@@ -51,9 +54,17 @@ export type AcquisitionConsumablePlannerState = {
   orangeJuice: OrangeJuicePlannerState;
 };
 
+export type AcquisitionOwnedNowSourceCategory = 'stockpile' | 'container';
+
+export type AcquisitionOwnedNowItemInput = {
+  canonicalItemKey: string;
+  itemName: string;
+  ownedCount: number;
+  sourceCategory: AcquisitionOwnedNowSourceCategory;
+};
+
 export type AcquisitionOwnedNowPlannerState = {
-  stockpileItemCountsByCanonicalKey: Record<string, number>;
-  containerItemCountsByCanonicalKey: Record<string, number>;
+  entries: AcquisitionOwnedNowItemInput[];
 };
 
 export type AcquisitionPetPlannerState = {
@@ -87,6 +98,10 @@ type PartialAcquisitionConsumablePlannerState = Partial<AcquisitionConsumablePla
 type PartialAcquisitionOwnedNowPlannerState = Partial<AcquisitionOwnedNowPlannerState>;
 type PartialAcquisitionPetPlannerState = Partial<AcquisitionPetPlannerState>;
 type PartialFuturePetProductionState = Partial<AcquisitionPetPlannerState['futureProduction']>;
+type LegacyOwnedNowCountsState = {
+  stockpileItemCountsByCanonicalKey?: Record<string, unknown>;
+  containerItemCountsByCanonicalKey?: Record<string, unknown>;
+};
 
 function createDefaultSourceOverrides(): Record<AcquisitionSourceKey, AcquisitionSourcePolicyOverride> {
   return ACQUISITION_SOURCE_CATALOG.sources.reduce(
@@ -141,8 +156,7 @@ const DEFAULT_ACQUISITION_PLANNER_INPUT_STATE: AcquisitionPlannerInputState = {
     },
   },
   ownedNow: {
-    stockpileItemCountsByCanonicalKey: {},
-    containerItemCountsByCanonicalKey: {},
+    entries: [],
   },
   pets: {
     storedInventoryByCanonicalKey: {},
@@ -185,6 +199,93 @@ function normalizeRecordOfCounts(value: unknown): Record<string, number> {
 
     return result;
   }, {});
+}
+
+function normalizeOwnedNowSourceCategory(value: unknown): AcquisitionOwnedNowSourceCategory | null {
+  return value === 'stockpile' || value === 'container' ? value : null;
+}
+
+function normalizeOwnedNowItemEntry(value: unknown): AcquisitionOwnedNowItemInput | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  const sourceCategory = normalizeOwnedNowSourceCategory(record.sourceCategory);
+  const itemName = typeof record.itemName === 'string' ? record.itemName.trim() : '';
+  const canonicalItemKeyInput =
+    typeof record.canonicalItemKey === 'string' ? record.canonicalItemKey.trim() : '';
+  const canonicalItemKey = canonicalItemKeyInput.length > 0
+    ? toCanonicalItemKey(canonicalItemKeyInput)
+    : toCanonicalItemKey(itemName);
+  const ownedCount = clampNonNegativeNumber(record.ownedCount, -1);
+
+  if (!sourceCategory || canonicalItemKey.length === 0 || ownedCount < 0) {
+    return null;
+  }
+
+  return {
+    canonicalItemKey,
+    itemName: itemName.length > 0 ? itemName : canonicalItemKey,
+    ownedCount,
+    sourceCategory,
+  };
+}
+
+function normalizeOwnedNowEntries(value: unknown): AcquisitionOwnedNowItemInput[] {
+  if (Array.isArray(value)) {
+    const dedupedEntries = new Map<string, AcquisitionOwnedNowItemInput>();
+
+    for (const entry of value) {
+      const normalizedEntry = normalizeOwnedNowItemEntry(entry);
+
+      if (!normalizedEntry) {
+        continue;
+      }
+
+      dedupedEntries.set(
+        `${normalizedEntry.sourceCategory}:${normalizedEntry.canonicalItemKey}`,
+        normalizedEntry,
+      );
+    }
+
+    return Array.from(dedupedEntries.values()).sort((left, right) => {
+      return (
+        left.sourceCategory.localeCompare(right.sourceCategory) ||
+        left.itemName.localeCompare(right.itemName) ||
+        left.canonicalItemKey.localeCompare(right.canonicalItemKey)
+      );
+    });
+  }
+
+  if (!value || typeof value !== 'object') {
+    return [];
+  }
+
+  const legacyValue = value as LegacyOwnedNowCountsState;
+  const stockpileCounts = normalizeRecordOfCounts(legacyValue.stockpileItemCountsByCanonicalKey);
+  const containerCounts = normalizeRecordOfCounts(legacyValue.containerItemCountsByCanonicalKey);
+
+  return [
+    ...Object.entries(stockpileCounts).map(([canonicalItemKey, ownedCount]) => ({
+      canonicalItemKey,
+      itemName: canonicalItemKey,
+      ownedCount,
+      sourceCategory: 'stockpile' as const,
+    })),
+    ...Object.entries(containerCounts).map(([canonicalItemKey, ownedCount]) => ({
+      canonicalItemKey,
+      itemName: canonicalItemKey,
+      ownedCount,
+      sourceCategory: 'container' as const,
+    })),
+  ].sort((left, right) => {
+    return (
+      left.sourceCategory.localeCompare(right.sourceCategory) ||
+      left.itemName.localeCompare(right.itemName) ||
+      left.canonicalItemKey.localeCompare(right.canonicalItemKey)
+    );
+  });
 }
 
 function normalizeSourcePolicyOverride(value: unknown): AcquisitionSourcePolicyOverride {
@@ -275,8 +376,12 @@ export function normalizeAcquisitionPlannerInputState(value: unknown): Acquisiti
       orangeJuice: normalizeConsumableAvailabilityState(consumables.orangeJuice),
     },
     ownedNow: {
-      stockpileItemCountsByCanonicalKey: normalizeRecordOfCounts(ownedNow.stockpileItemCountsByCanonicalKey),
-      containerItemCountsByCanonicalKey: normalizeRecordOfCounts(ownedNow.containerItemCountsByCanonicalKey),
+      entries: normalizeOwnedNowEntries(
+        ownedNow.entries ?? {
+          stockpileItemCountsByCanonicalKey: (ownedNow as LegacyOwnedNowCountsState).stockpileItemCountsByCanonicalKey,
+          containerItemCountsByCanonicalKey: (ownedNow as LegacyOwnedNowCountsState).containerItemCountsByCanonicalKey,
+        },
+      ),
     },
     pets: {
       storedInventoryByCanonicalKey: normalizeRecordOfCounts(pets.storedInventoryByCanonicalKey),
@@ -289,6 +394,118 @@ export function normalizeAcquisitionPlannerInputState(value: unknown): Acquisiti
       },
     },
   };
+}
+
+function getLocalStorage(storage?: Storage): Storage {
+  if (storage) {
+    return storage;
+  }
+
+  if (!('localStorage' in globalThis)) {
+    throw new Error('localStorage is not available in this browser.');
+  }
+
+  return globalThis.localStorage;
+}
+
+export function loadAcquisitionPlannerInputState(storage?: Storage): AcquisitionPlannerInputState {
+  const activeStorage = getLocalStorage(storage);
+  const rawValue = activeStorage.getItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY);
+
+  if (!rawValue) {
+    return createDefaultAcquisitionPlannerInputState();
+  }
+
+  try {
+    return normalizeAcquisitionPlannerInputState(JSON.parse(rawValue));
+  } catch {
+    return createDefaultAcquisitionPlannerInputState();
+  }
+}
+
+export function saveAcquisitionPlannerInputState(
+  state: AcquisitionPlannerInputState,
+  storage?: Storage,
+): AcquisitionPlannerInputState {
+  const normalizedState = normalizeAcquisitionPlannerInputState(state);
+  const activeStorage = getLocalStorage(storage);
+
+  activeStorage.setItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY, JSON.stringify(normalizedState));
+  return normalizedState;
+}
+
+export function clearAcquisitionPlannerInputState(storage?: Storage): void {
+  const activeStorage = getLocalStorage(storage);
+  activeStorage.removeItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY);
+}
+
+export type UpdateOwnedNowItemInput = {
+  itemName: string;
+  ownedCount: number;
+  sourceCategory: AcquisitionOwnedNowSourceCategory;
+};
+
+export function upsertOwnedNowItemInput(
+  state: AcquisitionPlannerInputState,
+  input: UpdateOwnedNowItemInput,
+): AcquisitionPlannerInputState {
+  const trimmedItemName = input.itemName.trim();
+  const canonicalItemKey = toCanonicalItemKey(trimmedItemName);
+  const ownedCount = clampNonNegativeNumber(input.ownedCount, -1);
+
+  if (canonicalItemKey.length === 0 || ownedCount < 0) {
+    return state;
+  }
+
+  const nextEntries = state.ownedNow.entries.filter((entry) => {
+    return !(
+      entry.sourceCategory === input.sourceCategory &&
+      entry.canonicalItemKey === canonicalItemKey
+    );
+  });
+
+  if (ownedCount > 0) {
+    nextEntries.push({
+      canonicalItemKey,
+      itemName: trimmedItemName.length > 0 ? trimmedItemName : canonicalItemKey,
+      ownedCount,
+      sourceCategory: input.sourceCategory,
+    });
+  }
+
+  return normalizeAcquisitionPlannerInputState({
+    ...state,
+    ownedNow: {
+      entries: nextEntries,
+    },
+  });
+}
+
+export function removeOwnedNowItemInput(
+  state: AcquisitionPlannerInputState,
+  canonicalItemKey: string,
+  sourceCategory: AcquisitionOwnedNowSourceCategory,
+): AcquisitionPlannerInputState {
+  return normalizeAcquisitionPlannerInputState({
+    ...state,
+    ownedNow: {
+      entries: state.ownedNow.entries.filter((entry) => {
+        return !(
+          entry.sourceCategory === sourceCategory &&
+          entry.canonicalItemKey === toCanonicalItemKey(canonicalItemKey)
+        );
+      }),
+    },
+  });
+}
+
+export function getOwnedNowItemInputs(
+  state: AcquisitionPlannerInputState,
+  sourceCategory?: AcquisitionOwnedNowSourceCategory,
+): AcquisitionOwnedNowItemInput[] {
+  return state.ownedNow.entries.filter((entry) => {
+    return sourceCategory ? entry.sourceCategory === sourceCategory : true;
+  });
 }
 
 export function resolveAcquisitionSourceInclusion(

@@ -2,11 +2,17 @@ import { describe, expect, it } from 'vitest';
 
 import { ACQUISITION_SOURCE_CATALOG } from './acquisitionSourceCatalog';
 import {
+  ACQUISITION_PLANNER_STATE_STORAGE_KEY,
+  clearAcquisitionPlannerInputState,
   createDefaultAcquisitionPlannerInputState,
   getResolvedAcquisitionSharedAssumptions,
+  getOwnedNowItemInputs,
+  loadAcquisitionPlannerInputState,
   normalizeAcquisitionPlannerInputState,
   resolveAcquisitionSourceInclusion,
   resolveAcquisitionSourceInclusionMap,
+  saveAcquisitionPlannerInputState,
+  upsertOwnedNowItemInput,
 } from './acquisitionPlannerState';
 import { createDefaultCraftingModifierState } from './craftingModifierState';
 
@@ -57,8 +63,7 @@ describe('acquisitionPlannerState', () => {
         },
       },
       ownedNow: {
-        stockpileItemCountsByCanonicalKey: {},
-        containerItemCountsByCanonicalKey: {},
+        entries: [],
       },
       pets: {
         storedInventoryByCanonicalKey: {},
@@ -153,9 +158,14 @@ describe('acquisitionPlannerState', () => {
         },
       },
       ownedNow: {
-        stockpileItemCountsByCanonicalKey: {
-          twine: 10,
-        },
+        entries: [
+          {
+            canonicalItemKey: 'twine',
+            itemName: 'twine',
+            ownedCount: 10,
+            sourceCategory: 'stockpile',
+          },
+        ],
       },
       pets: {
         futureProduction: {
@@ -257,5 +267,88 @@ describe('acquisitionPlannerState', () => {
       runeCubeActive: true,
       ironDepotActive: false,
     });
+  });
+
+  it('adds, updates, and removes owned-now stockpile entries through shared helpers', () => {
+    const withBag = upsertOwnedNowItemInput(createDefaultAcquisitionPlannerInputState(), {
+      itemName: 'Large Chest',
+      ownedCount: 3,
+      sourceCategory: 'container',
+    });
+
+    expect(getOwnedNowItemInputs(withBag)).toEqual([
+      {
+        canonicalItemKey: 'large chest',
+        itemName: 'Large Chest',
+        ownedCount: 3,
+        sourceCategory: 'container',
+      },
+    ]);
+
+    const updated = upsertOwnedNowItemInput(withBag, {
+      itemName: 'large chest',
+      ownedCount: 8,
+      sourceCategory: 'container',
+    });
+
+    expect(getOwnedNowItemInputs(updated)).toEqual([
+      {
+        canonicalItemKey: 'large chest',
+        itemName: 'large chest',
+        ownedCount: 8,
+        sourceCategory: 'container',
+      },
+    ]);
+
+    const removed = upsertOwnedNowItemInput(updated, {
+      itemName: 'large chest',
+      ownedCount: 0,
+      sourceCategory: 'container',
+    });
+
+    expect(getOwnedNowItemInputs(removed)).toEqual([]);
+  });
+
+  it('persists, hydrates, and safely normalizes owned-now planner state', () => {
+    const storage = window.localStorage;
+    clearAcquisitionPlannerInputState(storage);
+
+    const savedState = saveAcquisitionPlannerInputState(
+      upsertOwnedNowItemInput(createDefaultAcquisitionPlannerInputState(), {
+        itemName: 'Mystery Bag',
+        ownedCount: 5,
+        sourceCategory: 'stockpile',
+      }),
+      storage,
+    );
+
+    expect(savedState.ownedNow.entries).toEqual([
+      {
+        canonicalItemKey: 'mystery bag',
+        itemName: 'Mystery Bag',
+        ownedCount: 5,
+        sourceCategory: 'stockpile',
+      },
+    ]);
+    expect(storage.getItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY)).toContain('"canonicalItemKey":"mystery bag"');
+
+    expect(loadAcquisitionPlannerInputState(storage)).toEqual(savedState);
+
+    storage.setItem(
+      ACQUISITION_PLANNER_STATE_STORAGE_KEY,
+      JSON.stringify({
+        ownedNow: {
+          entries: [
+            {
+              itemName: '  ',
+              ownedCount: 10,
+              sourceCategory: 'stockpile',
+            },
+          ],
+        },
+      }),
+    );
+
+    expect(loadAcquisitionPlannerInputState(storage).ownedNow.entries).toEqual([]);
   });
 });

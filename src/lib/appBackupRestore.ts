@@ -1,4 +1,9 @@
 import {
+  clearAcquisitionPlannerInputState,
+  loadAcquisitionPlannerInputState,
+  saveAcquisitionPlannerInputState,
+} from './acquisitionPlannerState';
+import {
   loadCraftingModifierState,
   clearCraftingModifierState,
   saveCraftingModifierState,
@@ -36,6 +41,7 @@ export async function readAppBackupFile(file: File): Promise<AppBackupPayloadV1>
 export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Promise<void> {
   const currentSnapshots = await listSnapshots();
   const currentCraftingModifierState = loadCraftingModifierState();
+  const currentAcquisitionPlannerState = loadAcquisitionPlannerInputState();
   const currentThemePreference = readStoredAppTheme();
 
   try {
@@ -47,6 +53,12 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       clearCraftingModifierState();
     }
 
+    if (payload.state.preferences.acquisitionPlannerState) {
+      saveAcquisitionPlannerInputState(payload.state.preferences.acquisitionPlannerState);
+    } else {
+      clearAcquisitionPlannerInputState();
+    }
+
     if (payload.state.preferences.themePreference) {
       persistAppTheme(payload.state.preferences.themePreference);
     } else {
@@ -55,6 +67,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   } catch {
     await replaceSnapshots(currentSnapshots);
     saveCraftingModifierState(currentCraftingModifierState);
+    saveAcquisitionPlannerInputState(currentAcquisitionPlannerState);
 
     if (currentThemePreference) {
       persistAppTheme(currentThemePreference);

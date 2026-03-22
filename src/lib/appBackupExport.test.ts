@@ -5,10 +5,12 @@ import type { MasterySnapshot } from './storage/masterySnapshots';
 const {
   mockListSnapshots,
   mockLoadCraftingModifierState,
+  mockLoadAcquisitionPlannerInputState,
   mockReadStoredAppTheme,
 } = vi.hoisted(() => ({
   mockListSnapshots: vi.fn<() => Promise<MasterySnapshot[]>>(),
   mockLoadCraftingModifierState: vi.fn(),
+  mockLoadAcquisitionPlannerInputState: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
 }));
 
@@ -18,6 +20,10 @@ vi.mock('./storage/masterySnapshots', () => ({
 
 vi.mock('./craftingModifierState', () => ({
   loadCraftingModifierState: mockLoadCraftingModifierState,
+}));
+
+vi.mock('./acquisitionPlannerState', () => ({
+  loadAcquisitionPlannerInputState: mockLoadAcquisitionPlannerInputState,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -75,10 +81,83 @@ function createModifierStateFixture() {
   };
 }
 
+function createAcquisitionPlannerStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    sourcePolicy: {
+      planningHorizon: 'include_future' as const,
+      sourceOverrides: {
+        manual_explore: 'default',
+        stamina: 'default',
+        apple_cider: 'default',
+        lemonade: 'default',
+        arnold_palmer: 'default',
+        orange_juice: 'default',
+        owned_containers: 'default',
+        owned_stockpiles: 'default',
+        stored_pet_inventory: 'default',
+        future_pet_production: 'default',
+        one_time_rewards: 'default',
+        flea_market: 'default',
+        exchange_center: 'default',
+      },
+    },
+    explore: {
+      runeCubeActive: false,
+      availableStamina: 0,
+      wandererPercent: 0,
+      exploringEffectivenessPercent: 0,
+      cinnamonSticksActive: false,
+      neighActive: false,
+    },
+    consumables: {
+      appleCider: { ownedCount: 0, craftableNowCount: 0, futureCraftableCount: 0 },
+      lemonade: {
+        ownedCount: 0,
+        craftableNowCount: 0,
+        futureCraftableCount: 0,
+        lemonSqueezerActive: false,
+        quandaryChowderActive: false,
+      },
+      arnoldPalmer: {
+        ownedCount: 0,
+        craftableNowCount: 0,
+        futureCraftableCount: 0,
+        lemonSqueezerActive: false,
+        quandaryChowderActive: false,
+        lemonSeltzerUsesRemaining: 0,
+        lemonCreamPieActive: false,
+      },
+      orangeJuice: { ownedCount: 0, craftableNowCount: 0, futureCraftableCount: 0 },
+    },
+    ownedNow: {
+      entries: [
+        {
+          canonicalItemKey: 'mystery bag',
+          itemName: 'Mystery Bag',
+          ownedCount: 3,
+          sourceCategory: 'stockpile',
+        },
+      ],
+    },
+    pets: {
+      storedInventoryByCanonicalKey: {},
+      futureProduction: {
+        enabled: false,
+        horizonDays: 7,
+        petLevelsByCanonicalKey: {},
+        respectSeasonality: true,
+        offlineHoursCap: 48,
+      },
+    },
+  };
+}
+
 describe('appBackupExport', () => {
   beforeEach(() => {
     mockListSnapshots.mockReset();
     mockLoadCraftingModifierState.mockReset();
+    mockLoadAcquisitionPlannerInputState.mockReset();
     mockReadStoredAppTheme.mockReset();
   });
 
@@ -96,9 +175,11 @@ describe('appBackupExport', () => {
         resourceSaver3Unlocked: true,
       },
     };
+    const acquisitionPlannerState = createAcquisitionPlannerStateFixture();
 
     mockListSnapshots.mockResolvedValue(snapshots);
     mockLoadCraftingModifierState.mockReturnValue(craftingModifierState);
+    mockLoadAcquisitionPlannerInputState.mockReturnValue(acquisitionPlannerState);
     mockReadStoredAppTheme.mockReturnValue('dark');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -112,12 +193,14 @@ describe('appBackupExport', () => {
     expect(payload.restoreStrategy).toBe('replace');
     expect(payload.state.snapshots).toEqual(snapshots);
     expect(payload.state.preferences.craftingModifierState).toEqual(craftingModifierState);
+    expect(payload.state.preferences.acquisitionPlannerState).toEqual(acquisitionPlannerState);
     expect(payload.state.preferences.themePreference).toBe('dark');
   });
 
   it('serializes a versioned backup payload and uses a timestamped filename', async () => {
     mockListSnapshots.mockResolvedValue([createSnapshot('snapshot-1')]);
     mockLoadCraftingModifierState.mockReturnValue(createModifierStateFixture());
+    mockLoadAcquisitionPlannerInputState.mockReturnValue(createAcquisitionPlannerStateFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -142,6 +225,7 @@ describe('appBackupExport', () => {
 
     mockListSnapshots.mockResolvedValue([createSnapshot('snapshot-1')]);
     mockLoadCraftingModifierState.mockReturnValue(createModifierStateFixture());
+    mockLoadAcquisitionPlannerInputState.mockReturnValue(createAcquisitionPlannerStateFixture());
     mockReadStoredAppTheme.mockReturnValue(null);
 
     Object.defineProperty(URL, 'createObjectURL', {

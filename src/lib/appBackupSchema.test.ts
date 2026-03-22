@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { createDefaultAcquisitionPlannerInputState } from './acquisitionPlannerState';
 import { createDefaultCraftingModifierState } from './craftingModifierState';
 import {
   APP_BACKUP_PAYLOAD_KIND,
@@ -35,6 +36,30 @@ function createSnapshot(snapshotId: string): MasterySnapshot {
   };
 }
 
+function createAcquisitionPlannerStateFixture() {
+  return {
+    ...createDefaultAcquisitionPlannerInputState(),
+    explore: {
+      runeCubeActive: true,
+      availableStamina: 0,
+      wandererPercent: 0,
+      exploringEffectivenessPercent: 0,
+      cinnamonSticksActive: false,
+      neighActive: false,
+    },
+    ownedNow: {
+      entries: [
+        {
+          canonicalItemKey: 'mystery bag',
+          itemName: 'Mystery Bag',
+          ownedCount: 5,
+          sourceCategory: 'stockpile',
+        },
+      ],
+    },
+  };
+}
+
 describe('appBackupSchema', () => {
   it('creates a versioned full-app backup payload with the current v1 state categories', () => {
     const snapshots = [createSnapshot('snapshot-1'), createSnapshot('snapshot-2')];
@@ -46,12 +71,14 @@ describe('appBackupSchema', () => {
         resourceSaver3Unlocked: false,
       },
     };
+    const acquisitionPlannerState = createAcquisitionPlannerStateFixture();
 
     const payload = createAppBackupPayload({
       appVersion: '1.1.0',
       exportedAt: '2026-03-21T09:00:00.000Z',
       snapshots,
       craftingModifierState,
+      acquisitionPlannerState,
       themePreference: 'dark',
     });
 
@@ -66,6 +93,7 @@ describe('appBackupSchema', () => {
         snapshots,
         preferences: {
           craftingModifierState,
+          acquisitionPlannerState,
           themePreference: 'dark',
         },
       },
@@ -78,6 +106,7 @@ describe('appBackupSchema', () => {
       exportedAt: '2026-03-21T09:00:00.000Z',
       snapshots: [createSnapshot('snapshot-1')],
       craftingModifierState: createDefaultCraftingModifierState(),
+      acquisitionPlannerState: createAcquisitionPlannerStateFixture(),
       themePreference: 'light',
     });
 
@@ -100,6 +129,7 @@ describe('appBackupSchema', () => {
           snapshots: [],
           preferences: {
             craftingModifierState: null,
+            acquisitionPlannerState: null,
             themePreference: 'dark',
           },
         },
@@ -117,6 +147,7 @@ describe('appBackupSchema', () => {
           snapshots: [],
           preferences: {
             craftingModifierState: null,
+            acquisitionPlannerState: null,
             themePreference: 'dark',
           },
         },
@@ -134,6 +165,7 @@ describe('appBackupSchema', () => {
           snapshots: [],
           preferences: {
             craftingModifierState: null,
+            acquisitionPlannerState: null,
             themePreference: 'sepia',
           },
         },
@@ -154,6 +186,7 @@ describe('appBackupSchema', () => {
           snapshots: [],
           preferences: {
             craftingModifierState: null,
+            acquisitionPlannerState: null,
             themePreference: 'dark',
           },
         },
@@ -176,6 +209,7 @@ describe('appBackupSchema', () => {
           snapshots: [{}],
           preferences: {
             craftingModifierState: null,
+            acquisitionPlannerState: null,
             themePreference: 'dark',
           },
         },
@@ -184,6 +218,76 @@ describe('appBackupSchema', () => {
       ok: false,
       code: 'invalid_snapshot',
       message: 'The backup file contains malformed snapshot data.',
+    });
+
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: APP_BACKUP_SCHEMA_VERSION,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [],
+          preferences: {
+            craftingModifierState: null,
+            acquisitionPlannerState: {
+              schemaVersion: 1,
+              sourcePolicy: {
+                planningHorizon: 'include_future',
+                sourceOverrides: {},
+              },
+              explore: {
+                runeCubeActive: false,
+                availableStamina: 0,
+                wandererPercent: 0,
+                exploringEffectivenessPercent: 0,
+                cinnamonSticksActive: false,
+                neighActive: false,
+              },
+              consumables: {
+                appleCider: { ownedCount: 0, craftableNowCount: 0, futureCraftableCount: 0 },
+                lemonade: {
+                  ownedCount: 0,
+                  craftableNowCount: 0,
+                  futureCraftableCount: 0,
+                  lemonSqueezerActive: false,
+                  quandaryChowderActive: false,
+                },
+                arnoldPalmer: {
+                  ownedCount: 0,
+                  craftableNowCount: 0,
+                  futureCraftableCount: 0,
+                  lemonSqueezerActive: false,
+                  quandaryChowderActive: false,
+                  lemonSeltzerUsesRemaining: 0,
+                  lemonCreamPieActive: false,
+                },
+                orangeJuice: { ownedCount: 0, craftableNowCount: 0, futureCraftableCount: 0 },
+              },
+              ownedNow: {
+                entries: [{ itemName: 'Bag', ownedCount: 2, sourceCategory: 'stockpile' }],
+              },
+              pets: {
+                storedInventoryByCanonicalKey: {},
+                futureProduction: {
+                  enabled: false,
+                  horizonDays: 7,
+                  petLevelsByCanonicalKey: {},
+                  respectSeasonality: true,
+                  offlineHoursCap: 48,
+                },
+              },
+            },
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'invalid_acquisition_planner_state',
+      message: 'The backup file contains malformed acquisition planner state.',
     });
   });
 });

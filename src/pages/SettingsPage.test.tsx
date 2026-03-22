@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {
+  ACQUISITION_PLANNER_STATE_STORAGE_KEY,
+  createDefaultAcquisitionPlannerInputState,
+  loadAcquisitionPlannerInputState,
+} from '../lib/acquisitionPlannerState';
 import { createAppBackupPayload } from '../lib/appBackupSchema';
 
 const {
@@ -68,6 +73,19 @@ function createBackupPayload() {
         ironDepotActive: false,
       },
     },
+    acquisitionPlannerState: {
+      ...createDefaultAcquisitionPlannerInputState(),
+      ownedNow: {
+        entries: [
+          {
+            canonicalItemKey: 'mystery bag',
+            itemName: 'Mystery Bag',
+            ownedCount: 5,
+            sourceCategory: 'stockpile',
+          },
+        ],
+      },
+    },
     themePreference: 'dark',
   });
 }
@@ -78,6 +96,7 @@ describe('SettingsPage', () => {
     mockReadAppBackupFile.mockReset();
     mockRestoreAppBackupPayload.mockReset();
     mockReloadAfterRestore.mockReset();
+    window.localStorage.removeItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY);
   });
 
   it('exports the full local backup file from the settings page', async () => {
@@ -130,6 +149,7 @@ describe('SettingsPage', () => {
     expect(mockReadAppBackupFile).toHaveBeenCalledTimes(1);
     expect(await screen.findByText('backup.json')).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: 'Confirm Restore Backup' })).toBeInTheDocument();
+    expect(screen.getByText('Acquisition planner')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Confirm Restore Backup' }));
 
@@ -156,5 +176,32 @@ describe('SettingsPage', () => {
     ).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Confirm Restore Backup' })).not.toBeInTheDocument();
     expect(mockRestoreAppBackupPayload).not.toHaveBeenCalled();
+  });
+
+  it('saves and removes owned-now stockpile inputs through shared local planner state', async () => {
+    const user = userEvent.setup();
+
+    render(<SettingsPage />);
+
+    await user.type(screen.getByLabelText('Item name'), 'Large Chest');
+    await user.selectOptions(screen.getByLabelText('Owned-now source type'), 'container');
+    await user.clear(screen.getByLabelText('Owned quantity'));
+    await user.type(screen.getByLabelText('Owned quantity'), '4');
+    await user.click(screen.getByRole('button', { name: 'Save Owned Item' }));
+
+    expect(await screen.findByText('Large Chest')).toBeInTheDocument();
+    expect(loadAcquisitionPlannerInputState().ownedNow.entries).toEqual([
+      {
+        canonicalItemKey: 'large chest',
+        itemName: 'Large Chest',
+        ownedCount: 4,
+        sourceCategory: 'container',
+      },
+    ]);
+
+    await user.click(screen.getByRole('button', { name: 'Remove' }));
+
+    expect(screen.getByText('No owned-now stockpile items saved yet.')).toBeInTheDocument();
+    expect(loadAcquisitionPlannerInputState().ownedNow.entries).toEqual([]);
   });
 });

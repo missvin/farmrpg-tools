@@ -6,6 +6,9 @@ const {
   mockSaveCraftingModifierState,
   mockLoadCraftingModifierState,
   mockClearCraftingModifierState,
+  mockSaveAcquisitionPlannerInputState,
+  mockLoadAcquisitionPlannerInputState,
+  mockClearAcquisitionPlannerInputState,
   mockPersistAppTheme,
   mockClearStoredAppTheme,
   mockReadStoredAppTheme,
@@ -15,6 +18,9 @@ const {
   mockSaveCraftingModifierState: vi.fn(),
   mockLoadCraftingModifierState: vi.fn(),
   mockClearCraftingModifierState: vi.fn(),
+  mockSaveAcquisitionPlannerInputState: vi.fn(),
+  mockLoadAcquisitionPlannerInputState: vi.fn(),
+  mockClearAcquisitionPlannerInputState: vi.fn(),
   mockPersistAppTheme: vi.fn(),
   mockClearStoredAppTheme: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
@@ -29,6 +35,12 @@ vi.mock('./craftingModifierState', () => ({
   loadCraftingModifierState: mockLoadCraftingModifierState,
   saveCraftingModifierState: mockSaveCraftingModifierState,
   clearCraftingModifierState: mockClearCraftingModifierState,
+}));
+
+vi.mock('./acquisitionPlannerState', () => ({
+  loadAcquisitionPlannerInputState: mockLoadAcquisitionPlannerInputState,
+  saveAcquisitionPlannerInputState: mockSaveAcquisitionPlannerInputState,
+  clearAcquisitionPlannerInputState: mockClearAcquisitionPlannerInputState,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -89,8 +101,81 @@ function createBackupPayload() {
       },
     ],
     craftingModifierState: createModifierStateFixture(),
+    acquisitionPlannerState: createAcquisitionPlannerStateFixture(),
     themePreference: 'dark',
   });
+}
+
+function createAcquisitionPlannerStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    sourcePolicy: {
+      planningHorizon: 'include_future' as const,
+      sourceOverrides: {
+        manual_explore: 'default',
+        stamina: 'default',
+        apple_cider: 'default',
+        lemonade: 'default',
+        arnold_palmer: 'default',
+        orange_juice: 'default',
+        owned_containers: 'default',
+        owned_stockpiles: 'default',
+        stored_pet_inventory: 'default',
+        future_pet_production: 'default',
+        one_time_rewards: 'default',
+        flea_market: 'default',
+        exchange_center: 'default',
+      },
+    },
+    explore: {
+      runeCubeActive: true,
+      availableStamina: 1000,
+      wandererPercent: 0,
+      exploringEffectivenessPercent: 0,
+      cinnamonSticksActive: false,
+      neighActive: false,
+    },
+    consumables: {
+      appleCider: { ownedCount: 0, craftableNowCount: 0, futureCraftableCount: 0 },
+      lemonade: {
+        ownedCount: 0,
+        craftableNowCount: 0,
+        futureCraftableCount: 0,
+        lemonSqueezerActive: false,
+        quandaryChowderActive: false,
+      },
+      arnoldPalmer: {
+        ownedCount: 0,
+        craftableNowCount: 0,
+        futureCraftableCount: 0,
+        lemonSqueezerActive: false,
+        quandaryChowderActive: false,
+        lemonSeltzerUsesRemaining: 0,
+        lemonCreamPieActive: false,
+      },
+      orangeJuice: { ownedCount: 0, craftableNowCount: 0, futureCraftableCount: 0 },
+    },
+    ownedNow: {
+      entries: [
+        {
+          canonicalItemKey: 'large chest',
+          itemName: 'Large Chest',
+          ownedCount: 2,
+          sourceCategory: 'container',
+        },
+      ],
+    },
+    pets: {
+      storedInventoryByCanonicalKey: {},
+      futureProduction: {
+        enabled: false,
+        horizonDays: 7,
+        petLevelsByCanonicalKey: {},
+        respectSeasonality: true,
+        offlineHoursCap: 48,
+      },
+    },
+  };
 }
 
 describe('appBackupRestore', () => {
@@ -100,11 +185,15 @@ describe('appBackupRestore', () => {
     mockSaveCraftingModifierState.mockReset();
     mockLoadCraftingModifierState.mockReset();
     mockClearCraftingModifierState.mockReset();
+    mockSaveAcquisitionPlannerInputState.mockReset();
+    mockLoadAcquisitionPlannerInputState.mockReset();
+    mockClearAcquisitionPlannerInputState.mockReset();
     mockPersistAppTheme.mockReset();
     mockClearStoredAppTheme.mockReset();
     mockReadStoredAppTheme.mockReset();
     mockListSnapshots.mockResolvedValue([]);
     mockLoadCraftingModifierState.mockReturnValue(createModifierStateFixture());
+    mockLoadAcquisitionPlannerInputState.mockReturnValue(createAcquisitionPlannerStateFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
   });
 
@@ -126,8 +215,12 @@ describe('appBackupRestore', () => {
     expect(mockSaveCraftingModifierState).toHaveBeenCalledWith(
       payload.state.preferences.craftingModifierState,
     );
+    expect(mockSaveAcquisitionPlannerInputState).toHaveBeenCalledWith(
+      payload.state.preferences.acquisitionPlannerState,
+    );
     expect(mockPersistAppTheme).toHaveBeenCalledWith('dark');
     expect(mockClearCraftingModifierState).not.toHaveBeenCalled();
+    expect(mockClearAcquisitionPlannerInputState).not.toHaveBeenCalled();
     expect(mockClearStoredAppTheme).not.toHaveBeenCalled();
   });
 
@@ -137,6 +230,7 @@ describe('appBackupRestore', () => {
       exportedAt: '2026-03-21T11:00:00.000Z',
       snapshots: [],
       craftingModifierState: null,
+      acquisitionPlannerState: null,
       themePreference: null,
     });
 
@@ -144,6 +238,7 @@ describe('appBackupRestore', () => {
 
     expect(mockReplaceSnapshots).toHaveBeenCalledWith([]);
     expect(mockClearCraftingModifierState).toHaveBeenCalledTimes(1);
+    expect(mockClearAcquisitionPlannerInputState).toHaveBeenCalledTimes(1);
     expect(mockClearStoredAppTheme).toHaveBeenCalledTimes(1);
   });
 
@@ -167,6 +262,7 @@ describe('appBackupRestore', () => {
             snapshots: [],
             preferences: {
               craftingModifierState: null,
+              acquisitionPlannerState: null,
               themePreference: 'dark',
             },
           },
@@ -185,6 +281,7 @@ describe('appBackupRestore', () => {
           state: {
             preferences: {
               craftingModifierState: null,
+              acquisitionPlannerState: null,
               themePreference: 'dark',
             },
           },
@@ -229,9 +326,11 @@ describe('appBackupRestore', () => {
       },
     ];
     const previousModifierState = createModifierStateFixture();
+    const previousAcquisitionPlannerState = createAcquisitionPlannerStateFixture();
 
     mockListSnapshots.mockResolvedValue(previousSnapshots);
     mockLoadCraftingModifierState.mockReturnValue(previousModifierState);
+    mockLoadAcquisitionPlannerInputState.mockReturnValue(previousAcquisitionPlannerState);
     mockReadStoredAppTheme.mockReturnValue('dark');
     mockSaveCraftingModifierState
       .mockImplementationOnce(() => {
@@ -246,6 +345,7 @@ describe('appBackupRestore', () => {
     expect(mockReplaceSnapshots).toHaveBeenNthCalledWith(1, payload.state.snapshots);
     expect(mockReplaceSnapshots).toHaveBeenNthCalledWith(2, previousSnapshots);
     expect(mockSaveCraftingModifierState).toHaveBeenLastCalledWith(previousModifierState);
+    expect(mockSaveAcquisitionPlannerInputState).toHaveBeenLastCalledWith(previousAcquisitionPlannerState);
     expect(mockPersistAppTheme).toHaveBeenLastCalledWith('dark');
   });
 
