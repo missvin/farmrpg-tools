@@ -1,14 +1,27 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import {
-  generateBuddyFarmCandidates,
-  parseMuseumSeedCsv,
+  createMuseumKnownBaseline,
+  deriveMuseumRefreshWorkflow,
+  toMuseumRefreshActionableCsv,
+  type MuseumCoverageInputs,
+  type MuseumRefreshWorkflowResult,
+} from '../lib/deriveMuseumRefreshWorkflow';
+import {
   toBuddyFarmCandidateReviewCsv,
   toBuddyFarmCandidatesCsv,
   toBuddyFarmCandidatesJson,
 } from '../lib/generateBuddyFarmCandidates';
-import { parseMuseumExport, toMuseumSeedCsv, toMuseumSeedJson } from '../lib/parseMuseumExport';
+import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
+import { loadRecipeGraph } from '../lib/loadRecipeGraph';
+import { loadTowerRequirements } from '../lib/loadTowerRequirements';
+import {
+  clearMuseumKnownBaseline,
+  loadMuseumKnownBaseline,
+  saveMuseumKnownBaseline,
+} from '../lib/museumKnownBaselineStorage';
+import { parseMuseumExport, toMuseumSeedCsv, toMuseumSeedJson, type MuseumParseResult } from '../lib/parseMuseumExport';
 
 const MUSEUM_PLACEHOLDER = `Farm RPG
 Back
@@ -22,10 +35,12 @@ Yellow Perch
 Artifacts 2 / 2
 Chef's Hat 2
 Chef's Hat 2`;
-const MUSEUM_SEED_PLACEHOLDER = `museum_category,category,item_name,canonical_key,obtainable
-Items,Item,Bamboo Trellis,bamboo trellis,Y
-Items,Item,Banana Peel,banana peel,N
-Event,Event,Piñata Whop Stick,piñata whop stick,Y`;
+
+const EMPTY_COVERAGE: MuseumCoverageInputs = {
+  masteryEntries: [],
+  towerEntries: [],
+  recipeRows: [],
+};
 
 function downloadTextFile(filename: string, content: string, mimeType: string): void {
   const blob = new Blob([content], { type: mimeType });
@@ -58,37 +73,136 @@ function formatValidationLabel(validation: string): string {
   }
 }
 
+function formatSavedAt(savedAt: string): string {
+  const parsedDate = new Date(savedAt);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return savedAt;
+  }
+
+  return parsedDate.toLocaleString();
+}
+
 export function MuseumToolsPage() {
   const [rawText, setRawText] = useState('');
-  const [parseResult, setParseResult] = useState<ReturnType<typeof parseMuseumExport> | null>(null);
+  const [parseResult, setParseResult] = useState<MuseumParseResult | null>(null);
+  const [workflowResult, setWorkflowResult] = useState<MuseumRefreshWorkflowResult | null>(null);
+  const [workflowMode, setWorkflowMode] = useState<'bootstrap' | 'incremental' | null>(null);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
-  const [seedCsvText, setSeedCsvText] = useState('');
-  const [candidateResult, setCandidateResult] = useState<ReturnType<typeof generateBuddyFarmCandidates> | null>(null);
-  const [candidateValidationMessage, setCandidateValidationMessage] = useState<string | null>(null);
-  const [candidateExportMessage, setCandidateExportMessage] = useState<string | null>(null);
+  const [baselineMessage, setBaselineMessage] = useState<string | null>(null);
+  const [savedBaseline, setSavedBaseline] = useState(() => loadMuseumKnownBaseline());
+  const [coverage, setCoverage] = useState<MuseumCoverageInputs>(EMPTY_COVERAGE);
+  const [coverageStatus, setCoverageStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [coverageMessage, setCoverageMessage] = useState<string | null>(null);
 
-  function handleParse(): void {
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadCoverage(): Promise<void> {
+      try {
+        const [masteryDifficulty, towerRequirements, recipeGraph] = await Promise.all([
+          loadMasteryDifficulty(),
+          loadTowerRequirements(),
+          loadRecipeGraph(),
+        ]);
+
+        if (!isActive) {
+          return;
+        }
+
+        setCoverage({
+          masteryEntries: masteryDifficulty.entries,
+          towerEntries: towerRequirements.entries,
+          recipeRows: recipeGraph.recipes,
+        });
+        setCoverageStatus('ready');
+        setCoverageMessage(null);
+      } catch (error) {
+        if (!isActive) {
+          return;
+        }
+
+        setCoverage(EMPTY_COVERAGE);
+        setCoverageStatus('error');
+        setCoverageMessage(
+          error instanceof Error
+            ? `${error.message} Coverage follow-up counts are using empty local reference data for now.`
+            : 'Unable to load local reference coverage data. Coverage follow-up counts are using empty local reference data for now.',
+        );
+      }
+    }
+
+    void loadCoverage();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  function runWorkflow(nextMode: 'bootstrap' | 'incremental', nextBaseline = savedBaseline): void {
     setExportMessage(null);
+    setBaselineMessage(null);
 
     if (!rawText.trim()) {
       setParseResult(null);
-      setValidationMessage('Paste a Farm RPG museum export to build a seed list.');
+      setWorkflowResult(null);
+      setWorkflowMode(nextMode);
+      setValidationMessage('Paste a Farm RPG museum export before running the museum workflow.');
       return;
     }
 
     const nextParseResult = parseMuseumExport(rawText);
     setParseResult(nextParseResult);
+    setWorkflowMode(nextMode);
 
     if (nextParseResult.parseSummary.uniqueItemsParsed === 0) {
+      setWorkflowResult(null);
       setValidationMessage('No museum items were detected in that paste.');
       return;
     }
 
+    if (nextMode === 'incremental' && !nextBaseline) {
+      setWorkflowResult(null);
+      setValidationMessage('Save a bootstrap baseline first before running incremental refresh.');
+      return;
+    }
+
+    setWorkflowResult(deriveMuseumRefreshWorkflow(nextParseResult, coverage, nextBaseline));
     setValidationMessage(null);
   }
 
-  function handleExportJson(): void {
+  function handleSaveBaseline(): void {
+    if (!workflowResult || !parseResult) {
+      return;
+    }
+
+    const nextBaseline = createMuseumKnownBaseline(workflowResult);
+    saveMuseumKnownBaseline(nextBaseline);
+    setSavedBaseline(nextBaseline);
+    setBaselineMessage('Current museum item set saved as the local bootstrap baseline.');
+    setWorkflowResult(deriveMuseumRefreshWorkflow(parseResult, coverage, nextBaseline));
+  }
+
+  function handleClearBaseline(): void {
+    clearMuseumKnownBaseline();
+    setSavedBaseline(null);
+    setBaselineMessage('Saved museum baseline cleared.');
+
+    if (!parseResult || !workflowResult) {
+      return;
+    }
+
+    if (workflowMode === 'incremental') {
+      setWorkflowResult(null);
+      setValidationMessage('Saved museum baseline cleared. Run a bootstrap pass before using incremental refresh again.');
+      return;
+    }
+
+    setWorkflowResult(deriveMuseumRefreshWorkflow(parseResult, coverage, null));
+  }
+
+  function handleExportSeedJson(): void {
     if (!parseResult) {
       return;
     }
@@ -97,7 +211,7 @@ export function MuseumToolsPage() {
     setExportMessage('Museum seed JSON downloaded.');
   }
 
-  function handleExportCsv(): void {
+  function handleExportSeedCsv(): void {
     if (!parseResult) {
       return;
     }
@@ -106,95 +220,73 @@ export function MuseumToolsPage() {
     setExportMessage('Museum seed CSV downloaded.');
   }
 
-  function handleUseCurrentMuseumSeed(): void {
-    if (!parseResult || parseResult.parseSummary.uniqueItemsParsed === 0) {
-      return;
-    }
-
-    setSeedCsvText(toMuseumSeedCsv(parseResult));
-    setCandidateValidationMessage(null);
-    setCandidateExportMessage('Current museum seed copied into the buddy candidate tool.');
-  }
-
-  function handleGenerateCandidates(): void {
-    setCandidateExportMessage(null);
-
-    if (!seedCsvText.trim()) {
-      setCandidateResult(null);
-      setCandidateValidationMessage('Paste museum_seed.csv contents or use the current museum seed first.');
-      return;
-    }
-
-    try {
-      const seedRows = parseMuseumSeedCsv(seedCsvText);
-
-      if (seedRows.length === 0) {
-        setCandidateResult(null);
-        setCandidateValidationMessage('No museum seed rows were detected in that CSV.');
-        return;
-      }
-
-      const nextCandidateResult = generateBuddyFarmCandidates(seedRows);
-      setCandidateResult(nextCandidateResult);
-      setCandidateValidationMessage(null);
-    } catch (error) {
-      setCandidateResult(null);
-      setCandidateValidationMessage(error instanceof Error ? error.message : 'Unable to parse museum seed CSV.');
-    }
-  }
-
   function handleExportCandidateJson(): void {
-    if (!candidateResult) {
+    if (!workflowResult) {
       return;
     }
 
     downloadTextFile(
       'buddy_item_candidates.json',
-      toBuddyFarmCandidatesJson(candidateResult),
+      toBuddyFarmCandidatesJson(workflowResult.candidateResult),
       'application/json;charset=utf-8',
     );
-    setCandidateExportMessage('Buddy candidate JSON downloaded.');
+    setExportMessage('Buddy candidate JSON downloaded.');
   }
 
   function handleExportCandidateCsv(): void {
-    if (!candidateResult) {
+    if (!workflowResult) {
       return;
     }
 
     downloadTextFile(
       'buddy_item_candidates.csv',
-      toBuddyFarmCandidatesCsv(candidateResult),
+      toBuddyFarmCandidatesCsv(workflowResult.candidateResult),
       'text/csv;charset=utf-8',
     );
-    setCandidateExportMessage('Buddy candidate CSV downloaded.');
+    setExportMessage('Buddy candidate CSV downloaded.');
   }
 
   function handleExportCandidateReviewCsv(): void {
-    if (!candidateResult) {
+    if (!workflowResult) {
       return;
     }
 
     downloadTextFile(
       'buddy_item_candidates_review.csv',
-      toBuddyFarmCandidateReviewCsv(candidateResult),
+      toBuddyFarmCandidateReviewCsv(workflowResult.candidateResult),
       'text/csv;charset=utf-8',
     );
-    setCandidateExportMessage('Buddy candidate review CSV downloaded.');
+    setExportMessage('Buddy candidate review CSV downloaded.');
   }
+
+  function handleExportActionableCsv(): void {
+    if (!workflowResult) {
+      return;
+    }
+
+    downloadTextFile(
+      'museum_refresh_follow_up.csv',
+      toMuseumRefreshActionableCsv(workflowResult.actionableItems),
+      'text/csv;charset=utf-8',
+    );
+    setExportMessage('Museum refresh follow-up CSV downloaded.');
+  }
+
+  const runButtonsDisabled = coverageStatus === 'loading';
 
   return (
     <div className="page-stack">
       <PageIntro
         title="Museum Tools"
-        description="Parse pasted Farm RPG museum exports into clean local seed lists for downstream reference-data tooling."
+        description="Run a paste-once local museum refresh that chains parsing, buddy candidate generation, and local coverage follow-up reporting without adding live runtime scraping."
       />
 
       <section className="page-card page-stack" aria-labelledby="museum-tools-input-title">
         <div>
           <h2 id="museum-tools-input-title">Paste Museum Export</h2>
           <p className="supporting-text">
-            This is a local tooling helper only. It parses museum categories, removes duplicated icon/text artifacts,
-            and prepares deduplicated seed output for later recipe/reference-data workflows.
+            This dev-facing local workflow keeps raw pasted input, parsed seed output, generated buddy candidates, and
+            local follow-up reporting distinct while avoiding the old paste-parse-paste-again loop.
           </p>
         </div>
 
@@ -210,47 +302,221 @@ export function MuseumToolsPage() {
           rows={14}
         />
         <p className="supporting-text">
-          The parser will ignore obvious UI lines and deduplicate repeated item-name artifacts from copied icon/text
-          output.
+          The parser ignores obvious UI lines, removes duplicated icon/text artifacts, and uses your pasted museum
+          export as the primary source so incremental refreshes stay local-first and respectful of the server.
         </p>
 
         <div className="button-row">
-          <button type="button" className="button" onClick={handleParse}>
-            Parse Museum Export
-          </button>
           <button
             type="button"
             className="button button--primary"
-            onClick={handleExportJson}
-            disabled={!parseResult || parseResult.parseSummary.uniqueItemsParsed === 0}
+            onClick={() => runWorkflow('bootstrap')}
+            disabled={runButtonsDisabled}
           >
-            Export JSON
+            Run Bootstrap Pass
           </button>
           <button
             type="button"
             className="button"
-            onClick={handleExportCsv}
-            disabled={!parseResult || parseResult.parseSummary.uniqueItemsParsed === 0}
+            onClick={() => runWorkflow('incremental')}
+            disabled={runButtonsDisabled || !savedBaseline}
           >
-            Export CSV
+            Run Incremental Refresh
+          </button>
+          <button
+            type="button"
+            className="button"
+            onClick={handleSaveBaseline}
+            disabled={!workflowResult || workflowMode !== 'bootstrap'}
+          >
+            Save Bootstrap Baseline
+          </button>
+          <button type="button" className="button" onClick={handleClearBaseline} disabled={!savedBaseline}>
+            Clear Saved Baseline
           </button>
         </div>
 
+        {coverageStatus === 'loading' ? (
+          <p className="status-message">Loading local mastery, tower, and recipe coverage data…</p>
+        ) : null}
+        {coverageMessage ? <p className="status-message">{coverageMessage}</p> : null}
+        {savedBaseline ? (
+          <p className="status-message status-message--success">
+            Saved baseline: {savedBaseline.items.length.toLocaleString()} items as of {formatSavedAt(savedBaseline.savedAt)}.
+          </p>
+        ) : (
+          <p className="status-message">
+            No saved museum baseline yet. Use bootstrap mode once, then save the parsed result locally for future
+            incremental refreshes.
+          </p>
+        )}
         {validationMessage ? <p className="status-message">{validationMessage}</p> : null}
+        {baselineMessage ? <p className="status-message status-message--success">{baselineMessage}</p> : null}
         {exportMessage ? <p className="status-message status-message--success">{exportMessage}</p> : null}
+      </section>
+
+      <section className="page-card page-stack" aria-labelledby="museum-tools-summary-title">
+        <div>
+          <h2 id="museum-tools-summary-title">
+            {workflowMode === 'incremental' ? 'Incremental Refresh Report' : 'Bootstrap Workflow Report'}
+          </h2>
+          <p className="supporting-text">
+            Bootstrap mode establishes a local known museum baseline and buddy candidate set. Incremental refresh mode
+            compares the latest full museum export against that saved baseline plus current local reference coverage,
+            then surfaces only new or still-uncovered items.
+          </p>
+        </div>
+
+        {!workflowResult ? (
+          <p className="empty-state">
+            No chained museum workflow run yet. Paste a museum export, then run a bootstrap pass or incremental
+            refresh.
+          </p>
+        ) : (
+          <>
+            <dl className="summary-grid">
+              <div className="summary-grid__item">
+                <dt>Parsed museum items</dt>
+                <dd>{workflowResult.summary.itemsParsed.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Known baseline items</dt>
+                <dd>{workflowResult.summary.knownBaselineItemCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Newly discovered items</dt>
+                <dd>{workflowResult.summary.newItemsCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Unmatched items</dt>
+                <dd>{workflowResult.summary.unmatchedItemsCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Missing buddy slug coverage</dt>
+                <dd>{workflowResult.summary.missingBuddySlugCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Missing recipe coverage</dt>
+                <dd>{workflowResult.summary.missingRecipeCoverageCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Candidate review rows</dt>
+                <dd>{workflowResult.summary.candidateReviewCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Actionable items surfaced</dt>
+                <dd>{workflowResult.summary.actionableItemsCount.toLocaleString()}</dd>
+              </div>
+            </dl>
+
+            <div className="button-row">
+              <button type="button" className="button button--primary" onClick={handleExportSeedJson}>
+                Export Seed JSON
+              </button>
+              <button type="button" className="button" onClick={handleExportSeedCsv}>
+                Export Seed CSV
+              </button>
+              <button type="button" className="button" onClick={handleExportCandidateJson}>
+                Export Candidate JSON
+              </button>
+              <button type="button" className="button" onClick={handleExportCandidateCsv}>
+                Export Candidate CSV
+              </button>
+              <button
+                type="button"
+                className="button"
+                onClick={handleExportCandidateReviewCsv}
+                disabled={workflowResult.candidateResult.reviewItems.length === 0}
+              >
+                Export Candidate Review CSV
+              </button>
+              <button type="button" className="button" onClick={handleExportActionableCsv}>
+                Export Follow-Up CSV
+              </button>
+            </div>
+
+            {workflowResult.warnings.length > 0 ? (
+              <div className="page-stack">
+                <h3 className="section-title">Workflow Warnings</h3>
+                <ul className="data-list">
+                  {workflowResult.warnings.map((warning) => (
+                    <li key={warning}>{warning}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            <div className="page-stack">
+              <h3 className="section-title">
+                {workflowMode === 'incremental' ? 'New Or Uncovered Items' : 'Bootstrap Follow-Up Items'}
+              </h3>
+              {workflowResult.actionableItems.length === 0 ? (
+                <p className="empty-state">
+                  {workflowMode === 'incremental'
+                    ? 'No new or still-uncovered items were found in this incremental refresh.'
+                    : 'No bootstrap follow-up items are currently flagged.'}
+                </p>
+              ) : (
+                <div className="table-scroll">
+                  <table className="summary-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">New</th>
+                        <th scope="col">Reference</th>
+                        <th scope="col">Buddy slug</th>
+                        <th scope="col">Recipe</th>
+                        <th scope="col">Candidate review</th>
+                        <th scope="col">Follow-up</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {workflowResult.actionableItems.map((item) => (
+                        <tr key={item.canonicalKey}>
+                          <td>
+                            <strong>{item.itemName}</strong>
+                            <p className="subtle-text">
+                              {item.canonicalKey}
+                              {' | '}
+                              {item.candidateBuddyUrl}
+                            </p>
+                          </td>
+                          <td>{item.isNewSinceBaseline ? 'New' : 'Known'}</td>
+                          <td>{item.hasAnyReferenceCoverage ? 'Covered' : 'Missing'}</td>
+                          <td>{item.hasLocalBuddySlugCoverage ? 'Covered' : 'Missing'}</td>
+                          <td>{item.hasRecipeCoverage ? 'Covered' : 'Missing or intentional'}</td>
+                          <td>{item.needsCandidateReview ? item.flags.join(', ') : 'No review needed'}</td>
+                          <td>
+                            {item.followUpReasons.join(' ')}
+                            {!item.hasRecipeCoverage ? (
+                              <p className="subtle-text">
+                                Recipe coverage is reported separately so known museum items can remain intentionally
+                                non-recipe-covered.
+                              </p>
+                            ) : null}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </section>
 
       <section className="page-card page-stack" aria-labelledby="museum-tools-preview-title">
         <div>
-          <h2 id="museum-tools-preview-title">Seed Preview</h2>
+          <h2 id="museum-tools-preview-title">Parsed Seed Preview</h2>
           <p className="supporting-text">
-            Review the parsed category structure, validation warnings, and deduplicated item-universe seed list before
-            using it downstream.
+            The parsed museum seed remains distinct from the saved baseline and from later canonical outputs. Use this
+            view to inspect the current pasted export before any downstream probe, recipe, or icon work.
           </p>
         </div>
 
         {!parseResult || parseResult.parseSummary.uniqueItemsParsed === 0 ? (
-          <p className="empty-state">No parsed museum seed yet. Paste an export and choose Parse Museum Export.</p>
+          <p className="empty-state">No parsed museum seed yet. Paste an export and run the museum workflow.</p>
         ) : (
           <>
             <dl className="summary-grid">
@@ -267,21 +533,10 @@ export function MuseumToolsPage() {
                 <dd>{parseResult.parseSummary.duplicateArtifactsRemoved.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Warnings</dt>
+                <dt>Parse warnings</dt>
                 <dd>{parseResult.parseSummary.warnings.length.toLocaleString()}</dd>
               </div>
             </dl>
-
-            {parseResult.parseSummary.warnings.length > 0 ? (
-              <div className="page-stack">
-                <h3 className="section-title">Validation Warnings</h3>
-                <ul className="data-list">
-                  {parseResult.parseSummary.warnings.map((warning) => (
-                    <li key={warning}>{warning}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
 
             <div className="page-stack">
               <h3 className="section-title">Parsed Categories</h3>
@@ -300,10 +555,13 @@ export function MuseumToolsPage() {
                     {parseResult.categories.map((category) => (
                       <tr key={category.categoryName}>
                         <td>{category.categoryName}</td>
-                        <td>{category.items[0] ? parseResult.uniqueItems.find((item) => item.categoryName === category.categoryName)?.category ?? '-' : '-'}</td>
                         <td>
-                          {formatExpectedCounts(category.expectedOwnedCount, category.expectedTotalCount)}
+                          {category.items[0]
+                            ? parseResult.uniqueItems.find((item) => item.categoryName === category.categoryName)
+                                ?.category ?? '-'
+                            : '-'}
                         </td>
+                        <td>{formatExpectedCounts(category.expectedOwnedCount, category.expectedTotalCount)}</td>
                         <td>{category.parsedItemCount.toLocaleString()}</td>
                         <td>{formatValidationLabel(category.countValidation)}</td>
                       </tr>
@@ -342,146 +600,6 @@ export function MuseumToolsPage() {
                   </ul>
                 </div>
               ))}
-            </div>
-          </>
-        )}
-      </section>
-
-      <section className="page-card page-stack" aria-labelledby="buddy-candidate-title">
-        <div>
-          <h2 id="buddy-candidate-title">Buddy Item Page Candidates</h2>
-          <p className="supporting-text">
-            This local tooling step reads <code>museum_seed.csv</code> and generates reviewable buddy.farm item-page
-            candidates only. It does not probe pages yet, and museum-derived items must not be treated as
-            mastery-eligible by default.
-          </p>
-        </div>
-
-        <label className="field-label" htmlFor="museum-seed-csv">
-          Museum seed CSV
-        </label>
-        <textarea
-          id="museum-seed-csv"
-          className="text-area"
-          value={seedCsvText}
-          onChange={(event) => setSeedCsvText(event.target.value)}
-          placeholder={MUSEUM_SEED_PLACEHOLDER}
-          rows={10}
-        />
-        <p className="supporting-text">
-          Paste the contents of <code>museum_seed.csv</code>, or reuse the parsed museum seed above. Candidate slugs
-          stay review-oriented so punctuation and diacritic edge cases remain visible before later probing.
-        </p>
-
-        <div className="button-row">
-          <button
-            type="button"
-            className="button"
-            onClick={handleUseCurrentMuseumSeed}
-            disabled={!parseResult || parseResult.parseSummary.uniqueItemsParsed === 0}
-          >
-            Use Current Museum Seed
-          </button>
-          <button type="button" className="button" onClick={handleGenerateCandidates}>
-            Generate Buddy Candidates
-          </button>
-          <button
-            type="button"
-            className="button button--primary"
-            onClick={handleExportCandidateJson}
-            disabled={!candidateResult || candidateResult.parseSummary.itemsParsed === 0}
-          >
-            Export Candidate JSON
-          </button>
-          <button
-            type="button"
-            className="button"
-            onClick={handleExportCandidateCsv}
-            disabled={!candidateResult || candidateResult.parseSummary.itemsParsed === 0}
-          >
-            Export Candidate CSV
-          </button>
-          <button
-            type="button"
-            className="button"
-            onClick={handleExportCandidateReviewCsv}
-            disabled={!candidateResult || candidateResult.reviewItems.length === 0}
-          >
-            Export Review CSV
-          </button>
-        </div>
-
-        {candidateValidationMessage ? <p className="status-message">{candidateValidationMessage}</p> : null}
-        {candidateExportMessage ? <p className="status-message status-message--success">{candidateExportMessage}</p> : null}
-
-        {!candidateResult || candidateResult.parseSummary.itemsParsed === 0 ? (
-          <p className="empty-state">
-            No buddy item-page candidates yet. Paste museum_seed.csv contents and choose Generate Buddy Candidates.
-          </p>
-        ) : (
-          <>
-            <dl className="summary-grid">
-              <div className="summary-grid__item">
-                <dt>Candidate rows</dt>
-                <dd>{candidateResult.parseSummary.itemsParsed.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Needs review</dt>
-                <dd>{candidateResult.parseSummary.reviewItemsCount.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Slug collisions</dt>
-                <dd>{candidateResult.parseSummary.collisionCount.toLocaleString()}</dd>
-              </div>
-            </dl>
-
-            {candidateResult.parseSummary.warnings.length > 0 ? (
-              <div className="page-stack">
-                <h3 className="section-title">Candidate Review Warnings</h3>
-                <ul className="data-list">
-                  {candidateResult.parseSummary.warnings.map((warning) => (
-                    <li key={warning}>{warning}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            <div className="page-stack">
-              <h3 className="section-title">Review Needed</h3>
-              {candidateResult.reviewItems.length === 0 ? (
-                <p className="empty-state">No candidate rows are currently flagged for manual review.</p>
-              ) : (
-                <div className="table-scroll">
-                  <table className="summary-table">
-                    <thead>
-                      <tr>
-                        <th scope="col">Item</th>
-                        <th scope="col">Primary slug</th>
-                        <th scope="col">Alternate slug</th>
-                        <th scope="col">Confidence</th>
-                        <th scope="col">Flags</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {candidateResult.reviewItems.map((item) => (
-                        <tr key={`${item.canonicalKey}-${item.generatedBuddySlug}`}>
-                          <td>
-                            <strong>{item.itemName}</strong>
-                            <p className="subtle-text">{item.candidateBuddyUrl}</p>
-                          </td>
-                          <td>{item.generatedBuddySlug}</td>
-                          <td>{item.alternateBuddySlug ?? '-'}</td>
-                          <td>{item.confidence}</td>
-                          <td>
-                            {item.flags.join(', ')}
-                            {item.notes.length > 0 ? <p className="subtle-text">{item.notes.join(' ')}</p> : null}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
             </div>
           </>
         )}
