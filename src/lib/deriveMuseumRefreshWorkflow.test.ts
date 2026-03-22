@@ -290,7 +290,7 @@ Pot of Gold (Large) Pot of Gold (Large)`);
     expect(toMuseumUnresolvedTriageCsv(result.unresolvedItems)).toContain('likely_name_mismatch');
   });
 
-  it('exposes explicit icon candidate URLs only when current local evidence is strong enough', () => {
+  it('only exposes direct icon URLs when current local evidence is strong enough and keeps slug-only icon hints explicit', () => {
     const parseResult = parseMuseumExport(`Items Count = 3
 Fancy Pipe Fancy Pipe
 Mystery Goo Mystery Goo
@@ -320,12 +320,16 @@ Mystery Goo Mystery Goo
 
     expect(fancyPipe?.iconCandidateStatus).toBe('from_local_item_id');
     expect(fancyPipe?.candidateIconUrl).toBe('https://farmrpg.com/img/items/5885.png');
+    expect(fancyPipe?.candidateIconKeyHint).toBe('5885');
     expect(mysteryGoo?.iconCandidateStatus).toBe('assumed_from_clean_slug');
-    expect(mysteryGoo?.candidateIconUrl).toBe('https://farmrpg.com/img/items/mystery-goo.png');
+    expect(mysteryGoo?.candidateIconKeyHint).toBe('mystery-goo');
+    expect(mysteryGoo?.candidateIconUrl).toBe(null);
     expect(unknown?.iconCandidateStatus).toBe('undetermined');
     expect(unknown?.candidateIconUrl).toBe(null);
     expect(toMuseumIconCandidateInspectionCsv(result.items)).toContain('icon_candidate_status');
+    expect(toMuseumIconCandidateInspectionCsv(result.items)).toContain('candidate_icon_key_hint');
     expect(toMuseumIconCandidateInspectionCsv(result.items)).toContain('https://farmrpg.com/img/items/5885.png');
+    expect(toMuseumIconCandidateInspectionCsv(result.items)).toContain('mystery-goo');
   });
 
   it('credits recipe source URLs as local buddy slug coverage for known matched items', () => {

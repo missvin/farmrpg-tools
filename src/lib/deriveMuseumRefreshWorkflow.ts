@@ -89,6 +89,7 @@ export type MuseumRefreshItem = BuddyFarmCandidate & {
   iconReadyCoverageStatus: IconReadyCoverageStatus;
   hasIconReadyCoverage: boolean;
   iconCandidateStatus: MuseumIconCandidateStatus;
+  candidateIconKeyHint: string | null;
   candidateIconUrl: string | null;
   candidateIconPathname: string | null;
   planningReferenceStatus: PlanningReferenceStatus;
@@ -515,18 +516,20 @@ export function deriveMuseumRefreshWorkflow(
           : candidateReviewStatus === 'not_needed' && item.generatedBuddySlug
             ? 'assumed_from_clean_slug'
             : 'undetermined';
+      const candidateIconKeyHint =
+        iconCandidateStatus === 'from_local_item_id'
+          ? localFarmrpgItemId
+          : iconCandidateStatus === 'assumed_from_clean_slug' || iconCandidateStatus === 'assumed_from_reviewed_slug'
+            ? item.generatedBuddySlug
+            : null;
       const candidateIconUrl =
         iconCandidateStatus === 'from_local_item_id'
           ? buildFarmRpgIconUrl(localFarmrpgItemId!)
-          : iconCandidateStatus === 'assumed_from_clean_slug' || iconCandidateStatus === 'assumed_from_reviewed_slug'
-            ? buildFarmRpgIconUrl(item.generatedBuddySlug)
-            : null;
+          : null;
       const candidateIconPathname =
         iconCandidateStatus === 'from_local_item_id'
           ? buildFarmRpgIconPathname(localFarmrpgItemId!)
-          : iconCandidateStatus === 'assumed_from_clean_slug' || iconCandidateStatus === 'assumed_from_reviewed_slug'
-            ? buildFarmRpgIconPathname(item.generatedBuddySlug)
-            : null;
+          : null;
       const planningReferenceStatus: PlanningReferenceStatus = isMatchedKnownItem
         ? 'matched_local'
         : likelyReferenceMatches.length > 0
@@ -646,11 +649,11 @@ export function deriveMuseumRefreshWorkflow(
         followUpReasons.push('Candidate icon URL is being exposed from local farmrpg_item_id metadata for manual inspection.');
       } else if (iconCandidateStatus === 'assumed_from_clean_slug') {
         followUpReasons.push(
-          'Candidate icon URL is being exposed from the current clean slug assumption only; buddy slug and icon path should still be spot-checked manually before broader icon work.',
+          'Only an unverified slug-based icon key hint is available right now. Live buddy pages show that icon filenames are not reliably the same as buddy slugs, so no direct icon URL is exposed from this guess.',
         );
       } else if (iconCandidateStatus === 'assumed_from_reviewed_slug') {
         followUpReasons.push(
-          'Candidate icon URL is being exposed from a locally reviewed slug assumption; keep it reviewable and do not treat it as canonical without later extraction evidence.',
+          'Only a reviewed-but-still-unverified slug-based icon key hint is available right now. Live buddy pages show that icon filenames are not reliably the same as buddy slugs, so no direct icon URL is exposed from this guess.',
         );
       } else {
         followUpReasons.push('No candidate icon URL is exposed yet because current local evidence is not strong enough to derive one safely.');
@@ -680,6 +683,7 @@ export function deriveMuseumRefreshWorkflow(
         iconReadyCoverageStatus,
         hasIconReadyCoverage,
         iconCandidateStatus,
+        candidateIconKeyHint,
         candidateIconUrl,
         candidateIconPathname,
         planningReferenceStatus,
@@ -774,7 +778,7 @@ function escapeCsvValue(value: string): string {
 
 export function toMuseumRefreshActionableCsv(items: MuseumRefreshItem[]): string {
   const rows = [
-    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,candidate_review_key,candidate_review_status,planning_reference_status,icon_ready_coverage_status,icon_candidate_status,local_farmrpg_item_id,candidate_icon_url,candidate_icon_pathname,unresolved_case_type,unresolved_triage_key,unresolved_triage_status,likely_reference_matches,is_new_since_baseline,is_matched_known_item,recipe_coverage_status,buddy_slug_coverage_status,needs_reference_follow_up,needs_unresolved_triage_follow_up,needs_recipe_follow_up,needs_buddy_slug_follow_up,needs_candidate_review,is_actionable_follow_up,flags,follow_up_reasons',
+    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,candidate_review_key,candidate_review_status,planning_reference_status,icon_ready_coverage_status,icon_candidate_status,candidate_icon_key_hint,local_farmrpg_item_id,candidate_icon_url,candidate_icon_pathname,unresolved_case_type,unresolved_triage_key,unresolved_triage_status,likely_reference_matches,is_new_since_baseline,is_matched_known_item,recipe_coverage_status,buddy_slug_coverage_status,needs_reference_follow_up,needs_unresolved_triage_follow_up,needs_recipe_follow_up,needs_buddy_slug_follow_up,needs_candidate_review,is_actionable_follow_up,flags,follow_up_reasons',
   ];
 
   for (const item of items) {
@@ -792,6 +796,7 @@ export function toMuseumRefreshActionableCsv(items: MuseumRefreshItem[]): string
         item.planningReferenceStatus,
         item.iconReadyCoverageStatus,
         item.iconCandidateStatus,
+        item.candidateIconKeyHint ?? '',
         item.localFarmrpgItemId ?? '',
         item.candidateIconUrl ?? '',
         item.candidateIconPathname ?? '',
@@ -824,7 +829,7 @@ export function toMuseumRefreshActionableCsv(items: MuseumRefreshItem[]): string
 
 export function toMuseumRefreshCandidateReviewCsv(items: MuseumRefreshItem[]): string {
   const rows = [
-    'museum_category,category,item_name,canonical_key,generated_buddy_slug,alternate_buddy_slug,candidate_buddy_url,icon_candidate_status,candidate_icon_url,candidate_icon_pathname,candidate_review_key,candidate_review_status,buddy_slug_coverage_status,flags,notes',
+    'museum_category,category,item_name,canonical_key,generated_buddy_slug,alternate_buddy_slug,candidate_buddy_url,icon_candidate_status,candidate_icon_key_hint,candidate_icon_url,candidate_icon_pathname,candidate_review_key,candidate_review_status,buddy_slug_coverage_status,flags,notes',
   ];
 
   for (const item of items.filter((candidate) => candidate.flags.length > 0)) {
@@ -838,6 +843,7 @@ export function toMuseumRefreshCandidateReviewCsv(items: MuseumRefreshItem[]): s
         item.alternateBuddySlug ?? '',
         item.candidateBuddyUrl,
         item.iconCandidateStatus,
+        item.candidateIconKeyHint ?? '',
         item.candidateIconUrl ?? '',
         item.candidateIconPathname ?? '',
         item.candidateReviewKey,
@@ -856,7 +862,7 @@ export function toMuseumRefreshCandidateReviewCsv(items: MuseumRefreshItem[]): s
 
 export function toMuseumUnresolvedTriageCsv(items: MuseumRefreshItem[]): string {
   const rows = [
-    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,candidate_buddy_url,planning_reference_status,icon_ready_coverage_status,icon_candidate_status,candidate_icon_url,candidate_icon_pathname,unresolved_case_type,unresolved_triage_key,unresolved_triage_status,candidate_review_status,flags,is_new_since_baseline,likely_reference_matches,follow_up_reasons',
+    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,candidate_buddy_url,planning_reference_status,icon_ready_coverage_status,icon_candidate_status,candidate_icon_key_hint,candidate_icon_url,candidate_icon_pathname,unresolved_case_type,unresolved_triage_key,unresolved_triage_status,candidate_review_status,flags,is_new_since_baseline,likely_reference_matches,follow_up_reasons',
   ];
 
   for (const item of items.filter((candidate) => candidate.unresolvedCaseType !== null)) {
@@ -873,6 +879,7 @@ export function toMuseumUnresolvedTriageCsv(items: MuseumRefreshItem[]): string 
         item.planningReferenceStatus,
         item.iconReadyCoverageStatus,
         item.iconCandidateStatus,
+        item.candidateIconKeyHint ?? '',
         item.candidateIconUrl ?? '',
         item.candidateIconPathname ?? '',
         item.unresolvedCaseType ?? '',
@@ -896,7 +903,7 @@ export function toMuseumUnresolvedTriageCsv(items: MuseumRefreshItem[]): string 
 
 export function toMuseumIconCandidateInspectionCsv(items: MuseumRefreshItem[]): string {
   const rows = [
-    'museum_category,category,item_name,canonical_key,generated_buddy_slug,candidate_buddy_url,local_farmrpg_item_id,icon_candidate_status,candidate_icon_url,candidate_icon_pathname,candidate_review_status,buddy_slug_coverage_status,icon_ready_coverage_status,flags,notes',
+    'museum_category,category,item_name,canonical_key,generated_buddy_slug,candidate_buddy_url,local_farmrpg_item_id,icon_candidate_status,candidate_icon_key_hint,candidate_icon_url,candidate_icon_pathname,candidate_review_status,buddy_slug_coverage_status,icon_ready_coverage_status,flags,notes',
   ];
 
   for (const item of items) {
@@ -910,6 +917,7 @@ export function toMuseumIconCandidateInspectionCsv(items: MuseumRefreshItem[]): 
         item.candidateBuddyUrl,
         item.localFarmrpgItemId ?? '',
         item.iconCandidateStatus,
+        item.candidateIconKeyHint ?? '',
         item.candidateIconUrl ?? '',
         item.candidateIconPathname ?? '',
         item.candidateReviewStatus,

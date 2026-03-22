@@ -128,11 +128,11 @@ function formatIconCandidateStatusLabel(
 ): string {
   switch (status) {
     case 'from_local_item_id':
-      return 'From local item ID';
+      return 'Observed local item ID pattern';
     case 'assumed_from_clean_slug':
-      return 'Assumed from clean slug';
+      return 'Unverified slug guess';
     case 'assumed_from_reviewed_slug':
-      return 'Assumed from reviewed slug';
+      return 'Reviewed but unverified slug guess';
     default:
       return 'Not safely derivable yet';
   }
@@ -915,9 +915,10 @@ export function MuseumToolsPage() {
             <div className="page-stack">
               <h3 className="section-title">Icon Candidate Inspection</h3>
               <p className="supporting-text">
-                These icon URLs are exposed for manual inspection only. `farmrpg_item_id`-based candidates are stronger
-                local hints; slug-based icon URLs are explicit assumptions so you can spot-check whether buddy/item slug
-                and icon path actually line up before any broader icon acquisition work.
+                These icon hints are exposed for manual inspection only. Live buddy item pages show mixed image keys
+                such as numeric IDs and custom filenames, so buddy slug and icon filename should stay separate concepts
+                unless a real page confirms the asset path. This view exposes direct icon URLs only for the stronger
+                local item-ID pattern and keeps slug-only cases explicit as unverified investigation hints.
               </p>
               {iconInspectionItems.length === 0 ? (
                 <p className="empty-state">
@@ -948,13 +949,18 @@ export function MuseumToolsPage() {
                             <p>{formatIconCandidateStatusLabel(item.iconCandidateStatus)}</p>
                             <p className="subtle-text">
                               {item.iconCandidateStatus === 'from_local_item_id'
-                                ? 'Derived from local farmrpg_item_id metadata.'
+                                ? 'Observed buddy pages use farmrpg.com /img/items/ paths, and this row has a local farmrpg_item_id hint.'
                                 : item.iconCandidateStatus === 'assumed_from_clean_slug'
-                                  ? 'Derived from the current clean slug as an explicit assumption.'
+                                  ? 'Buddy slug exists, but live page checks show slug and icon filename do not reliably match.'
                                   : item.iconCandidateStatus === 'assumed_from_reviewed_slug'
-                                    ? 'Derived from the locally reviewed slug as an explicit assumption.'
+                                    ? 'Locally reviewed slug candidate exists, but the icon filename is still unverified.'
                                     : 'Current local evidence is not strong enough to expose a candidate icon URL safely.'}
                             </p>
+                            {item.candidateIconKeyHint ? (
+                              <p className="subtle-text">
+                                Candidate key hint: <code>{item.candidateIconKeyHint}</code>
+                              </p>
+                            ) : null}
                           </td>
                           <td>
                             <a href={item.candidateBuddyUrl} target="_blank" rel="noreferrer">
@@ -969,6 +975,9 @@ export function MuseumToolsPage() {
                                 </a>
                                 <p className="subtle-text">{item.candidateIconPathname}</p>
                               </>
+                            ) : item.iconCandidateStatus === 'assumed_from_clean_slug' ||
+                              item.iconCandidateStatus === 'assumed_from_reviewed_slug' ? (
+                              <span>No direct icon URL exposed from slug-only evidence</span>
                             ) : (
                               <span>Not safely derivable yet</span>
                             )}

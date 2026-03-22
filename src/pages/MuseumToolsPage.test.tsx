@@ -201,7 +201,7 @@ Mystery Goo Mystery Goo
     expect(within(actionableSection).getByText('Not icon-ready yet')).toBeInTheDocument();
   });
 
-  it('shows candidate icon URLs for manual inspection and leaves unsafe rows explicit', async () => {
+  it('shows direct icon URLs only for stronger evidence and keeps slug-only icon hints explicit', async () => {
     const user = userEvent.setup();
 
     render(<MuseumToolsPage />);
@@ -220,11 +220,13 @@ Mystery Goo Mystery Goo
 
     const iconSection = screen.getByRole('heading', { name: 'Icon Candidate Inspection' }).closest('div') as HTMLElement;
 
-    expect(within(iconSection).getByText('From local item ID')).toBeInTheDocument();
-    expect(within(iconSection).getByText('Assumed from clean slug')).toBeInTheDocument();
+    expect(within(iconSection).getByText('Observed local item ID pattern')).toBeInTheDocument();
+    expect(within(iconSection).getByText('Unverified slug guess')).toBeInTheDocument();
     expect(within(iconSection).getAllByText('Not safely derivable yet').length).toBeGreaterThan(0);
+    expect(within(iconSection).getAllByText('Candidate key hint:').length).toBeGreaterThan(0);
     expect(within(iconSection).getByRole('link', { name: 'https://farmrpg.com/img/items/5885.png' })).toBeInTheDocument();
-    expect(within(iconSection).getByRole('link', { name: 'https://farmrpg.com/img/items/mystery-goo.png' })).toBeInTheDocument();
+    expect(within(iconSection).getByText('No direct icon URL exposed from slug-only evidence')).toBeInTheDocument();
+    expect(within(iconSection).queryByRole('link', { name: 'https://farmrpg.com/img/items/mystery-goo.png' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Export Icon Candidate CSV' })).toBeInTheDocument();
   });
 });
