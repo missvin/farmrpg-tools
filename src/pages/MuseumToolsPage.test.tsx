@@ -90,7 +90,7 @@ Barracuda Barracuda`,
     expect(within(actionableSection).getByText('No review needed')).toBeInTheDocument();
   });
 
-  it('surfaces unresolved reconciliation hints and lets unresolved rows be triaged locally', async () => {
+  it('keeps museum-only icon-ready rows out of the active unresolved queue while still surfacing true unresolved rows', async () => {
     const user = userEvent.setup();
 
     render(<MuseumToolsPage />);
@@ -114,23 +114,16 @@ Mystery Goo Mystery Goo`,
     expect(potOfGoldRow).toBeInTheDocument();
     expect(within(potOfGoldRow).getByText('Likely naming mismatch')).toBeInTheDocument();
     expect(within(unresolvedSection).getByText(/Pot of Gold Large \[mastery\]/i)).toBeInTheDocument();
-    const mysteryGooRow = within(unresolvedSection).getByText('Mystery Goo').closest('tr') as HTMLElement;
-    expect(mysteryGooRow).toBeInTheDocument();
-    expect(within(mysteryGooRow).getByText('Missing local reference')).toBeInTheDocument();
+    expect(within(unresolvedSection).queryByText('Mystery Goo')).not.toBeInTheDocument();
 
-    await user.click(within(potOfGoldRow).getByRole('button', { name: 'Mark Triaged' }));
-
-    expect(screen.getByText(/unresolved triage marks? saved locally/i)).toBeInTheDocument();
     expect(within(unresolvedSection).getAllByRole('button', { name: 'Mark Triaged' })).toHaveLength(1);
-
-    const triagedSection = screen.getByRole('heading', { name: 'Locally Triaged Unresolved Rows' }).closest('div') as HTMLElement;
-    expect(within(triagedSection).getByText('Pot of Gold (Large)')).toBeInTheDocument();
-    expect(within(triagedSection).getByRole('button', { name: 'Remove Triage Mark' })).toBeInTheDocument();
 
     const reportSection = screen
       .getByRole('heading', { name: 'Bootstrap Workflow Report' })
       .closest('section') as HTMLElement;
 
+    expect(within(reportSection).getByText('Museum-only icon-ready items')).toBeInTheDocument();
+    expect(within(reportSection).getAllByText('Missing planning reference').length).toBeGreaterThan(0);
     expect(within(reportSection).getByText('Active unresolved triage rows')).toBeInTheDocument();
     expect(within(reportSection).getByText('Triaged unresolved rows')).toBeInTheDocument();
   });
@@ -164,9 +157,47 @@ Mystery Goo Mystery Goo`,
     await user.click(screen.getByRole('button', { name: 'Mark Visible Triaged' }));
 
     expect(screen.getByText(/unresolved triage marks? saved locally/i)).toBeInTheDocument();
-    expect(within(unresolvedSection).getByText(/No active unresolved rows match the current case filter/i)).toBeInTheDocument();
+    expect(within(unresolvedSection).getByText(/No active unresolved triage rows are currently surfaced/i)).toBeInTheDocument();
 
     const triagedSection = screen.getByRole('heading', { name: 'Locally Triaged Unresolved Rows' }).closest('div') as HTMLElement;
     expect(within(triagedSection).getByText('Pot of Gold (Large)')).toBeInTheDocument();
+  });
+
+  it('shows active planning-reference follow-up separately from museum-only icon-ready coverage', async () => {
+    const user = userEvent.setup();
+
+    render(<MuseumToolsPage />);
+
+    const bootstrapButton = await screen.findByRole('button', { name: 'Run Bootstrap Pass' });
+
+    await user.type(
+      screen.getByLabelText('Raw museum export'),
+      `Items Count = 2
+Mystery Goo Mystery Goo
+??? ???`,
+    );
+
+    await user.click(bootstrapButton);
+
+    const reportSection = screen
+      .getByRole('heading', { name: 'Bootstrap Workflow Report' })
+      .closest('section') as HTMLElement;
+
+    expect(within(reportSection).getByText('Museum-only icon-ready items')).toBeInTheDocument();
+    expect(within(reportSection).getAllByText('Missing planning reference').length).toBeGreaterThan(0);
+
+    const unresolvedSection = screen
+      .getByRole('heading', { name: 'Unresolved Reconciliation Queue' })
+      .closest('div') as HTMLElement;
+
+    expect(within(unresolvedSection).getByText('???')).toBeInTheDocument();
+    expect(within(unresolvedSection).queryByText('Mystery Goo')).not.toBeInTheDocument();
+
+    const actionableSection = screen
+      .getByRole('heading', { name: 'Bootstrap Follow-Up Items' })
+      .closest('section') as HTMLElement;
+
+    expect(within(actionableSection).getAllByText('Missing planning reference').length).toBeGreaterThan(0);
+    expect(within(actionableSection).getByText('Not icon-ready yet')).toBeInTheDocument();
   });
 });

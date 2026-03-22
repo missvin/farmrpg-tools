@@ -101,7 +101,7 @@ Mystery Goo Mystery Goo`);
     expect(workflowResult.summary.knownItemsMissingExpectedBuddySlugCount).toBe(0);
   });
 
-  it('classifies unresolved museum items with likely local-match hints and triage status', () => {
+  it('treats clean unmatched slug-backed items as museum-only icon-ready instead of active missing-reference noise', () => {
     const parseResult = parseMuseumExport(`Items Count = 2
 Pot of Gold (Large) Pot of Gold (Large)
 Mystery Goo Mystery Goo`);
@@ -127,6 +127,7 @@ Mystery Goo Mystery Goo`);
     const mysteryGoo = initialResult.items.find((item) => item.canonicalKey === 'mystery goo');
 
     expect(potOfGold?.unresolvedCaseType).toBe('likely_name_mismatch');
+    expect(potOfGold?.planningReferenceStatus).toBe('likely_name_mismatch');
     expect(potOfGold?.likelyReferenceMatches).toEqual([
       expect.objectContaining({
         itemName: 'Pot of Gold Large',
@@ -134,10 +135,14 @@ Mystery Goo Mystery Goo`);
       }),
     ]);
     expect(potOfGold?.unresolvedTriageStatus).toBe('active');
-    expect(mysteryGoo?.unresolvedCaseType).toBe('missing_local_reference');
-    expect(initialResult.summary.activeUnresolvedTriageCount).toBe(2);
+    expect(mysteryGoo?.unresolvedCaseType).toBe(null);
+    expect(mysteryGoo?.planningReferenceStatus).toBe('museum_only_icon_ready');
+    expect(mysteryGoo?.iconReadyCoverageStatus).toBe('derived_ready');
+    expect(mysteryGoo?.needsReferenceCoverageFollowUp).toBe(false);
+    expect(initialResult.summary.activeUnresolvedTriageCount).toBe(1);
     expect(initialResult.summary.likelyNameMismatchCount).toBe(1);
-    expect(initialResult.summary.missingLocalReferenceCount).toBe(1);
+    expect(initialResult.summary.museumOnlyIconReadyCount).toBe(1);
+    expect(initialResult.summary.missingPlanningReferenceCount).toBe(0);
 
     const triagedResult = deriveMuseumRefreshWorkflow(
       parseResult,
@@ -162,8 +167,33 @@ Mystery Goo Mystery Goo`);
     const triagedPotOfGold = triagedResult.items.find((item) => item.canonicalKey === 'pot of gold (large)');
     expect(triagedPotOfGold?.unresolvedTriageStatus).toBe('triaged');
     expect(triagedPotOfGold?.needsUnresolvedTriageFollowUp).toBe(false);
-    expect(triagedResult.summary.activeUnresolvedTriageCount).toBe(1);
+    expect(triagedResult.summary.activeUnresolvedTriageCount).toBe(0);
     expect(triagedResult.summary.triagedUnresolvedCount).toBe(1);
+  });
+
+  it('keeps unmatched non-icon-ready rows as truly unresolved planning/reference follow-up', () => {
+    const parseResult = parseMuseumExport(`Items Count = 1
+??? ???`);
+
+    const result = deriveMuseumRefreshWorkflow(
+      parseResult,
+      {
+        masteryEntries: [],
+        towerEntries: [],
+        recipeRows: [],
+      },
+      null,
+    );
+
+    const item = result.items[0];
+
+    expect(item.generatedBuddySlug).toBe('');
+    expect(item.iconReadyCoverageStatus).toBe('not_ready');
+    expect(item.planningReferenceStatus).toBe('truly_unresolved');
+    expect(item.unresolvedCaseType).toBe('slug_edge_case');
+    expect(item.needsReferenceCoverageFollowUp).toBe(true);
+    expect(result.summary.trulyUnresolvedCount).toBe(1);
+    expect(result.summary.museumOnlyIconReadyCount).toBe(0);
   });
 
   it('keeps reviewed candidate rows out of active review counts until the candidate changes', () => {
@@ -212,11 +242,11 @@ PiÃƒÂ±ata Whop Stick PiÃƒÂ±ata Whop Stick`);
     expect(reviewedResult.summary.candidateReviewCount).toBe(0);
     expect(reviewedResult.summary.reviewedCandidateCount).toBe(1);
     expect(reviewedResult.items[0].candidateReviewStatus).toBe('reviewed');
-    expect(reviewedResult.items[0].buddySlugCoverageStatus).toBe('unresolved');
+    expect(reviewedResult.items[0].buddySlugCoverageStatus).toBe('candidate_reviewed');
     expect(reviewedResult.items[0].needsCandidateReview).toBe(false);
   });
 
-  it('exports review, actionable, and unresolved triage rows with explicit status columns', () => {
+  it('exports review, actionable, and unresolved triage rows with explicit planning and icon-ready status columns', () => {
     const parseResult = parseMuseumExport(`Items Count = 3
 PiÃƒÂ±ata Whop Stick PiÃƒÂ±ata Whop Stick
 Mystery Goo Mystery Goo
@@ -239,9 +269,12 @@ Pot of Gold (Large) Pot of Gold (Large)`);
     );
 
     expect(toMuseumRefreshActionableCsv(result.actionableItems)).toContain('unresolved_case_type');
+    expect(toMuseumRefreshActionableCsv(result.actionableItems)).toContain('planning_reference_status');
+    expect(toMuseumRefreshActionableCsv(result.actionableItems)).toContain('icon_ready_coverage_status');
     expect(toMuseumRefreshActionableCsv(result.actionableItems)).toContain('likely_reference_matches');
     expect(toMuseumRefreshCandidateReviewCsv(result.items)).toContain('candidate_review_status');
     expect(toMuseumUnresolvedTriageCsv(result.unresolvedItems)).toContain('unresolved_triage_status');
+    expect(toMuseumUnresolvedTriageCsv(result.unresolvedItems)).toContain('planning_reference_status');
     expect(toMuseumUnresolvedTriageCsv(result.unresolvedItems)).toContain('likely_reference_matches');
     expect(toMuseumUnresolvedTriageCsv(result.unresolvedItems)).toContain('likely_name_mismatch');
   });
@@ -339,7 +372,7 @@ PiÃƒÂ±ata Whop Stick PiÃƒÂ±ata Whop Stick`);
     const pinata = incrementalResult.items.find((item) => item.itemName.includes('Pi'));
 
     expect(newRope?.buddySlugCoverageStatus).toBe('derived_candidate_ready');
-    expect(pinata?.buddySlugCoverageStatus).toBe('unresolved');
+    expect(pinata?.buddySlugCoverageStatus).toBe('candidate_review_needed');
     expect(pinata?.unresolvedCaseType).toBe('slug_edge_case');
     expect(incrementalResult.summary.autoDerivedBuddySlugReadyCount).toBe(1);
     expect(incrementalResult.summary.unresolvedBuddySlugStatusCount).toBe(1);

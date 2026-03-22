@@ -38,13 +38,20 @@ export type BuddySlugCoverageStatus =
   | 'candidate_review_needed'
   | 'candidate_reviewed'
   | 'unresolved';
+export type IconReadyCoverageStatus = 'maintained_local' | 'derived_ready' | 'reviewed_candidate' | 'not_ready';
+export type PlanningReferenceStatus =
+  | 'matched_local'
+  | 'museum_only_icon_ready'
+  | 'missing_planning_reference'
+  | 'likely_name_mismatch'
+  | 'truly_unresolved';
 export type MuseumReferenceSource = 'mastery' | 'tower' | 'recipe';
 export type MuseumUnresolvedCaseType =
   | 'likely_name_mismatch'
   | 'collision_or_ambiguity'
   | 'slug_edge_case'
   | 'likely_new_item'
-  | 'missing_local_reference';
+  | 'missing_planning_reference';
 export type MuseumUnresolvedTriageStatus = 'not_applicable' | 'active' | 'triaged';
 
 export type MuseumLikelyReferenceMatch = {
@@ -73,6 +80,9 @@ export type MuseumRefreshItem = BuddyFarmCandidate & {
   localBuddySlug: string | null;
   recipeCoverageStatus: RecipeCoverageStatus;
   buddySlugCoverageStatus: BuddySlugCoverageStatus;
+  iconReadyCoverageStatus: IconReadyCoverageStatus;
+  hasIconReadyCoverage: boolean;
+  planningReferenceStatus: PlanningReferenceStatus;
   unresolvedCaseType: MuseumUnresolvedCaseType | null;
   unresolvedTriageKey: string | null;
   unresolvedTriageStatus: MuseumUnresolvedTriageStatus;
@@ -120,7 +130,9 @@ export type MuseumRefreshWorkflowResult = {
     unresolvedCollisionCount: number;
     unresolvedSlugEdgeCaseCount: number;
     likelyNewItemCount: number;
-    missingLocalReferenceCount: number;
+    museumOnlyIconReadyCount: number;
+    missingPlanningReferenceCount: number;
+    trulyUnresolvedCount: number;
     actionableItemsCount: number;
   };
   warnings: string[];
@@ -278,6 +290,7 @@ function deriveUnresolvedCaseType(
     isMatchedKnownItem: boolean;
     isNewSinceBaseline: boolean;
     candidateReviewStatus: CandidateReviewStatus;
+    hasIconReadyCoverage: boolean;
     likelyReferenceMatches: MuseumLikelyReferenceMatch[];
   },
 ): MuseumUnresolvedCaseType | null {
@@ -293,6 +306,10 @@ function deriveUnresolvedCaseType(
     return 'likely_name_mismatch';
   }
 
+  if (item.hasIconReadyCoverage) {
+    return null;
+  }
+
   if (item.candidateReviewStatus !== 'not_needed') {
     return 'slug_edge_case';
   }
@@ -301,7 +318,7 @@ function deriveUnresolvedCaseType(
     return 'likely_new_item';
   }
 
-  return 'missing_local_reference';
+  return 'missing_planning_reference';
 }
 
 export function createMuseumCandidateReviewKey(
@@ -342,7 +359,7 @@ function describeUnresolvedCaseType(caseType: MuseumUnresolvedCaseType): string 
     case 'likely_new_item':
       return 'Likely a museum item not yet represented in current local reference coverage.';
     default:
-      return 'No strong local reconciliation hints were found; treat this as missing local reference coverage until reviewed.';
+      return 'No planning-relevant local reference match or safe icon-ready slug candidate was found yet; keep this as active local planning follow-up until reviewed.';
   }
 }
 
@@ -441,25 +458,45 @@ export function deriveMuseumRefreshWorkflow(
 
       if (localBuddySlug && isMatchedKnownItem) {
         buddySlugCoverageStatus = 'covered_local';
-      } else if (!isMatchedKnownItem) {
-        buddySlugCoverageStatus = 'unresolved';
       } else if (candidateReviewStatus === 'review_needed') {
         buddySlugCoverageStatus = 'candidate_review_needed';
       } else if (candidateReviewStatus === 'reviewed') {
         buddySlugCoverageStatus = 'candidate_reviewed';
       } else if (item.generatedBuddySlug) {
         buddySlugCoverageStatus = 'derived_candidate_ready';
+      } else if (!isMatchedKnownItem) {
+        buddySlugCoverageStatus = 'unresolved';
       } else if (isNewSinceBaseline) {
         buddySlugCoverageStatus = 'missing_new_item';
       } else {
         buddySlugCoverageStatus = 'missing_known_expected';
       }
 
+      const iconReadyCoverageStatus: IconReadyCoverageStatus =
+        localBuddySlug && isMatchedKnownItem
+          ? 'maintained_local'
+          : candidateReviewStatus === 'reviewed' && item.generatedBuddySlug
+            ? 'reviewed_candidate'
+            : candidateReviewStatus === 'not_needed' && item.generatedBuddySlug
+              ? 'derived_ready'
+              : 'not_ready';
+      const hasIconReadyCoverage = iconReadyCoverageStatus !== 'not_ready';
+      const planningReferenceStatus: PlanningReferenceStatus = isMatchedKnownItem
+        ? 'matched_local'
+        : likelyReferenceMatches.length > 0
+          ? 'likely_name_mismatch'
+          : hasIconReadyCoverage
+            ? 'museum_only_icon_ready'
+            : item.flags.includes('slug_collision') || candidateReviewStatus !== 'not_needed' || isNewSinceBaseline
+              ? 'truly_unresolved'
+              : 'missing_planning_reference';
+
       const unresolvedCaseType = deriveUnresolvedCaseType({
         flags: item.flags,
         isMatchedKnownItem,
         isNewSinceBaseline,
         candidateReviewStatus,
+        hasIconReadyCoverage,
         likelyReferenceMatches,
       });
       const unresolvedTriageKey =
@@ -476,7 +513,10 @@ export function deriveMuseumRefreshWorkflow(
       const unresolvedTriageStatus: MuseumUnresolvedTriageStatus =
         unresolvedTriageKey === null ? 'not_applicable' : triagedUnresolvedKeys.has(unresolvedTriageKey) ? 'triaged' : 'active';
 
-      const needsReferenceCoverageFollowUp = !isMatchedKnownItem;
+      const needsReferenceCoverageFollowUp =
+        planningReferenceStatus === 'likely_name_mismatch' ||
+        planningReferenceStatus === 'missing_planning_reference' ||
+        planningReferenceStatus === 'truly_unresolved';
       const needsUnresolvedTriageFollowUp = unresolvedTriageStatus === 'active';
       const needsRecipeCoverageFollowUp = recipeCoverageStatus === 'missing_expected';
       const needsBuddySlugFollowUp =
@@ -492,12 +532,16 @@ export function deriveMuseumRefreshWorkflow(
         followUpReasons.push('New since the saved museum baseline.');
       }
 
-      if (needsReferenceCoverageFollowUp) {
-        followUpReasons.push('Unmatched against current local mastery, tower, and recipe outputs.');
-      }
-
       if (unresolvedCaseType) {
         followUpReasons.push(describeUnresolvedCaseType(unresolvedCaseType));
+      }
+
+      if (planningReferenceStatus === 'museum_only_icon_ready') {
+        followUpReasons.push(
+          'No current local mastery, tower, or recipe match was found, but this row already has enough slug coverage to stay museum-only and icon-ready for now without forcing it into active planning/reference coverage.',
+        );
+      } else if (needsReferenceCoverageFollowUp) {
+        followUpReasons.push('Still needs local planning/reference follow-up against current mastery, tower, and recipe coverage.');
       }
 
       if (likelyReferenceMatches.length > 0) {
@@ -542,6 +586,16 @@ export function deriveMuseumRefreshWorkflow(
         followUpReasons.push('Buddy slug status is unresolved until this item is reconciled more safely.');
       }
 
+      if (iconReadyCoverageStatus === 'maintained_local') {
+        followUpReasons.push('Icon-ready coverage already exists from maintained local buddy slug metadata.');
+      } else if (iconReadyCoverageStatus === 'derived_ready') {
+        followUpReasons.push('Icon-ready coverage can be preserved from the clean derived buddy slug candidate even without pulling this item into active planning coverage.');
+      } else if (iconReadyCoverageStatus === 'reviewed_candidate') {
+        followUpReasons.push('Icon-ready coverage can be preserved from the locally reviewed buddy slug candidate.');
+      } else {
+        followUpReasons.push('Icon-ready coverage is not yet safe enough to preserve from current local candidate data.');
+      }
+
       if (needsCandidateReview) {
         followUpReasons.push(`Generated buddy candidate needs review: ${item.flags.join(', ')}.`);
       } else if (candidateReviewStatus === 'reviewed') {
@@ -562,6 +616,9 @@ export function deriveMuseumRefreshWorkflow(
         localBuddySlug,
         recipeCoverageStatus,
         buddySlugCoverageStatus,
+        iconReadyCoverageStatus,
+        hasIconReadyCoverage,
+        planningReferenceStatus,
         unresolvedCaseType,
         unresolvedTriageKey,
         unresolvedTriageStatus,
@@ -633,8 +690,10 @@ export function deriveMuseumRefreshWorkflow(
         .length,
       unresolvedSlugEdgeCaseCount: unresolvedItems.filter((item) => item.unresolvedCaseType === 'slug_edge_case').length,
       likelyNewItemCount: unresolvedItems.filter((item) => item.unresolvedCaseType === 'likely_new_item').length,
-      missingLocalReferenceCount: unresolvedItems.filter((item) => item.unresolvedCaseType === 'missing_local_reference')
+      museumOnlyIconReadyCount: items.filter((item) => item.planningReferenceStatus === 'museum_only_icon_ready').length,
+      missingPlanningReferenceCount: unresolvedItems.filter((item) => item.unresolvedCaseType === 'missing_planning_reference')
         .length,
+      trulyUnresolvedCount: items.filter((item) => item.planningReferenceStatus === 'truly_unresolved').length,
       actionableItemsCount: actionableItems.length,
     },
     warnings,
@@ -651,7 +710,7 @@ function escapeCsvValue(value: string): string {
 
 export function toMuseumRefreshActionableCsv(items: MuseumRefreshItem[]): string {
   const rows = [
-    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,candidate_review_key,candidate_review_status,unresolved_case_type,unresolved_triage_key,unresolved_triage_status,likely_reference_matches,is_new_since_baseline,is_matched_known_item,recipe_coverage_status,buddy_slug_coverage_status,needs_reference_follow_up,needs_unresolved_triage_follow_up,needs_recipe_follow_up,needs_buddy_slug_follow_up,needs_candidate_review,is_actionable_follow_up,flags,follow_up_reasons',
+    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,candidate_review_key,candidate_review_status,planning_reference_status,icon_ready_coverage_status,unresolved_case_type,unresolved_triage_key,unresolved_triage_status,likely_reference_matches,is_new_since_baseline,is_matched_known_item,recipe_coverage_status,buddy_slug_coverage_status,needs_reference_follow_up,needs_unresolved_triage_follow_up,needs_recipe_follow_up,needs_buddy_slug_follow_up,needs_candidate_review,is_actionable_follow_up,flags,follow_up_reasons',
   ];
 
   for (const item of items) {
@@ -666,6 +725,8 @@ export function toMuseumRefreshActionableCsv(items: MuseumRefreshItem[]): string
         item.alternateBuddySlug ?? '',
         item.candidateReviewKey,
         item.candidateReviewStatus,
+        item.planningReferenceStatus,
+        item.iconReadyCoverageStatus,
         item.unresolvedCaseType ?? '',
         item.unresolvedTriageKey ?? '',
         item.unresolvedTriageStatus,
@@ -724,7 +785,7 @@ export function toMuseumRefreshCandidateReviewCsv(items: MuseumRefreshItem[]): s
 
 export function toMuseumUnresolvedTriageCsv(items: MuseumRefreshItem[]): string {
   const rows = [
-    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,candidate_buddy_url,unresolved_case_type,unresolved_triage_key,unresolved_triage_status,candidate_review_status,flags,is_new_since_baseline,likely_reference_matches,follow_up_reasons',
+    'museum_category,category,item_name,canonical_key,obtainable,generated_buddy_slug,alternate_buddy_slug,candidate_buddy_url,planning_reference_status,icon_ready_coverage_status,unresolved_case_type,unresolved_triage_key,unresolved_triage_status,candidate_review_status,flags,is_new_since_baseline,likely_reference_matches,follow_up_reasons',
   ];
 
   for (const item of items.filter((candidate) => candidate.unresolvedCaseType !== null)) {
@@ -738,6 +799,8 @@ export function toMuseumUnresolvedTriageCsv(items: MuseumRefreshItem[]): string 
         item.generatedBuddySlug,
         item.alternateBuddySlug ?? '',
         item.candidateBuddyUrl,
+        item.planningReferenceStatus,
+        item.iconReadyCoverageStatus,
         item.unresolvedCaseType ?? '',
         item.unresolvedTriageKey ?? '',
         item.unresolvedTriageStatus,

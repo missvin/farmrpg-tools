@@ -90,6 +90,38 @@ function formatBuddySlugCoverageLabel(
   }
 }
 
+function formatIconReadyCoverageLabel(
+  status: MuseumRefreshWorkflowResult['items'][number]['iconReadyCoverageStatus'],
+): string {
+  switch (status) {
+    case 'maintained_local':
+      return 'Maintained local coverage';
+    case 'derived_ready':
+      return 'Museum-only icon-ready';
+    case 'reviewed_candidate':
+      return 'Reviewed icon-ready candidate';
+    default:
+      return 'Not icon-ready yet';
+  }
+}
+
+function formatPlanningReferenceLabel(
+  status: MuseumRefreshWorkflowResult['items'][number]['planningReferenceStatus'],
+): string {
+  switch (status) {
+    case 'matched_local':
+      return 'Matched local coverage';
+    case 'museum_only_icon_ready':
+      return 'Museum-only / icon-ready';
+    case 'missing_planning_reference':
+      return 'Missing planning reference';
+    case 'likely_name_mismatch':
+      return 'Likely naming mismatch';
+    default:
+      return 'Truly unresolved';
+  }
+}
+
 function formatCandidateReviewLabel(
   status: MuseumRefreshWorkflowResult['items'][number]['candidateReviewStatus'],
   flags: string[],
@@ -117,8 +149,8 @@ function formatUnresolvedCaseLabel(
       return 'Slug edge case';
     case 'likely_new_item':
       return 'Likely new local item';
-    case 'missing_local_reference':
-      return 'Missing local reference';
+    case 'missing_planning_reference':
+      return 'Missing planning reference';
     default:
       return 'Not unresolved';
   }
@@ -750,6 +782,18 @@ export function MuseumToolsPage() {
                 <dd>{workflowResult.summary.likelyNameMismatchCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
+                <dt>Museum-only icon-ready items</dt>
+                <dd>{workflowResult.summary.museumOnlyIconReadyCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Missing planning reference</dt>
+                <dd>{workflowResult.summary.missingPlanningReferenceCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Truly unresolved reference status</dt>
+                <dd>{workflowResult.summary.trulyUnresolvedCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
                 <dt>Likely new local items</dt>
                 <dd>{workflowResult.summary.likelyNewItemCount.toLocaleString()}</dd>
               </div>
@@ -824,8 +868,9 @@ export function MuseumToolsPage() {
               <h3 className="section-title">Unresolved Reconciliation Queue</h3>
               <p className="supporting-text">
                 This queue focuses on unresolved museum items that do not yet reconcile safely against current local
-                mastery, tower, or recipe coverage. Use the case label, likely local match hints, and export to work
-                through unresolved rows intentionally without promoting uncertain matches.
+                mastery, tower, or recipe coverage. Museum-only icon-ready rows stay out of this queue; use the case
+                label, likely local match hints, and export to work through the remaining planning-relevant unresolved
+                rows intentionally without promoting uncertain matches.
               </p>
               <div className="button-row">
                 <label className="field-label" htmlFor="unresolved-sort-mode">
@@ -859,7 +904,7 @@ export function MuseumToolsPage() {
                   <option value="collision_or_ambiguity">Collision or ambiguity</option>
                   <option value="slug_edge_case">Slug edge case</option>
                   <option value="likely_new_item">Likely new local item</option>
-                  <option value="missing_local_reference">Missing local reference</option>
+                  <option value="missing_planning_reference">Missing planning reference</option>
                 </select>
                 <button
                   type="button"
@@ -998,7 +1043,8 @@ export function MuseumToolsPage() {
                       <tr>
                         <th scope="col">Item</th>
                         <th scope="col">New</th>
-                        <th scope="col">Match</th>
+                        <th scope="col">Planning reference</th>
+                        <th scope="col">Icon-ready</th>
                         <th scope="col">Buddy slug</th>
                         <th scope="col">Recipe</th>
                         <th scope="col">Review state</th>
@@ -1017,7 +1063,8 @@ export function MuseumToolsPage() {
                             </p>
                           </td>
                           <td>{item.isNewSinceBaseline ? 'New' : 'Known'}</td>
-                          <td>{item.isMatchedKnownItem ? 'Matched known item' : 'Unmatched'}</td>
+                          <td>{formatPlanningReferenceLabel(item.planningReferenceStatus)}</td>
+                          <td>{formatIconReadyCoverageLabel(item.iconReadyCoverageStatus)}</td>
                           <td>{formatBuddySlugCoverageLabel(item.buddySlugCoverageStatus)}</td>
                           <td>{formatRecipeCoverageLabel(item.recipeCoverageStatus)}</td>
                           <td>
@@ -1068,6 +1115,12 @@ export function MuseumToolsPage() {
                               <p className="subtle-text">
                                 Recipe expectation stays unresolved until local reconciliation is strong enough to judge
                                 whether recipe coverage should exist.
+                              </p>
+                            ) : null}
+                            {item.planningReferenceStatus === 'museum_only_icon_ready' ? (
+                              <p className="subtle-text">
+                                This row is museum-only for now because icon-ready slug coverage is already good enough
+                                without active planning/reference coverage.
                               </p>
                             ) : null}
                           </td>
