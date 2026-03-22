@@ -67,6 +67,22 @@ Rationale:
 Implications:
 Missing `buddy_slug` values should not block reference-data use. Future buddy-oriented features should treat it as supplemental metadata.
 
+## Buddy slug and icon asset key are separate optional metadata concepts
+
+Status: Accepted
+
+Decision:
+`buddy_slug` and the underlying item-image asset key should be treated as separate optional metadata concepts.
+
+Rationale:
+Observed buddy item pages reference item images from `farmrpg.com/img/items/...`, but the asset key is not reliably the same as `buddy_slug`. Confirmed patterns include directly numeric filenames, numeric filenames with query strings, and custom filenames. Treating slug and icon asset key as the same concept would overstate certainty and create fragile tooling assumptions.
+
+Implications:
+- Museum and icon tooling should not present slug-derived icon URLs as trustworthy by default.
+- Numeric icon filenames may be treated as `farmrpg_item_id` candidates only when they are directly observed from real image references.
+- Custom icon filenames should be preserved as icon asset metadata rather than coerced into IDs.
+- Canonical item identity remains the normalized item name, while `farmrpg_item_id`, `buddy_slug`, and icon asset metadata remain optional enrichment fields.
+
 ## `mastery_difficulty.csv` remains separate from tower requirements data
 
 Status: Accepted

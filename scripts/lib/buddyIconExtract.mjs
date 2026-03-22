@@ -1,6 +1,7 @@
 import { extractHtmlTitle } from './buddyFarmProbe.mjs';
 
 export const ICON_EXTRACTION_STATUSES = ['icon_found', 'no_icon', 'uncertain'];
+export const ICON_OBSERVATION_STATUSES = ['observed', 'review_needed'];
 
 const H1_RE = /<h1\b[^>]*>(?<content>[\s\S]*?)<\/h1>/iu;
 const ITEM_IMAGE_RE = /<img\b[^>]*src="(?<src>(?:https?:\/\/[^"]+|\/[^"]+img\/items\/[^"]+|\/img\/items\/[^"]+))"[^>]*>/giu;
@@ -37,6 +38,26 @@ function getIconFilename(iconUrl) {
   } catch {
     return null;
   }
+}
+
+function getIconAssetKey(iconFilename) {
+  if (!iconFilename) {
+    return null;
+  }
+
+  const extension = iconFilename.match(/\.[^.]+$/u)?.[0] ?? '';
+  const baseName = extension ? iconFilename.slice(0, -extension.length) : iconFilename;
+  return baseName || null;
+}
+
+function getFarmRpgItemIdCandidate(iconFilename) {
+  const assetKey = getIconAssetKey(iconFilename);
+
+  if (!assetKey || !/^\d+$/u.test(assetKey)) {
+    return null;
+  }
+
+  return assetKey;
 }
 
 function getIconPathname(iconUrl) {
@@ -231,5 +252,92 @@ export function toBuddyIconReviewCsv(extractionResult) {
   return toBuddyIconExtractionCsv({
     ...extractionResult,
     results: extractionResult.reviewResults,
+  });
+}
+
+export function deriveBuddyIconObservations(extractionResult) {
+  const results = extractionResult.results.map((result) => {
+    const iconAssetKey = getIconAssetKey(result.iconFilename);
+    const farmrpgItemIdCandidate = getFarmRpgItemIdCandidate(result.iconFilename);
+    const observationStatus =
+      result.extractionStatus === 'icon_found' && result.iconUrl && result.iconPathname && result.iconFilename
+        ? 'observed'
+        : 'review_needed';
+
+    return {
+      itemName: result.itemName,
+      canonicalKey: result.canonicalKey,
+      generatedBuddySlug: result.generatedBuddySlug,
+      candidateBuddyUrl: result.candidateBuddyUrl,
+      pageTitle: result.pageTitle ?? null,
+      extractionStatus: result.extractionStatus,
+      observationStatus,
+      iconUrl: result.iconUrl ?? null,
+      iconPathname: result.iconPathname ?? null,
+      iconFilename: result.iconFilename ?? null,
+      iconAssetKey,
+      farmrpgItemIdCandidate,
+      flags: [...result.flags],
+      notes: [...result.notes],
+    };
+  });
+
+  const countsByStatus = results.reduce((counts, result) => {
+    counts[result.observationStatus] = (counts[result.observationStatus] ?? 0) + 1;
+    return counts;
+  }, {});
+
+  return {
+    results,
+    reviewResults: results.filter((result) => result.observationStatus !== 'observed'),
+    summary: {
+      rowsProcessed: results.length,
+      countsByStatus,
+      observedCount: results.filter((result) => result.observationStatus === 'observed').length,
+      numericFarmRpgItemIdCandidateCount: results.filter((result) => result.farmrpgItemIdCandidate !== null).length,
+      reviewCount: results.filter((result) => result.observationStatus !== 'observed').length,
+    },
+  };
+}
+
+export function toBuddyIconObservationJson(observationResult) {
+  return JSON.stringify(observationResult, null, 2);
+}
+
+export function toBuddyIconObservationCsv(observationResult) {
+  const rows = [
+    'item_name,canonical_key,generated_buddy_slug,candidate_buddy_url,page_title,extraction_status,observation_status,icon_url,icon_pathname,icon_filename,icon_asset_key,farmrpg_item_id_candidate,flags,notes',
+  ];
+
+  for (const result of observationResult.results) {
+    rows.push(
+      [
+        result.itemName,
+        result.canonicalKey,
+        result.generatedBuddySlug,
+        result.candidateBuddyUrl,
+        result.pageTitle ?? '',
+        result.extractionStatus,
+        result.observationStatus,
+        result.iconUrl ?? '',
+        result.iconPathname ?? '',
+        result.iconFilename ?? '',
+        result.iconAssetKey ?? '',
+        result.farmrpgItemIdCandidate ?? '',
+        result.flags.join('; '),
+        result.notes.join('; '),
+      ]
+        .map(escapeCsvValue)
+        .join(','),
+    );
+  }
+
+  return rows.join('\n');
+}
+
+export function toBuddyIconObservationReviewCsv(observationResult) {
+  return toBuddyIconObservationCsv({
+    ...observationResult,
+    results: observationResult.reviewResults,
   });
 }

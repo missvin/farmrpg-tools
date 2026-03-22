@@ -3,9 +3,13 @@ import path from 'node:path';
 
 import { filterFoundProbeCandidates, parseBuddyProbeResultsCsv } from './lib/buddyRecipeExtract.mjs';
 import {
+  deriveBuddyIconObservations,
   extractBuddyItemIcons,
   toBuddyIconExtractionCsv,
   toBuddyIconExtractionJson,
+  toBuddyIconObservationCsv,
+  toBuddyIconObservationJson,
+  toBuddyIconObservationReviewCsv,
   toBuddyIconReviewCsv,
 } from './lib/buddyIconExtract.mjs';
 
@@ -82,24 +86,35 @@ async function main() {
   const extractionResult = await extractBuddyItemIcons(selectedCandidates, {
     interRequestDelayMs: delayMs,
   });
+  const observationResult = deriveBuddyIconObservations(extractionResult);
 
   const resultsJsonPath = path.join(resolvedOutputDir, 'buddy_item_icons.json');
   const resultsCsvPath = path.join(resolvedOutputDir, 'buddy_item_icons.csv');
   const reviewCsvPath = path.join(resolvedOutputDir, 'buddy_item_icon_review.csv');
+  const observationsJsonPath = path.join(resolvedOutputDir, 'buddy_item_icon_observations.json');
+  const observationsCsvPath = path.join(resolvedOutputDir, 'buddy_item_icon_observations.csv');
+  const observationReviewCsvPath = path.join(resolvedOutputDir, 'buddy_item_icon_observation_review.csv');
 
   await writeFile(resultsJsonPath, toBuddyIconExtractionJson(extractionResult), 'utf8');
   await writeFile(resultsCsvPath, toBuddyIconExtractionCsv(extractionResult), 'utf8');
   await writeFile(reviewCsvPath, toBuddyIconReviewCsv(extractionResult), 'utf8');
+  await writeFile(observationsJsonPath, toBuddyIconObservationJson(observationResult), 'utf8');
+  await writeFile(observationsCsvPath, toBuddyIconObservationCsv(observationResult), 'utf8');
+  await writeFile(observationReviewCsvPath, toBuddyIconObservationReviewCsv(observationResult), 'utf8');
 
   console.log(`Wrote ${resultsJsonPath}`);
   console.log(`Wrote ${resultsCsvPath}`);
   console.log(`Wrote ${reviewCsvPath}`);
+  console.log(`Wrote ${observationsJsonPath}`);
+  console.log(`Wrote ${observationsCsvPath}`);
+  console.log(`Wrote ${observationReviewCsvPath}`);
 
   for (const [status, count] of Object.entries(extractionResult.summary.countsByStatus)) {
     console.log(`${status}: ${count.toLocaleString()}`);
   }
 
   console.log(`review: ${extractionResult.summary.reviewCount.toLocaleString()}`);
+  console.log(`observed_numeric_farmrpg_item_id_candidates: ${observationResult.summary.numericFarmRpgItemIdCandidateCount.toLocaleString()}`);
 }
 
 main().catch((error) => {
