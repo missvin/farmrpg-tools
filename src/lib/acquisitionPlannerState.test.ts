@@ -7,12 +7,16 @@ import {
   createDefaultAcquisitionPlannerInputState,
   getResolvedAcquisitionSharedAssumptions,
   getOwnedNowItemInputs,
+  getStoredPetInventoryItemInputs,
   loadAcquisitionPlannerInputState,
   normalizeAcquisitionPlannerInputState,
+  replaceStoredPetInventoryEntries,
+  removeStoredPetInventoryItemInput,
   resolveAcquisitionSourceInclusion,
   resolveAcquisitionSourceInclusionMap,
   saveAcquisitionPlannerInputState,
   upsertOwnedNowItemInput,
+  upsertStoredPetInventoryItemInput,
 } from './acquisitionPlannerState';
 import { createDefaultCraftingModifierState } from './craftingModifierState';
 
@@ -66,7 +70,7 @@ describe('acquisitionPlannerState', () => {
         entries: [],
       },
       pets: {
-        storedInventoryByCanonicalKey: {},
+        storedInventoryEntries: [],
         futureProduction: {
           enabled: false,
           horizonDays: 7,
@@ -168,6 +172,7 @@ describe('acquisitionPlannerState', () => {
         ],
       },
       pets: {
+        storedInventoryEntries: [],
         futureProduction: {
           enabled: true,
           horizonDays: 14,
@@ -350,5 +355,82 @@ describe('acquisitionPlannerState', () => {
     );
 
     expect(loadAcquisitionPlannerInputState(storage).ownedNow.entries).toEqual([]);
+  });
+
+  it('adds, replaces, removes, and safely normalizes stored pet inventory entries', () => {
+    const initialState = createDefaultAcquisitionPlannerInputState();
+    const withHoney = upsertStoredPetInventoryItemInput(initialState, {
+      itemName: 'Honey',
+      storedCount: 12,
+    });
+
+    expect(getStoredPetInventoryItemInputs(withHoney)).toEqual([
+      {
+        canonicalItemKey: 'honey',
+        itemName: 'Honey',
+        storedCount: 12,
+      },
+    ]);
+
+    const replaced = replaceStoredPetInventoryEntries(withHoney, [
+      {
+        canonicalItemKey: 'apple',
+        itemName: 'Apple',
+        storedCount: 25,
+      },
+      {
+        canonicalItemKey: 'honey',
+        itemName: 'Honey',
+        storedCount: 9,
+      },
+    ]);
+
+    expect(getStoredPetInventoryItemInputs(replaced)).toEqual([
+      {
+        canonicalItemKey: 'apple',
+        itemName: 'Apple',
+        storedCount: 25,
+      },
+      {
+        canonicalItemKey: 'honey',
+        itemName: 'Honey',
+        storedCount: 9,
+      },
+    ]);
+
+    const removed = removeStoredPetInventoryItemInput(replaced, 'Honey');
+    expect(getStoredPetInventoryItemInputs(removed)).toEqual([
+      {
+        canonicalItemKey: 'apple',
+        itemName: 'Apple',
+        storedCount: 25,
+      },
+    ]);
+
+    expect(
+      normalizeAcquisitionPlannerInputState({
+        pets: {
+          storedInventoryByCanonicalKey: {
+            honey: 5,
+            apple: 3,
+          },
+        },
+      }),
+    ).toMatchObject({
+      pets: {
+        storedInventoryEntries: [
+          {
+            canonicalItemKey: 'apple',
+            itemName: 'apple',
+            storedCount: 3,
+          },
+          {
+            canonicalItemKey: 'honey',
+            itemName: 'honey',
+            storedCount: 5,
+          },
+        ],
+      },
+    });
   });
 });

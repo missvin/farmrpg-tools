@@ -1,12 +1,16 @@
-import { useState, type ChangeEvent } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import {
   getOwnedNowItemInputs,
+  getStoredPetInventoryItemInputs,
   loadAcquisitionPlannerInputState,
+  removeStoredPetInventoryItemInput,
+  replaceStoredPetInventoryEntries,
   removeOwnedNowItemInput,
   saveAcquisitionPlannerInputState,
   upsertOwnedNowItemInput,
+  upsertStoredPetInventoryItemInput,
   type AcquisitionOwnedNowSourceCategory,
 } from '../lib/acquisitionPlannerState';
 import { exportCurrentAppBackupFile } from '../lib/appBackupExport';
@@ -16,6 +20,8 @@ import {
   restoreAppBackupPayload,
 } from '../lib/appBackupRestore';
 import type { AppBackupPayloadV1 } from '../lib/appBackupSchema';
+import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
+import { parseStoredPetInventoryPaste } from '../lib/parseStoredPetInventoryPaste';
 
 export function SettingsPage() {
   const [acquisitionPlannerState, setAcquisitionPlannerState] = useState(() => loadAcquisitionPlannerInputState());
@@ -25,6 +31,13 @@ export function SettingsPage() {
     useState<AcquisitionOwnedNowSourceCategory>('stockpile');
   const [ownedItemsMessage, setOwnedItemsMessage] = useState<string | null>(null);
   const [ownedItemsError, setOwnedItemsError] = useState<string | null>(null);
+  const [storedPetItemName, setStoredPetItemName] = useState('');
+  const [storedPetItemCount, setStoredPetItemCount] = useState('1');
+  const [storedPetImportText, setStoredPetImportText] = useState('');
+  const [storedPetMessage, setStoredPetMessage] = useState<string | null>(null);
+  const [storedPetError, setStoredPetError] = useState<string | null>(null);
+  const [storedPetWarnings, setStoredPetWarnings] = useState<string[]>([]);
+  const [knownItemKeys, setKnownItemKeys] = useState<Set<string> | null>(null);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -37,6 +50,27 @@ export function SettingsPage() {
   const [isRestoring, setIsRestoring] = useState(false);
 
   const ownedNowEntries = getOwnedNowItemInputs(acquisitionPlannerState);
+  const storedPetEntries = getStoredPetInventoryItemInputs(acquisitionPlannerState);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void loadMasteryDifficulty()
+      .then((data) => {
+        if (!cancelled) {
+          setKnownItemKeys(new Set(Object.keys(data.byCanonicalKey)));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setKnownItemKeys(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function handleSaveOwnedItem(): void {
     const normalizedCount = Number(ownedItemCount);
@@ -90,6 +124,99 @@ export function SettingsPage() {
       setOwnedItemsMessage(null);
       setOwnedItemsError(
         error instanceof Error ? error.message : 'Unable to remove the owned-now stockpile entry.',
+      );
+    }
+  }
+
+  function handleSaveStoredPetItem(): void {
+    const normalizedCount = Number(storedPetItemCount);
+
+    if (storedPetItemName.trim().length === 0) {
+      setStoredPetMessage(null);
+      setStoredPetWarnings([]);
+      setStoredPetError('Enter an item name to save a stored pet inventory entry.');
+      return;
+    }
+
+    if (!Number.isFinite(normalizedCount) || normalizedCount < 0) {
+      setStoredPetMessage(null);
+      setStoredPetWarnings([]);
+      setStoredPetError('Enter a non-negative quantity for the stored pet inventory entry.');
+      return;
+    }
+
+    try {
+      const nextState = upsertStoredPetInventoryItemInput(acquisitionPlannerState, {
+        itemName: storedPetItemName,
+        storedCount: normalizedCount,
+      });
+      const savedState = saveAcquisitionPlannerInputState(nextState);
+
+      setAcquisitionPlannerState(savedState);
+      setStoredPetError(null);
+      setStoredPetWarnings([]);
+      setStoredPetMessage(
+        normalizedCount > 0
+          ? `Saved ${storedPetItemName.trim()} as stored pet inventory.`
+          : `Removed ${storedPetItemName.trim()} from stored pet inventory.`,
+      );
+      setStoredPetItemName('');
+      setStoredPetItemCount('1');
+    } catch (error) {
+      setStoredPetMessage(null);
+      setStoredPetWarnings([]);
+      setStoredPetError(
+        error instanceof Error ? error.message : 'Unable to save the stored pet inventory entry.',
+      );
+    }
+  }
+
+  function handleImportStoredPetInventory(): void {
+    const parsedResult = parseStoredPetInventoryPaste(storedPetImportText, {
+      knownCanonicalKeys: knownItemKeys ?? undefined,
+    });
+
+    if (parsedResult.entries.length === 0) {
+      setStoredPetMessage(null);
+      setStoredPetWarnings(parsedResult.warnings);
+      setStoredPetError('No stored pet inventory entries were imported from the pasted text.');
+      return;
+    }
+
+    try {
+      const nextState = replaceStoredPetInventoryEntries(acquisitionPlannerState, parsedResult.entries);
+      const savedState = saveAcquisitionPlannerInputState(nextState);
+
+      setAcquisitionPlannerState(savedState);
+      setStoredPetError(null);
+      setStoredPetWarnings(parsedResult.warnings);
+      setStoredPetMessage(
+        `Imported ${parsedResult.entries.length.toLocaleString()} stored pet inventory entr${parsedResult.entries.length === 1 ? 'y' : 'ies'}.`,
+      );
+      setStoredPetImportText('');
+    } catch (error) {
+      setStoredPetMessage(null);
+      setStoredPetWarnings(parsedResult.warnings);
+      setStoredPetError(
+        error instanceof Error ? error.message : 'Unable to import the stored pet inventory text.',
+      );
+    }
+  }
+
+  function handleRemoveStoredPetItem(canonicalItemKey: string): void {
+    try {
+      const nextState = removeStoredPetInventoryItemInput(acquisitionPlannerState, canonicalItemKey);
+      const savedState = saveAcquisitionPlannerInputState(nextState);
+
+      setAcquisitionPlannerState(savedState);
+      setStoredPetError(null);
+      setStoredPetWarnings([]);
+      setStoredPetMessage(`Removed ${canonicalItemKey} from stored pet inventory.`);
+    } catch (error) {
+      setStoredPetMessage(null);
+      setStoredPetWarnings([]);
+      setStoredPetError(
+        error instanceof Error ? error.message : 'Unable to remove the stored pet inventory entry.',
       );
     }
   }
@@ -300,6 +427,133 @@ export function SettingsPage() {
 
         {ownedItemsMessage ? <p className="status-message status-message--success">{ownedItemsMessage}</p> : null}
         {ownedItemsError ? <p className="status-message status-message--error">{ownedItemsError}</p> : null}
+      </section>
+
+      <section className="page-card page-stack" aria-labelledby="settings-stored-pet-title">
+        <div>
+          <h2 id="settings-stored-pet-title">Stored Pet Inventory</h2>
+          <p className="supporting-text">
+            Track already-produced pet items you have on hand right now. This stays separate from owned stockpiles and
+            future pet production estimates.
+          </p>
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="stored-pet-item-name">
+            Pet item name
+          </label>
+          <input
+            id="stored-pet-item-name"
+            className="text-input"
+            type="text"
+            value={storedPetItemName}
+            onChange={(event) => {
+              setStoredPetItemName(event.target.value);
+            }}
+            placeholder="Honey"
+          />
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="stored-pet-item-count">
+            Stored quantity
+          </label>
+          <input
+            id="stored-pet-item-count"
+            className="text-input"
+            type="number"
+            min="0"
+            step="1"
+            value={storedPetItemCount}
+            onChange={(event) => {
+              setStoredPetItemCount(event.target.value);
+            }}
+          />
+        </div>
+
+        <div className="button-row">
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={handleSaveStoredPetItem}
+          >
+            Save Stored Pet Item
+          </button>
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="stored-pet-import-text">
+            Paste pet inventory
+          </label>
+          <textarea
+            id="stored-pet-import-text"
+            className="text-input"
+            rows={6}
+            value={storedPetImportText}
+            onChange={(event) => {
+              setStoredPetImportText(event.target.value);
+            }}
+            placeholder={`Honey, 12\n25, Apple`}
+          />
+        </div>
+
+        <div className="button-row">
+          <button
+            type="button"
+            className="button"
+            onClick={handleImportStoredPetInventory}
+          >
+            Import Stored Pet Inventory
+          </button>
+        </div>
+
+        <p className="supporting-text">
+          Supported paste format: one entry per line using <code>Item Name, Count</code>, <code>Count, Item Name</code>,
+          or tab-separated pairs.
+        </p>
+
+        {storedPetEntries.length > 0 ? (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Stored count</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {storedPetEntries.map((entry) => (
+                <tr key={entry.canonicalItemKey}>
+                  <td>{entry.itemName}</td>
+                  <td>{entry.storedCount.toLocaleString()}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="button"
+                      onClick={() => {
+                        handleRemoveStoredPetItem(entry.canonicalItemKey);
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="supporting-text">No stored pet inventory saved yet.</p>
+        )}
+
+        {storedPetMessage ? <p className="status-message status-message--success">{storedPetMessage}</p> : null}
+        {storedPetError ? <p className="status-message status-message--error">{storedPetError}</p> : null}
+        {storedPetWarnings.length > 0 ? (
+          <ul className="supporting-text">
+            {storedPetWarnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        ) : null}
       </section>
 
       <section className="page-card page-stack" aria-labelledby="settings-restore-title">

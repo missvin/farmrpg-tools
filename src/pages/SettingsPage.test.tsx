@@ -13,11 +13,13 @@ const {
   mockReadAppBackupFile,
   mockRestoreAppBackupPayload,
   mockReloadAfterRestore,
+  mockLoadMasteryDifficulty,
 } = vi.hoisted(() => ({
   mockExportCurrentAppBackupFile: vi.fn(),
   mockReadAppBackupFile: vi.fn(),
   mockRestoreAppBackupPayload: vi.fn(),
   mockReloadAfterRestore: vi.fn(),
+  mockLoadMasteryDifficulty: vi.fn(),
 }));
 
 vi.mock('../lib/appBackupExport', () => ({
@@ -28,6 +30,10 @@ vi.mock('../lib/appBackupRestore', () => ({
   readAppBackupFile: mockReadAppBackupFile,
   restoreAppBackupPayload: mockRestoreAppBackupPayload,
   reloadAfterRestore: mockReloadAfterRestore,
+}));
+
+vi.mock('../lib/loadMasteryDifficulty', () => ({
+  loadMasteryDifficulty: mockLoadMasteryDifficulty,
 }));
 
 import { SettingsPage } from './SettingsPage';
@@ -96,6 +102,14 @@ describe('SettingsPage', () => {
     mockReadAppBackupFile.mockReset();
     mockRestoreAppBackupPayload.mockReset();
     mockReloadAfterRestore.mockReset();
+    mockLoadMasteryDifficulty.mockReset();
+    mockLoadMasteryDifficulty.mockResolvedValue({
+      entries: [],
+      byCanonicalKey: {
+        honey: { canonicalKey: 'honey' },
+        apple: { canonicalKey: 'apple' },
+      },
+    });
     window.localStorage.removeItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY);
   });
 
@@ -203,5 +217,59 @@ describe('SettingsPage', () => {
 
     expect(screen.getByText('No owned-now stockpile items saved yet.')).toBeInTheDocument();
     expect(loadAcquisitionPlannerInputState().ownedNow.entries).toEqual([]);
+  });
+
+  it('saves and imports stored pet inventory separately from owned-now stockpiles', async () => {
+    const user = userEvent.setup();
+
+    render(<SettingsPage />);
+
+    await user.type(screen.getByLabelText('Pet item name'), 'Honey');
+    await user.clear(screen.getByLabelText('Stored quantity'));
+    await user.type(screen.getByLabelText('Stored quantity'), '12');
+    await user.click(screen.getByRole('button', { name: 'Save Stored Pet Item' }));
+
+    expect(await screen.findByText('Honey')).toBeInTheDocument();
+    expect(loadAcquisitionPlannerInputState().pets.storedInventoryEntries).toEqual([
+      {
+        canonicalItemKey: 'honey',
+        itemName: 'Honey',
+        storedCount: 12,
+      },
+    ]);
+    expect(loadAcquisitionPlannerInputState().ownedNow.entries).toEqual([]);
+
+    await user.clear(screen.getByLabelText('Paste pet inventory'));
+    await user.type(
+      screen.getByLabelText('Paste pet inventory'),
+      'Honey, 10{enter}Bad line{enter}Mystery Relic, 7',
+    );
+    await user.click(screen.getByRole('button', { name: 'Import Stored Pet Inventory' }));
+
+    expect(await screen.findByText('Imported 2 stored pet inventory entries.')).toBeInTheDocument();
+    expect(screen.getByText('Line 2 could not be parsed. Use "Item Name, Count" or "Count, Item Name".')).toBeInTheDocument();
+    expect(screen.getByText('Line 3 item "Mystery Relic" was not found in local reference data and was kept as entered.')).toBeInTheDocument();
+    expect(loadAcquisitionPlannerInputState().pets.storedInventoryEntries).toEqual([
+      {
+        canonicalItemKey: 'honey',
+        itemName: 'Honey',
+        storedCount: 10,
+      },
+      {
+        canonicalItemKey: 'mystery relic',
+        itemName: 'Mystery Relic',
+        storedCount: 7,
+      },
+    ]);
+
+    await user.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
+
+    expect(loadAcquisitionPlannerInputState().pets.storedInventoryEntries).toEqual([
+      {
+        canonicalItemKey: 'mystery relic',
+        itemName: 'Mystery Relic',
+        storedCount: 7,
+      },
+    ]);
   });
 });

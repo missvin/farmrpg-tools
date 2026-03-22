@@ -166,7 +166,7 @@ function createAcquisitionPlannerStateFixture() {
       ],
     },
     pets: {
-      storedInventoryByCanonicalKey: {},
+      storedInventoryEntries: [],
       futureProduction: {
         enabled: false,
         horizonDays: 7,

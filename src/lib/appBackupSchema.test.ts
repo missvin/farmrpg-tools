@@ -270,7 +270,7 @@ describe('appBackupSchema', () => {
                 entries: [{ itemName: 'Bag', ownedCount: 2, sourceCategory: 'stockpile' }],
               },
               pets: {
-                storedInventoryByCanonicalKey: {},
+                storedInventoryEntries: [],
                 futureProduction: {
                   enabled: false,
                   horizonDays: 7,

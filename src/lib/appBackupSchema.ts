@@ -121,6 +121,20 @@ function isValidOwnedNowEntry(value: unknown): boolean {
   );
 }
 
+function isValidStoredPetInventoryEntry(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.canonicalItemKey === 'string' &&
+    value.canonicalItemKey.length > 0 &&
+    typeof value.itemName === 'string' &&
+    value.itemName.length > 0 &&
+    isFiniteNonNegativeNumber(value.storedCount)
+  );
+}
+
 function isValidAcquisitionPlannerState(value: unknown): value is AcquisitionPlannerInputState {
   if (!isRecord(value) || value.schemaVersion !== 1) {
     return false;
@@ -162,6 +176,8 @@ function isValidAcquisitionPlannerState(value: unknown): value is AcquisitionPla
 
   if (
     !isRecord(value.pets.futureProduction) ||
+    !Array.isArray(value.pets.storedInventoryEntries) ||
+    !value.pets.storedInventoryEntries.every((entry) => isValidStoredPetInventoryEntry(entry)) ||
     !isBoolean(value.pets.futureProduction.enabled) ||
     !isFiniteNonNegativeNumber(value.pets.futureProduction.horizonDays) ||
     !isStringRecord(value.pets.futureProduction.petLevelsByCanonicalKey) ||
@@ -171,14 +187,6 @@ function isValidAcquisitionPlannerState(value: unknown): value is AcquisitionPla
     !isBoolean(value.pets.futureProduction.respectSeasonality) ||
     !isFiniteNonNegativeNumber(value.pets.futureProduction.offlineHoursCap)
   ) {
-    return false;
-  }
-
-  if (!isStringRecord(value.pets.storedInventoryByCanonicalKey)) {
-    return false;
-  }
-
-  if (!Object.values(value.pets.storedInventoryByCanonicalKey).every((entry) => isFiniteNonNegativeNumber(entry))) {
     return false;
   }
 
