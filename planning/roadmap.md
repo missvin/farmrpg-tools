@@ -1,102 +1,88 @@
 # Roadmap
 
-This file is for near/mid-term milestone planning; use [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for the detailed backlog.
+This file is for milestone-level planning; use [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for the detailed backlog and dependencies.
 
-## v1.5 (Complete)
+## Completed Through v1.6
 
-- Tower requirements support
-  - Load `tower_requirements.csv`
-  - Join against the latest saved snapshot by normalized item name
-  - Add a simple read-only Tower view with requirement status and non-fatal unmatched handling
+- `v1.5` established the core local tracker and Tower workflow
+  - Tower requirements loading and read-only Tower view
+  - import warning follow-ons for collapsed mastery exports
+  - Tower hierarchy and detail-view polish
+- `v1.6` expanded the app into broader local planning and usability
+  - Tower Progress planning page and drilldowns
+  - snapshot comparison
+  - Sorted page planning rollups
+  - import/reference-data maintenance polish
+  - shared UI improvements such as Back to top and dark mode
 
-## v1.5.4 (Complete)
+## v1.7 (Complete)
 
-- Tower page quality-of-life pass
-  - Add accordion/collapse behavior for completed tower levels so the next relevant requirements are easier to scan
+- Planning foundations and durability
+  - crafting rules, modifier handling, recursive ingredient burden, and ingredient-demand views
+  - planner recipe exclusions and shared assumptions such as permanent saver and Iron Depot
+  - acquisition-planning foundations for source taxonomy, planner state, owned stockpiles, stored pet inventory, and future pet forecast
+  - local snapshot history plus full backup export, restore, and restore safety
+  - internal backlog-planning tooling including the backlog graph and overview mode
 
-## v1.5.5 (Complete)
+## v1.8 (Current)
 
-- Tower range grouping follow-up
-  - Group by `tower_level_range` and collect fully completed range groups under `Completed ranges`
+- First non-crafting acquisition answers
+  - consumable acquisition assumptions for Cider, Lemonade, and Arnold Palmer
+  - manual explore acquisition modeling
+  - first per-item acquisition breakdown view
 
-## v1.5.6 (Complete)
+User-facing story:
+You can start asking not just "what do I need to craft?" but "what are my practical acquisition paths for this item under my current assumptions?"
 
-- Tower detail cleanup follow-up
-  - Simplify the default detail table for planning, including compact M/GM/MM requirement labels
+## v1.9
 
-## v1.5.2 (Complete)
+- Acquisition recommendations and trust
+  - first cross-source recommendation MVP
+  - acquisition explainability and provenance
 
-- Detect collapsed mastery export sections during import and warn the user
+User-facing story:
+The app moves from showing possible acquisition sources to recommending a practical next path and explaining why.
 
-## v1.5.3 (Complete)
+## v2.0
 
-- Make incomplete-import warnings more visually prominent
-- Use a more realistic raw export example on the import screen
+- Target-output planning workspace
+  - target-output planning domain model
+  - normalized shared available-supply layer with override rules
+  - recursive remaining-requirement engine
+  - multi-target shared-demand support
+  - first target-output planning page
 
-## v1.6 (Complete)
+User-facing story:
+You can choose one or more target outputs and see what is still required after pooled available supply is consumed across the whole planning problem.
 
-- Improve import and reference-data maintenance workflows
-  - Import validation report
-  - Unmatched reference data polish
-  - Tower data validation
-- Expand local planning views
-  - Tower progress planning page with unique-item GM/MM counts, difficulty summaries, and progress bars
-  - Tower progress difficulty drilldown accordion for row-level inspection inside difficulty buckets
-  - Snapshot comparison view with two-snapshot summary deltas and changed-item inspection
-  - Sorted page tier-and-difficulty accordion rollup
-- Shared app polish
-  - Cross-page back-to-top affordance
-  - App-wide dark mode
+## v2.1
 
-## v1.7 (Current)
+- Richer recursive planning workflow
+  - current inventory import as an available-supply source
+  - graph-ready recursive planning tree derivation
+  - recursive planning graph/tree visualization
+  - target-output planning explainability
 
-- Deepen local planning foundations
-  - Crafting mastery rules and user modifier model
-  - Crafting mastery calculation engine
-  - Recursive ingredient burden engine
-  - Ingredient demand lookup and sortable list views
-  - Planner recipe-policy exclusions and shared crafting assumptions such as permanent saver and Iron Depot
-- Extend local acquisition-planning foundations beyond crafting
-  - Shared acquisition source taxonomy and planner input model
-  - Owned stockpile inputs
-  - Stored pet inventory import
-  - Future pet production forecast support
-- Strengthen local durability and portability
-  - Snapshot history foundation
-  - Full local backup export, restore, and validation-safe rollback
-- Improve internal planning workflow support
-  - Backlog graph loader, page, focus controls, overview mode, and feature extraction
+User-facing story:
+The target-output planner becomes easier to feed with real inventory data and easier to understand when plans become large or overlapping.
 
 ## Later
 
-- Expand non-crafting acquisition modeling
-  - Consumable acquisition assumptions for Cider, Lemonade, and Arnold Palmer
-  - Manual explore acquisition model
-  - Per-item acquisition breakdown and first cross-source recommendation flow
-  - Acquisition explainability and provenance
-- Add recursive target-output planning
-  - Shared target-output planning model
-  - Normalized pooled available-supply layer with overrides
-  - Recursive remaining-requirement engine and multi-target support
-  - First target-output planning page
-  - Later graph/tree visualization
-- Continue focused planning views and workflow polish
+- Focused planning and workflow polish
   - Tower filters and summaries
-  - Current inventory import as a planning supply source
-  - Backlog/release workflow maintenance
-- Improve optional cross-reference enrichment
-  - Buddy slug enrichment
-  - Buddy slug acquisition workflow
-  - Export unmatched tower rows
-- Revisit stronger item identity when it becomes necessary for planning breadth
-  - Canonical key formalization
-  - Item alias support
-  - Early item registry groundwork
+  - shipped-version release tracking in the backlog/changelog workflow
+  - stable backlog row ordering maintenance
+- Optional enrichment
+  - buddy slug enrichment and related reference-maintenance workflows
+  - unmatched export helpers where they materially improve maintenance
+- Deeper identity work when planning breadth truly requires it
+  - stronger canonical item identity
+  - alias support and registry groundwork
 
 ## Icebox
 
 - Community process features
-  - Community feature request intake
-  - Community voting workflow
+  - community feature request intake
+  - community voting workflow
 - Deferred import/docs ideas
-  - Mastery export help page with an import-screen link
+  - mastery export help page with an import-screen link
