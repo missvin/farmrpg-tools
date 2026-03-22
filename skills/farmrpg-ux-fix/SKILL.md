@@ -40,6 +40,26 @@ Unless the user explicitly asks for a broader pass:
 
 If a tightly related issue must be adjusted so the requested fix behaves correctly, keep the change minimal and call it out explicitly. If you notice adjacent UX issues that are not required, note them briefly and leave them for later.
 
+## Audit context check
+
+Before implementing selected UX fixes, check `planning/ux-audits/` for the most recent relevant saved audit artifact when that folder exists.
+
+Use a relevant saved audit as lightweight context for:
+
+- prior findings
+- severity or prioritization context
+- disposition status
+- whether a finding was already covered, deferred, or intentionally kept out of backlog
+
+Keep this lightweight:
+
+- do not treat the latest audit as a hard gate
+- do not summarize the whole audit unless the user asks
+- do not let an older audit override the user's current explicit request
+- if no saved audit exists, or the most recent one is not relevant to the requested fix, proceed normally
+
+If the current request conflicts with an older audit recommendation or disposition, note that briefly and follow the user's current request unless they instruct otherwise.
+
 ## UX lenses
 
 When choosing a fix direction, evaluate through these lenses:
@@ -74,13 +94,14 @@ Treat this skill as complementary to the audit skill:
 ## Implementation workflow
 
 1. Identify the exact UX issue or selected findings being fixed.
-2. Confirm the smallest appropriate scope from the request, the selected issues, and the repository context.
-3. Check backlog alignment and add or update a backlog item only if the change is meaningful and not already covered.
-4. Inspect only the relevant routes, components, styles, tests, and copy.
-5. Implement the fix conservatively, reusing existing patterns where possible.
-6. Add or update focused tests when practical.
-7. Run the relevant verification steps required by the repo: tests for behavior changes, lint for code changes, and build when UI or runtime behavior changed.
-8. Summarize the result in product terms, then suggest the next reasonable backlog item with a short justification.
+2. Confirm the smallest appropriate scope from the request, the selected issues, the repository context, and the most recent relevant saved audit if one exists.
+3. Check recent saved audit context in `planning/ux-audits/` when relevant, using it to avoid re-litigating already-deferred or already-covered issues while keeping the current user request primary.
+4. Check backlog alignment and add or update a backlog item only if the change is meaningful and not already covered.
+5. Inspect only the relevant routes, components, styles, tests, and copy.
+6. Implement the fix conservatively, reusing existing patterns where possible.
+7. Add or update focused tests when practical.
+8. Run the relevant verification steps required by the repo: tests for behavior changes, lint for code changes, and build when UI or runtime behavior changed.
+9. Summarize the result in product terms, then suggest the next reasonable backlog item with a short justification.
 
 ## Implementation heuristics
 
@@ -159,6 +180,8 @@ State:
 Do not drift into these patterns:
 
 - Re-auditing the whole app before making a narrow fix
+- Treating the latest saved audit as a rigid source of truth over the current request
+- Reopening deferred or no-action findings without a reason tied to the current task
 - Expanding selected findings into a broad redesign pass
 - Renaming many concepts at once without strong product value
 - Replacing multiple UI patterns just for abstract consistency
@@ -174,6 +197,7 @@ Do not use this skill when implementation-first UX-fix behavior would be the wro
 Examples:
 
 - Whole-app UX audits or page audits that should stay review-oriented
+- Requests that are really asking for audit interpretation rather than implementation
 - Deciding whether something is worth backlogging before a fix is selected
 - Pure model, data, parsing, storage, import/export, or refactor tasks
 - Broad product strategy or information-architecture decisions
@@ -194,7 +218,7 @@ Use prompts like these to invoke the skill in practice:
 1. `Use $farmrpg-ux-fix to implement a small shell/navigation UX fix. Keep scope limited to the header and route grouping behavior for the selected issue, preserve existing routes, and handle backlog alignment before coding.`
 2. `Use $farmrpg-ux-fix to implement a page naming and labeling cleanup on the selected page. Focus only on the chosen labels and nearby explanatory copy, avoid broader content rewrites, and summarize the result in product terms.`
 3. `Use $farmrpg-ux-fix to improve dense-table usability on one page. Preserve useful density, change only the selected table and directly related controls, and add focused validation for the new behavior.`
-4. `Use $farmrpg-ux-fix to implement only findings 1, 3, and 4 from the prior UX audit. Do not broaden scope beyond those selected issues unless a tightly related fix is required for them to behave correctly.`
+4. `Use $farmrpg-ux-fix to implement only findings 1, 3, and 4 from the prior UX audit. Check the most recent relevant saved audit artifact first, do not broaden scope beyond those selected issues unless a tightly related fix is required for them to behave correctly, and keep any older deferred findings out of scope.`
 
 ## Escalation rule
 
