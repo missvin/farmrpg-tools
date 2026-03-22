@@ -42,6 +42,34 @@ const EMPTY_COVERAGE: MuseumCoverageInputs = {
   recipeRows: [],
 };
 
+function formatRecipeCoverageLabel(status: MuseumRefreshWorkflowResult['items'][number]['recipeCoverageStatus']): string {
+  switch (status) {
+    case 'covered':
+      return 'Covered';
+    case 'missing_expected':
+      return 'Missing expected coverage';
+    case 'not_expected':
+      return 'No recipe expected';
+    default:
+      return 'Expectation unresolved';
+  }
+}
+
+function formatBuddySlugCoverageLabel(
+  status: MuseumRefreshWorkflowResult['items'][number]['buddySlugCoverageStatus'],
+): string {
+  switch (status) {
+    case 'covered_known':
+      return 'Covered';
+    case 'missing_known_expected':
+      return 'Known item missing slug';
+    case 'missing_new_item':
+      return 'New item follow-up';
+    default:
+      return 'Status unresolved';
+  }
+}
+
 function downloadTextFile(filename: string, content: string, mimeType: string): void {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
@@ -380,31 +408,55 @@ export function MuseumToolsPage() {
                 <dd>{workflowResult.summary.itemsParsed.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Known baseline items</dt>
-                <dd>{workflowResult.summary.knownBaselineItemCount.toLocaleString()}</dd>
+                <dt>Matched known items</dt>
+                <dd>{workflowResult.summary.matchedKnownItemsCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Unmatched museum items</dt>
+                <dd>{workflowResult.summary.unmatchedItemsCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
                 <dt>Newly discovered items</dt>
                 <dd>{workflowResult.summary.newItemsCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Unmatched items</dt>
-                <dd>{workflowResult.summary.unmatchedItemsCount.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Missing buddy slug coverage</dt>
-                <dd>{workflowResult.summary.missingBuddySlugCount.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Missing recipe coverage</dt>
-                <dd>{workflowResult.summary.missingRecipeCoverageCount.toLocaleString()}</dd>
+                <dt>Known baseline items</dt>
+                <dd>{workflowResult.summary.knownBaselineItemCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
                 <dt>Candidate review rows</dt>
                 <dd>{workflowResult.summary.candidateReviewCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Actionable items surfaced</dt>
+                <dt>Expected recipe coverage missing</dt>
+                <dd>{workflowResult.summary.recipeMissingExpectedCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>No recipe expected</dt>
+                <dd>{workflowResult.summary.recipeNotExpectedCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Recipe expectation unresolved</dt>
+                <dd>{workflowResult.summary.recipeExpectationUnresolvedCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Known items with buddy slug coverage</dt>
+                <dd>{workflowResult.summary.knownItemsWithBuddySlugCoverageCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Known items missing expected buddy slug</dt>
+                <dd>{workflowResult.summary.knownItemsMissingExpectedBuddySlugCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>New items still missing buddy slug</dt>
+                <dd>{workflowResult.summary.newItemsMissingBuddySlugCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Buddy slug status unresolved</dt>
+                <dd>{workflowResult.summary.unresolvedBuddySlugStatusCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Truly actionable follow-up</dt>
                 <dd>{workflowResult.summary.actionableItemsCount.toLocaleString()}</dd>
               </div>
             </dl>
@@ -463,7 +515,7 @@ export function MuseumToolsPage() {
                       <tr>
                         <th scope="col">Item</th>
                         <th scope="col">New</th>
-                        <th scope="col">Reference</th>
+                        <th scope="col">Match</th>
                         <th scope="col">Buddy slug</th>
                         <th scope="col">Recipe</th>
                         <th scope="col">Candidate review</th>
@@ -482,16 +534,21 @@ export function MuseumToolsPage() {
                             </p>
                           </td>
                           <td>{item.isNewSinceBaseline ? 'New' : 'Known'}</td>
-                          <td>{item.hasAnyReferenceCoverage ? 'Covered' : 'Missing'}</td>
-                          <td>{item.hasLocalBuddySlugCoverage ? 'Covered' : 'Missing'}</td>
-                          <td>{item.hasRecipeCoverage ? 'Covered' : 'Missing or intentional'}</td>
+                          <td>{item.isMatchedKnownItem ? 'Matched known item' : 'Unmatched'}</td>
+                          <td>{formatBuddySlugCoverageLabel(item.buddySlugCoverageStatus)}</td>
+                          <td>{formatRecipeCoverageLabel(item.recipeCoverageStatus)}</td>
                           <td>{item.needsCandidateReview ? item.flags.join(', ') : 'No review needed'}</td>
                           <td>
                             {item.followUpReasons.join(' ')}
-                            {!item.hasRecipeCoverage ? (
+                            {item.recipeCoverageStatus === 'not_expected' ? (
                               <p className="subtle-text">
-                                Recipe coverage is reported separately so known museum items can remain intentionally
-                                non-recipe-covered.
+                                This matched item is currently classified as not expected to have recipe coverage.
+                              </p>
+                            ) : null}
+                            {item.recipeCoverageStatus === 'unresolved' ? (
+                              <p className="subtle-text">
+                                Recipe expectation stays unresolved until local reconciliation is strong enough to judge
+                                whether recipe coverage should exist.
                               </p>
                             ) : null}
                           </td>
