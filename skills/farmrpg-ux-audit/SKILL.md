@@ -83,6 +83,30 @@ Only recommend immediate backlog additions when a finding is clearly one of thes
 
 Otherwise, keep the recommendation in the audit readout and let the user decide whether it becomes backlog work.
 
+## Audit artifact workflow
+
+Keep this workflow lightweight.
+
+When the user wants to preserve audit results beyond chat history, recommend storing the audit under `planning/ux-audits/` as a planning artifact.
+
+Saved audits in that folder should:
+
+- use a simple date-based filename such as `YYYY-MM-DD-whole-app-ux-audit.md`
+- preserve the audit substance rather than collapsing it into a short note
+- include a small disposition step after the recommendations
+
+Use one simple disposition label per finding:
+
+- `backlog-now`
+- `already-covered`
+- `defer`
+- `no-action`
+- `fixed-directly`
+
+The point of the disposition step is to make the audit reusable later without automatically converting every finding into backlog work.
+
+Saved audits are evidence and review artifacts. Backlog rows remain committed work.
+
 ## Implementation discipline
 
 Unless the user explicitly asks for changes:
@@ -102,6 +126,7 @@ If the user later asks for fixes, convert the prioritized findings into the smal
 4. Prefer concrete, implementation-aware recommendations over abstract design critique.
 5. Call out what is already working well so the audit does not read like a teardown.
 6. End with a backlog recommendation check instead of assuming every finding becomes planned work.
+7. If the user wants the audit preserved, save it under `planning/ux-audits/` and add a brief disposition table instead of forcing broad backlog creation.
 
 ## Required audit output
 
@@ -145,6 +170,8 @@ Separate recommendations into:
 
 Explicitly state which findings, if any, are strong enough to justify immediate backlog additions.
 
+When saving the audit as an artifact, also include a small disposition table so later readers can tell which findings were backlog-now candidates, which were already covered, and which were deferred.
+
 ## Anti-patterns to avoid
 
 Do not drift into these patterns:
@@ -157,6 +184,7 @@ Do not drift into these patterns:
 - Architecture refactors disguised as UX feedback
 - Turning internal tooling existence into a reason to bury core planning features
 - Converting every finding into a backlog item
+- Turning saved audits into heavy governance paperwork
 - Fix-everything-while-I-am-here behavior
 
 ## When not to use this skill
