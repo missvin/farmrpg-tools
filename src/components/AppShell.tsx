@@ -1,4 +1,5 @@
 import { useEffect, useState, type PropsWithChildren } from 'react';
+import { Link } from 'react-router-dom';
 
 import {
   getInitialAppTheme,
@@ -48,10 +49,10 @@ export function AppShell({ children }: PropsWithChildren) {
       <header className="site-header">
         <div className="site-header__inner">
           <div className="site-header__top">
-            <div>
-              <p className="site-title">FarmRPG Mastery Tracker</p>
-              <p className="site-tagline">Local-first snapshot tools for mastery progress.</p>
-            </div>
+            <Link to="/" className="site-branding">
+              <span className="site-title">FarmRPG Planning Tools</span>
+              <span className="site-tagline">Local-first progress and material planning.</span>
+            </Link>
             <button
               type="button"
               className="button site-theme-toggle"

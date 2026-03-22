@@ -19,6 +19,14 @@ type AppRoute = {
   element: ReactElement;
 };
 
+type NavigationSection = {
+  title: string;
+  items: {
+    to: string;
+    label: string;
+  }[];
+};
+
 export const appRoutes: AppRoute[] = [
   {
     path: '/',
@@ -47,7 +55,7 @@ export const appRoutes: AppRoute[] = [
   },
   {
     path: '/ingredient-demand-list',
-    label: 'Ingredient List',
+    label: 'Material Planner',
     element: <IngredientDemandListPage />,
   },
   {
@@ -82,7 +90,37 @@ export const appRoutes: AppRoute[] = [
   },
 ];
 
-export const navigationItems = appRoutes.map(({ path, label }) => ({
-  to: path,
-  label,
-}));
+export const navigationSections: NavigationSection[] = [
+  {
+    title: 'Plan',
+    items: [
+      { to: '/', label: 'Dashboard' },
+      { to: '/ingredient-demand', label: 'Ingredient Lookup' },
+      { to: '/ingredient-demand-list', label: 'Material Planner' },
+    ],
+  },
+  {
+    title: 'Progress',
+    items: [
+      { to: '/tower-progress', label: 'Tower Progress' },
+      { to: '/sorted', label: 'Sorted' },
+      { to: '/tower', label: 'Tower' },
+      { to: '/history', label: 'History' },
+      { to: '/compare', label: 'Compare' },
+    ],
+  },
+  {
+    title: 'Data',
+    items: [
+      { to: '/import', label: 'Import' },
+      { to: '/settings', label: 'Settings' },
+    ],
+  },
+  {
+    title: 'Dev Tools',
+    items: [
+      { to: '/museum-tools', label: 'Museum Tools' },
+      { to: '/backlog-graph', label: 'Backlog Graph' },
+    ],
+  },
+];

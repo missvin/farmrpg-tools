@@ -98,6 +98,7 @@ describe('App shell', () => {
   });
 
   it('renders the dashboard and navigation links', async () => {
+    const user = userEvent.setup();
     setWindowScrollY(0);
 
     render(
@@ -113,13 +114,27 @@ describe('App shell', () => {
     );
 
     expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Import' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Museum Tools' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Backlog Graph' })).toBeInTheDocument();
+    expect(screen.getByText('FarmRPG Planning Tools')).toBeInTheDocument();
+    expect(screen.getByText('Local-first progress and material planning.')).toBeInTheDocument();
+    expect(screen.getByText('Plan')).toBeInTheDocument();
+    expect(screen.getByText('Progress')).toBeInTheDocument();
+    expect(screen.getByText('Data')).toBeInTheDocument();
+    expect(screen.getByText('Dev Tools')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Ingredient Lookup' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Ingredient List' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Tower Progress' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Material Planner' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Museum Tools' })).not.toBeVisible();
+    expect(screen.getByRole('link', { name: 'Backlog Graph' })).not.toBeVisible();
+
+    await user.click(screen.getByText('Progress'));
+    expect(await screen.findByRole('link', { name: 'Tower Progress' })).toBeVisible();
+
+    await user.click(screen.getByText('Data'));
+    expect(await screen.findByRole('link', { name: 'Import' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Settings' })).toBeVisible();
+
+    await user.click(screen.getByText('Dev Tools'));
+    expect(await screen.findByRole('link', { name: 'Museum Tools' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Backlog Graph' })).toBeVisible();
   });
 
   it('defaults to light theme when no saved preference exists and toggles to dark mode', async () => {
