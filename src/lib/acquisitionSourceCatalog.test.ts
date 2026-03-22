@@ -46,9 +46,9 @@ describe('ACQUISITION_SOURCE_CATALOG', () => {
     });
 
     expect(getAcquisitionSourceDefinition('future_pet_production')).toMatchObject({
-      defaultPolicy: 'deferred',
+      defaultPolicy: 'optional',
       availability: 'future',
-      modelingStatus: 'deferred',
+      modelingStatus: 'planned_engine',
     });
 
     expect(getAcquisitionSourceDefinition('flea_market')).toMatchObject({
@@ -90,7 +90,6 @@ describe('ACQUISITION_SOURCE_CATALOG', () => {
     expect(getDeferredOrUnsupportedAcquisitionSources().map((source) => source.key)).toEqual(
       expect.arrayContaining([
         'orange_juice',
-        'future_pet_production',
         'one_time_rewards',
         'flea_market',
         'exchange_center',

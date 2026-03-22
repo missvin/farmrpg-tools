@@ -274,9 +274,10 @@ describe('appBackupSchema', () => {
                 futureProduction: {
                   enabled: false,
                   horizonDays: 7,
-                  petLevelsByCanonicalKey: {},
+                  entries: [],
                   respectSeasonality: true,
                   offlineHoursCap: 48,
+                  crunchyOmeletteActive: false,
                 },
               },
             },

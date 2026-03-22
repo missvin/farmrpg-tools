@@ -73,14 +73,23 @@ export type AcquisitionStoredPetInventoryItemInput = {
   storedCount: number;
 };
 
+export type AcquisitionFuturePetProductionEntryInput = {
+  canonicalItemKey: string;
+  itemName: string;
+  petName: string;
+  petLevel: number;
+  seasonalActive: boolean;
+};
+
 export type AcquisitionPetPlannerState = {
   storedInventoryEntries: AcquisitionStoredPetInventoryItemInput[];
   futureProduction: {
     enabled: boolean;
     horizonDays: number;
-    petLevelsByCanonicalKey: Record<string, number>;
+    entries: AcquisitionFuturePetProductionEntryInput[];
     respectSeasonality: boolean;
     offlineHoursCap: number;
+    crunchyOmeletteActive: boolean;
   };
 };
 
@@ -110,6 +119,9 @@ type LegacyOwnedNowCountsState = {
 };
 type LegacyStoredPetInventoryCountsState = {
   storedInventoryByCanonicalKey?: Record<string, unknown>;
+};
+type LegacyFuturePetLevelsState = {
+  petLevelsByCanonicalKey?: Record<string, unknown>;
 };
 
 function createDefaultSourceOverrides(): Record<AcquisitionSourceKey, AcquisitionSourcePolicyOverride> {
@@ -172,9 +184,10 @@ const DEFAULT_ACQUISITION_PLANNER_INPUT_STATE: AcquisitionPlannerInputState = {
     futureProduction: {
       enabled: false,
       horizonDays: 7,
-      petLevelsByCanonicalKey: {},
+      entries: [],
       respectSeasonality: true,
       offlineHoursCap: 48,
+      crunchyOmeletteActive: false,
     },
   },
 };
@@ -359,6 +372,84 @@ function normalizeStoredPetInventoryEntries(value: unknown): AcquisitionStoredPe
     });
 }
 
+function normalizeFuturePetProductionEntry(value: unknown): AcquisitionFuturePetProductionEntryInput | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  const itemName = typeof record.itemName === 'string' ? record.itemName.trim() : '';
+  const petName = typeof record.petName === 'string' ? record.petName.trim() : '';
+  const canonicalItemKeyInput =
+    typeof record.canonicalItemKey === 'string' ? record.canonicalItemKey.trim() : '';
+  const canonicalItemKey = canonicalItemKeyInput.length > 0
+    ? toCanonicalItemKey(canonicalItemKeyInput)
+    : toCanonicalItemKey(itemName);
+  const petLevel = clampNonNegativeNumber(record.petLevel, -1);
+
+  if (canonicalItemKey.length === 0 || itemName.length === 0 || petName.length === 0 || petLevel < 0) {
+    return null;
+  }
+
+  return {
+    canonicalItemKey,
+    itemName,
+    petName,
+    petLevel,
+    seasonalActive: toBoolean(record.seasonalActive),
+  };
+}
+
+function normalizeFuturePetProductionEntries(value: unknown): AcquisitionFuturePetProductionEntryInput[] {
+  if (Array.isArray(value)) {
+    const dedupedEntries = new Map<string, AcquisitionFuturePetProductionEntryInput>();
+
+    for (const entry of value) {
+      const normalizedEntry = normalizeFuturePetProductionEntry(entry);
+
+      if (!normalizedEntry) {
+        continue;
+      }
+
+      dedupedEntries.set(
+        `${normalizedEntry.petName.toLocaleLowerCase()}:${normalizedEntry.canonicalItemKey}`,
+        normalizedEntry,
+      );
+    }
+
+    return Array.from(dedupedEntries.values()).sort((left, right) => {
+      return (
+        left.itemName.localeCompare(right.itemName) ||
+        left.petName.localeCompare(right.petName) ||
+        left.canonicalItemKey.localeCompare(right.canonicalItemKey)
+      );
+    });
+  }
+
+  if (!value || typeof value !== 'object') {
+    return [];
+  }
+
+  const legacyValue = value as LegacyFuturePetLevelsState;
+  const legacyCounts = normalizeRecordOfCounts(legacyValue.petLevelsByCanonicalKey);
+
+  return Object.entries(legacyCounts)
+    .map(([canonicalItemKey, petLevel]) => ({
+      canonicalItemKey: toCanonicalItemKey(canonicalItemKey),
+      itemName: canonicalItemKey,
+      petName: canonicalItemKey,
+      petLevel,
+      seasonalActive: true,
+    }))
+    .sort((left, right) => {
+      return (
+        left.itemName.localeCompare(right.itemName) ||
+        left.petName.localeCompare(right.petName) ||
+        left.canonicalItemKey.localeCompare(right.canonicalItemKey)
+      );
+    });
+}
+
 function normalizeSourcePolicyOverride(value: unknown): AcquisitionSourcePolicyOverride {
   return value === 'force_included' || value === 'force_excluded' || value === 'default' ? value : 'default';
 }
@@ -463,9 +554,14 @@ export function normalizeAcquisitionPlannerInputState(value: unknown): Acquisiti
       futureProduction: {
         enabled: toBoolean(futureProduction.enabled),
         horizonDays: clampNonNegativeNumber(futureProduction.horizonDays, 7),
-        petLevelsByCanonicalKey: normalizeRecordOfCounts(futureProduction.petLevelsByCanonicalKey),
+        entries: normalizeFuturePetProductionEntries(
+          futureProduction.entries ?? {
+            petLevelsByCanonicalKey: (futureProduction as LegacyFuturePetLevelsState).petLevelsByCanonicalKey,
+          },
+        ),
         respectSeasonality: futureProduction.respectSeasonality !== false,
         offlineHoursCap: clampNonNegativeNumber(futureProduction.offlineHoursCap, 48),
+        crunchyOmeletteActive: toBoolean(futureProduction.crunchyOmeletteActive),
       },
     },
   };
@@ -653,6 +749,83 @@ export function getStoredPetInventoryItemInputs(
   state: AcquisitionPlannerInputState,
 ): AcquisitionStoredPetInventoryItemInput[] {
   return state.pets.storedInventoryEntries;
+}
+
+export type UpdateFuturePetProductionEntryInput = {
+  itemName: string;
+  petName: string;
+  petLevel: number;
+  seasonalActive: boolean;
+};
+
+export function upsertFuturePetProductionEntryInput(
+  state: AcquisitionPlannerInputState,
+  input: UpdateFuturePetProductionEntryInput,
+): AcquisitionPlannerInputState {
+  const trimmedItemName = input.itemName.trim();
+  const trimmedPetName = input.petName.trim();
+  const canonicalItemKey = toCanonicalItemKey(trimmedItemName);
+  const petLevel = clampNonNegativeNumber(input.petLevel, -1);
+
+  if (canonicalItemKey.length === 0 || trimmedItemName.length === 0 || trimmedPetName.length === 0 || petLevel < 0) {
+    return state;
+  }
+
+  const nextEntries = state.pets.futureProduction.entries.filter((entry) => {
+    return !(
+      entry.canonicalItemKey === canonicalItemKey &&
+      entry.petName.toLocaleLowerCase() === trimmedPetName.toLocaleLowerCase()
+    );
+  });
+
+  if (petLevel > 0) {
+    nextEntries.push({
+      canonicalItemKey,
+      itemName: trimmedItemName,
+      petName: trimmedPetName,
+      petLevel,
+      seasonalActive: input.seasonalActive,
+    });
+  }
+
+  return normalizeAcquisitionPlannerInputState({
+    ...state,
+    pets: {
+      ...state.pets,
+      futureProduction: {
+        ...state.pets.futureProduction,
+        entries: nextEntries,
+      },
+    },
+  });
+}
+
+export function removeFuturePetProductionEntryInput(
+  state: AcquisitionPlannerInputState,
+  canonicalItemKey: string,
+  petName: string,
+): AcquisitionPlannerInputState {
+  return normalizeAcquisitionPlannerInputState({
+    ...state,
+    pets: {
+      ...state.pets,
+      futureProduction: {
+        ...state.pets.futureProduction,
+        entries: state.pets.futureProduction.entries.filter((entry) => {
+          return !(
+            entry.canonicalItemKey === toCanonicalItemKey(canonicalItemKey) &&
+            entry.petName.toLocaleLowerCase() === petName.trim().toLocaleLowerCase()
+          );
+        }),
+      },
+    },
+  });
+}
+
+export function getFuturePetProductionEntries(
+  state: AcquisitionPlannerInputState,
+): AcquisitionFuturePetProductionEntryInput[] {
+  return state.pets.futureProduction.entries;
 }
 
 export function resolveAcquisitionSourceInclusion(

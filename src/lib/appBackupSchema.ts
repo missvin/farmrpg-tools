@@ -135,6 +135,23 @@ function isValidStoredPetInventoryEntry(value: unknown): boolean {
   );
 }
 
+function isValidFuturePetProductionEntry(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.canonicalItemKey === 'string' &&
+    value.canonicalItemKey.length > 0 &&
+    typeof value.itemName === 'string' &&
+    value.itemName.length > 0 &&
+    typeof value.petName === 'string' &&
+    value.petName.length > 0 &&
+    isFiniteNonNegativeNumber(value.petLevel) &&
+    isBoolean(value.seasonalActive)
+  );
+}
+
 function isValidAcquisitionPlannerState(value: unknown): value is AcquisitionPlannerInputState {
   if (!isRecord(value) || value.schemaVersion !== 1) {
     return false;
@@ -180,12 +197,11 @@ function isValidAcquisitionPlannerState(value: unknown): value is AcquisitionPla
     !value.pets.storedInventoryEntries.every((entry) => isValidStoredPetInventoryEntry(entry)) ||
     !isBoolean(value.pets.futureProduction.enabled) ||
     !isFiniteNonNegativeNumber(value.pets.futureProduction.horizonDays) ||
-    !isStringRecord(value.pets.futureProduction.petLevelsByCanonicalKey) ||
-    !Object.values(value.pets.futureProduction.petLevelsByCanonicalKey).every((entry) =>
-      isFiniteNonNegativeNumber(entry),
-    ) ||
+    !Array.isArray(value.pets.futureProduction.entries) ||
+    !value.pets.futureProduction.entries.every((entry) => isValidFuturePetProductionEntry(entry)) ||
     !isBoolean(value.pets.futureProduction.respectSeasonality) ||
-    !isFiniteNonNegativeNumber(value.pets.futureProduction.offlineHoursCap)
+    !isFiniteNonNegativeNumber(value.pets.futureProduction.offlineHoursCap) ||
+    !isBoolean(value.pets.futureProduction.crunchyOmeletteActive)
   ) {
     return false;
   }

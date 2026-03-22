@@ -6,15 +6,18 @@ import {
   clearAcquisitionPlannerInputState,
   createDefaultAcquisitionPlannerInputState,
   getResolvedAcquisitionSharedAssumptions,
+  getFuturePetProductionEntries,
   getOwnedNowItemInputs,
   getStoredPetInventoryItemInputs,
   loadAcquisitionPlannerInputState,
   normalizeAcquisitionPlannerInputState,
   replaceStoredPetInventoryEntries,
+  removeFuturePetProductionEntryInput,
   removeStoredPetInventoryItemInput,
   resolveAcquisitionSourceInclusion,
   resolveAcquisitionSourceInclusionMap,
   saveAcquisitionPlannerInputState,
+  upsertFuturePetProductionEntryInput,
   upsertOwnedNowItemInput,
   upsertStoredPetInventoryItemInput,
 } from './acquisitionPlannerState';
@@ -74,9 +77,10 @@ describe('acquisitionPlannerState', () => {
         futureProduction: {
           enabled: false,
           horizonDays: 7,
-          petLevelsByCanonicalKey: {},
+          entries: [],
           respectSeasonality: true,
           offlineHoursCap: 48,
+          crunchyOmeletteActive: false,
         },
       },
     });
@@ -176,8 +180,10 @@ describe('acquisitionPlannerState', () => {
         futureProduction: {
           enabled: true,
           horizonDays: 14,
+          entries: [],
           respectSeasonality: false,
           offlineHoursCap: 72,
+          crunchyOmeletteActive: false,
         },
       },
     });
@@ -430,6 +436,66 @@ describe('acquisitionPlannerState', () => {
             storedCount: 5,
           },
         ],
+      },
+    });
+  });
+
+  it('adds, removes, and safely normalizes future pet production entries and assumptions', () => {
+    const initialState = createDefaultAcquisitionPlannerInputState();
+    const withFutureEntry = upsertFuturePetProductionEntryInput(initialState, {
+      itemName: 'Honey',
+      petName: 'Owl',
+      petLevel: 6,
+      seasonalActive: true,
+    });
+
+    expect(getFuturePetProductionEntries(withFutureEntry)).toEqual([
+      {
+        canonicalItemKey: 'honey',
+        itemName: 'Honey',
+        petName: 'Owl',
+        petLevel: 6,
+        seasonalActive: true,
+      },
+    ]);
+    expect(getStoredPetInventoryItemInputs(withFutureEntry)).toEqual([]);
+
+    const removed = removeFuturePetProductionEntryInput(withFutureEntry, 'Honey', 'Owl');
+    expect(getFuturePetProductionEntries(removed)).toEqual([]);
+
+    expect(
+      normalizeAcquisitionPlannerInputState({
+        pets: {
+          futureProduction: {
+            enabled: true,
+            horizonDays: '10',
+            petLevelsByCanonicalKey: {
+              honey: 3,
+            },
+            respectSeasonality: false,
+            offlineHoursCap: '36',
+            crunchyOmeletteActive: true,
+          },
+        },
+      }),
+    ).toMatchObject({
+      pets: {
+        futureProduction: {
+          enabled: true,
+          horizonDays: 10,
+          entries: [
+            {
+              canonicalItemKey: 'honey',
+              itemName: 'honey',
+              petName: 'honey',
+              petLevel: 3,
+              seasonalActive: true,
+            },
+          ],
+          respectSeasonality: false,
+          offlineHoursCap: 36,
+          crunchyOmeletteActive: true,
+        },
       },
     });
   });

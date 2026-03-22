@@ -2,13 +2,16 @@ import { useEffect, useState, type ChangeEvent } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import {
+  getFuturePetProductionEntries,
   getOwnedNowItemInputs,
   getStoredPetInventoryItemInputs,
   loadAcquisitionPlannerInputState,
+  removeFuturePetProductionEntryInput,
   removeStoredPetInventoryItemInput,
   replaceStoredPetInventoryEntries,
   removeOwnedNowItemInput,
   saveAcquisitionPlannerInputState,
+  upsertFuturePetProductionEntryInput,
   upsertOwnedNowItemInput,
   upsertStoredPetInventoryItemInput,
   type AcquisitionOwnedNowSourceCategory,
@@ -20,8 +23,18 @@ import {
   restoreAppBackupPayload,
 } from '../lib/appBackupRestore';
 import type { AppBackupPayloadV1 } from '../lib/appBackupSchema';
+import { deriveFuturePetProductionForecast } from '../lib/deriveFuturePetProductionForecast';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import { parseStoredPetInventoryPaste } from '../lib/parseStoredPetInventoryPaste';
+
+function formatForecastQuantity(value: number): string {
+  return Number.isInteger(value)
+    ? value.toLocaleString()
+    : value.toLocaleString(undefined, {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+}
 
 export function SettingsPage() {
   const [acquisitionPlannerState, setAcquisitionPlannerState] = useState(() => loadAcquisitionPlannerInputState());
@@ -37,6 +50,28 @@ export function SettingsPage() {
   const [storedPetMessage, setStoredPetMessage] = useState<string | null>(null);
   const [storedPetError, setStoredPetError] = useState<string | null>(null);
   const [storedPetWarnings, setStoredPetWarnings] = useState<string[]>([]);
+  const [futurePetForecastEnabled, setFuturePetForecastEnabled] = useState(
+    acquisitionPlannerState.pets.futureProduction.enabled,
+  );
+  const [futurePetForecastHorizonDays, setFuturePetForecastHorizonDays] = useState(
+    String(acquisitionPlannerState.pets.futureProduction.horizonDays),
+  );
+  const [futurePetForecastOfflineHoursCap, setFuturePetForecastOfflineHoursCap] = useState(
+    String(acquisitionPlannerState.pets.futureProduction.offlineHoursCap),
+  );
+  const [futurePetForecastRespectSeasonality, setFuturePetForecastRespectSeasonality] = useState(
+    acquisitionPlannerState.pets.futureProduction.respectSeasonality,
+  );
+  const [futurePetForecastCrunchyOmeletteActive, setFuturePetForecastCrunchyOmeletteActive] = useState(
+    acquisitionPlannerState.pets.futureProduction.crunchyOmeletteActive,
+  );
+  const [futurePetItemName, setFuturePetItemName] = useState('');
+  const [futurePetName, setFuturePetName] = useState('');
+  const [futurePetLevel, setFuturePetLevel] = useState('1');
+  const [futurePetSeasonalActive, setFuturePetSeasonalActive] = useState(true);
+  const [futurePetMessage, setFuturePetMessage] = useState<string | null>(null);
+  const [futurePetError, setFuturePetError] = useState<string | null>(null);
+  const [futurePetWarnings, setFuturePetWarnings] = useState<string[]>([]);
   const [knownItemKeys, setKnownItemKeys] = useState<Set<string> | null>(null);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -51,6 +86,8 @@ export function SettingsPage() {
 
   const ownedNowEntries = getOwnedNowItemInputs(acquisitionPlannerState);
   const storedPetEntries = getStoredPetInventoryItemInputs(acquisitionPlannerState);
+  const futurePetEntries = getFuturePetProductionEntries(acquisitionPlannerState);
+  const futurePetForecast = deriveFuturePetProductionForecast(acquisitionPlannerState);
 
   useEffect(() => {
     let cancelled = false;
@@ -217,6 +254,139 @@ export function SettingsPage() {
       setStoredPetWarnings([]);
       setStoredPetError(
         error instanceof Error ? error.message : 'Unable to remove the stored pet inventory entry.',
+      );
+    }
+  }
+
+  function handleSaveFuturePetForecastSettings(): void {
+    const normalizedHorizonDays = Number(futurePetForecastHorizonDays);
+    const normalizedOfflineHoursCap = Number(futurePetForecastOfflineHoursCap);
+
+    if (!Number.isFinite(normalizedHorizonDays) || normalizedHorizonDays < 0) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError('Enter a non-negative forecast horizon in days.');
+      return;
+    }
+
+    if (!Number.isFinite(normalizedOfflineHoursCap) || normalizedOfflineHoursCap < 0) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError('Enter a non-negative offline hours cap for the future pet forecast.');
+      return;
+    }
+
+    try {
+      const savedState = saveAcquisitionPlannerInputState({
+        ...acquisitionPlannerState,
+        pets: {
+          ...acquisitionPlannerState.pets,
+          futureProduction: {
+            ...acquisitionPlannerState.pets.futureProduction,
+            enabled: futurePetForecastEnabled,
+            horizonDays: normalizedHorizonDays,
+            respectSeasonality: futurePetForecastRespectSeasonality,
+            offlineHoursCap: normalizedOfflineHoursCap,
+            crunchyOmeletteActive: futurePetForecastCrunchyOmeletteActive,
+          },
+        },
+      });
+
+      setAcquisitionPlannerState(savedState);
+      setFuturePetError(null);
+      setFuturePetWarnings([]);
+      setFuturePetMessage('Saved future pet forecast assumptions.');
+    } catch (error) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError(
+        error instanceof Error ? error.message : 'Unable to save the future pet forecast assumptions.',
+      );
+    }
+  }
+
+  function handleSaveFuturePetEntry(): void {
+    const normalizedPetLevel = Number(futurePetLevel);
+    const warnings: string[] = [];
+
+    if (futurePetItemName.trim().length === 0) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError('Enter an item name to save a future pet production entry.');
+      return;
+    }
+
+    if (futurePetName.trim().length === 0) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError('Enter a pet name to save a future pet production entry.');
+      return;
+    }
+
+    if (!Number.isFinite(normalizedPetLevel) || normalizedPetLevel < 0) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError('Enter a non-negative pet level for the future pet production entry.');
+      return;
+    }
+
+    try {
+      const nextState = upsertFuturePetProductionEntryInput(acquisitionPlannerState, {
+        itemName: futurePetItemName,
+        petName: futurePetName,
+        petLevel: normalizedPetLevel,
+        seasonalActive: futurePetSeasonalActive,
+      });
+      const savedState = saveAcquisitionPlannerInputState(nextState);
+
+      if (knownItemKeys) {
+        const canonicalItemKey = savedState.pets.futureProduction.entries.find((entry) => {
+          return (
+            entry.itemName === futurePetItemName.trim() &&
+            entry.petName.toLocaleLowerCase() === futurePetName.trim().toLocaleLowerCase()
+          );
+        })?.canonicalItemKey;
+
+        if (canonicalItemKey && !knownItemKeys.has(canonicalItemKey)) {
+          warnings.push(`Future pet item "${futurePetItemName.trim()}" was not found in local reference data and was kept as entered.`);
+        }
+      }
+
+      setAcquisitionPlannerState(savedState);
+      setFuturePetError(null);
+      setFuturePetWarnings(warnings);
+      setFuturePetMessage(
+        normalizedPetLevel > 0
+          ? `Saved ${futurePetName.trim()} -> ${futurePetItemName.trim()} for future pet production forecasting.`
+          : `Removed ${futurePetName.trim()} -> ${futurePetItemName.trim()} from future pet production forecasting.`,
+      );
+      setFuturePetItemName('');
+      setFuturePetName('');
+      setFuturePetLevel('1');
+      setFuturePetSeasonalActive(true);
+    } catch (error) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError(
+        error instanceof Error ? error.message : 'Unable to save the future pet production entry.',
+      );
+    }
+  }
+
+  function handleRemoveFuturePetEntry(canonicalItemKey: string, petName: string): void {
+    try {
+      const nextState = removeFuturePetProductionEntryInput(acquisitionPlannerState, canonicalItemKey, petName);
+      const savedState = saveAcquisitionPlannerInputState(nextState);
+
+      setAcquisitionPlannerState(savedState);
+      setFuturePetError(null);
+      setFuturePetWarnings([]);
+      setFuturePetMessage(`Removed ${petName} -> ${canonicalItemKey} from future pet production forecasting.`);
+    } catch (error) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError(
+        error instanceof Error ? error.message : 'Unable to remove the future pet production entry.',
       );
     }
   }
@@ -551,6 +721,241 @@ export function SettingsPage() {
         {storedPetWarnings.length > 0 ? (
           <ul className="supporting-text">
             {storedPetWarnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
+
+      <section className="page-card page-stack" aria-labelledby="settings-future-pet-title">
+        <div>
+          <h2 id="settings-future-pet-title">Future Pet Production</h2>
+          <p className="supporting-text">
+            Track a simple future-only pet production estimate separately from stored pet inventory. This first slice
+            assumes one collection window capped by offline hours instead of a full cadence-aware planner.
+          </p>
+        </div>
+
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={futurePetForecastEnabled}
+            onChange={(event) => {
+              setFuturePetForecastEnabled(event.target.checked);
+            }}
+          />
+          <span>Enable future pet production forecast</span>
+        </label>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="future-pet-horizon-days">
+            Forecast horizon (days)
+          </label>
+          <input
+            id="future-pet-horizon-days"
+            className="text-input"
+            type="number"
+            min="0"
+            step="1"
+            value={futurePetForecastHorizonDays}
+            onChange={(event) => {
+              setFuturePetForecastHorizonDays(event.target.value);
+            }}
+          />
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="future-pet-offline-hours-cap">
+            Offline hours cap
+          </label>
+          <input
+            id="future-pet-offline-hours-cap"
+            className="text-input"
+            type="number"
+            min="0"
+            step="1"
+            value={futurePetForecastOfflineHoursCap}
+            onChange={(event) => {
+              setFuturePetForecastOfflineHoursCap(event.target.value);
+            }}
+          />
+        </div>
+
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={futurePetForecastRespectSeasonality}
+            onChange={(event) => {
+              setFuturePetForecastRespectSeasonality(event.target.checked);
+            }}
+          />
+          <span>Respect seasonal pet availability</span>
+        </label>
+
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={futurePetForecastCrunchyOmeletteActive}
+            onChange={(event) => {
+              setFuturePetForecastCrunchyOmeletteActive(event.target.checked);
+            }}
+          />
+          <span>Use Crunchy Omelette while collecting from pets (1.5x)</span>
+        </label>
+
+        <div className="button-row">
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={handleSaveFuturePetForecastSettings}
+          >
+            Save Future Pet Forecast Settings
+          </button>
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="future-pet-name">
+            Pet name
+          </label>
+          <input
+            id="future-pet-name"
+            className="text-input"
+            type="text"
+            value={futurePetName}
+            onChange={(event) => {
+              setFuturePetName(event.target.value);
+            }}
+            placeholder="Owl"
+          />
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="future-pet-item-name">
+            Produced item name
+          </label>
+          <input
+            id="future-pet-item-name"
+            className="text-input"
+            type="text"
+            value={futurePetItemName}
+            onChange={(event) => {
+              setFuturePetItemName(event.target.value);
+            }}
+            placeholder="Honey"
+          />
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="future-pet-level">
+            Pet level
+          </label>
+          <input
+            id="future-pet-level"
+            className="text-input"
+            type="number"
+            min="0"
+            step="1"
+            value={futurePetLevel}
+            onChange={(event) => {
+              setFuturePetLevel(event.target.value);
+            }}
+          />
+        </div>
+
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={futurePetSeasonalActive}
+            onChange={(event) => {
+              setFuturePetSeasonalActive(event.target.checked);
+            }}
+          />
+          <span>Seasonal pet currently active</span>
+        </label>
+
+        <div className="button-row">
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={handleSaveFuturePetEntry}
+          >
+            Save Future Pet Entry
+          </button>
+        </div>
+
+        <p className="supporting-text">
+          This estimate uses <strong>{futurePetForecast.forecastHours.toLocaleString()}</strong> forecast hours from
+          the current horizon and offline-cap assumptions. Crunchy Omelette applies only as an explicit
+          collection-time multiplier when checked.
+        </p>
+
+        {futurePetEntries.length > 0 ? (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Pet</th>
+                <th scope="col">Item</th>
+                <th scope="col">Level</th>
+                <th scope="col">Seasonal active</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {futurePetEntries.map((entry) => (
+                <tr key={`${entry.petName}:${entry.canonicalItemKey}`}>
+                  <td>{entry.petName}</td>
+                  <td>{entry.itemName}</td>
+                  <td>{entry.petLevel.toLocaleString()}</td>
+                  <td>{entry.seasonalActive ? 'Yes' : 'No'}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="button"
+                      onClick={() => {
+                        handleRemoveFuturePetEntry(entry.canonicalItemKey, entry.petName);
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="supporting-text">No future pet production entries saved yet.</p>
+        )}
+
+        {futurePetForecast.enabled && futurePetForecast.entries.length > 0 ? (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Forecast quantity</th>
+                <th scope="col">Source pets</th>
+              </tr>
+            </thead>
+            <tbody>
+              {futurePetForecast.entries.map((entry) => (
+                <tr key={entry.canonicalItemKey}>
+                  <td>{entry.itemName}</td>
+                  <td>{formatForecastQuantity(entry.forecastQuantity)}</td>
+                  <td>{entry.sourcePetCount.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : futurePetForecast.enabled ? (
+          <p className="supporting-text">Future pet forecast is enabled, but no pet entries are saved yet.</p>
+        ) : (
+          <p className="supporting-text">Future pet forecast is currently disabled.</p>
+        )}
+
+        {futurePetMessage ? <p className="status-message status-message--success">{futurePetMessage}</p> : null}
+        {futurePetError ? <p className="status-message status-message--error">{futurePetError}</p> : null}
+        {futurePetWarnings.length > 0 ? (
+          <ul className="supporting-text">
+            {futurePetWarnings.map((warning) => (
               <li key={warning}>{warning}</li>
             ))}
           </ul>

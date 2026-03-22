@@ -271,4 +271,45 @@ describe('SettingsPage', () => {
       },
     ]);
   });
+
+  it('saves future pet forecast assumptions and applies the Crunchy Omelette checkbox in forecast output', async () => {
+    const user = userEvent.setup();
+
+    render(<SettingsPage />);
+
+    await user.click(screen.getByLabelText('Enable future pet production forecast'));
+    await user.clear(screen.getByLabelText('Forecast horizon (days)'));
+    await user.type(screen.getByLabelText('Forecast horizon (days)'), '1');
+    await user.clear(screen.getByLabelText('Offline hours cap'));
+    await user.type(screen.getByLabelText('Offline hours cap'), '24');
+    await user.click(screen.getByLabelText('Use Crunchy Omelette while collecting from pets (1.5x)'));
+    await user.click(screen.getByRole('button', { name: 'Save Future Pet Forecast Settings' }));
+
+    expect(await screen.findByText('Saved future pet forecast assumptions.')).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText('Pet name'), 'Owl');
+    await user.type(screen.getByLabelText('Produced item name'), 'Honey');
+    await user.clear(screen.getByLabelText('Pet level'));
+    await user.type(screen.getByLabelText('Pet level'), '6');
+    await user.click(screen.getByRole('button', { name: 'Save Future Pet Entry' }));
+
+    expect(await screen.findByText('Saved Owl -> Honey for future pet production forecasting.')).toBeInTheDocument();
+    expect(loadAcquisitionPlannerInputState().pets.storedInventoryEntries).toEqual([]);
+    expect(loadAcquisitionPlannerInputState().pets.futureProduction).toMatchObject({
+      enabled: true,
+      horizonDays: 1,
+      offlineHoursCap: 24,
+      crunchyOmeletteActive: true,
+      entries: [
+        {
+          canonicalItemKey: 'honey',
+          itemName: 'Honey',
+          petName: 'Owl',
+          petLevel: 6,
+          seasonalActive: true,
+        },
+      ],
+    });
+    expect(screen.getByText('432')).toBeInTheDocument();
+  });
 });

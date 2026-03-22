@@ -351,10 +351,10 @@ export const ACQUISITION_SOURCE_CATALOG: AcquisitionSourceCatalog = {
       key: 'future_pet_production',
       label: 'Future Pet Production',
       category: 'pet_source',
-      defaultPolicy: 'deferred',
+      defaultPolicy: 'optional',
       availability: 'future',
       userInputDependence: 'required',
-      modelingStatus: 'deferred',
+      modelingStatus: 'planned_engine',
       burdenSupport: 'direct',
       relevantAssumptionFamilies: [
         'source_policy',
