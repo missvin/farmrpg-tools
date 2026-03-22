@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import {
   downloadBuddyItemIcons,
-  parseBuddyIconExtractionCsv,
+  parseBuddyIconSourceCsv,
   toBuddyIconDownloadCsv,
   toBuddyIconDownloadJson,
   toBuddyIconDownloadReviewCsv,
@@ -17,6 +17,10 @@ function parseArgs(argv) {
     delayMs: 500,
     limit: null,
     refresh: false,
+    maxConsecutiveFailures: 3,
+    maxTotalFailures: 5,
+    maxFailureRate: 0.2,
+    failureRateMinAttempts: 10,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -51,6 +55,30 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (argument === '--max-consecutive-failures') {
+      options.maxConsecutiveFailures = Number(argv[index + 1] ?? '3');
+      index += 1;
+      continue;
+    }
+
+    if (argument === '--max-total-failures') {
+      options.maxTotalFailures = Number(argv[index + 1] ?? '5');
+      index += 1;
+      continue;
+    }
+
+    if (argument === '--max-failure-rate') {
+      options.maxFailureRate = Number(argv[index + 1] ?? '0.2');
+      index += 1;
+      continue;
+    }
+
+    if (argument === '--failure-rate-min-attempts') {
+      options.failureRateMinAttempts = Number(argv[index + 1] ?? '10');
+      index += 1;
+      continue;
+    }
+
     positional.push(argument);
   }
 
@@ -62,12 +90,23 @@ function parseArgs(argv) {
 
 function printUsage() {
   console.log(
-    'Usage: node scripts/downloadBuddyItemIcons.mjs <buddy_item_icons.csv> [--output-dir <dir>] [--cache-dir <dir>] [--delay-ms <ms>] [--limit <n>] [--refresh]',
+    'Usage: node scripts/downloadBuddyItemIcons.mjs <buddy_item_icon_observations.csv|buddy_item_icons.csv> [--output-dir <dir>] [--cache-dir <dir>] [--delay-ms <ms>] [--limit <n>] [--refresh] [--max-consecutive-failures <n>] [--max-total-failures <n>] [--max-failure-rate <decimal>] [--failure-rate-min-attempts <n>]',
   );
 }
 
 async function main() {
-  const { inputPath, outputDir, cacheDir, delayMs, limit, refresh } = parseArgs(process.argv.slice(2));
+  const {
+    inputPath,
+    outputDir,
+    cacheDir,
+    delayMs,
+    limit,
+    refresh,
+    maxConsecutiveFailures,
+    maxTotalFailures,
+    maxFailureRate,
+    failureRateMinAttempts,
+  } = parseArgs(process.argv.slice(2));
 
   if (!inputPath) {
     printUsage();
@@ -79,7 +118,7 @@ async function main() {
   const resolvedOutputDir = path.resolve(process.cwd(), outputDir || path.dirname(absoluteInputPath));
   const resolvedCacheDir = path.resolve(process.cwd(), cacheDir);
   const csvText = await readFile(absoluteInputPath, 'utf8');
-  const iconRows = parseBuddyIconExtractionCsv(csvText);
+  const iconRows = parseBuddyIconSourceCsv(csvText);
   const selectedRows = limit && limit > 0 ? iconRows.slice(0, limit) : iconRows;
 
   await mkdir(resolvedOutputDir, { recursive: true });
@@ -93,6 +132,10 @@ async function main() {
     cacheDir: resolvedCacheDir,
     interRequestDelayMs: delayMs,
     refresh,
+    maxConsecutiveFailures,
+    maxTotalFailures,
+    maxFailureRate,
+    failureRateMinAttempts,
   });
 
   const resultsJsonPath = path.join(resolvedOutputDir, 'buddy_item_icon_downloads.json');
@@ -113,6 +156,12 @@ async function main() {
 
   console.log(`unique_icon_urls: ${downloadResult.summary.uniqueIconUrls.toLocaleString()}`);
   console.log(`review: ${downloadResult.summary.reviewCount.toLocaleString()}`);
+  console.log(`network_attempts: ${downloadResult.summary.networkAttempts.toLocaleString()}`);
+  console.log(`total_failures: ${downloadResult.summary.totalFailures.toLocaleString()}`);
+
+  if (downloadResult.summary.stoppedByGuard) {
+    console.log(`guard_stop: ${downloadResult.summary.guardStopReason}`);
+  }
 }
 
 main().catch((error) => {

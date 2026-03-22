@@ -18,6 +18,23 @@ const BUDDY_ICON_COLUMNS = [
   'notes',
 ];
 
+const BUDDY_ICON_OBSERVATION_COLUMNS = [
+  'item_name',
+  'canonical_key',
+  'generated_buddy_slug',
+  'candidate_buddy_url',
+  'page_title',
+  'extraction_status',
+  'observation_status',
+  'icon_url',
+  'icon_pathname',
+  'icon_filename',
+  'icon_asset_key',
+  'farmrpg_item_id_candidate',
+  'flags',
+  'notes',
+];
+
 function parseCsvRow(line) {
   const values = [];
   let currentValue = '';
@@ -67,12 +84,12 @@ function splitReviewField(value) {
     .filter(Boolean);
 }
 
-function validateHeaders(headers) {
-  const missingColumns = BUDDY_ICON_COLUMNS.filter((column) => !headers.includes(column));
-  const unexpectedColumns = headers.filter((header) => !BUDDY_ICON_COLUMNS.includes(header));
+function validateHeaders(headers, expectedColumns, schemaLabel) {
+  const missingColumns = expectedColumns.filter((column) => !headers.includes(column));
+  const unexpectedColumns = headers.filter((header) => !expectedColumns.includes(header));
 
   if (missingColumns.length === 0 && unexpectedColumns.length === 0) {
-    return;
+    return true;
   }
 
   const details = [];
@@ -85,7 +102,17 @@ function validateHeaders(headers) {
     details.push(`unexpected columns: ${unexpectedColumns.join(', ')}`);
   }
 
-  throw new Error(`Invalid buddy icon extraction CSV schema (${details.join('; ')}).`);
+  throw new Error(`Invalid ${schemaLabel} CSV schema (${details.join('; ')}).`);
+}
+
+function detectSchema(headers) {
+  try {
+    validateHeaders(headers, BUDDY_ICON_OBSERVATION_COLUMNS, 'buddy icon observation');
+    return 'observation';
+  } catch {
+    validateHeaders(headers, BUDDY_ICON_COLUMNS, 'buddy icon extraction');
+    return 'extraction';
+  }
 }
 
 function escapeCsvValue(value) {
@@ -115,7 +142,7 @@ async function fileExists(filePath) {
   }
 }
 
-export function parseBuddyIconExtractionCsv(csvText) {
+export function parseBuddyIconSourceCsv(csvText) {
   const lines = csvText
     .split(/\r?\n/u)
     .map((line) => line.trim())
@@ -126,7 +153,7 @@ export function parseBuddyIconExtractionCsv(csvText) {
   }
 
   const headers = parseCsvRow(lines[0]).map(normalizeHeader);
-  validateHeaders(headers);
+  const schema = detectSchema(headers);
 
   const headerIndex = headers.reduce((indexByHeader, header, index) => {
     indexByHeader[header] = index;
@@ -147,11 +174,38 @@ export function parseBuddyIconExtractionCsv(csvText) {
       iconUrl: readField(values, headerIndex, 'icon_url').trim() || null,
       iconPathname: readField(values, headerIndex, 'icon_pathname').trim() || null,
       iconFilename: readField(values, headerIndex, 'icon_filename').trim() || null,
+      iconAssetKey: schema === 'observation' ? readField(values, headerIndex, 'icon_asset_key').trim() || null : null,
+      farmrpgItemIdCandidate:
+        schema === 'observation' ? readField(values, headerIndex, 'farmrpg_item_id_candidate').trim() || null : null,
+      observationStatus: schema === 'observation' ? readField(values, headerIndex, 'observation_status').trim() : '',
       imageUrlCount: Number(readField(values, headerIndex, 'image_url_count').trim() || '0'),
       flags: splitReviewField(readField(values, headerIndex, 'flags')),
       notes: splitReviewField(readField(values, headerIndex, 'notes')),
     };
   });
+}
+
+export function parseBuddyIconExtractionCsv(csvText) {
+  return parseBuddyIconSourceCsv(csvText);
+}
+
+function evaluateStopCondition(metrics, options) {
+  if (metrics.consecutiveFailures >= options.maxConsecutiveFailures) {
+    return `Stopped after ${metrics.consecutiveFailures.toLocaleString()} consecutive failures.`;
+  }
+
+  if (metrics.totalFailures >= options.maxTotalFailures) {
+    return `Stopped after ${metrics.totalFailures.toLocaleString()} total failures.`;
+  }
+
+  if (
+    metrics.networkAttempts >= options.failureRateMinAttempts &&
+    metrics.totalFailures / metrics.networkAttempts > options.maxFailureRate
+  ) {
+    return `Stopped because failure rate reached ${(metrics.totalFailures / metrics.networkAttempts * 100).toFixed(1)}% after ${metrics.networkAttempts.toLocaleString()} attempts.`;
+  }
+
+  return null;
 }
 
 export function buildBuddyIconCacheFilename(iconRow) {
@@ -169,6 +223,12 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
   const cacheDir = options.cacheDir;
   const refresh = options.refresh ?? false;
   const interRequestDelayMs = options.interRequestDelayMs ?? 500;
+  const stopOptions = {
+    maxConsecutiveFailures: options.maxConsecutiveFailures ?? 3,
+    maxTotalFailures: options.maxTotalFailures ?? 5,
+    maxFailureRate: options.maxFailureRate ?? 0.2,
+    failureRateMinAttempts: options.failureRateMinAttempts ?? 10,
+  };
 
   if (!cacheDir) {
     throw new Error('A cacheDir option is required for icon downloads.');
@@ -176,12 +236,42 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
 
   await mkdir(cacheDir, { recursive: true });
 
-  const downloadableRows = iconRows.filter((row) => row.extractionStatus === 'icon_found' && row.iconUrl);
+  const downloadableRows = iconRows.filter(
+    (row) => row.extractionStatus === 'icon_found' && row.iconUrl && (!row.observationStatus || row.observationStatus === 'observed'),
+  );
   const cacheByIconUrl = new Map();
   const results = [];
+  const metrics = {
+    networkAttempts: 0,
+    totalFailures: 0,
+    consecutiveFailures: 0,
+  };
+  let guardStopReason = null;
 
   for (let index = 0; index < downloadableRows.length; index += 1) {
     const row = downloadableRows[index];
+
+    if (guardStopReason) {
+      results.push({
+        itemName: row.itemName,
+        canonicalKey: row.canonicalKey,
+        generatedBuddySlug: row.generatedBuddySlug,
+        candidateBuddyUrl: row.candidateBuddyUrl,
+        iconUrl: row.iconUrl,
+        iconPathname: row.iconPathname ?? null,
+        iconFilename: row.iconFilename,
+        iconAssetKey: row.iconAssetKey ?? null,
+        farmrpgItemIdCandidate: row.farmrpgItemIdCandidate ?? null,
+        localFilePath: null,
+        localRelativePath: null,
+        cacheFilename: null,
+        httpStatus: null,
+        cacheStatus: 'skipped_guard',
+        flags: [...row.flags, 'stopped_by_guard'],
+        notes: [...row.notes, guardStopReason],
+      });
+      continue;
+    }
 
     if (cacheByIconUrl.has(row.iconUrl)) {
       const cachedResult = cacheByIconUrl.get(row.iconUrl);
@@ -193,6 +283,9 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
         generatedBuddySlug: row.generatedBuddySlug,
         candidateBuddyUrl: row.candidateBuddyUrl,
         cacheStatus: 'reused',
+        iconPathname: row.iconPathname ?? cachedResult.iconPathname ?? null,
+        iconAssetKey: row.iconAssetKey ?? cachedResult.iconAssetKey ?? null,
+        farmrpgItemIdCandidate: row.farmrpgItemIdCandidate ?? cachedResult.farmrpgItemIdCandidate ?? null,
       });
       continue;
     }
@@ -206,7 +299,10 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
       generatedBuddySlug: row.generatedBuddySlug,
       candidateBuddyUrl: row.candidateBuddyUrl,
       iconUrl: row.iconUrl,
+      iconPathname: row.iconPathname ?? null,
       iconFilename: row.iconFilename,
+      iconAssetKey: row.iconAssetKey ?? null,
+      farmrpgItemIdCandidate: row.farmrpgItemIdCandidate ?? null,
       localFilePath,
       localRelativePath,
       cacheFilename: filename,
@@ -227,9 +323,12 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
     }
 
     try {
+      metrics.networkAttempts += 1;
       const response = await fetchFn(row.iconUrl);
 
       if (!response.ok) {
+        metrics.totalFailures += 1;
+        metrics.consecutiveFailures += 1;
         const result = {
           ...baseResult,
           cacheStatus: 'failed',
@@ -241,6 +340,7 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
         cacheByIconUrl.set(row.iconUrl, result);
         results.push(result);
       } else {
+        metrics.consecutiveFailures = 0;
         const arrayBuffer = await response.arrayBuffer();
         await writeFile(localFilePath, Buffer.from(arrayBuffer));
 
@@ -254,6 +354,8 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
         results.push(result);
       }
     } catch (error) {
+      metrics.totalFailures += 1;
+      metrics.consecutiveFailures += 1;
       const result = {
         ...baseResult,
         cacheStatus: 'failed',
@@ -266,6 +368,8 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
       results.push(result);
     }
 
+    guardStopReason = evaluateStopCondition(metrics, stopOptions);
+
     if (index < downloadableRows.length - 1) {
       await sleepFn(interRequestDelayMs);
     }
@@ -276,7 +380,7 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
     return counts;
   }, {});
 
-  const reviewResults = results.filter((result) => result.cacheStatus === 'failed');
+  const reviewResults = results.filter((result) => result.cacheStatus === 'failed' || result.cacheStatus === 'skipped_guard');
 
   return {
     results,
@@ -286,6 +390,10 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
       uniqueIconUrls: cacheByIconUrl.size,
       countsByStatus,
       reviewCount: reviewResults.length,
+      stoppedByGuard: guardStopReason !== null,
+      guardStopReason,
+      networkAttempts: metrics.networkAttempts,
+      totalFailures: metrics.totalFailures,
     },
   };
 }
@@ -296,7 +404,7 @@ export function toBuddyIconDownloadJson(downloadResult) {
 
 export function toBuddyIconDownloadCsv(downloadResult) {
   const rows = [
-    'item_name,canonical_key,generated_buddy_slug,candidate_buddy_url,icon_url,cache_status,http_status,cache_filename,local_relative_path,flags,notes',
+    'item_name,canonical_key,generated_buddy_slug,candidate_buddy_url,icon_url,icon_pathname,icon_filename,icon_asset_key,farmrpg_item_id_candidate,cache_status,http_status,cache_filename,local_relative_path,flags,notes',
   ];
 
   for (const result of downloadResult.results) {
@@ -307,6 +415,10 @@ export function toBuddyIconDownloadCsv(downloadResult) {
         result.generatedBuddySlug,
         result.candidateBuddyUrl,
         result.iconUrl ?? '',
+        result.iconPathname ?? '',
+        result.iconFilename ?? '',
+        result.iconAssetKey ?? '',
+        result.farmrpgItemIdCandidate ?? '',
         result.cacheStatus,
         result.httpStatus === null ? '' : String(result.httpStatus),
         result.cacheFilename ?? '',
