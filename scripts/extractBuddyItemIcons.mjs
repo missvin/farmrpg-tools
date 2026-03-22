@@ -19,6 +19,10 @@ function parseArgs(argv) {
     outputDir: '',
     delayMs: 1500,
     limit: null,
+    maxConsecutiveFailures: 3,
+    maxTotalFailures: 5,
+    maxFailureRate: 0.2,
+    failureRateMinAttempts: 10,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -42,6 +46,30 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (argument === '--max-consecutive-failures') {
+      options.maxConsecutiveFailures = Number(argv[index + 1] ?? '3');
+      index += 1;
+      continue;
+    }
+
+    if (argument === '--max-total-failures') {
+      options.maxTotalFailures = Number(argv[index + 1] ?? '5');
+      index += 1;
+      continue;
+    }
+
+    if (argument === '--max-failure-rate') {
+      options.maxFailureRate = Number(argv[index + 1] ?? '0.2');
+      index += 1;
+      continue;
+    }
+
+    if (argument === '--failure-rate-min-attempts') {
+      options.failureRateMinAttempts = Number(argv[index + 1] ?? '10');
+      index += 1;
+      continue;
+    }
+
     positional.push(argument);
   }
 
@@ -53,12 +81,21 @@ function parseArgs(argv) {
 
 function printUsage() {
   console.log(
-    'Usage: node scripts/extractBuddyItemIcons.mjs <buddy_item_probe_results.csv> [--output-dir <dir>] [--delay-ms <ms>] [--limit <n>]',
+    'Usage: node scripts/extractBuddyItemIcons.mjs <buddy_item_probe_results.csv> [--output-dir <dir>] [--delay-ms <ms>] [--limit <n>] [--max-consecutive-failures <n>] [--max-total-failures <n>] [--max-failure-rate <decimal>] [--failure-rate-min-attempts <n>]',
   );
 }
 
 async function main() {
-  const { inputPath, outputDir, delayMs, limit } = parseArgs(process.argv.slice(2));
+  const {
+    inputPath,
+    outputDir,
+    delayMs,
+    limit,
+    maxConsecutiveFailures,
+    maxTotalFailures,
+    maxFailureRate,
+    failureRateMinAttempts,
+  } = parseArgs(process.argv.slice(2));
 
   if (!inputPath) {
     printUsage();
@@ -85,6 +122,10 @@ async function main() {
 
   const extractionResult = await extractBuddyItemIcons(selectedCandidates, {
     interRequestDelayMs: delayMs,
+    maxConsecutiveFailures,
+    maxTotalFailures,
+    maxFailureRate,
+    failureRateMinAttempts,
   });
   const observationResult = deriveBuddyIconObservations(extractionResult);
 
@@ -114,6 +155,11 @@ async function main() {
   }
 
   console.log(`review: ${extractionResult.summary.reviewCount.toLocaleString()}`);
+  console.log(`network_attempts: ${extractionResult.summary.networkAttempts.toLocaleString()}`);
+  console.log(`total_failures: ${extractionResult.summary.totalFailures.toLocaleString()}`);
+  if (extractionResult.summary.stoppedByGuard) {
+    console.log(`guard_stop: ${extractionResult.summary.guardStopReason}`);
+  }
   console.log(`observed_numeric_farmrpg_item_id_candidates: ${observationResult.summary.numericFarmRpgItemIdCandidateCount.toLocaleString()}`);
 }
 

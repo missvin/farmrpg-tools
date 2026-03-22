@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   deriveBuddyIconObservations,
   extractBuddyItemIconPage,
+  extractBuddyItemIcons,
   toBuddyIconExtractionCsv,
   toBuddyIconObservationCsv,
 } from '../../scripts/lib/buddyIconExtract.mjs';
@@ -210,6 +211,65 @@ describe('deriveBuddyIconObservations', () => {
       }),
     );
     expect(observationResult.reviewResults).toHaveLength(1);
+  });
+});
+
+describe('extractBuddyItemIcons', () => {
+  it('stops conservatively when repeated extraction failures suggest a structural problem', async () => {
+    let fetchCount = 0;
+
+    const result = await extractBuddyItemIcons(
+      [
+        {
+          itemName: 'Board',
+          canonicalKey: 'board',
+          generatedBuddySlug: 'board',
+          candidateBuddyUrl: 'https://buddy.farm/i/board/',
+        },
+        {
+          itemName: 'Fancy Pipe',
+          canonicalKey: 'fancy pipe',
+          generatedBuddySlug: 'fancy-pipe',
+          candidateBuddyUrl: 'https://buddy.farm/i/fancy-pipe/',
+        },
+        {
+          itemName: 'Apple Ant Buddy Doll',
+          canonicalKey: 'apple ant buddy doll',
+          generatedBuddySlug: 'apple-ant-buddy-doll',
+          candidateBuddyUrl: 'https://buddy.farm/i/apple-ant-buddy-doll/',
+        },
+        {
+          itemName: '11th Leaf Centerpiece',
+          canonicalKey: '11th leaf centerpiece',
+          generatedBuddySlug: '11th-leaf-centerpiece',
+          candidateBuddyUrl: 'https://buddy.farm/i/11th-leaf-centerpiece/',
+        },
+      ],
+      {
+        interRequestDelayMs: 0,
+        maxConsecutiveFailures: 3,
+        fetchFn: async () => {
+          fetchCount += 1;
+
+          return {
+            ok: false,
+            status: 500,
+          };
+        },
+      },
+    );
+
+    expect(fetchCount).toBe(3);
+    expect(result.summary.stoppedByGuard).toBe(true);
+    expect(result.summary.guardStopReason).toContain('3 consecutive extraction failures');
+    expect(result.summary.totalFailures).toBe(3);
+    expect(result.reviewResults).toHaveLength(4);
+    expect(result.results[3]).toEqual(
+      expect.objectContaining({
+        extractionStatus: 'uncertain',
+        flags: ['stopped_by_guard'],
+      }),
+    );
   });
 });
 

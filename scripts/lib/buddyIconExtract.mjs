@@ -78,6 +78,25 @@ function extractImageUrls(htmlText) {
     .filter(Boolean);
 }
 
+function evaluateStopCondition(metrics, options) {
+  if (metrics.consecutiveFailures >= options.maxConsecutiveFailures) {
+    return `Stopped after ${metrics.consecutiveFailures.toLocaleString()} consecutive extraction failures.`;
+  }
+
+  if (metrics.totalFailures >= options.maxTotalFailures) {
+    return `Stopped after ${metrics.totalFailures.toLocaleString()} total extraction failures.`;
+  }
+
+  if (
+    metrics.networkAttempts >= options.failureRateMinAttempts &&
+    metrics.totalFailures / metrics.networkAttempts > options.maxFailureRate
+  ) {
+    return `Stopped because extraction failure rate reached ${(metrics.totalFailures / metrics.networkAttempts * 100).toFixed(1)}% after ${metrics.networkAttempts.toLocaleString()} attempts.`;
+  }
+
+  return null;
+}
+
 export function extractBuddyItemIconPage(candidate, htmlText) {
   const pageTitle = extractHtmlTitle(htmlText) ?? candidate.itemName;
   const h1Html = htmlText.match(H1_RE)?.groups?.content ?? '';
@@ -137,12 +156,44 @@ export async function extractBuddyItemIcons(candidates, options = {}) {
   const fetchFn = options.fetchFn ?? fetch;
   const sleepFn = options.sleepFn ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
   const interRequestDelayMs = options.interRequestDelayMs ?? 1500;
+  const stopOptions = {
+    maxConsecutiveFailures: options.maxConsecutiveFailures ?? 3,
+    maxTotalFailures: options.maxTotalFailures ?? 5,
+    maxFailureRate: options.maxFailureRate ?? 0.2,
+    failureRateMinAttempts: options.failureRateMinAttempts ?? 10,
+  };
   const results = [];
+  const metrics = {
+    networkAttempts: 0,
+    totalFailures: 0,
+    consecutiveFailures: 0,
+  };
+  let guardStopReason = null;
 
   for (let index = 0; index < candidates.length; index += 1) {
     const candidate = candidates[index];
 
+    if (guardStopReason) {
+      results.push({
+        itemName: candidate.itemName,
+        canonicalKey: candidate.canonicalKey,
+        generatedBuddySlug: candidate.generatedBuddySlug,
+        candidateBuddyUrl: candidate.candidateBuddyUrl,
+        pageTitle: null,
+        extractionStatus: 'uncertain',
+        iconUrl: null,
+        iconPathname: null,
+        iconFilename: null,
+        imageUrlCount: 0,
+        httpStatus: null,
+        flags: ['stopped_by_guard'],
+        notes: [guardStopReason],
+      });
+      continue;
+    }
+
     try {
+      metrics.networkAttempts += 1;
       const response = await fetchFn(candidate.candidateBuddyUrl, {
         method: 'GET',
         headers: {
@@ -151,6 +202,8 @@ export async function extractBuddyItemIcons(candidates, options = {}) {
       });
 
       if (!response.ok) {
+        metrics.totalFailures += 1;
+        metrics.consecutiveFailures += 1;
         results.push({
           itemName: candidate.itemName,
           canonicalKey: candidate.canonicalKey,
@@ -168,12 +221,15 @@ export async function extractBuddyItemIcons(candidates, options = {}) {
         });
       } else {
         const htmlText = await response.text();
+        metrics.consecutiveFailures = 0;
         results.push({
           ...extractBuddyItemIconPage(candidate, htmlText),
           httpStatus: response.status,
         });
       }
     } catch (error) {
+      metrics.totalFailures += 1;
+      metrics.consecutiveFailures += 1;
       results.push({
         itemName: candidate.itemName,
         canonicalKey: candidate.canonicalKey,
@@ -190,6 +246,8 @@ export async function extractBuddyItemIcons(candidates, options = {}) {
         notes: [error instanceof Error ? error.message : 'Unknown fetch failure.'],
       });
     }
+
+    guardStopReason = evaluateStopCondition(metrics, stopOptions);
 
     if (index < candidates.length - 1) {
       await sleepFn(interRequestDelayMs);
@@ -210,6 +268,10 @@ export async function extractBuddyItemIcons(candidates, options = {}) {
       candidatesProcessed: results.length,
       countsByStatus,
       reviewCount: reviewResults.length,
+      stoppedByGuard: guardStopReason !== null,
+      guardStopReason,
+      networkAttempts: metrics.networkAttempts,
+      totalFailures: metrics.totalFailures,
     },
   };
 }
