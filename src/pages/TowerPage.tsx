@@ -47,6 +47,33 @@ function formatPercentComplete(currentMastery: number, requiredThreshold: number
   return `${percent.toFixed(percent >= 100 ? 0 : 1)}%`;
 }
 
+function formatBlockingSummary(
+  blockingRows: Array<{
+    itemName: string;
+    requiredThreshold: number;
+  }>,
+): string | null {
+  if (blockingRows.length === 0) {
+    return null;
+  }
+
+  const [closestBlockingRow] = blockingRows;
+
+  if (blockingRows.length === 1) {
+    return `Blocking requirement: ${closestBlockingRow.itemName} (${formatRequirementLabel(closestBlockingRow.requiredThreshold)})`;
+  }
+
+  return `Blocking requirements: ${blockingRows.length.toLocaleString()} items remain. Closest blocker: ${closestBlockingRow.itemName} (${formatRequirementLabel(closestBlockingRow.requiredThreshold)})`;
+}
+
+function shouldShowTowerNote(note: string | null): boolean {
+  if (!note) {
+    return false;
+  }
+
+  return !/manual transcription from screenshot/i.test(note);
+}
+
 export function TowerPage() {
   const [towerState, setTowerState] = useState<{
     isLoading: boolean;
@@ -218,10 +245,6 @@ export function TowerPage() {
           <section className="page-card page-stack" aria-labelledby="tower-results-title">
             <div>
               <h2 id="tower-results-title">Tower Requirement Status</h2>
-              <p className="supporting-text">
-                Requirements are grouped by `tower_level_range`, then tower level. Fully completed range groups move
-                under Completed ranges, while incomplete ranges stay visible by default.
-              </p>
             </div>
 
             {incompleteRangeGroups.length > 0 ? (
@@ -249,9 +272,10 @@ export function TowerPage() {
                         {rangeGroup.levels.map((levelGroup) => {
                           const levelKey = getLevelKey(rangeGroup.towerLevelRange, levelGroup.towerLevel);
                           const isCompleted = levelGroup.rows.every((row) => row.achieved);
-                          const nextBlockingRowIndex = levelGroup.rows.findIndex((row) => !row.achieved);
-                          const remainingCount = levelGroup.rows.filter((row) => !row.achieved).length;
+                          const blockingRows = levelGroup.rows.filter((row) => !row.achieved);
+                          const remainingCount = blockingRows.length;
                           const isNextRelevantLevel = firstIncompleteLevelKey === levelKey;
+                          const blockingSummary = formatBlockingSummary(blockingRows);
 
                           return (
                             <details
@@ -265,10 +289,7 @@ export function TowerPage() {
                                     Tower Level {levelGroup.towerLevel} -{' '}
                                     {formatLevelSummary(remainingCount, levelGroup.rows.length)}
                                   </h4>
-                                  <p className="subtle-text">
-                                    {isCompleted ? 'Completed level' : 'Needs progress'}
-                                    {isNextRelevantLevel ? ' · Next relevant level' : ''}
-                                  </p>
+                                  {isNextRelevantLevel ? <p className="subtle-text">Next relevant level</p> : null}
                                 </div>
                                 <span
                                   className={`tower-level-summary__badge${
@@ -279,11 +300,8 @@ export function TowerPage() {
                                 </span>
                               </summary>
 
-                              {isNextRelevantLevel && nextBlockingRowIndex >= 0 ? (
-                                <p className="subtle-text">
-                                  Next blocking requirement: {levelGroup.rows[nextBlockingRowIndex].itemName} (
-                                  {formatRequirementLabel(levelGroup.rows[nextBlockingRowIndex].requiredThreshold)})
-                                </p>
+                              {isNextRelevantLevel && blockingSummary ? (
+                                <p className="subtle-text">{blockingSummary}</p>
                               ) : null}
 
                               <div className="table-scroll">
@@ -299,20 +317,24 @@ export function TowerPage() {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {levelGroup.rows.map((row, rowIndex) => (
+                                    {levelGroup.rows.map((row) => (
                                       <tr
                                         key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}-${row.requiredThreshold}`}
-                                        className={
-                                          isNextRelevantLevel && rowIndex === nextBlockingRowIndex
+                                        className={[
+                                          row.achieved ? 'summary-table__row--complete' : '',
+                                          isNextRelevantLevel && !row.achieved
                                             ? 'summary-table__row--highlight'
-                                            : undefined
-                                        }
+                                            : '',
+                                        ]
+                                          .filter(Boolean)
+                                          .join(' ')}
                                       >
                                         <td>{row.towerLevel}</td>
                                         <td>
                                           <strong>{row.itemName}</strong>
-                                          <p className="subtle-text">Slot {row.slotIndex}</p>
-                                          {row.notes ? <p className="subtle-text">Note: {row.notes}</p> : null}
+                                          {shouldShowTowerNote(row.notes) ? (
+                                            <p className="subtle-text">Note: {row.notes}</p>
+                                          ) : null}
                                           {!row.matchedSnapshotRow ? (
                                             <p className="subtle-text">Unmatched in latest snapshot</p>
                                           ) : null}
@@ -346,7 +368,7 @@ export function TowerPage() {
                       {completedRangeGroups.length === 1 ? '' : 's'}
                     </p>
                   </div>
-                  <span className="tower-level-summary__badge tower-level-summary__badge--complete">Collapsed</span>
+                  <span className="tower-level-summary__badge tower-level-summary__badge--complete">Completed</span>
                 </summary>
 
                 <div className="page-stack">
@@ -355,7 +377,6 @@ export function TowerPage() {
                       <summary className="tower-range-summary">
                         <div className="tower-range-summary__text">
                           <h4 className="section-title">Tower Levels {rangeGroup.towerLevelRange}</h4>
-                          <p className="subtle-text">Completed range</p>
                         </div>
                         <span className="tower-level-summary__badge tower-level-summary__badge--complete">
                           Completed
@@ -371,7 +392,6 @@ export function TowerPage() {
                                   Tower Level {levelGroup.towerLevel} -{' '}
                                   {formatLevelSummary(0, levelGroup.rows.length)}
                                 </h4>
-                                <p className="subtle-text">Completed level</p>
                               </div>
                               <span className="tower-level-summary__badge tower-level-summary__badge--complete">
                                 Completed
@@ -394,12 +414,14 @@ export function TowerPage() {
                                   {levelGroup.rows.map((row) => (
                                     <tr
                                       key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}-${row.requiredThreshold}`}
+                                      className={row.achieved ? 'summary-table__row--complete' : undefined}
                                     >
                                       <td>{row.towerLevel}</td>
                                       <td>
                                         <strong>{row.itemName}</strong>
-                                        <p className="subtle-text">Slot {row.slotIndex}</p>
-                                        {row.notes ? <p className="subtle-text">Note: {row.notes}</p> : null}
+                                        {shouldShowTowerNote(row.notes) ? (
+                                          <p className="subtle-text">Note: {row.notes}</p>
+                                        ) : null}
                                         {!row.matchedSnapshotRow ? (
                                           <p className="subtle-text">Unmatched in latest snapshot</p>
                                         ) : null}

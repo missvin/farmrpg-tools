@@ -127,21 +127,24 @@ describe('TowerPage', () => {
     expect((completedRange as HTMLDetailsElement).open).toBe(false);
     expect((completedLevel as HTMLDetailsElement).open).toBe(false);
     expect((incompleteLevel as HTMLDetailsElement).open).toBe(true);
+    expect(screen.getAllByText('Completed').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Collapsed')).not.toBeInTheDocument();
     expect(screen.getByText(/Next relevant level/)).toBeInTheDocument();
+    expect(screen.queryByText('Needs progress')).not.toBeInTheDocument();
+    expect(screen.queryByText('Completed level')).not.toBeInTheDocument();
+    expect(screen.queryByText('Completed range')).not.toBeInTheDocument();
     expect(screen.getByText(/Missing latest-snapshot matches are non-fatal/)).toBeInTheDocument();
-    expect(
-      screen.getByText('Next blocking requirement: Red Diamond Fish (Requires Mastered (>= 10,000))'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Blocking requirement: Red Diamond Fish (Requires Mastered (>= 10,000))')).toBeInTheDocument();
   });
 
-  it('keeps the next blocking requirement visible and highlighted inside the first incomplete range', async () => {
+  it('keeps multiple blocking requirements visible and highlights all blockers inside the first incomplete range', async () => {
     getLatestSnapshotMock.mockResolvedValue({
       snapshotId: 'snapshot-2',
       createdAt: '2026-03-16T00:00:00.000Z',
       rawText: '',
       masteryByItem: {
-        board: 1_500_000,
-        'gold cucumber': 50_000,
+        board: 500_000,
+        'gold cucumber': 900_000,
       },
       parseSummary: {
         itemsParsed: 2,
@@ -201,31 +204,36 @@ describe('TowerPage', () => {
     expect(incompleteRange).not.toBeNull();
     expect((incompleteRange as HTMLDetailsElement).open).toBe(true);
 
-    const incompleteLevel = screen.getByText('Tower Level 202 - 1/2 items remaining').closest('details');
+    const incompleteLevel = screen.getByText('Tower Level 202 - 2/2 items remaining').closest('details');
     expect(incompleteLevel).not.toBeNull();
 
-    const row = within(incompleteLevel as HTMLElement)
+    const goldCucumberRow = within(incompleteLevel as HTMLElement)
       .getByText('Gold Cucumber')
       .closest('tr');
+    const boardRow = within(incompleteLevel as HTMLElement).getByText('Board').closest('tr');
 
-    expect(row).toHaveClass('summary-table__row--highlight');
+    expect(goldCucumberRow).toHaveClass('summary-table__row--highlight');
+    expect(boardRow).toHaveClass('summary-table__row--highlight');
     expect(
-      screen.getByText('Next blocking requirement: Gold Cucumber (Requires Mega Mastered (>= 1,000,000))'),
+      screen.getByText(
+        'Blocking requirements: 2 items remain. Closest blocker: Gold Cucumber (Requires Mega Mastered (>= 1,000,000))',
+      ),
     ).toBeInTheDocument();
   });
 
-  it('uses compact default requirement labels and planning-oriented columns in the detail table', async () => {
+  it('uses compact default requirement labels, hides internal provenance notes, and keeps completed rows de-emphasized', async () => {
     getLatestSnapshotMock.mockResolvedValue({
       snapshotId: 'snapshot-3',
       createdAt: '2026-03-16T00:00:00.000Z',
       rawText: '',
       masteryByItem: {
         board: 1_500_000,
+        'gold cucumber': 25_000,
       },
       parseSummary: {
-        itemsParsed: 1,
+        itemsParsed: 2,
         parsedRowsCount: 0,
-        tiersDetected: [1_000_000],
+        tiersDetected: [100_000, 1_000_000],
         duplicateRowsCount: 0,
         skippedNonItemLinesCount: 0,
         skippedNonItemLineSamples: [],
@@ -250,9 +258,23 @@ describe('TowerPage', () => {
           sourceSheet: null,
           sourceRow: null,
         },
+        {
+          towerLevel: 202,
+          towerLevelRange: '201-220',
+          slotIndex: 2,
+          itemName: 'Gold Cucumber',
+          canonicalKey: 'gold cucumber',
+          masteryLevelNeeded: 'GM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: 'Manual transcription from screenshot',
+          sourceSheet: null,
+          sourceRow: null,
+        },
       ],
       byCanonicalKey: {
         board: [],
+        'gold cucumber': [],
       },
     });
 
@@ -267,9 +289,14 @@ describe('TowerPage', () => {
     expect(screen.queryByText('Match')).not.toBeInTheDocument();
     expect(screen.queryByText('Slot')).not.toBeInTheDocument();
     expect(screen.queryByText('Notes')).not.toBeInTheDocument();
-    expect(screen.getByText('Slot 1')).toBeInTheDocument();
+    expect(screen.queryByText('Slot 1')).not.toBeInTheDocument();
+    expect(screen.queryByText('Slot 2')).not.toBeInTheDocument();
     expect(screen.getByText('Note: Passive source')).toBeInTheDocument();
+    expect(screen.queryByText('Note: Manual transcription from screenshot')).not.toBeInTheDocument();
     expect(screen.getByText('100%')).toBeInTheDocument();
     expect(screen.queryByText('Requires Mega Mastered (>= 1,000,000)')).not.toBeInTheDocument();
+
+    const completedRow = screen.getByText('Board').closest('tr');
+    expect(completedRow).toHaveClass('summary-table__row--complete');
   });
 });
