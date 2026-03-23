@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveTowerRequirements } from '../lib/deriveTowerRequirements';
@@ -37,12 +37,18 @@ function formatLevelSummary(remainingCount: number, totalCount: number): string 
   return `${remainingCount.toLocaleString()}/${totalCount.toLocaleString()} items remaining`;
 }
 
-function formatPercentComplete(currentMastery: number, requiredThreshold: number): string {
-  const percent = Math.min(100, (currentMastery / requiredThreshold) * 100);
+function getPercentComplete(currentMastery: number, requiredThreshold: number): number {
+  const percent = (currentMastery / requiredThreshold) * 100;
 
   if (Number.isNaN(percent) || !Number.isFinite(percent)) {
-    return '0%';
+    return 0;
   }
+
+  return Math.max(0, Math.min(100, percent));
+}
+
+function formatPercentComplete(currentMastery: number, requiredThreshold: number): string {
+  const percent = getPercentComplete(currentMastery, requiredThreshold);
 
   return `${percent.toFixed(percent >= 100 ? 0 : 1)}%`;
 }
@@ -72,6 +78,15 @@ function shouldShowTowerNote(note: string | null): boolean {
   }
 
   return !/manual transcription from screenshot/i.test(note);
+}
+
+function getPercentCellStyle(
+  currentMastery: number,
+  requiredThreshold: number,
+): CSSProperties & Record<'--tower-percent-fill', string> {
+  return {
+    '--tower-percent-fill': `${getPercentComplete(currentMastery, requiredThreshold)}%`,
+  };
 }
 
 export function TowerPage() {
@@ -340,7 +355,19 @@ export function TowerPage() {
                                           ) : null}
                                         </td>
                                         <td>{formatCompactRequirementLabel(row.requiredThreshold)}</td>
-                                        <td>{formatPercentComplete(row.currentMastery, row.requiredThreshold)}</td>
+                                        <td
+                                          className={`tower-percent-cell${
+                                            row.achieved ? ' tower-percent-cell--complete' : ''
+                                          }`}
+                                          style={getPercentCellStyle(
+                                            row.currentMastery,
+                                            row.requiredThreshold,
+                                          )}
+                                        >
+                                          <span className="tower-percent-cell__label">
+                                            {formatPercentComplete(row.currentMastery, row.requiredThreshold)}
+                                          </span>
+                                        </td>
                                         <td>{row.currentMastery.toLocaleString()}</td>
                                         <td>{row.remainingToRequirement.toLocaleString()}</td>
                                       </tr>
@@ -427,7 +454,19 @@ export function TowerPage() {
                                         ) : null}
                                       </td>
                                       <td>{formatCompactRequirementLabel(row.requiredThreshold)}</td>
-                                      <td>{formatPercentComplete(row.currentMastery, row.requiredThreshold)}</td>
+                                      <td
+                                        className={`tower-percent-cell${
+                                          row.achieved ? ' tower-percent-cell--complete' : ''
+                                        }`}
+                                        style={getPercentCellStyle(
+                                          row.currentMastery,
+                                          row.requiredThreshold,
+                                        )}
+                                      >
+                                        <span className="tower-percent-cell__label">
+                                          {formatPercentComplete(row.currentMastery, row.requiredThreshold)}
+                                        </span>
+                                      </td>
                                       <td>{row.currentMastery.toLocaleString()}</td>
                                       <td>{row.remainingToRequirement.toLocaleString()}</td>
                                     </tr>

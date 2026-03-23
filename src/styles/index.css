@@ -32,6 +32,8 @@
   --color-warning-border: #b45309;
   --color-next-border: #7c3aed;
   --color-next-bg: #f6f1ff;
+  --color-progress-fill: rgb(124 58 237 / 0.12);
+  --color-progress-fill-complete: rgb(123 135 148 / 0.2);
   --color-backlog-shipped-border: #7cba8f;
   --color-backlog-shipped-bg: #f3fbf5;
   --color-backlog-shipped-selected-border: #2f9e44;
@@ -85,6 +87,8 @@
   --color-warning-border: #d59d3f;
   --color-next-border: #a78bfa;
   --color-next-bg: #2e2246;
+  --color-progress-fill: rgb(167 139 250 / 0.18);
+  --color-progress-fill-complete: rgb(127 147 171 / 0.22);
   --color-backlog-shipped-border: #4fb26c;
   --color-backlog-shipped-bg: #162a1b;
   --color-backlog-shipped-selected-border: #6ee28f;
@@ -488,6 +492,29 @@ a {
 
 .summary-table__row--complete td .subtle-text {
   color: var(--color-text-faint);
+}
+
+.tower-percent-cell {
+  position: relative;
+  overflow: hidden;
+}
+
+.tower-percent-cell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: var(--tower-percent-fill, 0%);
+  background: var(--color-progress-fill);
+  pointer-events: none;
+}
+
+.tower-percent-cell--complete::before {
+  background: var(--color-progress-fill-complete);
+}
+
+.tower-percent-cell__label {
+  position: relative;
+  z-index: 1;
 }
 
 .data-list {

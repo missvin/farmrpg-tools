@@ -219,6 +219,13 @@ describe('TowerPage', () => {
         'Blocking requirements: 2 items remain. Closest blocker: Gold Cucumber (Requires Mega Mastered (>= 1,000,000))',
       ),
     ).toBeInTheDocument();
+
+    const goldCucumberPercentCell = within(goldCucumberRow as HTMLElement).getByText('90.0%').closest('td');
+    const boardPercentCell = within(boardRow as HTMLElement).getByText('50.0%').closest('td');
+
+    expect(goldCucumberPercentCell).toHaveClass('tower-percent-cell');
+    expect(goldCucumberPercentCell).toHaveStyle('--tower-percent-fill: 90%');
+    expect(boardPercentCell).toHaveStyle('--tower-percent-fill: 50%');
   });
 
   it('uses compact default requirement labels, hides internal provenance notes, and keeps completed rows de-emphasized', async () => {
@@ -298,5 +305,14 @@ describe('TowerPage', () => {
 
     const completedRow = screen.getByText('Board').closest('tr');
     expect(completedRow).toHaveClass('summary-table__row--complete');
+
+    const completedPercentCell = within(completedRow as HTMLElement).getByText('100%').closest('td');
+    const incompleteRow = screen.getByText('Gold Cucumber').closest('tr');
+    const incompletePercentCell = within(incompleteRow as HTMLElement).getByText('25.0%').closest('td');
+
+    expect(completedPercentCell).toHaveClass('tower-percent-cell', 'tower-percent-cell--complete');
+    expect(completedPercentCell).toHaveStyle('--tower-percent-fill: 100%');
+    expect(incompletePercentCell).toHaveClass('tower-percent-cell');
+    expect(incompletePercentCell).toHaveStyle('--tower-percent-fill: 25%');
   });
 });
