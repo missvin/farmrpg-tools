@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveMasteryDifficultyStats } from '../lib/deriveMasteryDifficultyStats';
@@ -6,7 +6,7 @@ import { downloadMissingMasteryDifficultyCsv } from '../lib/exportMissingMastery
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
 
-type SortedMode = 'gm' | 'mm';
+type SortedMode = 'm' | 'gm' | 'mm';
 type TierBucketKey = 'no-tier' | 'mastered' | 'grand-mastered';
 type TierBucket = {
   key: TierBucketKey;
@@ -18,9 +18,45 @@ const MASTERY_TARGET = 10_000;
 const GRAND_MASTERY_TARGET = 100_000;
 
 function formatRemainingLabel(mode: SortedMode): string {
-  return mode === 'gm'
-    ? 'Remaining to Grand Mastery (100,000)'
-    : 'Remaining to Mega Mastery (1,000,000)';
+  if (mode === 'm') {
+    return 'Remaining to Mastery (10,000)';
+  }
+
+  return mode === 'gm' ? 'Remaining to Grand Mastery (100,000)' : 'Remaining to Mega Mastery (1,000,000)';
+}
+
+function formatProgressLabel(mode: SortedMode): string {
+  if (mode === 'm') {
+    return 'Progress to M (10k)';
+  }
+
+  return mode === 'gm' ? 'Progress to GM (100k)' : 'Progress to MM (1M)';
+}
+
+function getProgressPercent(currentMastery: number, mode: SortedMode): number {
+  const target =
+    mode === 'm' ? MASTERY_TARGET : mode === 'gm' ? GRAND_MASTERY_TARGET : 1_000_000;
+  const percent = (currentMastery / target) * 100;
+
+  if (Number.isNaN(percent) || !Number.isFinite(percent)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.min(100, percent));
+}
+
+function formatProgressPercent(currentMastery: number, mode: SortedMode): string {
+  const percent = getProgressPercent(currentMastery, mode);
+  return `${percent.toFixed(percent >= 100 ? 0 : 1)}%`;
+}
+
+function getSortedProgressCellStyle(
+  currentMastery: number,
+  mode: SortedMode,
+): CSSProperties & Record<'--sorted-progress-fill', string> {
+  return {
+    '--sorted-progress-fill': `${getProgressPercent(currentMastery, mode)}%`,
+  };
 }
 
 function buildBucketItem(group: { label: string }, item: {
@@ -43,7 +79,7 @@ function getTierBucketMeta(currentMastery: number): { key: TierBucketKey; label:
     return {
       key: 'grand-mastered',
       label: 'Grand Mastered',
-      order: 2,
+      order: 0,
     };
   }
 
@@ -56,9 +92,9 @@ function getTierBucketMeta(currentMastery: number): { key: TierBucketKey; label:
   }
 
   return {
-    key: 'no-tier',
-    label: 'No Tier Yet',
-    order: 0,
+      key: 'no-tier',
+      label: 'No Tier Yet',
+      order: 2,
   };
 }
 
@@ -125,7 +161,7 @@ function buildTierBuckets(
 }
 
 export function SortedPage() {
-  const [mode, setMode] = useState<SortedMode>('gm');
+  const [mode, setMode] = useState<SortedMode>('m');
   const [filterText, setFilterText] = useState('');
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -212,7 +248,11 @@ export function SortedPage() {
   }, []);
 
   const activeGroups =
-    mode === 'gm' ? sortedState.derivedStats?.gmLeftGroups ?? [] : sortedState.derivedStats?.mmLeftGroups ?? [];
+    mode === 'm'
+      ? sortedState.derivedStats?.mLeftGroups ?? []
+      : mode === 'gm'
+        ? sortedState.derivedStats?.gmLeftGroups ?? []
+        : sortedState.derivedStats?.mmLeftGroups ?? [];
   const normalizedFilter = filterText.trim().toLowerCase();
   const filteredGroups = activeGroups
     .map((group) => ({
@@ -271,12 +311,19 @@ export function SortedPage() {
             <div>
               <h2 id="sorted-controls-title">Progress-to-Threshold View</h2>
               <p className="supporting-text">
-                Switch between the latest snapshot items that still need progress toward Grand Mastery or Mega
-                Mastery.
+                Switch between the latest snapshot items that still need progress toward Mastery, Grand Mastery,
+                or Mega Mastery.
               </p>
             </div>
 
             <div className="button-row">
+              <button
+                type="button"
+                className={`button ${mode === 'm' ? 'button--active' : ''}`}
+                onClick={() => setMode('m')}
+              >
+                M Left
+              </button>
               <button
                 type="button"
                 className={`button ${mode === 'gm' ? 'button--active' : ''}`}
@@ -364,13 +411,14 @@ export function SortedPage() {
                                     <strong>{item.itemName}</strong>
                                     <span>{item.currentMastery.toLocaleString()}</span>
                                   </div>
-                                  <p className="progress-list__meta">
-                                    <span>{formatRemainingLabel(mode)}: {item.remainingToTarget.toLocaleString()}</span>
-                                    {' | '}
-                                    <span>{item.difficultyLabel}</span>
-                                  </p>
-                                  {item.method ? <p className="progress-list__meta">Method: {item.method}</p> : null}
-                                  {item.notes ? <p className="progress-list__notes">Notes: {item.notes}</p> : null}
+                                  <div
+                                    className="sorted-progress-cell"
+                                    style={getSortedProgressCellStyle(item.currentMastery, mode)}
+                                  >
+                                    <span className="sorted-progress-cell__label">
+                                      {formatProgressLabel(mode)}: {formatProgressPercent(item.currentMastery, mode)}
+                                    </span>
+                                  </div>
                                 </li>
                               ))}
                             </ul>

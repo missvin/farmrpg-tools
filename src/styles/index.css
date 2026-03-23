@@ -569,6 +569,30 @@ a {
   color: var(--color-text-muted);
 }
 
+.sorted-progress-cell {
+  position: relative;
+  overflow: hidden;
+  margin-top: 0.65rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.4rem;
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
+}
+
+.sorted-progress-cell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: var(--sorted-progress-fill, 0%);
+  background: var(--color-progress-fill);
+  pointer-events: none;
+}
+
+.sorted-progress-cell__label {
+  position: relative;
+  z-index: 1;
+}
+
 .sorted-rollup-card {
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;

@@ -128,9 +128,13 @@ describe('App shell', () => {
 
     await user.click(screen.getByText('Progress'));
     expect(await screen.findByRole('link', { name: 'Tower Progress' })).toBeVisible();
+    expect(screen.queryByRole('link', { name: 'History' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Compare' })).not.toBeInTheDocument();
 
     await user.click(screen.getByText('Data'));
     expect(await screen.findByRole('link', { name: 'Import' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'History' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Compare' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Settings' })).toBeVisible();
 
     await user.click(screen.getByText('Dev Tools'));

@@ -105,14 +105,14 @@ export const navigationSections: NavigationSection[] = [
       { to: '/tower-progress', label: 'Tower Progress' },
       { to: '/sorted', label: 'Sorted' },
       { to: '/tower', label: 'Tower' },
-      { to: '/history', label: 'History' },
-      { to: '/compare', label: 'Compare' },
     ],
   },
   {
     title: 'Data',
     items: [
       { to: '/import', label: 'Import' },
+      { to: '/history', label: 'History' },
+      { to: '/compare', label: 'Compare' },
       { to: '/settings', label: 'Settings' },
     ],
   },

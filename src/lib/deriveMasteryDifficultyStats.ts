@@ -49,6 +49,7 @@ export type UnmatchedItem = {
 export type DerivedMasteryDifficultyStats = {
   achievedStatusSummary: AchievedStatusSummary;
   difficultySummary: DifficultySummaryRow[];
+  mLeftGroups: ProgressListGroup[];
   gmLeftGroups: ProgressListGroup[];
   mmLeftGroups: ProgressListGroup[];
   unmatchedItemCount: number;
@@ -148,6 +149,7 @@ export function deriveMasteryDifficultyStats(
     megaMasteredCount: 0,
   };
   const difficultyBuckets = new Map<string, BucketAccumulator>();
+  const mLeftGroups = new Map<string, ProgressListGroup>();
   const gmLeftGroups = new Map<string, ProgressListGroup>();
   const mmLeftGroups = new Map<string, ProgressListGroup>();
   const unmatchedItems: UnmatchedItem[] = [];
@@ -197,6 +199,20 @@ export function deriveMasteryDifficultyStats(
       notes: matchedEntry?.notes ?? null,
       matched: Boolean(matchedEntry),
     };
+
+    if (currentMastery < MASTERY_TARGET) {
+      const group = mLeftGroups.get(bucketKey) ?? {
+        difficulty,
+        label: difficultyLabel,
+        items: [],
+      };
+
+      group.items.push({
+        ...baseItem,
+        remainingToTarget: MASTERY_TARGET - currentMastery,
+      });
+      mLeftGroups.set(bucketKey, group);
+    }
 
     if (currentMastery < GRAND_MASTERY_TARGET) {
       const group = gmLeftGroups.get(bucketKey) ?? {
@@ -252,6 +268,7 @@ export function deriveMasteryDifficultyStats(
   return {
     achievedStatusSummary,
     difficultySummary,
+    mLeftGroups: sortGroups([...mLeftGroups.values()]),
     gmLeftGroups: sortGroups([...gmLeftGroups.values()]),
     mmLeftGroups: sortGroups([...mmLeftGroups.values()]),
     unmatchedItemCount: unmatchedItems.length,
