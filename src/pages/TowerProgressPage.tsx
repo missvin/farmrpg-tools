@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveTowerProgress } from '../lib/deriveTowerProgress';
@@ -33,14 +33,28 @@ function toCompletePercent(total: number, remaining: number): number {
 
 function formatRequirementLabel(requiredThreshold: number): string {
   if (requiredThreshold === 10_000) {
-    return 'Mastery (10,000)';
+    return 'M (10k)';
   }
 
   if (requiredThreshold === 100_000) {
-    return 'Grand Mastery (100,000)';
+    return 'GM (100k)';
   }
 
-  return 'Mega Mastery (1,000,000)';
+  return 'MM (1M)';
+}
+
+function buildItemTooltip(method: string | null, notes: string | null): string | null {
+  const parts: string[] = [];
+
+  if (method) {
+    parts.push(`Method: ${method}`);
+  }
+
+  if (notes) {
+    parts.push(`Notes: ${notes}`);
+  }
+
+  return parts.length > 0 ? parts.join('\n') : null;
 }
 
 export function TowerProgressPage() {
@@ -336,8 +350,24 @@ export function TowerProgressPage() {
               <ul className="progress-list">
                 {progressState.derivedProgress.remainingItems.map((item) => (
                   <li key={item.canonicalKey} className="progress-list__item">
+                    {(() => {
+                      const tooltipText = buildItemTooltip(item.method, item.notes);
+
+                      return (
+                        <>
                     <div className="progress-list__header">
-                      <strong>{item.itemName}</strong>
+                      <div className="progress-list__title-row">
+                        <strong>{item.itemName}</strong>
+                        {tooltipText ? (
+                          <span
+                            className="progress-list__tooltip"
+                            title={tooltipText}
+                            aria-label={`Extra reference details for ${item.itemName}`}
+                          >
+                            Info
+                          </span>
+                        ) : null}
+                      </div>
                       <span>{item.currentMastery.toLocaleString()} / {item.requiredThreshold.toLocaleString()}</span>
                     </div>
                     <p className="progress-list__meta">
@@ -345,27 +375,28 @@ export function TowerProgressPage() {
                       {' | '}
                       <span>Target: {formatRequirementLabel(item.requiredThreshold)}</span>
                     </p>
-                    <progress
-                      className="progress-meter"
-                      max={100}
-                      value={item.progressPercent}
+                    <div
+                      className="progress-list__progress-cell"
+                      style={
+                        {
+                          '--progress-list-fill': `${Math.max(0, Math.min(100, item.progressPercent))}%`,
+                        } as CSSProperties
+                      }
                       aria-label={`${item.itemName} progress`}
                     >
-                      {item.progressPercent}
-                    </progress>
-                    <p className="progress-list__meta">
-                      <span>{formatPercent(item.progressPercent)} complete</span>
-                      {' | '}
-                      <span>{item.remainingToTarget.toLocaleString()} remaining</span>
-                    </p>
+                      <span className="progress-list__progress-label">
+                        {formatPercent(item.progressPercent)} complete | {item.remainingToTarget.toLocaleString()} remaining
+                      </span>
+                    </div>
                     {!item.matchedSnapshotRow ? (
                       <p className="progress-list__notes">Unmatched in latest snapshot; treated as 0 mastery.</p>
                     ) : null}
                     {!item.matchedDifficultyRow ? (
                       <p className="progress-list__notes">Missing from mastery difficulty data; shown as Unrated.</p>
                     ) : null}
-                    {item.method ? <p className="progress-list__notes">Method: {item.method}</p> : null}
-                    {item.notes ? <p className="progress-list__notes">Notes: {item.notes}</p> : null}
+                        </>
+                      );
+                    })()}
                   </li>
                 ))}
               </ul>

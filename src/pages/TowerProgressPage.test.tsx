@@ -202,8 +202,14 @@ describe('TowerProgressPage', () => {
     const boardItem = within(remainingItemsSection as HTMLElement).getByText('Board').closest('li');
     expect(boardItem).not.toBeNull();
     expect(within(boardItem as HTMLElement).getByText('150,000 / 1,000,000')).toBeInTheDocument();
-    expect(within(boardItem as HTMLElement).getByText('Target: Mega Mastery (1,000,000)')).toBeInTheDocument();
+    expect(within(boardItem as HTMLElement).getByText('Target: MM (1M)')).toBeInTheDocument();
     expect(screen.getByLabelText('Board progress')).toBeInTheDocument();
+    expect(within(boardItem as HTMLElement).getByLabelText('Extra reference details for Board')).toHaveAttribute(
+      'title',
+      'Method: Crafting\nNotes: Passive',
+    );
+    expect(within(boardItem as HTMLElement).queryByText('Method: Crafting')).not.toBeInTheDocument();
+    expect(within(boardItem as HTMLElement).queryByText('Notes: Passive')).not.toBeInTheDocument();
   });
 
   it('surfaces unmatched snapshot items and missing mastery difficulty rows without failing', async () => {

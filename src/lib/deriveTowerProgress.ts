@@ -156,6 +156,10 @@ function buildAggregatedTowerItems(towerRequirementsData: TowerRequirementsData)
 }
 
 function compareItems(left: TowerProgressItem, right: TowerProgressItem): number {
+  if (left.progressPercent !== right.progressPercent) {
+    return right.progressPercent - left.progressPercent;
+  }
+
   if (left.remainingToTarget !== right.remainingToTarget) {
     return left.remainingToTarget - right.remainingToTarget;
   }

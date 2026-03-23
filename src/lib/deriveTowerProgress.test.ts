@@ -262,4 +262,22 @@ describe('deriveTowerProgress', () => {
     expect(derived.unmatchedSnapshotItemCount).toBe(2);
     expect(derived.unratedItemCount).toBe(1);
   });
+
+  it('sorts remaining items by percent complete before remaining amount', () => {
+    const derived = deriveTowerProgress(
+      createSnapshot({
+        board: 600_000,
+        'gold cucumber': 90_000,
+        'red diamond fish': 2_000,
+      }),
+      towerRequirementsData,
+      masteryDifficultyData,
+    );
+
+    expect(derived.remainingItems.map((item) => item.canonicalKey)).toEqual([
+      'gold cucumber',
+      'board',
+      'red diamond fish',
+    ]);
+  });
 });
