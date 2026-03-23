@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveMasteryDifficultyStats } from '../lib/deriveMasteryDifficultyStats';
@@ -15,6 +15,20 @@ function formatTierList(tiers: Array<number | 'INF'>): string {
 
 function formatPercent(value: number): string {
   return `${value.toFixed(1)}%`;
+}
+
+function clampPercent(value: number): number {
+  if (Number.isNaN(value) || !Number.isFinite(value)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.min(100, value));
+}
+
+function getDashboardPercentCellStyle(value: number): CSSProperties & Record<'--dashboard-percent-fill', string> {
+  return {
+    '--dashboard-percent-fill': `${clampPercent(value)}%`,
+  };
 }
 
 export function DashboardPage() {
@@ -203,14 +217,29 @@ export function DashboardPage() {
                     <tr key={row.label}>
                       <th scope="row">{row.label}</th>
                       <td>{row.totalItems.toLocaleString()}</td>
-                      <td>
-                        {row.masteredCount.toLocaleString()} ({formatPercent(row.masteredPercent)})
+                      <td
+                        className="dashboard-percent-cell"
+                        style={getDashboardPercentCellStyle(row.masteredPercent)}
+                      >
+                        <span className="dashboard-percent-cell__label">
+                          {row.masteredCount.toLocaleString()} ({formatPercent(row.masteredPercent)})
+                        </span>
                       </td>
-                      <td>
-                        {row.grandMasteredCount.toLocaleString()} ({formatPercent(row.grandMasteredPercent)})
+                      <td
+                        className="dashboard-percent-cell"
+                        style={getDashboardPercentCellStyle(row.grandMasteredPercent)}
+                      >
+                        <span className="dashboard-percent-cell__label">
+                          {row.grandMasteredCount.toLocaleString()} ({formatPercent(row.grandMasteredPercent)})
+                        </span>
                       </td>
-                      <td>
-                        {row.megaMasteredCount.toLocaleString()} ({formatPercent(row.megaMasteredPercent)})
+                      <td
+                        className="dashboard-percent-cell"
+                        style={getDashboardPercentCellStyle(row.megaMasteredPercent)}
+                      >
+                        <span className="dashboard-percent-cell__label">
+                          {row.megaMasteredCount.toLocaleString()} ({formatPercent(row.megaMasteredPercent)})
+                        </span>
                       </td>
                     </tr>
                   ))}
