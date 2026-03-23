@@ -321,10 +321,7 @@ export function deriveBuddyIconObservations(extractionResult) {
   const results = extractionResult.results.map((result) => {
     const iconAssetKey = getIconAssetKey(result.iconFilename);
     const farmrpgItemIdCandidate = getFarmRpgItemIdCandidate(result.iconFilename);
-    const observationStatus =
-      result.extractionStatus === 'icon_found' && result.iconUrl && result.iconPathname && result.iconFilename
-        ? 'observed'
-        : 'review_needed';
+    const observationStatus = result.iconUrl && result.iconPathname && result.iconFilename ? 'observed' : 'review_needed';
 
     return {
       itemName: result.itemName,

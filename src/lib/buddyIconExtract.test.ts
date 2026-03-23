@@ -212,6 +212,41 @@ describe('deriveBuddyIconObservations', () => {
     );
     expect(observationResult.reviewResults).toHaveLength(1);
   });
+
+  it('treats directly observed special-case icon paths as observed while preserving the unexpected path flag', () => {
+    const observationResult = deriveBuddyIconObservations({
+      results: [
+        {
+          itemName: 'Captured Ghost',
+          canonicalKey: 'captured ghost',
+          generatedBuddySlug: 'captured-ghost',
+          candidateBuddyUrl: 'https://buddy.farm/i/captured-ghost/',
+          extractionStatus: 'uncertain',
+          pageTitle: 'Captured Ghost',
+          iconUrl: 'https://farmrpg.com/img/ghost.png',
+          iconPathname: '/img/ghost.png',
+          iconFilename: 'ghost.png',
+          flags: ['unexpected_icon_path'],
+          notes: ['The extracted icon URL did not use the expected /img/items/ path.'],
+        },
+      ],
+    });
+
+    expect(observationResult.results[0]).toEqual(
+      expect.objectContaining({
+        observationStatus: 'observed',
+        iconUrl: 'https://farmrpg.com/img/ghost.png',
+        flags: ['unexpected_icon_path'],
+      }),
+    );
+    expect(observationResult.reviewResults).toEqual([]);
+    expect(observationResult.summary).toEqual(
+      expect.objectContaining({
+        observedCount: 1,
+        reviewCount: 0,
+      }),
+    );
+  });
 });
 
 describe('extractBuddyItemIcons', () => {

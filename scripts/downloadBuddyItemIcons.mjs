@@ -14,7 +14,8 @@ function parseArgs(argv) {
   const options = {
     outputDir: '',
     cacheDir: 'generated/item-icons',
-    delayMs: 500,
+    delayMs: 3000,
+    jitterMs: 500,
     limit: null,
     refresh: false,
     maxConsecutiveFailures: 3,
@@ -39,7 +40,13 @@ function parseArgs(argv) {
     }
 
     if (argument === '--delay-ms') {
-      options.delayMs = Number(argv[index + 1] ?? '500');
+      options.delayMs = Number(argv[index + 1] ?? '3000');
+      index += 1;
+      continue;
+    }
+
+    if (argument === '--jitter-ms') {
+      options.jitterMs = Number(argv[index + 1] ?? '500');
       index += 1;
       continue;
     }
@@ -90,7 +97,7 @@ function parseArgs(argv) {
 
 function printUsage() {
   console.log(
-    'Usage: node scripts/downloadBuddyItemIcons.mjs <buddy_item_icon_observations.csv|buddy_item_icons.csv> [--output-dir <dir>] [--cache-dir <dir>] [--delay-ms <ms>] [--limit <n>] [--refresh] [--max-consecutive-failures <n>] [--max-total-failures <n>] [--max-failure-rate <decimal>] [--failure-rate-min-attempts <n>]',
+    'Usage: node scripts/downloadBuddyItemIcons.mjs <buddy_item_icon_observations.csv|buddy_item_icons.csv> [--output-dir <dir>] [--cache-dir <dir>] [--delay-ms <ms>] [--jitter-ms <ms>] [--limit <n>] [--refresh] [--max-consecutive-failures <n>] [--max-total-failures <n>] [--max-failure-rate <decimal>] [--failure-rate-min-attempts <n>]',
   );
 }
 
@@ -100,6 +107,7 @@ async function main() {
     outputDir,
     cacheDir,
     delayMs,
+    jitterMs,
     limit,
     refresh,
     maxConsecutiveFailures,
@@ -125,12 +133,13 @@ async function main() {
   await mkdir(resolvedCacheDir, { recursive: true });
 
   console.log(
-    `Downloading cached icons for ${selectedRows.length.toLocaleString()} icon rows with ${delayMs.toLocaleString()}ms delay...`,
+    `Downloading cached icons for ${selectedRows.length.toLocaleString()} icon rows with ${delayMs.toLocaleString()}ms base delay and up to ${jitterMs.toLocaleString()}ms jitter...`,
   );
 
   const downloadResult = await downloadBuddyItemIcons(selectedRows, {
     cacheDir: resolvedCacheDir,
     interRequestDelayMs: delayMs,
+    interRequestJitterMs: jitterMs,
     refresh,
     maxConsecutiveFailures,
     maxTotalFailures,
@@ -158,6 +167,8 @@ async function main() {
   console.log(`review: ${downloadResult.summary.reviewCount.toLocaleString()}`);
   console.log(`network_attempts: ${downloadResult.summary.networkAttempts.toLocaleString()}`);
   console.log(`total_failures: ${downloadResult.summary.totalFailures.toLocaleString()}`);
+  console.log(`base_delay_ms: ${downloadResult.summary.interRequestDelayMs.toLocaleString()}`);
+  console.log(`jitter_ms: ${downloadResult.summary.interRequestJitterMs.toLocaleString()}`);
 
   if (downloadResult.summary.stoppedByGuard) {
     console.log(`guard_stop: ${downloadResult.summary.guardStopReason}`);

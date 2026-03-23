@@ -109,6 +109,7 @@ describe('downloadBuddyItemIcons', () => {
             arrayBuffer: async () => new TextEncoder().encode('png-bytes').buffer,
           };
         },
+        randomFn: () => 0,
       },
     );
 
@@ -159,12 +160,14 @@ describe('downloadBuddyItemIcons', () => {
       cacheDir,
       interRequestDelayMs: 0,
       fetchFn,
+      randomFn: () => 0,
     });
 
     const secondResult = await downloadBuddyItemIcons(iconRows, {
       cacheDir,
       interRequestDelayMs: 0,
       fetchFn,
+      randomFn: () => 0,
     });
 
     expect(fetchCount).toBe(1);
@@ -251,6 +254,7 @@ describe('downloadBuddyItemIcons', () => {
             status: 500,
           };
         },
+        randomFn: () => 0,
       },
     );
 
@@ -266,6 +270,111 @@ describe('downloadBuddyItemIcons', () => {
       expect.objectContaining({
         cacheStatus: 'skipped_guard',
         flags: expect.arrayContaining(['stopped_by_guard']),
+      }),
+    );
+  });
+
+  it('applies jittered multi-second pacing between network requests', async () => {
+    const cacheDir = await createTempDir();
+    const sleepCalls = [];
+
+    await downloadBuddyItemIcons(
+      [
+        {
+          itemName: 'Board',
+          canonicalKey: 'board',
+          generatedBuddySlug: 'board',
+          candidateBuddyUrl: 'https://buddy.farm/i/board/',
+          extractionStatus: 'icon_found',
+          observationStatus: 'observed',
+          iconUrl: 'https://farmrpg.com/img/items/5885.png',
+          iconPathname: '/img/items/5885.png',
+          iconFilename: '5885.png',
+          iconAssetKey: '5885',
+          farmrpgItemIdCandidate: '5885',
+          flags: [],
+          notes: [],
+        },
+        {
+          itemName: 'Fancy Pipe',
+          canonicalKey: 'fancy pipe',
+          generatedBuddySlug: 'fancy-pipe',
+          candidateBuddyUrl: 'https://buddy.farm/i/fancy-pipe/',
+          extractionStatus: 'icon_found',
+          observationStatus: 'observed',
+          iconUrl: 'https://farmrpg.com/img/items/7275.png?1',
+          iconPathname: '/img/items/7275.png',
+          iconFilename: '7275.png',
+          iconAssetKey: '7275',
+          farmrpgItemIdCandidate: '7275',
+          flags: [],
+          notes: [],
+        },
+      ],
+      {
+        cacheDir,
+        interRequestDelayMs: 3000,
+        interRequestJitterMs: 500,
+        randomFn: () => 0.5,
+        sleepFn: async (ms) => {
+          sleepCalls.push(ms);
+        },
+        fetchFn: async () => ({
+          ok: true,
+          status: 200,
+          arrayBuffer: async () => new TextEncoder().encode('png-bytes').buffer,
+        }),
+      },
+    );
+
+    expect(sleepCalls).toEqual([3250]);
+  });
+
+  it('downloads observed special-case icon rows even when extraction status remains uncertain', async () => {
+    const cacheDir = await createTempDir();
+    let fetchCount = 0;
+
+    const result = await downloadBuddyItemIcons(
+      [
+        {
+          itemName: 'Captured Ghost',
+          canonicalKey: 'captured ghost',
+          generatedBuddySlug: 'captured-ghost',
+          candidateBuddyUrl: 'https://buddy.farm/i/captured-ghost/',
+          extractionStatus: 'uncertain',
+          observationStatus: 'observed',
+          iconUrl: 'https://farmrpg.com/img/ghost.png',
+          iconPathname: '/img/ghost.png',
+          iconFilename: 'ghost.png',
+          iconAssetKey: 'ghost',
+          farmrpgItemIdCandidate: null,
+          flags: ['unexpected_icon_path'],
+          notes: ['The extracted icon URL did not use the expected /img/items/ path.'],
+        },
+      ],
+      {
+        cacheDir,
+        interRequestDelayMs: 0,
+        interRequestJitterMs: 0,
+        randomFn: () => 0,
+        fetchFn: async () => {
+          fetchCount += 1;
+
+          return {
+            ok: true,
+            status: 200,
+            arrayBuffer: async () => new TextEncoder().encode('ghost-bytes').buffer,
+          };
+        },
+      },
+    );
+
+    expect(fetchCount).toBe(1);
+    expect(result.summary.iconRowsProcessed).toBe(1);
+    expect(result.results[0]).toEqual(
+      expect.objectContaining({
+        itemName: 'Captured Ghost',
+        cacheStatus: 'downloaded',
       }),
     );
   });

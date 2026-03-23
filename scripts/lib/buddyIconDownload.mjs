@@ -208,6 +208,18 @@ function evaluateStopCondition(metrics, options) {
   return null;
 }
 
+function getInterRequestDelayMs(baseDelayMs, jitterMs, randomFn) {
+  if (baseDelayMs <= 0) {
+    return 0;
+  }
+
+  if (jitterMs <= 0) {
+    return baseDelayMs;
+  }
+
+  return baseDelayMs + Math.floor(randomFn() * (jitterMs + 1));
+}
+
 export function buildBuddyIconCacheFilename(iconRow) {
   const extension = normalizeExtension(iconRow.iconFilename ?? '');
   const hash = createHash('sha1').update(iconRow.iconUrl ?? '').digest('hex').slice(0, 12);
@@ -220,9 +232,11 @@ export function buildBuddyIconCacheFilename(iconRow) {
 export async function downloadBuddyItemIcons(iconRows, options = {}) {
   const fetchFn = options.fetchFn ?? fetch;
   const sleepFn = options.sleepFn ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
+  const randomFn = options.randomFn ?? Math.random;
   const cacheDir = options.cacheDir;
   const refresh = options.refresh ?? false;
-  const interRequestDelayMs = options.interRequestDelayMs ?? 500;
+  const interRequestDelayMs = options.interRequestDelayMs ?? 3000;
+  const interRequestJitterMs = options.interRequestJitterMs ?? 500;
   const stopOptions = {
     maxConsecutiveFailures: options.maxConsecutiveFailures ?? 3,
     maxTotalFailures: options.maxTotalFailures ?? 5,
@@ -237,7 +251,7 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
   await mkdir(cacheDir, { recursive: true });
 
   const downloadableRows = iconRows.filter(
-    (row) => row.extractionStatus === 'icon_found' && row.iconUrl && (!row.observationStatus || row.observationStatus === 'observed'),
+    (row) => row.iconUrl && (!row.observationStatus || row.observationStatus === 'observed'),
   );
   const cacheByIconUrl = new Map();
   const results = [];
@@ -371,7 +385,7 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
     guardStopReason = evaluateStopCondition(metrics, stopOptions);
 
     if (index < downloadableRows.length - 1) {
-      await sleepFn(interRequestDelayMs);
+      await sleepFn(getInterRequestDelayMs(interRequestDelayMs, interRequestJitterMs, randomFn));
     }
   }
 
@@ -394,6 +408,8 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
       guardStopReason,
       networkAttempts: metrics.networkAttempts,
       totalFailures: metrics.totalFailures,
+      interRequestDelayMs,
+      interRequestJitterMs,
     },
   };
 }
