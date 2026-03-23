@@ -143,9 +143,6 @@ export function ImportPage() {
         parseResult.parseSummary.duplicateRowsCount > 0
           ? `${formatCountLabel(parseResult.parseSummary.duplicateRowsCount, 'duplicate row was', 'duplicate rows were')} merged using the highest parsed count.`
           : null,
-        parseResult.parseSummary.skippedNonItemLinesCount > 0
-          ? `${formatCountLabel(parseResult.parseSummary.skippedNonItemLinesCount, 'non-item line was', 'non-item lines were')} ignored during parsing.`
-          : null,
       ].filter((finding): finding is string => Boolean(finding))
     : [];
 
@@ -302,7 +299,7 @@ export function ImportPage() {
                 <dd>{formatTierList(parseResult.parseSummary.tiersDetected)}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Suspicious outcomes</dt>
+                <dt>Review findings</dt>
                 <dd>{validationSummaryFindings.length.toLocaleString()}</dd>
               </div>
             </dl>
@@ -310,8 +307,8 @@ export function ImportPage() {
             <div className="page-stack">
               <h3 className="section-title">Import Validation Report</h3>
               <p className="supporting-text">
-                This read-only summary shows what the parser kept, what it ignored, and anything worth checking
-                before you save.
+                This read-only summary shows what the parser kept, any actual review-worthy findings, and the expected
+                non-item lines it ignored before you save.
               </p>
 
               {validationSummaryFindings.length > 0 ? (
@@ -323,8 +320,23 @@ export function ImportPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="empty-state">No skipped lines, duplicate rows, or suspicious parsing outcomes were detected.</p>
+                <p className="empty-state">No duplicate-row merges or other review-worthy parser findings were detected.</p>
               )}
+
+              {parseResult.parseSummary.skippedNonItemLinesCount > 0 ? (
+                <div className="page-stack page-stack--tight">
+                  <h4 className="section-title">Expected Ignored Lines</h4>
+                  <p className="supporting-text">
+                    {formatCountLabel(
+                      parseResult.parseSummary.skippedNonItemLinesCount,
+                      'non-item line was',
+                      'non-item lines were',
+                    )}{' '}
+                    ignored during parsing. This is normal when the pasted export includes headers, navigation, or
+                    standalone percent lines.
+                  </p>
+                </div>
+              ) : null}
 
               {parseResult.parseSummary.skippedNonItemLineSamples.length > 0 ? (
                 <div className="page-stack page-stack--tight">

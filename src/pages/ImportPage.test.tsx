@@ -224,8 +224,14 @@ Settings`,
     expect(screen.getByRole('heading', { name: 'Import Validation Report' })).toBeInTheDocument();
     expect(screen.getByText('Duplicate rows')).toBeInTheDocument();
     expect(screen.getByText('Ignored lines')).toBeInTheDocument();
+    const reviewFindingsCard = screen.getByText('Review findings').closest('.summary-grid__item');
+    expect(reviewFindingsCard).not.toBeNull();
+    expect(within(reviewFindingsCard as HTMLElement).getByText('1')).toBeInTheDocument();
     expect(screen.getByText(/1 duplicate row was merged using the highest parsed count/)).toBeInTheDocument();
-    expect(screen.getByText(/3 non-item lines were ignored during parsing/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Expected Ignored Lines' })).toBeInTheDocument();
+    expect(
+      screen.getByText(/3 non-item lines were ignored during parsing\. This is normal when the pasted export includes headers, navigation, or standalone percent lines\./),
+    ).toBeInTheDocument();
     expect(screen.getByText('Line 1: Farm RPG')).toBeInTheDocument();
     expect(screen.getByText('Line 2: Back')).toBeInTheDocument();
     expect(screen.getByText('Line 12: Settings')).toBeInTheDocument();
