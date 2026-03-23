@@ -259,17 +259,19 @@ describe('IngredientDemandListPage', () => {
 
     const table = screen.getByRole('table');
     const initialRows = within(table).getAllByRole('row');
-    expect(initialRows[1]).toHaveTextContent('Iron');
+    expect(initialRows[1]).toHaveTextContent('Twine');
     expect(initialRows[2]).toHaveTextContent('Fiber');
-    expect(initialRows[3]).toHaveTextContent('Twine');
+    expect(initialRows[3]).toHaveTextContent('Iron');
     expect(screen.queryByText('Rope')).not.toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText('Sort direction'), 'desc');
+    await user.click(screen.getByRole('button', { name: /sort by ingredient/i }));
 
-    const descendingRows = within(table).getAllByRole('row');
-    expect(descendingRows[1]).toHaveTextContent('Twine');
-    expect(descendingRows[2]).toHaveTextContent('Fiber');
-    expect(descendingRows[3]).toHaveTextContent('Iron');
+    const ingredientSortedRows = within(table).getAllByRole('row');
+    expect(ingredientSortedRows[1]).toHaveTextContent('Fiber');
+    expect(ingredientSortedRows[2]).toHaveTextContent('Iron');
+    expect(ingredientSortedRows[3]).toHaveTextContent('Twine');
+
+    expect(within(table).getAllByText('Terminal')).toHaveLength(2);
   });
 
   it('wires permanent saver, temporary bonuses, and Iron Depot through the existing modifier pipeline', async () => {
@@ -281,10 +283,10 @@ describe('IngredientDemandListPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByLabelText('Goal scope');
+    await screen.findByRole('radiogroup', { name: 'Goal scope' });
 
     await user.click(screen.getByLabelText('Resource Saver II'));
-    await user.selectOptions(screen.getByLabelText('Mushroom Stew active'), 'yes');
+    await user.click(screen.getByLabelText('Mushroom Stew active'));
     await user.type(screen.getByLabelText('Event mastery bonus %'), '17');
     await user.type(screen.getByLabelText('Event resource saver %'), '5');
     await user.click(screen.getByLabelText('Iron Depot active'));
@@ -310,9 +312,9 @@ describe('IngredientDemandListPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByLabelText('Goal scope');
+    await screen.findByRole('radiogroup', { name: 'Goal scope' });
 
-    await user.selectOptions(screen.getByLabelText('Goal scope'), 'Tower');
+    await user.click(screen.getByRole('radio', { name: 'Tower' }));
     await user.type(screen.getByLabelText('Tower max level'), '250');
 
     await waitFor(() => {
@@ -321,7 +323,9 @@ describe('IngredientDemandListPage', () => {
     });
 
     expect(await screen.findByText('Scope')).toBeInTheDocument();
-    expect(screen.getByText('This list is scoped to Tower and keeps recursive burden separate from raw direct recipe use.')).toBeInTheDocument();
+    expect(
+      screen.getByText(/This list is scoped to Tower and keeps recursive burden separate from raw direct recipe use\./),
+    ).toBeInTheDocument();
     expect(screen.getByRole('table')).toHaveTextContent('Twine');
     expect(screen.getByRole('table')).toHaveTextContent('4');
   });

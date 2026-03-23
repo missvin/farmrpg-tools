@@ -27,6 +27,11 @@ type IngredientDemandListRow = {
 };
 
 type SortDirection = 'asc' | 'desc';
+type IngredientDemandSortField =
+  | 'itemName'
+  | 'selectedScopeRequiredEffectiveOutput'
+  | 'selectedScopeRequiredCraftOperations'
+  | 'totalRequiredEffectiveOutput';
 
 function formatAmount(value: number): string {
   return Math.round(value).toLocaleString();
@@ -50,6 +55,7 @@ function buildIngredientDemandRows(
   burdenByCanonicalKey: Record<string, IngredientBurdenAggregateEntry>,
   selectedScope: IngredientBurdenGoalScope,
   hideZeroDemand: boolean,
+  sortField: IngredientDemandSortField,
   sortDirection: SortDirection,
 ): IngredientDemandListRow[] {
   return Object.values(burdenByCanonicalKey)
@@ -68,11 +74,16 @@ function buildIngredientDemandRows(
     })
     .filter((entry) => !hideZeroDemand || entry.selectedScopeRequiredEffectiveOutput > 0)
     .sort((left, right) => {
-      const amountDifference =
-        left.selectedScopeRequiredEffectiveOutput - right.selectedScopeRequiredEffectiveOutput;
+      let comparison = 0;
 
-      if (amountDifference !== 0) {
-        return sortDirection === 'asc' ? amountDifference : -amountDifference;
+      if (sortField === 'itemName') {
+        comparison = left.itemName.localeCompare(right.itemName);
+      } else {
+        comparison = left[sortField] - right[sortField];
+      }
+
+      if (comparison !== 0) {
+        return sortDirection === 'asc' ? comparison : -comparison;
       }
 
       return left.itemName.localeCompare(right.itemName);
@@ -107,7 +118,8 @@ export function IngredientDemandListPage() {
     }
   });
   const [selectedScope, setSelectedScope] = useState<IngredientBurdenGoalScope>('M');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [sortField, setSortField] = useState<IngredientDemandSortField>('selectedScopeRequiredEffectiveOutput');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [hideZeroDemand, setHideZeroDemand] = useState(true);
   const [towerCutoffInput, setTowerCutoffInput] = useState('');
 
@@ -253,9 +265,10 @@ export function IngredientDemandListPage() {
         burdenResult?.ingredientBurdenByCanonicalKey ?? {},
         selectedScope,
         hideZeroDemand,
+        sortField,
         sortDirection,
       ),
-    [burdenResult, hideZeroDemand, selectedScope, sortDirection],
+    [burdenResult, hideZeroDemand, selectedScope, sortDirection, sortField],
   );
 
   const totalVisibleScopeBurden = useMemo(
@@ -270,6 +283,24 @@ export function IngredientDemandListPage() {
       ).length,
     [burdenResult, selectedScope],
   );
+
+  function handleSort(field: IngredientDemandSortField): void {
+    if (sortField === field) {
+      setSortDirection((current) => (current === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setSortField(field);
+    setSortDirection(field === 'itemName' ? 'asc' : 'desc');
+  }
+
+  function getSortIndicator(field: IngredientDemandSortField): string {
+    if (sortField !== field) {
+      return '';
+    }
+
+    return sortDirection === 'asc' ? ' ↑' : ' ↓';
+  }
 
   return (
     <div className="page-stack">
@@ -370,58 +401,48 @@ export function IngredientDemandListPage() {
               </div>
 
               <div className="page-stack page-stack--tight">
-                <label className="field-label" htmlFor="ingredient-demand-list-scope">
-                  Goal scope
-                </label>
-                <select
-                  id="ingredient-demand-list-scope"
-                  className="text-input"
-                  value={selectedScope}
-                  onChange={(event) => setSelectedScope(event.target.value as IngredientBurdenGoalScope)}
-                >
-                  <option value="M">M</option>
-                  <option value="GM">GM</option>
-                  <option value="MM">MM</option>
-                  <option value="Tower">Tower</option>
-                </select>
-              </div>
-
-              <div className="page-stack page-stack--tight">
-                <label className="field-label" htmlFor="ingredient-demand-list-sort">
-                  Sort direction
-                </label>
-                <select
-                  id="ingredient-demand-list-sort"
-                  className="text-input"
-                  value={sortDirection}
-                  onChange={(event) => setSortDirection(event.target.value as SortDirection)}
-                >
-                  <option value="asc">Ascending burden</option>
-                  <option value="desc">Descending burden</option>
-                </select>
+                <span className="field-label">Goal scope</span>
+                <div className="button-row" role="radiogroup" aria-label="Goal scope">
+                  {(['M', 'GM', 'MM', 'Tower'] as IngredientBurdenGoalScope[]).map((scope) => (
+                    <button
+                      key={scope}
+                      type="button"
+                      role="radio"
+                      aria-checked={selectedScope === scope}
+                      className={`button ${selectedScope === scope ? 'button--active' : ''}`}
+                      onClick={() => setSelectedScope(scope)}
+                    >
+                      {scope}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="page-stack page-stack--tight">
                 <label className="field-label" htmlFor="ingredient-demand-list-mushroom-stew">
                   Mushroom Stew active
                 </label>
-                <select
-                  id="ingredient-demand-list-mushroom-stew"
-                  className="text-input"
-                  value={modifierState.temporary.mushroomStewActive ? 'yes' : 'no'}
-                  onChange={(event) =>
-                    updateModifierState((current) => ({
-                      ...current,
-                      temporary: {
-                        ...current.temporary,
-                        mushroomStewActive: event.target.value === 'yes',
-                      },
-                    }))
-                  }
-                >
-                  <option value="no">No</option>
-                  <option value="yes">Yes</option>
-                </select>
+                <label className="toggle-switch" htmlFor="ingredient-demand-list-mushroom-stew">
+                  <input
+                    id="ingredient-demand-list-mushroom-stew"
+                    className="toggle-switch__input"
+                    type="checkbox"
+                    checked={modifierState.temporary.mushroomStewActive}
+                    onChange={(event) =>
+                      updateModifierState((current) => ({
+                        ...current,
+                        temporary: {
+                          ...current.temporary,
+                          mushroomStewActive: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  <span className="toggle-switch__track" aria-hidden="true">
+                    <span className="toggle-switch__thumb" />
+                  </span>
+                  <span>{modifierState.temporary.mushroomStewActive ? 'On' : 'Off'}</span>
+                </label>
               </div>
 
               <div className="page-stack page-stack--tight">
@@ -543,7 +564,8 @@ export function IngredientDemandListPage() {
             <h2 id="ingredient-demand-list-results-title">Ingredient Burden List</h2>
             <p className="supporting-text">
               This list is scoped to {formatScopeLabel(selectedScope)} and keeps recursive burden separate from raw
-              direct recipe use.
+              direct recipe use. Terminal ingredients are highlighted in the final column and indicate ingredients
+              that are not craftable locally.
             </p>
           </div>
 
@@ -573,10 +595,46 @@ export function IngredientDemandListPage() {
               <table className="summary-table">
                 <thead>
                   <tr>
-                    <th scope="col">Ingredient</th>
-                    <th scope="col">{formatScopeLabel(selectedScope)} burden</th>
-                    <th scope="col">{formatScopeLabel(selectedScope)} craft ops</th>
-                    <th scope="col">Total burden</th>
+                    <th scope="col">
+                      <button
+                        type="button"
+                        className="table-sort-button"
+                        onClick={() => handleSort('itemName')}
+                        aria-label={`Sort by ingredient${sortField === 'itemName' ? ` ${sortDirection}` : ''}`}
+                      >
+                        Ingredient{getSortIndicator('itemName')}
+                      </button>
+                    </th>
+                    <th scope="col">
+                      <button
+                        type="button"
+                        className="table-sort-button"
+                        onClick={() => handleSort('selectedScopeRequiredEffectiveOutput')}
+                        aria-label={`Sort by ${formatScopeLabel(selectedScope)} burden${sortField === 'selectedScopeRequiredEffectiveOutput' ? ` ${sortDirection}` : ''}`}
+                      >
+                        {formatScopeLabel(selectedScope)} burden{getSortIndicator('selectedScopeRequiredEffectiveOutput')}
+                      </button>
+                    </th>
+                    <th scope="col">
+                      <button
+                        type="button"
+                        className="table-sort-button"
+                        onClick={() => handleSort('selectedScopeRequiredCraftOperations')}
+                        aria-label={`Sort by ${formatScopeLabel(selectedScope)} craft ops${sortField === 'selectedScopeRequiredCraftOperations' ? ` ${sortDirection}` : ''}`}
+                      >
+                        {formatScopeLabel(selectedScope)} craft ops{getSortIndicator('selectedScopeRequiredCraftOperations')}
+                      </button>
+                    </th>
+                    <th scope="col">
+                      <button
+                        type="button"
+                        className="table-sort-button"
+                        onClick={() => handleSort('totalRequiredEffectiveOutput')}
+                        aria-label={`Sort by total burden${sortField === 'totalRequiredEffectiveOutput' ? ` ${sortDirection}` : ''}`}
+                      >
+                        Total burden{getSortIndicator('totalRequiredEffectiveOutput')}
+                      </button>
+                    </th>
                     <th scope="col">Craftable</th>
                   </tr>
                 </thead>
@@ -587,7 +645,9 @@ export function IngredientDemandListPage() {
                       <td>{formatAmount(row.selectedScopeRequiredEffectiveOutput)}</td>
                       <td>{formatAmount(row.selectedScopeRequiredCraftOperations)}</td>
                       <td>{formatAmount(row.totalRequiredEffectiveOutput)}</td>
-                      <td>{row.isCraftable ? 'Yes' : 'No'}</td>
+                      <td className={row.isCraftable ? undefined : 'summary-table__cell--terminal'}>
+                        {row.isCraftable ? 'Craftable' : 'Terminal'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

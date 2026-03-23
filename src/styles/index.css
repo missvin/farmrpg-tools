@@ -357,6 +357,56 @@ a {
   margin: 0;
 }
 
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.toggle-switch__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-switch__track {
+  position: relative;
+  width: 2.75rem;
+  height: 1.5rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: var(--color-surface-subtle);
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.toggle-switch__thumb {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 999px;
+  background: var(--color-text-muted);
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.toggle-switch__input:checked + .toggle-switch__track {
+  border-color: var(--color-next-border);
+  background: var(--color-next-bg);
+}
+
+.toggle-switch__input:checked + .toggle-switch__track .toggle-switch__thumb {
+  transform: translateX(1.2rem);
+  background: var(--color-next-border);
+}
+
+.toggle-switch__input:focus-visible + .toggle-switch__track {
+  outline: 2px solid var(--color-button-active-border);
+  outline-offset: 2px;
+}
+
 .button-row {
   display: flex;
   flex-wrap: wrap;
@@ -497,6 +547,22 @@ a {
   background: var(--color-surface-muted);
 }
 
+.table-sort-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.table-sort-button:hover,
+.table-sort-button:focus-visible {
+  color: var(--color-text-strong);
+}
+
 .summary-table__row--highlight td {
   background: var(--color-next-bg);
 }
@@ -512,6 +578,12 @@ a {
 
 .summary-table__row--complete td .subtle-text {
   color: var(--color-text-faint);
+}
+
+.summary-table__cell--terminal {
+  background: var(--color-next-bg) !important;
+  color: var(--color-text-strong);
+  font-weight: 600;
 }
 
 .tower-percent-cell {
