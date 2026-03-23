@@ -31,6 +31,23 @@ function getDashboardPercentCellStyle(value: number): CSSProperties & Record<'--
   };
 }
 
+function getSummaryProgressPercent(value: number, itemsParsed: number): number {
+  if (itemsParsed <= 0) {
+    return 0;
+  }
+
+  return clampPercent((value / itemsParsed) * 100);
+}
+
+function getSummaryProgressStyle(
+  value: number,
+  itemsParsed: number,
+): CSSProperties & Record<'--summary-progress-fill', string> {
+  return {
+    '--summary-progress-fill': `${getSummaryProgressPercent(value, itemsParsed)}%`,
+  };
+}
+
 export function DashboardPage() {
   const [dashboardState, setDashboardState] = useState<{
     isLoading: boolean;
@@ -159,6 +176,10 @@ export function DashboardPage() {
 
       {!dashboardState.isLoading && dashboardState.snapshot && dashboardState.derivedStats ? (
         <>
+          {(() => {
+            const parsedItemsCount = dashboardState.snapshot.parseSummary.itemsParsed;
+
+            return (
           <section className="page-card page-stack" aria-labelledby="achieved-summary-title">
             <div>
               <h2 id="achieved-summary-title">Achieved Status Summary</h2>
@@ -168,29 +189,80 @@ export function DashboardPage() {
             </div>
 
             <dl className="summary-grid">
-              <div className="summary-grid__item">
+              <div
+                className="summary-grid__item summary-grid__item--progress"
+                style={getSummaryProgressStyle(
+                  dashboardState.derivedStats.achievedStatusSummary.masteredCount,
+                  parsedItemsCount,
+                )}
+              >
                 <dt>Mastered (&gt;= 10,000)</dt>
                 <dd>{dashboardState.derivedStats.achievedStatusSummary.masteredCount.toLocaleString()}</dd>
+                <p className="subtle-text">
+                  {formatPercent(
+                    getSummaryProgressPercent(
+                      dashboardState.derivedStats.achievedStatusSummary.masteredCount,
+                      parsedItemsCount,
+                    ),
+                  )}{' '}
+                  of parsed items
+                </p>
               </div>
-              <div className="summary-grid__item">
+              <div
+                className="summary-grid__item summary-grid__item--progress"
+                style={getSummaryProgressStyle(
+                  dashboardState.derivedStats.achievedStatusSummary.grandMasteredCount,
+                  parsedItemsCount,
+                )}
+              >
                 <dt>Grand Mastered (&gt;= 100,000)</dt>
                 <dd>{dashboardState.derivedStats.achievedStatusSummary.grandMasteredCount.toLocaleString()}</dd>
+                <p className="subtle-text">
+                  {formatPercent(
+                    getSummaryProgressPercent(
+                      dashboardState.derivedStats.achievedStatusSummary.grandMasteredCount,
+                      parsedItemsCount,
+                    ),
+                  )}{' '}
+                  of parsed items
+                </p>
               </div>
-              <div className="summary-grid__item">
+              <div
+                className="summary-grid__item summary-grid__item--progress"
+                style={getSummaryProgressStyle(
+                  dashboardState.derivedStats.achievedStatusSummary.megaMasteredCount,
+                  parsedItemsCount,
+                )}
+              >
                 <dt>Mega Mastered (&gt;= 1,000,000)</dt>
                 <dd>{dashboardState.derivedStats.achievedStatusSummary.megaMasteredCount.toLocaleString()}</dd>
+                <p className="subtle-text">
+                  {formatPercent(
+                    getSummaryProgressPercent(
+                      dashboardState.derivedStats.achievedStatusSummary.megaMasteredCount,
+                      parsedItemsCount,
+                    ),
+                  )}{' '}
+                  of parsed items
+                </p>
               </div>
-              <div className="summary-grid__item">
+              <div
+                className="summary-grid__item summary-grid__item--progress"
+                style={getSummaryProgressStyle(dashboardState.derivedStats.unmatchedItemCount, parsedItemsCount)}
+              >
                 <dt>Unmatched snapshot items</dt>
                 <dd>{dashboardState.derivedStats.unmatchedItemCount.toLocaleString()}</dd>
+                <p className="subtle-text">
+                  {formatPercent(
+                    getSummaryProgressPercent(dashboardState.derivedStats.unmatchedItemCount, parsedItemsCount),
+                  )}{' '}
+                  of parsed items
+                </p>
               </div>
             </dl>
-
-            <p className="subtle-text">
-              Snapshot items missing from mastery difficulty data stay non-fatal. They appear as Unrated in the
-              derived views so you can review and maintain the local reference data without losing progress visibility.
-            </p>
           </section>
+            );
+          })()}
 
           <section className="page-card page-stack" aria-labelledby="difficulty-summary-title">
             <div>
