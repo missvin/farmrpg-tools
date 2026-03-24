@@ -228,6 +228,91 @@ describe('TowerPage', () => {
     expect(boardPercentCell).toHaveStyle('--tower-percent-fill: 50%');
   });
 
+  it('surfaces tower reference review rows for unmatched entries and TBD placeholders', async () => {
+    getLatestSnapshotMock.mockResolvedValue({
+      snapshotId: 'snapshot-4',
+      createdAt: '2026-03-16T00:00:00.000Z',
+      rawText: '',
+      masteryByItem: {
+        board: 500_000,
+      },
+      parseSummary: {
+        itemsParsed: 1,
+        parsedRowsCount: 0,
+        tiersDetected: [100_000],
+        duplicateRowsCount: 0,
+        skippedNonItemLinesCount: 0,
+        skippedNonItemLineSamples: [],
+        unknownItemsCount: 0,
+        warnings: [],
+      },
+      parsedRows: [],
+    });
+
+    loadTowerRequirementsMock.mockResolvedValue({
+      entries: [
+        {
+          towerLevel: 311,
+          towerLevelRange: '311-320',
+          slotIndex: 1,
+          itemName: 'Board',
+          canonicalKey: 'board',
+          masteryLevelNeeded: 'GM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: null,
+          sourceSheet: 'Community discovery 311-320',
+          sourceRow: '311-1',
+        },
+        {
+          towerLevel: 311,
+          towerLevelRange: '311-320',
+          slotIndex: 2,
+          itemName: 'TBD',
+          canonicalKey: 'tbd',
+          masteryLevelNeeded: 'GM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: 'TBD placeholder - requirement not yet confirmed',
+          sourceSheet: 'Community discovery 311-320',
+          sourceRow: '311-2',
+        },
+        {
+          towerLevel: 312,
+          towerLevelRange: '311-320',
+          slotIndex: 1,
+          itemName: 'Mystery Item',
+          canonicalKey: 'mystery item',
+          masteryLevelNeeded: 'MM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: null,
+          sourceSheet: 'Community discovery 311-320',
+          sourceRow: '312-1',
+        },
+      ],
+      byCanonicalKey: {
+        board: [],
+        tbd: [],
+        'mystery item': [],
+      },
+    });
+
+    render(<TowerPage />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Tower Reference Maintenance' })).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Review rows')).toBeInTheDocument();
+    expect(screen.getByText('TBD placeholder rows')).toBeInTheDocument();
+    expect(screen.getByText('Export-ready review rows')).toBeInTheDocument();
+    expect(screen.getByText('Tower Level 311 Slot 2: TBD')).toBeInTheDocument();
+    expect(screen.getByText('Review reasons: tbd_placeholder, unmatched_snapshot')).toBeInTheDocument();
+    expect(screen.getByText('Tower Level 312 Slot 1: Mystery Item')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Export Tower Reference Review CSV' })).toBeEnabled();
+  });
+
   it('uses compact default requirement labels, hides internal provenance notes, and keeps completed rows de-emphasized', async () => {
     getLatestSnapshotMock.mockResolvedValue({
       snapshotId: 'snapshot-3',

@@ -195,7 +195,7 @@ describe('deriveTowerRequirements', () => {
     expect(range311to320?.levels.map((level) => level.towerLevel)).toEqual([
       311, 312, 313, 314, 315, 316, 317, 318, 319, 320,
     ]);
-    expect(level311?.rows.map((row) => row.itemName)).toEqual(['Bamboo Table', 'Barbed Wire']);
+    expect(level311?.rows.map((row) => row.itemName)).toEqual(['Bamboo Chair', 'Barbed Wire']);
     expect(level318?.rows.map((row) => row.itemName)).toEqual(['Yellow Butterfly', 'Acorn Butter']);
     expect(level319?.rows.map((row) => row.itemName)).toEqual(['Strong Paste', 'Spoon']);
     expect(level320?.rows.map((row) => row.itemName)).toEqual(['Corn Husk Doll', 'Reaver Claw', 'Blubberfish']);

@@ -2,6 +2,7 @@ import { useEffect, useState, type CSSProperties } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveTowerRequirements } from '../lib/deriveTowerRequirements';
+import { downloadTowerReferenceReviewCsv, deriveTowerReferenceReviewRows } from '../lib/exportTowerReferenceReviewCsv';
 import { loadTowerRequirements } from '../lib/loadTowerRequirements';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
 
@@ -90,6 +91,8 @@ function getPercentCellStyle(
 }
 
 export function TowerPage() {
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
   const [towerState, setTowerState] = useState<{
     isLoading: boolean;
     snapshotError: string | null;
@@ -192,6 +195,30 @@ export function TowerPage() {
     towerState.derivedTowerRequirements?.groups.filter((rangeGroup) =>
       rangeGroup.levels.every((levelGroup) => levelGroup.rows.every((row) => row.achieved)),
     ) ?? [];
+  const referenceReviewRows = towerState.derivedTowerRequirements
+    ? deriveTowerReferenceReviewRows(towerState.derivedTowerRequirements.rows)
+    : [];
+  const tbdPlaceholderCount = referenceReviewRows.filter((row) =>
+    row.reviewReasons.includes('tbd_placeholder'),
+  ).length;
+  const unmatchedReviewCount = referenceReviewRows.filter((row) =>
+    row.reviewReasons.includes('unmatched_snapshot'),
+  ).length;
+
+  function handleExportTowerReferenceReviewCsv(): void {
+    if (!towerState.derivedTowerRequirements || referenceReviewRows.length === 0) {
+      return;
+    }
+
+    try {
+      downloadTowerReferenceReviewCsv(towerState.derivedTowerRequirements.rows);
+      setExportError(null);
+      setExportMessage('Tower reference review CSV downloaded for local maintenance.');
+    } catch (error) {
+      setExportMessage(null);
+      setExportError(error instanceof Error ? error.message : 'Unable to export tower reference review CSV.');
+    }
+  }
 
   return (
     <div className="page-stack">
@@ -255,6 +282,72 @@ export function TowerPage() {
               Missing latest-snapshot matches are non-fatal. Keep these rows visible so naming drift, import coverage,
               or tower-reference maintenance issues are easier to spot and review.
             </p>
+          </section>
+
+          <section className="page-card page-stack" aria-labelledby="tower-reference-review-title">
+            <div>
+              <h2 id="tower-reference-review-title">Tower Reference Maintenance</h2>
+              <p className="supporting-text">
+                Review rows that still need reference-data follow-up. The export includes per-row review reasons plus
+                tower provenance fields so future manual corrections are easier to compare over time.
+              </p>
+            </div>
+
+            <dl className="summary-grid">
+              <div className="summary-grid__item">
+                <dt>Review rows</dt>
+                <dd>{referenceReviewRows.length.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Unmatched snapshot rows</dt>
+                <dd>{unmatchedReviewCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>TBD placeholder rows</dt>
+                <dd>{tbdPlaceholderCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Export-ready review rows</dt>
+                <dd>{referenceReviewRows.length.toLocaleString()}</dd>
+              </div>
+            </dl>
+
+            <p className="subtle-text">
+              This export is dev-facing maintenance output only. It keeps placeholder and unmatched tower rows visible
+              for review without changing the normal tower status flow or exposing provenance details in the main table.
+            </p>
+
+            <div className="button-row">
+              <button
+                type="button"
+                className="button"
+                onClick={handleExportTowerReferenceReviewCsv}
+                disabled={referenceReviewRows.length === 0}
+              >
+                Export Tower Reference Review CSV
+              </button>
+            </div>
+
+            {exportMessage ? <p className="status-message status-message--success">{exportMessage}</p> : null}
+            {exportError ? <p className="status-message status-message--error">{exportError}</p> : null}
+
+            {referenceReviewRows.length === 0 ? (
+              <p className="empty-state">No tower reference review rows are currently surfaced.</p>
+            ) : (
+              <ul className="data-list">
+                {referenceReviewRows.map((row) => (
+                  <li key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}`}>
+                    <div>
+                      <strong>
+                        Tower Level {row.towerLevel} Slot {row.slotIndex}: {row.itemName}
+                      </strong>
+                      <p className="subtle-text">Review reasons: {row.reviewReasons.join(', ')}</p>
+                    </div>
+                    <strong>{row.masteryLevelNeeded}</strong>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           <section className="page-card page-stack" aria-labelledby="tower-results-title">

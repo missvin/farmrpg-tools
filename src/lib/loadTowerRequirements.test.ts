@@ -97,9 +97,9 @@ describe('parseTowerRequirementsCsv', () => {
 
     expect(rows311to320).toHaveLength(25);
     expect(Object.keys(byLevel).map(Number)).toEqual([311, 312, 313, 314, 315, 316, 317, 318, 319, 320]);
-    expect(byLevel[311]).toEqual(['Bamboo Table', 'Barbed Wire']);
+    expect(byLevel[311]).toEqual(['Bamboo Chair', 'Barbed Wire']);
     expect(byLevel[312]).toEqual(['Yellow Scarf', 'Fire Ant Farm']);
-    expect(byLevel[313]).toEqual(['Stepladder', 'Orange Shirt']);
+    expect(byLevel[313]).toEqual(['Step Ladder', 'Orange Shirt']);
     expect(byLevel[318]).toEqual(['Yellow Butterfly', 'Acorn Butter']);
     expect(byLevel[314]).toEqual(['TBD', 'TBD', 'TBD']);
     expect(byLevel[319]).toEqual(['Strong Paste', 'Spoon']);
