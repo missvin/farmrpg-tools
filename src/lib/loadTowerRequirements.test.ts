@@ -95,13 +95,16 @@ describe('parseTowerRequirementsCsv', () => {
       return accumulator;
     }, {});
 
-    expect(rows311to320).toHaveLength(25);
+    expect(rows311to320).toHaveLength(22);
     expect(Object.keys(byLevel).map(Number)).toEqual([311, 312, 313, 314, 315, 316, 317, 318, 319, 320]);
     expect(byLevel[311]).toEqual(['Bamboo Chair', 'Barbed Wire']);
     expect(byLevel[312]).toEqual(['Yellow Scarf', 'Fire Ant Farm']);
     expect(byLevel[313]).toEqual(['Step Ladder', 'Orange Shirt']);
     expect(byLevel[318]).toEqual(['Yellow Butterfly', 'Acorn Butter']);
-    expect(byLevel[314]).toEqual(['TBD', 'TBD', 'TBD']);
+    expect(byLevel[314]).toEqual(['Energy Coil', 'Black Dye']);
+    expect(byLevel[315]).toEqual(['Reinforced Helmet', 'Gold Lemon Quartz Ring', 'Steel Vise']);
+    expect(byLevel[316]).toEqual(['Yellow Bag', 'Leather Helmet']);
+    expect(byLevel[317]).toEqual(['Gold Aquamarine Ring', 'Handsaw']);
     expect(byLevel[319]).toEqual(['Strong Paste', 'Spoon']);
     expect(byLevel[320]).toEqual(['Corn Husk Doll', 'Reaver Claw', 'Blubberfish']);
   });

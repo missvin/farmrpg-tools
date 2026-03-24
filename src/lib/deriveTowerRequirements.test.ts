@@ -188,6 +188,10 @@ describe('deriveTowerRequirements', () => {
     const result = deriveTowerRequirements(emptySnapshot, towerRequirementsData);
     const range311to320 = result.groups.find((group) => group.towerLevelRange === '311-320');
     const level311 = range311to320?.levels.find((level) => level.towerLevel === 311);
+    const level314 = range311to320?.levels.find((level) => level.towerLevel === 314);
+    const level315 = range311to320?.levels.find((level) => level.towerLevel === 315);
+    const level316 = range311to320?.levels.find((level) => level.towerLevel === 316);
+    const level317 = range311to320?.levels.find((level) => level.towerLevel === 317);
     const level318 = range311to320?.levels.find((level) => level.towerLevel === 318);
     const level319 = range311to320?.levels.find((level) => level.towerLevel === 319);
     const level320 = range311to320?.levels.find((level) => level.towerLevel === 320);
@@ -196,6 +200,14 @@ describe('deriveTowerRequirements', () => {
       311, 312, 313, 314, 315, 316, 317, 318, 319, 320,
     ]);
     expect(level311?.rows.map((row) => row.itemName)).toEqual(['Bamboo Chair', 'Barbed Wire']);
+    expect(level314?.rows.map((row) => row.itemName)).toEqual(['Energy Coil', 'Black Dye']);
+    expect(level315?.rows.map((row) => row.itemName)).toEqual([
+      'Reinforced Helmet',
+      'Gold Lemon Quartz Ring',
+      'Steel Vise',
+    ]);
+    expect(level316?.rows.map((row) => row.itemName)).toEqual(['Yellow Bag', 'Leather Helmet']);
+    expect(level317?.rows.map((row) => row.itemName)).toEqual(['Gold Aquamarine Ring', 'Handsaw']);
     expect(level318?.rows.map((row) => row.itemName)).toEqual(['Yellow Butterfly', 'Acorn Butter']);
     expect(level319?.rows.map((row) => row.itemName)).toEqual(['Strong Paste', 'Spoon']);
     expect(level320?.rows.map((row) => row.itemName)).toEqual(['Corn Husk Doll', 'Reaver Claw', 'Blubberfish']);
