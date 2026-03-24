@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import { parseTowerRequirementsCsv } from './loadTowerRequirements';
@@ -44,6 +47,23 @@ describe('parseTowerRequirementsCsv', () => {
     });
   });
 
+  it('accepts explicit TBD placeholder rows for partially known future tower levels', () => {
+    const result = parseTowerRequirementsCsv(`tower_level,tower_level_range,slot_index,item_name,farmrpg_item_id,mastery_level_needed,buddy_slug,notes,source_sheet,source_row
+311,311-320,3,TBD,,GM,,TBD placeholder - requirement not yet confirmed,Community discovery 311-320,311-3`);
+
+    expect(result.entries[0]).toMatchObject({
+      towerLevel: 311,
+      towerLevelRange: '311-320',
+      slotIndex: 3,
+      itemName: 'TBD',
+      canonicalKey: 'tbd',
+      masteryLevelNeeded: 'GM',
+      notes: 'TBD placeholder - requirement not yet confirmed',
+      sourceSheet: 'Community discovery 311-320',
+      sourceRow: '311-3',
+    });
+  });
+
   it('rejects invalid mastery_level_needed values', () => {
     expect(() =>
       parseTowerRequirementsCsv(`tower_level,tower_level_range,slot_index,item_name,farmrpg_item_id,mastery_level_needed,buddy_slug,notes,source_sheet,source_row
@@ -64,5 +84,25 @@ describe('parseTowerRequirementsCsv', () => {
 201,201-210,1,Board,,MM,,,Tower MMs,15
 201,201-210,1,Twine,,MM,,,Tower MMs,16`),
     ).toThrow('Duplicate tower requirement slot detected for tower level 201 slot 1 in range 201-210.');
+  });
+
+  it('includes the partially known 311-320 range in the canonical tower data file', () => {
+    const csvText = readFileSync(resolve(process.cwd(), 'data/tower_requirements.csv'), 'utf8');
+    const result = parseTowerRequirementsCsv(csvText);
+    const rows311to320 = result.entries.filter((entry) => entry.towerLevel >= 311 && entry.towerLevel <= 320);
+    const byLevel = rows311to320.reduce<Record<number, string[]>>((accumulator, entry) => {
+      accumulator[entry.towerLevel] = [...(accumulator[entry.towerLevel] ?? []), entry.itemName];
+      return accumulator;
+    }, {});
+
+    expect(rows311to320).toHaveLength(25);
+    expect(Object.keys(byLevel).map(Number)).toEqual([311, 312, 313, 314, 315, 316, 317, 318, 319, 320]);
+    expect(byLevel[311]).toEqual(['Bamboo Table', 'Barbed Wire']);
+    expect(byLevel[312]).toEqual(['Yellow Scarf', 'Fire Ant Farm']);
+    expect(byLevel[313]).toEqual(['Stepladder', 'Orange Shirt']);
+    expect(byLevel[318]).toEqual(['Yellow Butterfly', 'Acorn Butter']);
+    expect(byLevel[314]).toEqual(['TBD', 'TBD', 'TBD']);
+    expect(byLevel[319]).toEqual(['Strong Paste', 'Spoon']);
+    expect(byLevel[320]).toEqual(['Corn Husk Doll', 'Reaver Claw', 'Blubberfish']);
   });
 });
