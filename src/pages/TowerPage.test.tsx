@@ -1,4 +1,5 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { TowerPage } from './TowerPage';
@@ -226,6 +227,103 @@ describe('TowerPage', () => {
     expect(goldCucumberPercentCell).toHaveClass('tower-percent-cell');
     expect(goldCucumberPercentCell).toHaveStyle('--tower-percent-fill: 90%');
     expect(boardPercentCell).toHaveStyle('--tower-percent-fill: 50%');
+  });
+
+  it('supports compact range, row-state, and requirement-tier filters for dense tower inspection', async () => {
+    const user = userEvent.setup();
+
+    getLatestSnapshotMock.mockResolvedValue({
+      snapshotId: 'snapshot-5',
+      createdAt: '2026-03-16T00:00:00.000Z',
+      rawText: '',
+      masteryByItem: {
+        board: 1_500_000,
+        twine: 50_000,
+      },
+      parseSummary: {
+        itemsParsed: 2,
+        parsedRowsCount: 0,
+        tiersDetected: [10_000, 100_000, 1_000_000],
+        duplicateRowsCount: 0,
+        skippedNonItemLinesCount: 0,
+        skippedNonItemLineSamples: [],
+        unknownItemsCount: 0,
+        warnings: [],
+      },
+      parsedRows: [],
+    });
+
+    loadTowerRequirementsMock.mockResolvedValue({
+      entries: [
+        {
+          towerLevel: 201,
+          towerLevelRange: '201-220',
+          slotIndex: 1,
+          itemName: 'Board',
+          canonicalKey: 'board',
+          masteryLevelNeeded: 'MM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: null,
+          sourceSheet: null,
+          sourceRow: null,
+        },
+        {
+          towerLevel: 201,
+          towerLevelRange: '201-220',
+          slotIndex: 2,
+          itemName: 'Twine',
+          canonicalKey: 'twine',
+          masteryLevelNeeded: 'GM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: null,
+          sourceSheet: null,
+          sourceRow: null,
+        },
+        {
+          towerLevel: 311,
+          towerLevelRange: '311-320',
+          slotIndex: 1,
+          itemName: 'TBD',
+          canonicalKey: 'tbd',
+          masteryLevelNeeded: 'GM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: 'TBD placeholder - requirement not yet confirmed',
+          sourceSheet: 'Community discovery 311-320',
+          sourceRow: '311-1',
+        },
+      ],
+      byCanonicalKey: {
+        board: [],
+        twine: [],
+        tbd: [],
+      },
+    });
+
+    render(<TowerPage />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Tower Filters' })).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Visible ranges')).toBeInTheDocument();
+    expect(screen.getByText('Closest visible blocker: Tower Level 201 Twine (GM)')).toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText('Tower range'), '311-320');
+
+    expect(await screen.findByText('Closest visible blocker: Tower Level 311 TBD (GM)')).toBeInTheDocument();
+    expect(screen.queryByText('Board')).not.toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText('Row state'), 'tbd');
+
+    expect(screen.getByText('Visible TBD rows')).toBeInTheDocument();
+    expect(screen.getByText('Tower Level 311 - 1/1 items remaining')).toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText('Requirement tier'), 'MM');
+
+    expect((await screen.findAllByText('No tower rows match the current filters.')).length).toBeGreaterThan(0);
   });
 
   it('surfaces tower reference review rows for unmatched entries and TBD placeholders', async () => {

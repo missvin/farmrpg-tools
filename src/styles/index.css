@@ -413,6 +413,12 @@ a {
   gap: 0.75rem;
 }
 
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+}
+
 .button {
   border: 1px solid var(--color-button-border);
   background: var(--color-button-bg);

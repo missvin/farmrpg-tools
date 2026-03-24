@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveTowerRequirements } from '../lib/deriveTowerRequirements';
@@ -90,9 +90,19 @@ function getPercentCellStyle(
   };
 }
 
+type TowerRowStateFilter = 'all' | 'blocking' | 'completed' | 'tbd';
+type TowerTierFilter = 'all' | 'M' | 'GM' | 'MM';
+
+function isTbdTowerRow(itemName: string): boolean {
+  return itemName.trim().toUpperCase() === 'TBD';
+}
+
 export function TowerPage() {
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [selectedRange, setSelectedRange] = useState<string>('all');
+  const [rowStateFilter, setRowStateFilter] = useState<TowerRowStateFilter>('all');
+  const [tierFilter, setTierFilter] = useState<TowerTierFilter>('all');
   const [towerState, setTowerState] = useState<{
     isLoading: boolean;
     snapshotError: string | null;
@@ -179,7 +189,44 @@ export function TowerPage() {
     towerState.derivedTowerRequirements?.rows.filter((row) => row.achieved).length ?? 0;
   const unmatchedSnapshotItemCount =
     towerState.derivedTowerRequirements?.rows.filter((row) => !row.matchedSnapshotRow).length ?? 0;
-  const firstIncompleteLevelKey = towerState.derivedTowerRequirements?.groups
+  const availableRanges = towerState.derivedTowerRequirements?.groups.map((group) => group.towerLevelRange) ?? [];
+  const filteredGroups = useMemo(() => {
+    if (!towerState.derivedTowerRequirements) {
+      return [];
+    }
+
+    return towerState.derivedTowerRequirements.groups
+      .filter((rangeGroup) => selectedRange === 'all' || rangeGroup.towerLevelRange === selectedRange)
+      .map((rangeGroup) => ({
+        ...rangeGroup,
+        levels: rangeGroup.levels
+          .map((levelGroup) => ({
+            ...levelGroup,
+            rows: levelGroup.rows.filter((row) => {
+              if (tierFilter !== 'all' && formatCompactRequirementLabel(row.requiredThreshold) !== tierFilter) {
+                return false;
+              }
+
+              if (rowStateFilter === 'blocking' && row.achieved) {
+                return false;
+              }
+
+              if (rowStateFilter === 'completed' && !row.achieved) {
+                return false;
+              }
+
+              if (rowStateFilter === 'tbd' && !isTbdTowerRow(row.itemName)) {
+                return false;
+              }
+
+              return true;
+            }),
+          }))
+          .filter((levelGroup) => levelGroup.rows.length > 0),
+      }))
+      .filter((rangeGroup) => rangeGroup.levels.length > 0);
+  }, [rowStateFilter, selectedRange, tierFilter, towerState.derivedTowerRequirements]);
+  const firstIncompleteLevelKey = filteredGroups
     .flatMap((rangeGroup) =>
       rangeGroup.levels.map((levelGroup) => ({
         key: getLevelKey(rangeGroup.towerLevelRange, levelGroup.towerLevel),
@@ -187,14 +234,12 @@ export function TowerPage() {
       })),
     )
     .find((levelGroup) => !levelGroup.isCompleted)?.key;
-  const incompleteRangeGroups =
-    towerState.derivedTowerRequirements?.groups.filter((rangeGroup) =>
-      rangeGroup.levels.some((levelGroup) => levelGroup.rows.some((row) => !row.achieved)),
-    ) ?? [];
-  const completedRangeGroups =
-    towerState.derivedTowerRequirements?.groups.filter((rangeGroup) =>
-      rangeGroup.levels.every((levelGroup) => levelGroup.rows.every((row) => row.achieved)),
-    ) ?? [];
+  const incompleteRangeGroups = filteredGroups.filter((rangeGroup) =>
+    rangeGroup.levels.some((levelGroup) => levelGroup.rows.some((row) => !row.achieved)),
+  );
+  const completedRangeGroups = filteredGroups.filter((rangeGroup) =>
+    rangeGroup.levels.every((levelGroup) => levelGroup.rows.every((row) => row.achieved)),
+  );
   const referenceReviewRows = towerState.derivedTowerRequirements
     ? deriveTowerReferenceReviewRows(towerState.derivedTowerRequirements.rows)
     : [];
@@ -204,6 +249,14 @@ export function TowerPage() {
   const unmatchedReviewCount = referenceReviewRows.filter((row) =>
     row.reviewReasons.includes('unmatched_snapshot'),
   ).length;
+  const visibleRows = filteredGroups.flatMap((rangeGroup) =>
+    rangeGroup.levels.flatMap((levelGroup) => levelGroup.rows),
+  );
+  const visibleBlockingRows = visibleRows.filter((row) => !row.achieved);
+  const visibleCompletedRows = visibleRows.filter((row) => row.achieved);
+  const visibleTbdRows = visibleRows.filter((row) => isTbdTowerRow(row.itemName));
+  const visibleLevelCount = filteredGroups.reduce((count, rangeGroup) => count + rangeGroup.levels.length, 0);
+  const visibleClosestBlocker = visibleBlockingRows[0] ?? null;
 
   function handleExportTowerReferenceReviewCsv(): void {
     if (!towerState.derivedTowerRequirements || referenceReviewRows.length === 0) {
@@ -284,6 +337,93 @@ export function TowerPage() {
             </p>
           </section>
 
+          <section className="page-card page-stack" aria-labelledby="tower-filters-title">
+            <div>
+              <h2 id="tower-filters-title">Tower Filters</h2>
+              <p className="supporting-text">
+                Narrow dense tower data by range, row state, or requirement tier without leaving the main Tower page.
+              </p>
+            </div>
+
+            <div className="filter-grid">
+              <label className="page-stack page-stack--tight">
+                <span className="field-label">Tower range</span>
+                <select
+                  className="text-input"
+                  value={selectedRange}
+                  onChange={(event) => setSelectedRange(event.target.value)}
+                >
+                  <option value="all">All ranges</option>
+                  {availableRanges.map((towerLevelRange) => (
+                    <option key={towerLevelRange} value={towerLevelRange}>
+                      {towerLevelRange}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="page-stack page-stack--tight">
+                <span className="field-label">Row state</span>
+                <select
+                  className="text-input"
+                  value={rowStateFilter}
+                  onChange={(event) => setRowStateFilter(event.target.value as TowerRowStateFilter)}
+                >
+                  <option value="all">All rows</option>
+                  <option value="blocking">Blocking only</option>
+                  <option value="completed">Completed only</option>
+                  <option value="tbd">TBD only</option>
+                </select>
+              </label>
+
+              <label className="page-stack page-stack--tight">
+                <span className="field-label">Requirement tier</span>
+                <select
+                  className="text-input"
+                  value={tierFilter}
+                  onChange={(event) => setTierFilter(event.target.value as TowerTierFilter)}
+                >
+                  <option value="all">All tiers</option>
+                  <option value="M">M only</option>
+                  <option value="GM">GM only</option>
+                  <option value="MM">MM only</option>
+                </select>
+              </label>
+            </div>
+
+            <dl className="summary-grid">
+              <div className="summary-grid__item">
+                <dt>Visible ranges</dt>
+                <dd>{filteredGroups.length.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Visible levels</dt>
+                <dd>{visibleLevelCount.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Visible blocker rows</dt>
+                <dd>{visibleBlockingRows.length.toLocaleString()}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Visible TBD rows</dt>
+                <dd>{visibleTbdRows.length.toLocaleString()}</dd>
+              </div>
+            </dl>
+
+            {visibleClosestBlocker ? (
+              <p className="subtle-text">
+                Closest visible blocker: Tower Level {visibleClosestBlocker.towerLevel} {visibleClosestBlocker.itemName}{' '}
+                ({formatCompactRequirementLabel(visibleClosestBlocker.requiredThreshold)})
+              </p>
+            ) : (
+              <p className="subtle-text">
+                {visibleRows.length === 0
+                  ? 'No tower rows match the current filters.'
+                  : `Visible completed rows: ${visibleCompletedRows.length.toLocaleString()}`}
+              </p>
+            )}
+          </section>
+
           <section className="page-card page-stack" aria-labelledby="tower-reference-review-title">
             <div>
               <h2 id="tower-reference-review-title">Tower Reference Maintenance</h2>
@@ -355,7 +495,11 @@ export function TowerPage() {
               <h2 id="tower-results-title">Tower Requirement Status</h2>
             </div>
 
-            {incompleteRangeGroups.length > 0 ? (
+            {filteredGroups.length === 0 ? (
+              <p className="empty-state">No tower rows match the current filters.</p>
+            ) : null}
+
+            {filteredGroups.length > 0 && incompleteRangeGroups.length > 0 ? (
               <div className="page-stack">
                 <h3 className="section-title">In-progress ranges</h3>
 
@@ -478,7 +622,7 @@ export function TowerPage() {
               </div>
             ) : null}
 
-            {completedRangeGroups.length > 0 ? (
+            {filteredGroups.length > 0 && completedRangeGroups.length > 0 ? (
               <details className="tower-range-group-card">
                 <summary className="tower-range-summary">
                   <div className="tower-range-summary__text">
