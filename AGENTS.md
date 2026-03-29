@@ -130,6 +130,8 @@ Use concise conventional-style commit messages, for example:
 - `ux(import): improve warning visibility`
 - `chore(planning): update backlog`
 
-## Secondary project consideration: 
+## Secondary project consideration
 
-When choosing between otherwise reasonable backlog options, prefer work that both improves the real product and creates strong evidence for Rebecca’s professional positioning. This must not override core product goals, architecture constraints, or backlog discipline.
+Use `planning/positioning.md` as guidance when multiple backlog options are otherwise reasonable. Prefer work that improves the real product and also strengthens the project as a case study for Rebecca’s professional positioning.
+
+Treat this as a secondary tie-breaker only. Do not use it to justify off-strategy scope, performative complexity, architecture violations, or skipping normal backlog/dependency discipline.
