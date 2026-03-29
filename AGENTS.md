@@ -129,3 +129,7 @@ Use concise conventional-style commit messages, for example:
 - `fix(import): correct missing-tier validation logic`
 - `ux(import): improve warning visibility`
 - `chore(planning): update backlog`
+
+## Secondary project consideration: 
+
+When choosing between otherwise reasonable backlog options, prefer work that both improves the real product and creates strong evidence for Rebecca’s professional positioning. This must not override core product goals, architecture constraints, or backlog discipline.
