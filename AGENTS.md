@@ -52,8 +52,17 @@ Planning files are part of the repo workflow:
 For non-trivial work:
 
 - confirm the relevant backlog item before coding
+- work directly from the relevant backlog row
 - create one if it does not exist
+- if a slice materially advances but does not complete the row, update that row's status/notes conservatively before finishing
 - update the same item when the work is complete
+
+Default read set for non-trivial tasks:
+
+- always read `AGENTS.md`, `planning/backlog.csv`, and `planning/decisions.md`
+- add `planning/roadmap.md` when sequencing or milestone fit matters
+- add `planning/architecture.md` for compatibility-sensitive work
+- use `planning/positioning.md` as secondary guidance when relevant, not as a primary planning artifact
 
 Update planning files only when appropriate:
 
