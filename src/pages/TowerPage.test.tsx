@@ -135,7 +135,7 @@ describe('TowerPage', () => {
     expect(screen.queryByText('Completed level')).not.toBeInTheDocument();
     expect(screen.queryByText('Completed range')).not.toBeInTheDocument();
     expect(screen.getByText(/Missing latest-snapshot matches are non-fatal/)).toBeInTheDocument();
-    expect(screen.getByText('Blocking requirement: Red Diamond Fish (Requires Mastered (>= 10,000))')).toBeInTheDocument();
+    expect(screen.queryByText(/Blocking requirement/)).not.toBeInTheDocument();
     expect(container.querySelectorAll('.item-icon').length).toBeGreaterThan(0);
   });
 
@@ -216,11 +216,8 @@ describe('TowerPage', () => {
 
     expect(goldCucumberRow).toHaveClass('summary-table__row--highlight');
     expect(boardRow).toHaveClass('summary-table__row--highlight');
-    expect(
-      screen.getByText(
-        'Blocking requirements: 2 items remain. Closest blocker: Gold Cucumber (Requires Mega Mastered (>= 1,000,000))',
-      ),
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/Blocking requirements/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Closest blocker/)).not.toBeInTheDocument();
 
     const goldCucumberPercentCell = within(goldCucumberRow as HTMLElement).getByText('90.0%').closest('td');
     const boardPercentCell = within(boardRow as HTMLElement).getByText('50.0%').closest('td');

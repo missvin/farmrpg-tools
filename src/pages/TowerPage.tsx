@@ -7,18 +7,6 @@ import { getItemIcon } from '../lib/itemIconManifest';
 import { loadTowerRequirements } from '../lib/loadTowerRequirements';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
 
-function formatRequirementLabel(requiredThreshold: number): string {
-  if (requiredThreshold === 10_000) {
-    return 'Requires Mastered (>= 10,000)';
-  }
-
-  if (requiredThreshold === 100_000) {
-    return 'Requires Grand Mastered (>= 100,000)';
-  }
-
-  return 'Requires Mega Mastered (>= 1,000,000)';
-}
-
 function formatCompactRequirementLabel(requiredThreshold: number): 'M' | 'GM' | 'MM' {
   if (requiredThreshold === 10_000) {
     return 'M';
@@ -53,25 +41,6 @@ function formatPercentComplete(currentMastery: number, requiredThreshold: number
   const percent = getPercentComplete(currentMastery, requiredThreshold);
 
   return `${percent.toFixed(percent >= 100 ? 0 : 1)}%`;
-}
-
-function formatBlockingSummary(
-  blockingRows: Array<{
-    itemName: string;
-    requiredThreshold: number;
-  }>,
-): string | null {
-  if (blockingRows.length === 0) {
-    return null;
-  }
-
-  const [closestBlockingRow] = blockingRows;
-
-  if (blockingRows.length === 1) {
-    return `Blocking requirement: ${closestBlockingRow.itemName} (${formatRequirementLabel(closestBlockingRow.requiredThreshold)})`;
-  }
-
-  return `Blocking requirements: ${blockingRows.length.toLocaleString()} items remain. Closest blocker: ${closestBlockingRow.itemName} (${formatRequirementLabel(closestBlockingRow.requiredThreshold)})`;
 }
 
 function shouldShowTowerNote(note: string | null): boolean {
@@ -553,7 +522,6 @@ export function TowerPage() {
                           const blockingRows = levelGroup.rows.filter((row) => !row.achieved);
                           const remainingCount = blockingRows.length;
                           const isNextRelevantLevel = firstIncompleteLevelKey === levelKey;
-                          const blockingSummary = formatBlockingSummary(blockingRows);
 
                           return (
                             <details
@@ -577,10 +545,6 @@ export function TowerPage() {
                                   {isCompleted ? 'Completed' : 'In Progress'}
                                 </span>
                               </summary>
-
-                              {isNextRelevantLevel && blockingSummary ? (
-                                <p className="subtle-text">{blockingSummary}</p>
-                              ) : null}
 
                               <div className="table-scroll">
                                 <table className="summary-table">
