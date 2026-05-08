@@ -35,14 +35,14 @@ This file is for milestone-level planning; use [backlog.csv](/C:/Users/liqui/Doc
 User-facing story:
 The app is easier to keep current, easier to host as a local-first tool, and less noisy to maintain while broader acquisition-planning work remains sequenced in the backlog.
 
-## v1.9 (Current)
+## v1.9 (Complete)
 
 - Durability and trust cleanup
   - legacy snapshot-summary normalization for backup restore
   - action-oriented import trust summary
 
 User-facing story:
-The app should be safer to migrate between local and hosted browser contexts, and import/restore flows should give clearer confidence before the next planning surfaces expand.
+The app is safer to migrate between local and hosted browser contexts, and import/restore flows give clearer confidence before the next planning surfaces expand.
 
 ## Next Acquisition Milestone
 

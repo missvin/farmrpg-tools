@@ -25,6 +25,18 @@ const EXPECTED_MASTERY_TIERS = [
   { targetTier: 1_000_000, label: 'Tier V (MM)' },
 ] as const;
 
+type ImportTrustSummary = {
+  tone: 'high' | 'medium' | 'low';
+  title: string;
+  confidenceLabel: string;
+  message: string;
+  nextStep: string;
+  findings: Array<{
+    label: string;
+    detail: string;
+  }>;
+};
+
 function formatTierList(tiers: Array<number | 'INF'>): string {
   if (tiers.length === 0) {
     return 'None detected';
@@ -86,6 +98,74 @@ function buildImportValidationWarning(parseResult: ReturnType<typeof parseMaster
   return messageParts.join('');
 }
 
+function buildImportTrustSummary(
+  parseResult: ReturnType<typeof parseMasteryPaste>,
+  importValidationWarning: string | null,
+): ImportTrustSummary {
+  const duplicateRowsCount = parseResult.parseSummary.duplicateRowsCount;
+  const detailedWarningCount = Math.max(0, parseResult.parseSummary.warnings.length - duplicateRowsCount);
+  const findings: ImportTrustSummary['findings'] = [];
+
+  if (importValidationWarning) {
+    findings.push({
+      label: 'Possible incomplete export',
+      detail: importValidationWarning,
+    });
+  }
+
+  if (duplicateRowsCount > 0) {
+    findings.push({
+      label: 'Duplicate rows merged',
+      detail: `${formatCountLabel(duplicateRowsCount, 'duplicate row was', 'duplicate rows were')} merged using the highest parsed count.`,
+    });
+  }
+
+  if (detailedWarningCount > 0) {
+    findings.push({
+      label: 'Rows to review',
+      detail: `${formatCountLabel(detailedWarningCount, 'additional warning needs', 'additional warnings need')} a quick look before saving.`,
+    });
+  }
+
+  if (parseResult.parseSummary.skippedNonItemLinesCount > 0) {
+    findings.push({
+      label: 'Ignored non-item lines',
+      detail: `${formatCountLabel(parseResult.parseSummary.skippedNonItemLinesCount, 'header/navigation line was', 'header/navigation lines were')} ignored as expected.`,
+    });
+  }
+
+  if (importValidationWarning) {
+    return {
+      tone: 'low',
+      title: 'Review before saving',
+      confidenceLabel: 'Low confidence',
+      message: 'This paste may be incomplete, so saving it could replace a fuller snapshot with partial data.',
+      nextStep: 'Expand all mastery tiers in FarmRPG, copy again, and parse a fresh preview. Use Import anyway only if this partial snapshot is intentional.',
+      findings,
+    };
+  }
+
+  if (duplicateRowsCount > 0 || detailedWarningCount > 0) {
+    return {
+      tone: 'medium',
+      title: 'Usable after review',
+      confidenceLabel: 'Medium confidence',
+      message: 'The paste produced usable item rows, with a few findings worth checking before you save.',
+      nextStep: 'Review the grouped findings below, then save if the merged counts match what you expect.',
+      findings,
+    };
+  }
+
+  return {
+    tone: 'high',
+    title: 'Ready to save',
+    confidenceLabel: 'High confidence',
+    message: 'This looks like a complete mastery export with no review-worthy findings.',
+    nextStep: 'Save this snapshot if it matches the FarmRPG export you meant to capture.',
+    findings,
+  };
+}
+
 export function ImportPage() {
   const [rawText, setRawText] = useState('');
   const [parsedText, setParsedText] = useState('');
@@ -138,6 +218,8 @@ export function ImportPage() {
 
   const hasParsedItems = (parseResult?.parseSummary.itemsParsed ?? 0) > 0;
   const requiresImportOverride = Boolean(importValidationWarning) && !importValidationAcknowledged;
+  const importTrustSummary =
+    parseResult && hasParsedItems ? buildImportTrustSummary(parseResult, importValidationWarning) : null;
   const validationSummaryFindings = parseResult
     ? [
         parseResult.parseSummary.duplicateRowsCount > 0
@@ -304,6 +386,39 @@ export function ImportPage() {
                 <dd>{validationSummaryFindings.length.toLocaleString()}</dd>
               </div>
             </dl>
+
+            {importTrustSummary ? (
+              <div className="page-stack">
+                <h3 className="section-title">Import Trust Summary</h3>
+                <div
+                  className={`status-alert page-stack ${
+                    importTrustSummary.tone === 'low' ? 'status-alert--warning' : ''
+                  }`}
+                >
+                  <div>
+                    <p className="status-message">
+                      <strong>{importTrustSummary.confidenceLabel}</strong>: {importTrustSummary.title}
+                    </p>
+                    <p className="supporting-text">{importTrustSummary.message}</p>
+                    <p className="supporting-text">
+                      <strong>Next step:</strong> {importTrustSummary.nextStep}
+                    </p>
+                  </div>
+
+                  {importTrustSummary.findings.length > 0 ? (
+                    <ul className="data-list">
+                      {importTrustSummary.findings.map((finding) => (
+                        <li key={finding.label}>
+                          <span>
+                            <strong>{finding.label}:</strong> {finding.detail}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
 
             <div className="page-stack">
               <h3 className="section-title">Import Validation Report</h3>

@@ -256,6 +256,61 @@ function isValidParseSummary(value: unknown): boolean {
   );
 }
 
+function normalizeMissingLegacyNumber(
+  value: Record<string, unknown>,
+  fieldName: string,
+  fallback: number,
+): void {
+  if (!(fieldName in value)) {
+    value[fieldName] = fallback;
+  }
+}
+
+function normalizeMissingLegacyArray(
+  value: Record<string, unknown>,
+  fieldName: string,
+): void {
+  if (!(fieldName in value)) {
+    value[fieldName] = [];
+  }
+}
+
+function normalizeLegacyParseSummary(
+  value: unknown,
+  parsedRows: unknown,
+): unknown {
+  if (!isRecord(value)) {
+    return value;
+  }
+
+  const normalized = { ...value };
+  const parsedRowsFallback = Array.isArray(parsedRows)
+    ? parsedRows.length
+    : isFiniteNonNegativeNumber(normalized.itemsParsed)
+      ? normalized.itemsParsed
+      : 0;
+
+  normalizeMissingLegacyNumber(normalized, 'parsedRowsCount', parsedRowsFallback);
+  normalizeMissingLegacyNumber(normalized, 'duplicateRowsCount', 0);
+  normalizeMissingLegacyNumber(normalized, 'skippedNonItemLinesCount', 0);
+  normalizeMissingLegacyArray(normalized, 'skippedNonItemLineSamples');
+  normalizeMissingLegacyNumber(normalized, 'unknownItemsCount', 0);
+  normalizeMissingLegacyArray(normalized, 'warnings');
+
+  return normalized;
+}
+
+function normalizeLegacySnapshot(value: unknown): unknown {
+  if (!isRecord(value)) {
+    return value;
+  }
+
+  return {
+    ...value,
+    parseSummary: normalizeLegacyParseSummary(value.parseSummary, value.parsedRows),
+  };
+}
+
 function isValidMasteryByItem(value: unknown): boolean {
   if (!isStringRecord(value)) {
     return false;
@@ -400,7 +455,9 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
     };
   }
 
-  if (!value.state.snapshots.every((snapshot) => isValidSnapshot(snapshot))) {
+  const normalizedSnapshots = value.state.snapshots.map((snapshot) => normalizeLegacySnapshot(snapshot));
+
+  if (!normalizedSnapshots.every((snapshot) => isValidSnapshot(snapshot))) {
     return {
       ok: false,
       code: 'invalid_snapshot',
@@ -448,7 +505,13 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
 
   return {
     ok: true,
-    payload: value as AppBackupPayloadV1,
+    payload: {
+      ...value,
+      state: {
+        ...value.state,
+        snapshots: normalizedSnapshots,
+      },
+    } as AppBackupPayloadV1,
   };
 }
 

@@ -115,6 +115,63 @@ describe('appBackupSchema', () => {
     expect(isAppBackupPayloadV1(payload)).toBe(true);
   });
 
+  it('normalizes missing legacy snapshot summary fields during validation', () => {
+    const legacySnapshot = createSnapshot('legacy-snapshot') as unknown as Record<string, unknown>;
+    legacySnapshot.parsedRows = [{ rawItemName: 'Twine' }, { rawItemName: 'Rope' }];
+
+    const legacyParseSummary = {
+      ...(legacySnapshot.parseSummary as Record<string, unknown>),
+    };
+    delete legacyParseSummary.parsedRowsCount;
+    delete legacyParseSummary.duplicateRowsCount;
+    delete legacyParseSummary.skippedNonItemLinesCount;
+    delete legacyParseSummary.skippedNonItemLineSamples;
+    legacySnapshot.parseSummary = legacyParseSummary;
+
+    const payload = createAppBackupPayload({
+      appVersion: '1.1.0',
+      exportedAt: '2026-03-21T09:00:00.000Z',
+      snapshots: [legacySnapshot as unknown as MasterySnapshot],
+      craftingModifierState: createDefaultCraftingModifierState(),
+      acquisitionPlannerState: createAcquisitionPlannerStateFixture(),
+      themePreference: 'dark',
+    });
+
+    const validationResult = validateAppBackupPayloadV1(payload);
+
+    expect(validationResult.ok).toBe(true);
+    if (!validationResult.ok) {
+      throw new Error(validationResult.message);
+    }
+
+    expect(validationResult.payload.state.snapshots[0].parseSummary).toMatchObject({
+      parsedRowsCount: 2,
+      duplicateRowsCount: 0,
+      skippedNonItemLinesCount: 0,
+      skippedNonItemLineSamples: [],
+    });
+  });
+
+  it('still rejects present malformed snapshot summary fields', () => {
+    const malformedSnapshot = createSnapshot('malformed-snapshot');
+    (malformedSnapshot.parseSummary as unknown as Record<string, unknown>).duplicateRowsCount = '0';
+
+    const payload = createAppBackupPayload({
+      appVersion: '1.1.0',
+      exportedAt: '2026-03-21T09:00:00.000Z',
+      snapshots: [malformedSnapshot],
+      craftingModifierState: createDefaultCraftingModifierState(),
+      acquisitionPlannerState: createAcquisitionPlannerStateFixture(),
+      themePreference: 'dark',
+    });
+
+    expect(validateAppBackupPayloadV1(payload)).toEqual({
+      ok: false,
+      code: 'invalid_snapshot',
+      message: 'The backup file contains malformed snapshot data.',
+    });
+  });
+
   it('rejects malformed or incompatible payloads at the schema boundary', () => {
     expect(isAppBackupPayloadV1(null)).toBe(false);
     expect(

@@ -56,6 +56,10 @@ describe('ImportPage', () => {
 
     expect(screen.getByText('Items parsed')).toBeInTheDocument();
     expect(screen.queryByText('Import Warning')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Import Trust Summary' })).toBeInTheDocument();
+    expect(screen.getByText(/High confidence/)).toBeInTheDocument();
+    expect(screen.getByText(/Ready to save/)).toBeInTheDocument();
+    expect(screen.getByText(/Save this snapshot if it matches/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Import anyway' })).not.toBeInTheDocument();
     expect(saveButton).toBeEnabled();
   });
@@ -80,6 +84,10 @@ describe('ImportPage', () => {
     expect(within(importSection as HTMLElement).getByRole('alert')).toBeInTheDocument();
     expect(within(importSection as HTMLElement).getByText('Import Warning')).toBeInTheDocument();
     expect(within(importSection as HTMLElement).getByText(/Tier II appears to be missing/)).toBeInTheDocument();
+    expect(screen.getByText(/Low confidence/)).toBeInTheDocument();
+    expect(screen.getByText(/Review before saving/)).toBeInTheDocument();
+    expect(screen.getByText(/Expand all mastery tiers in FarmRPG/)).toBeInTheDocument();
+    expect(screen.getByText(/Possible incomplete export/)).toBeInTheDocument();
   });
 
   it('does not warn that Tier II is missing when Tier II rows are present', async () => {
@@ -205,35 +213,34 @@ describe('ImportPage', () => {
 
     fireEvent.change(screen.getByLabelText('Raw mastery export'), {
       target: {
-        value: `Farm RPG
-Back
-
-Gold Cucumber
-967,174 / 1,000,000 Progress
-96.7174%
-
-Gold Cucumber
-967,200 / 1,000,000 Progress
-96.72%
-
-Settings`,
+        value: [
+          'Farm RPG',
+          'Back',
+          buildFullExport(),
+          buildMasteryBlock('Tier V Item 401', 967_200, 1_000_000),
+          'Settings',
+        ].join('\n\n'),
       },
     });
     await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
 
     expect(screen.getByRole('heading', { name: 'Import Validation Report' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Import Trust Summary' })).toBeInTheDocument();
+    expect(screen.getByText(/Medium confidence/)).toBeInTheDocument();
+    expect(screen.getByText(/Usable after review/)).toBeInTheDocument();
+    expect(screen.getByText(/Duplicate rows merged/)).toBeInTheDocument();
     expect(screen.getByText('Duplicate rows')).toBeInTheDocument();
     expect(screen.getByText('Ignored lines')).toBeInTheDocument();
     const reviewFindingsCard = screen.getByText('Review findings').closest('.summary-grid__item');
     expect(reviewFindingsCard).not.toBeNull();
     expect(within(reviewFindingsCard as HTMLElement).getByText('1')).toBeInTheDocument();
-    expect(screen.getByText(/1 duplicate row was merged using the highest parsed count/)).toBeInTheDocument();
+    expect(screen.getAllByText(/1 duplicate row was merged using the highest parsed count/).length).toBeGreaterThan(0);
     expect(screen.getByRole('heading', { name: 'Expected Ignored Lines' })).toBeInTheDocument();
     expect(
       screen.getByText(/3 non-item lines were ignored during parsing\. This is normal when the pasted export includes headers, navigation, or standalone percent lines\./),
     ).toBeInTheDocument();
     expect(screen.getByText('Line 1: Farm RPG')).toBeInTheDocument();
-    expect(screen.getByText('Line 2: Back')).toBeInTheDocument();
-    expect(screen.getByText('Line 12: Settings')).toBeInTheDocument();
+    expect(screen.getByText('Line 3: Back')).toBeInTheDocument();
+    expect(screen.getAllByText(/Settings/).length).toBeGreaterThan(0);
   });
 });

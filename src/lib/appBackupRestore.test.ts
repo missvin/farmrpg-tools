@@ -207,6 +207,28 @@ describe('appBackupRestore', () => {
     await expect(readAppBackupFile(file)).resolves.toEqual(payload);
   });
 
+  it('reads legacy backup snapshots after normalizing missing summary fields', async () => {
+    const legacyPayload = createBackupPayload();
+    const legacyParseSummary = legacyPayload.state.snapshots[0].parseSummary as unknown as Record<string, unknown>;
+    delete legacyParseSummary.parsedRowsCount;
+    delete legacyParseSummary.duplicateRowsCount;
+    delete legacyParseSummary.skippedNonItemLinesCount;
+    delete legacyParseSummary.skippedNonItemLineSamples;
+
+    const file = {
+      text: vi.fn().mockResolvedValue(JSON.stringify(legacyPayload)),
+    } as unknown as File;
+
+    const restoredPayload = await readAppBackupFile(file);
+
+    expect(restoredPayload.state.snapshots[0].parseSummary).toMatchObject({
+      parsedRowsCount: 1,
+      duplicateRowsCount: 0,
+      skippedNonItemLinesCount: 0,
+      skippedNonItemLineSamples: [],
+    });
+  });
+
   it('restores supported local state categories with replace-style behavior', async () => {
     const payload = createBackupPayload();
 
