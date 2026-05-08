@@ -2,7 +2,7 @@
 
 This file is for milestone-level planning; use [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for the detailed backlog and dependencies.
 
-## Completed Through v1.6
+## Completed Through v1.8
 
 - `v1.5` established the core local tracker and Tower workflow
   - Tower requirements loading and read-only Tower view
@@ -24,7 +24,27 @@ This file is for milestone-level planning; use [backlog.csv](/C:/Users/liqui/Doc
   - local snapshot history plus full backup export, restore, and restore safety
   - internal backlog-planning tooling including the backlog graph and overview mode
 
-## v1.8 (Current)
+## v1.8 (Complete)
+
+- Maintenance, enrichment, and hosted-readiness
+  - paste-once Museum Tools refresh workflow with clearer follow-up metrics and unresolved triage
+  - local item-icon observation, cache, and manifest workflow for later app-side icon use
+  - header and navigation cleanup for the broader planning-tool shape
+  - static Vercel hosting readiness while keeping saved user state browser-local
+
+User-facing story:
+The app is easier to keep current, easier to host as a local-first tool, and less noisy to maintain while broader acquisition-planning work remains sequenced in the backlog.
+
+## v1.9 (Current)
+
+- Durability and trust cleanup
+  - legacy snapshot-summary normalization for backup restore
+  - action-oriented import trust summary
+
+User-facing story:
+The app should be safer to migrate between local and hosted browser contexts, and import/restore flows should give clearer confidence before the next planning surfaces expand.
+
+## Next Acquisition Milestone
 
 - First non-crafting acquisition answers
   - consumable acquisition assumptions for Cider, Lemonade, and Arnold Palmer
@@ -34,7 +54,7 @@ This file is for milestone-level planning; use [backlog.csv](/C:/Users/liqui/Doc
 User-facing story:
 You can start asking not just "what do I need to craft?" but "what are my practical acquisition paths for this item under my current assumptions?"
 
-## v1.9
+## Following Acquisition Milestone
 
 - Acquisition recommendations and trust
   - first cross-source recommendation MVP
@@ -69,9 +89,10 @@ The target-output planner becomes easier to feed with real inventory data and ea
 ## Later
 
 - Focused planning and workflow polish
-  - Tower filters and summaries
   - shipped-version release tracking in the backlog/changelog workflow
   - stable backlog row ordering maintenance
+  - selected item-icon integration into app views
+  - Tower requirement data refreshes as confirmed values are released
 - Optional enrichment
   - buddy slug enrichment and related reference-maintenance workflows
   - unmatched export helpers where they materially improve maintenance
