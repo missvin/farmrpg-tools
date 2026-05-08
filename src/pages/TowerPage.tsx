@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { PageIntro } from '../components/PageIntro';
 import { deriveTowerRequirements } from '../lib/deriveTowerRequirements';
 import { downloadTowerReferenceReviewCsv, deriveTowerReferenceReviewRows } from '../lib/exportTowerReferenceReviewCsv';
+import { getItemIcon } from '../lib/itemIconManifest';
 import { loadTowerRequirements } from '../lib/loadTowerRequirements';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
 
@@ -95,6 +96,31 @@ type TowerTierFilter = 'all' | 'M' | 'GM' | 'MM';
 
 function isTbdTowerRow(itemName: string): boolean {
   return itemName.trim().toUpperCase() === 'TBD';
+}
+
+function TowerItemCell({
+  canonicalKey,
+  itemName,
+  matchedSnapshotRow,
+  notes,
+}: {
+  canonicalKey: string;
+  itemName: string;
+  matchedSnapshotRow: boolean;
+  notes: string | null;
+}) {
+  const icon = getItemIcon(canonicalKey);
+
+  return (
+    <div className="tower-item-cell">
+      {icon ? <img className="item-icon" src={icon.src} alt="" aria-hidden="true" loading="lazy" /> : null}
+      <div>
+        <strong>{itemName}</strong>
+        {shouldShowTowerNote(notes) ? <p className="subtle-text">Note: {notes}</p> : null}
+        {!matchedSnapshotRow ? <p className="subtle-text">Unmatched in latest snapshot</p> : null}
+      </div>
+    </div>
+  );
 }
 
 export function TowerPage() {
@@ -583,13 +609,12 @@ export function TowerPage() {
                                       >
                                         <td>{row.towerLevel}</td>
                                         <td>
-                                          <strong>{row.itemName}</strong>
-                                          {shouldShowTowerNote(row.notes) ? (
-                                            <p className="subtle-text">Note: {row.notes}</p>
-                                          ) : null}
-                                          {!row.matchedSnapshotRow ? (
-                                            <p className="subtle-text">Unmatched in latest snapshot</p>
-                                          ) : null}
+                                          <TowerItemCell
+                                            canonicalKey={row.canonicalKey}
+                                            itemName={row.itemName}
+                                            matchedSnapshotRow={row.matchedSnapshotRow}
+                                            notes={row.notes}
+                                          />
                                         </td>
                                         <td>{formatCompactRequirementLabel(row.requiredThreshold)}</td>
                                         <td
@@ -682,13 +707,12 @@ export function TowerPage() {
                                     >
                                       <td>{row.towerLevel}</td>
                                       <td>
-                                        <strong>{row.itemName}</strong>
-                                        {shouldShowTowerNote(row.notes) ? (
-                                          <p className="subtle-text">Note: {row.notes}</p>
-                                        ) : null}
-                                        {!row.matchedSnapshotRow ? (
-                                          <p className="subtle-text">Unmatched in latest snapshot</p>
-                                        ) : null}
+                                        <TowerItemCell
+                                          canonicalKey={row.canonicalKey}
+                                          itemName={row.itemName}
+                                          matchedSnapshotRow={row.matchedSnapshotRow}
+                                          notes={row.notes}
+                                        />
                                       </td>
                                       <td>{formatCompactRequirementLabel(row.requiredThreshold)}</td>
                                       <td

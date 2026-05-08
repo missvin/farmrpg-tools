@@ -106,7 +106,7 @@ describe('TowerPage', () => {
       },
     });
 
-    render(<TowerPage />);
+    const { container } = render(<TowerPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Tower Requirement Status')).toBeInTheDocument();
@@ -136,6 +136,7 @@ describe('TowerPage', () => {
     expect(screen.queryByText('Completed range')).not.toBeInTheDocument();
     expect(screen.getByText(/Missing latest-snapshot matches are non-fatal/)).toBeInTheDocument();
     expect(screen.getByText('Blocking requirement: Red Diamond Fish (Requires Mastered (>= 10,000))')).toBeInTheDocument();
+    expect(container.querySelectorAll('.item-icon').length).toBeGreaterThan(0);
   });
 
   it('keeps multiple blocking requirements visible and highlights all blockers inside the first incomplete range', async () => {
@@ -320,6 +321,7 @@ describe('TowerPage', () => {
 
     expect(screen.getByText('Visible TBD rows')).toBeInTheDocument();
     expect(screen.getByText('Tower Level 311 - 1/1 items remaining')).toBeInTheDocument();
+    expect(screen.getByText('TBD').closest('td')?.querySelector('.item-icon')).toBeNull();
 
     await user.selectOptions(screen.getByLabelText('Requirement tier'), 'MM');
 

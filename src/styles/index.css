@@ -615,6 +615,19 @@ a {
   z-index: 1;
 }
 
+.tower-item-cell {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.item-icon {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
 .data-list {
   list-style: none;
   margin: 0;
