@@ -76,6 +76,15 @@ Run checks proportional to the files touched:
 
 Do not claim success without saying what was run or why a check was skipped.
 
+## Git And Landing
+
+Use `AGENTS.md` as the source of truth for the repo-local safe git workflow.
+
+- Do not commit unless the user asks.
+- When the user asks to commit, merge, push, or otherwise land the work, use the `git codex-*` helpers described in `AGENTS.md`.
+- If a helper fails, stop and report it instead of silently falling back to raw git commands.
+- When asked to finish landing work, verify the final branch/upstream status and report whether `master` is up to date with `origin/master`.
+
 ## Field Notes
 
 Use `C:\Users\liqui\Documents\codex-post-notes\field-notes.md` as a cross-repo capture log only when something genuinely reusable or noteworthy occurs.
@@ -122,4 +131,4 @@ Only include these sections when actually needed:
 - `Blocker for Rebecca`: name the action Rebecca must take, why it is required, and what can continue after it.
 - `Recommended test for Rebecca`: name the manual check, what it validates, and whether work can continue without it.
 
-Do not commit unless the user asks. If committing, use a concise conventional-style message.
+Do not commit unless the user asks. If committing, follow the Git And Landing section and use a concise conventional-style message.
