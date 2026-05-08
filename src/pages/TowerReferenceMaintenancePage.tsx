@@ -123,6 +123,7 @@ export function TowerReferenceMaintenancePage() {
       <PageIntro
         title="Tower Reference Maintenance"
         description="Review dev-facing tower rows that need reference-data follow-up without cluttering the user Tower page."
+        storageKey="tower-reference-maintenance"
       />
 
       {towerState.isLoading ? <p className="empty-state">Loading latest snapshot and tower requirements...</p> : null}

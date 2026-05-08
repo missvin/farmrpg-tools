@@ -1,4 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react';
+import { Link } from 'react-router-dom';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveMasteryDifficultyStats } from '../lib/deriveMasteryDifficultyStats';
@@ -46,6 +47,18 @@ function getSummaryProgressStyle(
   return {
     '--summary-progress-fill': `${getSummaryProgressPercent(value, itemsParsed)}%`,
   };
+}
+
+function getLocalDataStatus(snapshot: Awaited<ReturnType<typeof getLatestSnapshot>>, isLoading: boolean): string {
+  if (isLoading) {
+    return 'Checking the latest local snapshot saved in this browser.';
+  }
+
+  if (!snapshot) {
+    return 'No local snapshot saved yet. Import a fresh mastery export or restore a backup to get started.';
+  }
+
+  return `Latest local snapshot saved ${new Date(snapshot.createdAt).toLocaleString()} with ${snapshot.parseSummary.itemsParsed.toLocaleString()} items parsed.`;
 }
 
 export function DashboardPage() {
@@ -135,8 +148,43 @@ export function DashboardPage() {
     <div className="page-stack">
       <PageIntro
         title="Dashboard"
-        description="View a quick summary of your FarmRPG mastery progress and recent snapshots."
+        description="Start from your latest local mastery snapshot, confirm what data is saved, then jump to the planning view that matches what you want to check next."
+        storageKey="dashboard"
       />
+
+      <section className="page-card page-stack" aria-labelledby="getting-started-title">
+        <div>
+          <h2 id="getting-started-title">Start Here</h2>
+          <p className="supporting-text">{getLocalDataStatus(dashboardState.snapshot, dashboardState.isLoading)}</p>
+        </div>
+
+        <div className="quick-link-grid">
+          <Link className="quick-link-card" to="/import">
+            <span className="quick-link-card__title">Import snapshot</span>
+            <span className="quick-link-card__description">Paste a FarmRPG mastery export and save it locally.</span>
+          </Link>
+          <Link className="quick-link-card" to="/settings#settings-restore-title">
+            <span className="quick-link-card__title">Restore backup</span>
+            <span className="quick-link-card__description">Load a previously exported FarmRPG Tools backup file.</span>
+          </Link>
+          <Link className="quick-link-card" to="/tower-progress">
+            <span className="quick-link-card__title">Tower Progress</span>
+            <span className="quick-link-card__description">See the unique Tower items still left to GM or MM.</span>
+          </Link>
+          <Link className="quick-link-card" to="/tower">
+            <span className="quick-link-card__title">Tower</span>
+            <span className="quick-link-card__description">Review level-by-level Tower requirement status.</span>
+          </Link>
+          <Link className="quick-link-card" to="/sorted">
+            <span className="quick-link-card__title">Sorted</span>
+            <span className="quick-link-card__description">Browse mastery progress grouped by difficulty and remaining work.</span>
+          </Link>
+          <Link className="quick-link-card" to="/compare">
+            <span className="quick-link-card__title">Compare</span>
+            <span className="quick-link-card__description">Compare two saved snapshots to see what changed.</span>
+          </Link>
+        </div>
+      </section>
 
       <section className="page-card page-stack" aria-labelledby="latest-snapshot-title">
         <div>

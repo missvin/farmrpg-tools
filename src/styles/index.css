@@ -315,6 +315,26 @@ a {
   color: var(--color-text-muted);
 }
 
+.page-intro__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-intro__header h1 {
+  margin-bottom: 0;
+}
+
+.page-intro__toggle {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.page-intro__description {
+  margin-top: 0.75rem !important;
+}
+
 .supporting-text {
   color: var(--color-text-muted);
 }
@@ -523,6 +543,37 @@ a {
 .summary-grid__item .subtle-text {
   position: relative;
   z-index: 1;
+}
+
+.quick-link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+}
+
+.quick-link-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.quick-link-card:hover,
+.quick-link-card:focus-visible {
+  border-color: var(--color-button-hover-border);
+}
+
+.quick-link-card__title {
+  color: var(--color-text-strong);
+  font-weight: 700;
+}
+
+.quick-link-card__description {
+  color: var(--color-text-muted);
 }
 
 .section-title {
@@ -1074,6 +1125,10 @@ a {
   .progress-list__header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .page-intro__header {
+    flex-direction: column;
   }
 
   .tower-level-summary {

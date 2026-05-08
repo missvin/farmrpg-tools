@@ -157,7 +157,8 @@ export function ComparePage() {
     <div className="page-stack">
       <PageIntro
         title="Snapshot Comparison"
-        description="Compare two saved local snapshots to see concise mastery deltas and changed items."
+        description="Choose two local snapshots to see which item mastery values changed between imports."
+        storageKey="compare"
       />
 
       <section className="page-card page-stack" aria-labelledby="compare-selection-title">

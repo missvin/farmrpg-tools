@@ -4,7 +4,8 @@ export function HistoryPage() {
   return (
     <PageIntro
       title="Snapshot History"
-      description="Review previously imported mastery snapshots stored locally in your browser."
+      description="Review the mastery snapshots saved in this browser before comparing, backing up, or importing a newer export."
+      storageKey="history"
     />
   );
 }

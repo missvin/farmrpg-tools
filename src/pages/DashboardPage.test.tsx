@@ -1,4 +1,5 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { DashboardPage } from './DashboardPage';
@@ -14,10 +15,24 @@ vi.mock('../lib/loadMasteryDifficulty', () => ({
   loadMasteryDifficulty: (...args: unknown[]) => loadMasteryDifficultyMock(...args),
 }));
 
+function renderDashboardPage() {
+  return render(
+    <MemoryRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
+      <DashboardPage />
+    </MemoryRouter>,
+  );
+}
+
 describe('DashboardPage', () => {
   afterEach(() => {
     getLatestSnapshotMock.mockReset();
     loadMasteryDifficultyMock.mockReset();
+    window.localStorage.clear();
   });
 
   it('renders soft percent fills in the mastery difficulty summary table', async () => {
@@ -163,7 +178,7 @@ describe('DashboardPage', () => {
       },
     });
 
-    render(<DashboardPage />);
+    renderDashboardPage();
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Mastery Difficulty Summary' })).toBeInTheDocument();
@@ -178,6 +193,24 @@ describe('DashboardPage', () => {
     expect(percentCells[0]).toHaveStyle('--dashboard-percent-fill: 50%');
     expect(percentCells[1]).toHaveStyle('--dashboard-percent-fill: 25%');
     expect(percentCells[2]).toHaveStyle('--dashboard-percent-fill: 0%');
+  });
+
+  it('renders getting-started links when no local snapshot exists yet', async () => {
+    getLatestSnapshotMock.mockResolvedValue(null);
+
+    renderDashboardPage();
+
+    expect(await screen.findByRole('heading', { name: 'Start Here' })).toBeInTheDocument();
+    expect(screen.getByText('No local snapshot saved yet. Import a fresh mastery export or restore a backup to get started.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Import snapshot/i })).toHaveAttribute('href', '/import');
+    expect(screen.getByRole('link', { name: /Restore backup/i })).toHaveAttribute(
+      'href',
+      '/settings#settings-restore-title',
+    );
+    expect(screen.getByRole('link', { name: /^Tower Progress/i })).toHaveAttribute('href', '/tower-progress');
+    expect(screen.getByRole('link', { name: /^Tower Review/i })).toHaveAttribute('href', '/tower');
+    expect(screen.getByRole('link', { name: /Sorted/i })).toHaveAttribute('href', '/sorted');
+    expect(screen.getByRole('link', { name: /Compare/i })).toHaveAttribute('href', '/compare');
   });
 
   it('renders achieved status summary fills based on items parsed', async () => {
@@ -295,7 +328,7 @@ describe('DashboardPage', () => {
       },
     });
 
-    render(<DashboardPage />);
+    renderDashboardPage();
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Achieved Status Summary' })).toBeInTheDocument();

@@ -157,7 +157,8 @@ export function TowerProgressPage() {
     <div className="page-stack">
       <PageIntro
         title="Tower Progress"
-        description="Plan the remaining Tower mastery grind from the latest saved snapshot using unique-item progress toward each item's highest required tower target."
+        description="See the unique Tower items still left to GM or MM from your latest saved snapshot, using each item's highest required target."
+        storageKey="tower-progress"
       />
 
       {progressState.isLoading ? (

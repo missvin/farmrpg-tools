@@ -275,7 +275,8 @@ export function IngredientDemandPage() {
     <div className="page-stack">
       <PageIntro
         title="Ingredient Demand Lookup"
-        description="Look up a single ingredient and see its recursive remaining burden across mastery and Tower goal scopes under the current local planning assumptions."
+        description="Pick one ingredient to see its recursive demand across mastery and Tower goals under your current local planning assumptions."
+        storageKey="ingredient-demand"
       />
 
       <section className="page-card page-stack" aria-labelledby="ingredient-demand-controls-title">

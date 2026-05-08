@@ -453,7 +453,8 @@ export function SettingsPage() {
     <div className="page-stack">
       <PageIntro
         title="Settings"
-        description="Configure local app behavior and future data preferences here."
+        description="Manage local backups, restore a saved backup, and adjust planner assumptions stored in this browser."
+        storageKey="settings"
       />
 
       <section className="page-card page-stack" aria-labelledby="settings-backup-title">

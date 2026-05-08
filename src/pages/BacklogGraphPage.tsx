@@ -51,7 +51,8 @@ export function BacklogGraphPage() {
     <div className="page-stack">
       <PageIntro
         title="Backlog Graph"
-        description="Internal local-only project-planning view over backlog relationships. This page is read-only support data, not gameplay or canonical reference logic."
+        description="Review local backlog relationships for project planning; this read-only dev view does not affect gameplay data."
+        storageKey="backlog-graph"
       />
       <BacklogGraphView graphState={graphState} />
     </div>

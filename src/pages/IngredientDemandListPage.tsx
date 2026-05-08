@@ -306,7 +306,8 @@ export function IngredientDemandListPage() {
     <div className="page-stack">
       <PageIntro
         title="Ingredient Demand List"
-        description="Browse all ingredients by recursive remaining burden for one goal scope at a time using the shared recipe, modifier, and planning engine."
+        description="Browse ingredients by recursive remaining burden for one goal scope at a time, using the shared recipe and planner assumptions."
+        storageKey="ingredient-demand-list"
       />
 
       <section className="page-card page-stack" aria-labelledby="ingredient-demand-list-controls-title">

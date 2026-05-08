@@ -282,7 +282,8 @@ export function SortedPage() {
     <div className="page-stack">
       <PageIntro
         title="Sorted Mastery Progress"
-        description="Browse the latest saved snapshot grouped by mastery difficulty and remaining progress to the next threshold."
+        description="Use your latest saved snapshot to browse items by difficulty, mastery tier, and remaining progress toward the next threshold."
+        storageKey="sorted"
       />
 
       {sortedState.isLoading ? <p className="empty-state">Loading latest snapshot and mastery difficulty data...</p> : null}

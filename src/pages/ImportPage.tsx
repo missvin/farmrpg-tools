@@ -199,7 +199,8 @@ export function ImportPage() {
     <div className="page-stack">
       <PageIntro
         title="Import Mastery Snapshot"
-        description="Paste a FarmRPG mastery export, preview the parsed snapshot, and save it locally."
+        description="Paste a FarmRPG mastery export, review the parsed rows and warnings, then save the snapshot locally for the rest of the app."
+        storageKey="import"
       />
 
       <section className="page-card page-stack" aria-labelledby="import-form-title">

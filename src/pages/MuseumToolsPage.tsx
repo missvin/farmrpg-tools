@@ -643,7 +643,8 @@ export function MuseumToolsPage() {
     <div className="page-stack">
       <PageIntro
         title="Museum Tools"
-        description="Run a paste-once local museum refresh that chains parsing, buddy candidate generation, and local coverage follow-up reporting without adding live runtime scraping."
+        description="Run the local museum refresh workflow for parsing, buddy candidate generation, and follow-up review without live scraping."
+        storageKey="museum-tools"
       />
 
       <section className="page-card page-stack" aria-labelledby="museum-tools-input-title">

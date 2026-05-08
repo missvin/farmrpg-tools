@@ -241,7 +241,8 @@ export function TowerPage() {
     <div className="page-stack">
       <PageIntro
         title="Tower Requirements"
-        description="Review the latest saved snapshot against local tower requirements data in a read-only view."
+        description="Check your latest saved snapshot against the local Tower requirement list, level by level."
+        storageKey="tower"
       />
 
       {towerState.isLoading ? <p className="empty-state">Loading latest snapshot and tower requirements...</p> : null}
