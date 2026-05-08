@@ -173,7 +173,7 @@ describe('deriveTowerRequirements', () => {
     expect(level301Rows?.map((row) => row.slotIndex)).toEqual([1, 2]);
   });
 
-  it('keeps future 311-320 levels visible in derived outputs with known rows and TBD placeholders', () => {
+  it('keeps future 311-330 levels visible in derived outputs with known rows', () => {
     const csvText = readFileSync(resolve(process.cwd(), 'data/tower_requirements.csv'), 'utf8');
     const towerRequirementsData = parseTowerRequirementsCsv(csvText);
     const emptySnapshot = {
@@ -195,9 +195,17 @@ describe('deriveTowerRequirements', () => {
     const level318 = range311to320?.levels.find((level) => level.towerLevel === 318);
     const level319 = range311to320?.levels.find((level) => level.towerLevel === 319);
     const level320 = range311to320?.levels.find((level) => level.towerLevel === 320);
+    const range321to330 = result.groups.find((group) => group.towerLevelRange === '321-330');
+    const level321 = range321to330?.levels.find((level) => level.towerLevel === 321);
+    const level324 = range321to330?.levels.find((level) => level.towerLevel === 324);
+    const level325 = range321to330?.levels.find((level) => level.towerLevel === 325);
+    const level330 = range321to330?.levels.find((level) => level.towerLevel === 330);
 
     expect(range311to320?.levels.map((level) => level.towerLevel)).toEqual([
       311, 312, 313, 314, 315, 316, 317, 318, 319, 320,
+    ]);
+    expect(range321to330?.levels.map((level) => level.towerLevel)).toEqual([
+      321, 322, 323, 324, 325, 326, 327, 328, 329, 330,
     ]);
     expect(level311?.rows.map((row) => row.itemName)).toEqual(['Bamboo Chair', 'Barbed Wire']);
     expect(level314?.rows.map((row) => row.itemName)).toEqual(['Energy Coil', 'Black Dye']);
@@ -210,6 +218,10 @@ describe('deriveTowerRequirements', () => {
     expect(level317?.rows.map((row) => row.itemName)).toEqual(['Gold Aquamarine Ring', 'Handsaw']);
     expect(level318?.rows.map((row) => row.itemName)).toEqual(['Yellow Butterfly', 'Acorn Butter']);
     expect(level319?.rows.map((row) => row.itemName)).toEqual(['Strong Paste', 'Spoon']);
-    expect(level320?.rows.map((row) => row.itemName)).toEqual(['Corn Husk Doll', 'Reaver Claw', 'Blubberfish']);
+    expect(level320?.rows.map((row) => row.itemName)).toEqual(['Corn Husk Doll', 'Blubberfish', 'Reaver Claw']);
+    expect(level321?.rows.map((row) => row.itemName)).toEqual(['Green Diary', 'Sturdy Bow']);
+    expect(level324?.rows.map((row) => row.itemName)).toEqual(['Spool of Copper', 'Red Twine']);
+    expect(level325?.rows.map((row) => row.itemName)).toEqual(['Cloth', 'Gold Ring', 'Tin Scraps']);
+    expect(level330?.rows.map((row) => row.itemName)).toEqual(['Red Diary', 'White Twine', 'Magus Hat']);
   });
 });
