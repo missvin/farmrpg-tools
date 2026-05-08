@@ -119,6 +119,7 @@ End with a concise readout that includes:
 - concise implementation summary
 - suggested commit command if not committing directly
 - next reasonable backlog item plus short justification
+- any recommended user testing or Rebecca actions needed because of the completed work or to unlock the next backlog item
 
 Also include exactly one field-note status:
 

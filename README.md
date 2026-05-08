@@ -56,4 +56,8 @@ npm run lint
 
 - Reference data lives in [`/data/mastery_difficulty.csv`](/C:/Users/liqui/Documents/farmrpg-tools/data/mastery_difficulty.csv).
 - User data should remain local and untracked.
-- Future user snapshot storage is planned for IndexedDB.
+- User snapshots are stored locally in IndexedDB.
+
+## Hosted Use
+
+The Vercel-hosted app remains local-first. Reference CSVs are served as static files, but mastery snapshots and app settings stay in the current browser/device. Use the Settings backup export and restore flow to move or recover local app state.
