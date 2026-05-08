@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { TowerPage } from './TowerPage';
+import { TowerReferenceMaintenancePage } from './TowerReferenceMaintenancePage';
 
 const getLatestSnapshotMock = vi.fn();
 const loadTowerRequirementsMock = vi.fn();
@@ -94,7 +95,7 @@ describe('TowerPage', () => {
           masteryLevelNeeded: 'MM',
           farmrpgItemId: null,
           buddySlug: null,
-          notes: null,
+          notes: 'Auto-craft',
           sourceSheet: null,
           sourceRow: null,
         },
@@ -134,7 +135,10 @@ describe('TowerPage', () => {
     expect(screen.queryByText('Needs progress')).not.toBeInTheDocument();
     expect(screen.queryByText('Completed level')).not.toBeInTheDocument();
     expect(screen.queryByText('Completed range')).not.toBeInTheDocument();
-    expect(screen.getByText(/Missing latest-snapshot matches are non-fatal/)).toBeInTheDocument();
+    expect(screen.queryByText('Tower Summary')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Missing latest-snapshot matches are non-fatal/)).not.toBeInTheDocument();
+    expect(screen.queryByText('Tower Reference Maintenance')).not.toBeInTheDocument();
+    expect(screen.queryByText('Note: Auto-craft')).not.toBeInTheDocument();
     expect(screen.queryByText(/Blocking requirement/)).not.toBeInTheDocument();
     expect(container.querySelectorAll('.item-icon').length).toBeGreaterThan(0);
   });
@@ -303,20 +307,22 @@ describe('TowerPage', () => {
     render(<TowerPage />);
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'Tower Filters' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Tower Requirement Status' })).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Visible ranges')).toBeInTheDocument();
-    expect(screen.getByText('Closest visible blocker: Tower Level 201 Twine (GM)')).toBeInTheDocument();
+    expect(screen.getByText('Completed 1/3 tower mastery requirements (33%), with 2 remaining.')).toBeInTheDocument();
+    expect(screen.queryByText('Tower Filters')).not.toBeInTheDocument();
+    expect(screen.queryByText('Visible ranges')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Closest visible blocker/)).not.toBeInTheDocument();
 
     await user.selectOptions(screen.getByLabelText('Tower range'), '311-320');
 
-    expect(await screen.findByText('Closest visible blocker: Tower Level 311 TBD (GM)')).toBeInTheDocument();
+    expect(await screen.findByText('Tower Level 311 - 1/1 items remaining')).toBeInTheDocument();
     expect(screen.queryByText('Board')).not.toBeInTheDocument();
 
     await user.selectOptions(screen.getByLabelText('Row state'), 'tbd');
 
-    expect(screen.getByText('Visible TBD rows')).toBeInTheDocument();
+    expect(screen.queryByText('Visible TBD rows')).not.toBeInTheDocument();
     expect(screen.getByText('Tower Level 311 - 1/1 items remaining')).toBeInTheDocument();
     expect(screen.getByText('TBD').closest('td')?.querySelector('.item-icon')).toBeNull();
 
@@ -395,15 +401,14 @@ describe('TowerPage', () => {
       },
     });
 
-    render(<TowerPage />);
+    render(<TowerReferenceMaintenancePage />);
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'Tower Reference Maintenance' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Tower Reference Review' })).toBeInTheDocument();
     });
 
     expect(screen.getByText('Review rows')).toBeInTheDocument();
     expect(screen.getByText('TBD placeholder rows')).toBeInTheDocument();
-    expect(screen.getByText('Export-ready review rows')).toBeInTheDocument();
     expect(screen.getByText('Tower Level 311 Slot 2: TBD')).toBeInTheDocument();
     expect(screen.getByText('Review reasons: tbd_placeholder, unmatched_snapshot')).toBeInTheDocument();
     expect(screen.getByText('Tower Level 312 Slot 1: Mystery Item')).toBeInTheDocument();

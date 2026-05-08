@@ -12,6 +12,7 @@ import { SettingsPage } from '../pages/SettingsPage';
 import { SortedPage } from '../pages/SortedPage';
 import { TowerPage } from '../pages/TowerPage';
 import { TowerProgressPage } from '../pages/TowerProgressPage';
+import { TowerReferenceMaintenancePage } from '../pages/TowerReferenceMaintenancePage';
 
 type AppRoute = {
   path: string;
@@ -74,6 +75,11 @@ export const appRoutes: AppRoute[] = [
     element: <TowerProgressPage />,
   },
   {
+    path: '/tower-reference-maintenance',
+    label: 'Tower Reference Maintenance',
+    element: <TowerReferenceMaintenancePage />,
+  },
+  {
     path: '/history',
     label: 'History',
     element: <HistoryPage />,
@@ -120,6 +126,7 @@ export const navigationSections: NavigationSection[] = [
     title: 'Dev Tools',
     items: [
       { to: '/museum-tools', label: 'Museum Tools' },
+      { to: '/tower-reference-maintenance', label: 'Tower Reference Maintenance' },
       { to: '/backlog-graph', label: 'Backlog Graph' },
     ],
   },

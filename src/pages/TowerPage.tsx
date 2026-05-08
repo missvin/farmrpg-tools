@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveTowerRequirements } from '../lib/deriveTowerRequirements';
-import { downloadTowerReferenceReviewCsv, deriveTowerReferenceReviewRows } from '../lib/exportTowerReferenceReviewCsv';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { loadTowerRequirements } from '../lib/loadTowerRequirements';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
@@ -25,6 +24,13 @@ function getLevelKey(towerLevelRange: string, towerLevel: number): string {
 
 function formatLevelSummary(remainingCount: number, totalCount: number): string {
   return `${remainingCount.toLocaleString()}/${totalCount.toLocaleString()} items remaining`;
+}
+
+function formatRequirementCompletionSummary(completedRequirements: number, totalRequirements: number): string {
+  const remainingRequirements = totalRequirements - completedRequirements;
+  const completionPercent = totalRequirements > 0 ? Math.round((completedRequirements / totalRequirements) * 100) : 0;
+
+  return `Completed ${completedRequirements.toLocaleString()}/${totalRequirements.toLocaleString()} tower mastery requirements (${completionPercent}%), with ${remainingRequirements.toLocaleString()} remaining.`;
 }
 
 function getPercentComplete(currentMastery: number, requiredThreshold: number): number {
@@ -93,8 +99,6 @@ function TowerItemCell({
 }
 
 export function TowerPage() {
-  const [exportMessage, setExportMessage] = useState<string | null>(null);
-  const [exportError, setExportError] = useState<string | null>(null);
   const [selectedRange, setSelectedRange] = useState<string>('all');
   const [rowStateFilter, setRowStateFilter] = useState<TowerRowStateFilter>('all');
   const [tierFilter, setTierFilter] = useState<TowerTierFilter>('all');
@@ -182,8 +186,6 @@ export function TowerPage() {
   const totalRequirements = towerState.derivedTowerRequirements?.rows.length ?? 0;
   const completedRequirements =
     towerState.derivedTowerRequirements?.rows.filter((row) => row.achieved).length ?? 0;
-  const unmatchedSnapshotItemCount =
-    towerState.derivedTowerRequirements?.rows.filter((row) => !row.matchedSnapshotRow).length ?? 0;
   const availableRanges = towerState.derivedTowerRequirements?.groups.map((group) => group.towerLevelRange) ?? [];
   const filteredGroups = useMemo(() => {
     if (!towerState.derivedTowerRequirements) {
@@ -235,39 +237,6 @@ export function TowerPage() {
   const completedRangeGroups = filteredGroups.filter((rangeGroup) =>
     rangeGroup.levels.every((levelGroup) => levelGroup.rows.every((row) => row.achieved)),
   );
-  const referenceReviewRows = towerState.derivedTowerRequirements
-    ? deriveTowerReferenceReviewRows(towerState.derivedTowerRequirements.rows)
-    : [];
-  const tbdPlaceholderCount = referenceReviewRows.filter((row) =>
-    row.reviewReasons.includes('tbd_placeholder'),
-  ).length;
-  const unmatchedReviewCount = referenceReviewRows.filter((row) =>
-    row.reviewReasons.includes('unmatched_snapshot'),
-  ).length;
-  const visibleRows = filteredGroups.flatMap((rangeGroup) =>
-    rangeGroup.levels.flatMap((levelGroup) => levelGroup.rows),
-  );
-  const visibleBlockingRows = visibleRows.filter((row) => !row.achieved);
-  const visibleCompletedRows = visibleRows.filter((row) => row.achieved);
-  const visibleTbdRows = visibleRows.filter((row) => isTbdTowerRow(row.itemName));
-  const visibleLevelCount = filteredGroups.reduce((count, rangeGroup) => count + rangeGroup.levels.length, 0);
-  const visibleClosestBlocker = visibleBlockingRows[0] ?? null;
-
-  function handleExportTowerReferenceReviewCsv(): void {
-    if (!towerState.derivedTowerRequirements || referenceReviewRows.length === 0) {
-      return;
-    }
-
-    try {
-      downloadTowerReferenceReviewCsv(towerState.derivedTowerRequirements.rows);
-      setExportError(null);
-      setExportMessage('Tower reference review CSV downloaded for local maintenance.');
-    } catch (error) {
-      setExportMessage(null);
-      setExportError(error instanceof Error ? error.message : 'Unable to export tower reference review CSV.');
-    }
-  }
-
   return (
     <div className="page-stack">
       <PageIntro
@@ -297,46 +266,11 @@ export function TowerPage() {
 
       {!towerState.isLoading && towerState.snapshot && towerState.derivedTowerRequirements ? (
         <>
-          <section className="page-card page-stack" aria-labelledby="tower-summary-title">
+          <section className="page-card page-stack" aria-labelledby="tower-results-title">
             <div>
-              <h2 id="tower-summary-title">Tower Summary</h2>
+              <h2 id="tower-results-title">Tower Requirement Status</h2>
               <p className="supporting-text">
-                Each tower requirement row is shown independently, even when the same item appears in multiple
-                levels or tiers. Rows that do not match the latest snapshot stay visible and are treated as 0
-                mastery instead of failing the page.
-              </p>
-            </div>
-
-            <dl className="summary-grid">
-              <div className="summary-grid__item">
-                <dt>Total requirements</dt>
-                <dd>{totalRequirements.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Completed requirements</dt>
-                <dd>{completedRequirements.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Remaining requirements</dt>
-                <dd>{(totalRequirements - completedRequirements).toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Requirement rows missing from latest snapshot</dt>
-                <dd>{unmatchedSnapshotItemCount.toLocaleString()}</dd>
-              </div>
-            </dl>
-
-            <p className="subtle-text">
-              Missing latest-snapshot matches are non-fatal. Keep these rows visible so naming drift, import coverage,
-              or tower-reference maintenance issues are easier to spot and review.
-            </p>
-          </section>
-
-          <section className="page-card page-stack" aria-labelledby="tower-filters-title">
-            <div>
-              <h2 id="tower-filters-title">Tower Filters</h2>
-              <p className="supporting-text">
-                Narrow dense tower data by range, row state, or requirement tier without leaving the main Tower page.
+                {formatRequirementCompletionSummary(completedRequirements, totalRequirements)}
               </p>
             </div>
 
@@ -365,7 +299,7 @@ export function TowerPage() {
                   onChange={(event) => setRowStateFilter(event.target.value as TowerRowStateFilter)}
                 >
                   <option value="all">All rows</option>
-                  <option value="blocking">Blocking only</option>
+                  <option value="blocking">Remaining only</option>
                   <option value="completed">Completed only</option>
                   <option value="tbd">TBD only</option>
                 </select>
@@ -384,110 +318,6 @@ export function TowerPage() {
                   <option value="MM">MM only</option>
                 </select>
               </label>
-            </div>
-
-            <dl className="summary-grid">
-              <div className="summary-grid__item">
-                <dt>Visible ranges</dt>
-                <dd>{filteredGroups.length.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Visible levels</dt>
-                <dd>{visibleLevelCount.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Visible blocker rows</dt>
-                <dd>{visibleBlockingRows.length.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Visible TBD rows</dt>
-                <dd>{visibleTbdRows.length.toLocaleString()}</dd>
-              </div>
-            </dl>
-
-            {visibleClosestBlocker ? (
-              <p className="subtle-text">
-                Closest visible blocker: Tower Level {visibleClosestBlocker.towerLevel} {visibleClosestBlocker.itemName}{' '}
-                ({formatCompactRequirementLabel(visibleClosestBlocker.requiredThreshold)})
-              </p>
-            ) : (
-              <p className="subtle-text">
-                {visibleRows.length === 0
-                  ? 'No tower rows match the current filters.'
-                  : `Visible completed rows: ${visibleCompletedRows.length.toLocaleString()}`}
-              </p>
-            )}
-          </section>
-
-          <section className="page-card page-stack" aria-labelledby="tower-reference-review-title">
-            <div>
-              <h2 id="tower-reference-review-title">Tower Reference Maintenance</h2>
-              <p className="supporting-text">
-                Review rows that still need reference-data follow-up. The export includes per-row review reasons plus
-                tower provenance fields so future manual corrections are easier to compare over time.
-              </p>
-            </div>
-
-            <dl className="summary-grid">
-              <div className="summary-grid__item">
-                <dt>Review rows</dt>
-                <dd>{referenceReviewRows.length.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Unmatched snapshot rows</dt>
-                <dd>{unmatchedReviewCount.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>TBD placeholder rows</dt>
-                <dd>{tbdPlaceholderCount.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Export-ready review rows</dt>
-                <dd>{referenceReviewRows.length.toLocaleString()}</dd>
-              </div>
-            </dl>
-
-            <p className="subtle-text">
-              This export is dev-facing maintenance output only. It keeps placeholder and unmatched tower rows visible
-              for review without changing the normal tower status flow or exposing provenance details in the main table.
-            </p>
-
-            <div className="button-row">
-              <button
-                type="button"
-                className="button"
-                onClick={handleExportTowerReferenceReviewCsv}
-                disabled={referenceReviewRows.length === 0}
-              >
-                Export Tower Reference Review CSV
-              </button>
-            </div>
-
-            {exportMessage ? <p className="status-message status-message--success">{exportMessage}</p> : null}
-            {exportError ? <p className="status-message status-message--error">{exportError}</p> : null}
-
-            {referenceReviewRows.length === 0 ? (
-              <p className="empty-state">No tower reference review rows are currently surfaced.</p>
-            ) : (
-              <ul className="data-list">
-                {referenceReviewRows.map((row) => (
-                  <li key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}`}>
-                    <div>
-                      <strong>
-                        Tower Level {row.towerLevel} Slot {row.slotIndex}: {row.itemName}
-                      </strong>
-                      <p className="subtle-text">Review reasons: {row.reviewReasons.join(', ')}</p>
-                    </div>
-                    <strong>{row.masteryLevelNeeded}</strong>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section className="page-card page-stack" aria-labelledby="tower-results-title">
-            <div>
-              <h2 id="tower-results-title">Tower Requirement Status</h2>
             </div>
 
             {filteredGroups.length === 0 ? (
@@ -675,7 +505,7 @@ export function TowerPage() {
                                           canonicalKey={row.canonicalKey}
                                           itemName={row.itemName}
                                           matchedSnapshotRow={row.matchedSnapshotRow}
-                                          notes={row.notes}
+                                          notes={null}
                                         />
                                       </td>
                                       <td>{formatCompactRequirementLabel(row.requiredThreshold)}</td>
