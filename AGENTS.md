@@ -139,6 +139,20 @@ Use concise conventional-style commit messages, for example:
 - `ux(import): improve warning visibility`
 - `chore(planning): update backlog`
 
+## Git command workflow
+
+Use the repo-local safe Codex git helpers for branch, stage, commit, push, and merge work:
+
+- `git codex-branch`
+- `git codex-stage`
+- `git codex-commit`
+- `git codex-push`
+- `git codex-merge`
+
+The helpers read temporary input from `recovery/codex-branch-name.txt`, `recovery/codex-stage-paths.txt`, and `recovery/codex-commit-message.txt`. These files are ignored and should be removed automatically after successful helper use.
+
+If a helper fails, stop and report the failure. Do not silently fall back to raw `git add`, `git commit`, `git push`, or `git merge`.
+
 ## Secondary project consideration
 
 Use `planning/positioning.md` as guidance when multiple backlog options are otherwise reasonable. Prefer work that improves the real product and also strengthens the project as a case study for Rebecca’s professional positioning.
