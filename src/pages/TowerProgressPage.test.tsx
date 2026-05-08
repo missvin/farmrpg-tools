@@ -309,13 +309,16 @@ describe('TowerProgressPage', () => {
       expect(screen.getByRole('heading', { name: 'Tower Progress' })).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/Unmatched tower items in the latest snapshot: 1/)).toBeInTheDocument();
-    expect(screen.getByText(/Unrated tower items in mastery difficulty data: 1/)).toBeInTheDocument();
-    expect(screen.getByText(/These mismatches stay visible and non-fatal/)).toBeInTheDocument();
+    const summarySection = screen.getByRole('heading', { name: 'Progress Summary' }).closest('section');
+    expect(summarySection).not.toBeNull();
+    expect(within(summarySection as HTMLElement).queryByText(/Unmatched tower items/i)).not.toBeInTheDocument();
+    expect(within(summarySection as HTMLElement).queryByText(/mastery difficulty data/i)).not.toBeInTheDocument();
     const remainingItemsSection = screen.getByRole('heading', { name: 'Remaining Tower Items' }).closest('section');
     expect(within(remainingItemsSection as HTMLElement).getByText('Gold Flier')).toBeInTheDocument();
-    expect(within(remainingItemsSection as HTMLElement).getByText('Missing from mastery difficulty data; shown as Unrated.')).toBeInTheDocument();
-    expect(within(remainingItemsSection as HTMLElement).getByText('Unmatched in latest snapshot; treated as 0 mastery.')).toBeInTheDocument();
+    expect(within(remainingItemsSection as HTMLElement).getByText('Difficulty not rated yet.')).toBeInTheDocument();
+    expect(
+      within(remainingItemsSection as HTMLElement).getByText('Not found in the latest snapshot; counted from 0 mastery.'),
+    ).toBeInTheDocument();
   });
 
   it('keeps repeated tower requirement rows independent inside the difficulty drilldown', async () => {

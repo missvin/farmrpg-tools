@@ -199,11 +199,7 @@ export function TowerProgressPage() {
               <>
           <section className="page-card page-stack" aria-labelledby="tower-progress-summary-title">
             <div>
-              <h2 id="tower-progress-summary-title">Planning Summary</h2>
-              <p className="supporting-text">
-                This planning view aggregates Tower requirements by unique item and uses the highest required tower
-                target for each item. The existing Tower page still remains the row-by-row requirement view.
-              </p>
+              <h2 id="tower-progress-summary-title">Progress Summary</h2>
             </div>
 
             <dl className="summary-grid">
@@ -224,27 +220,13 @@ export function TowerProgressPage() {
                 <dd>{progressState.derivedProgress.remainingItems.length.toLocaleString()}</dd>
               </div>
             </dl>
-
-            <p className="subtle-text">
-              Unmatched tower items in the latest snapshot:{' '}
-              {progressState.derivedProgress.unmatchedSnapshotItemCount.toLocaleString()}
-              {' | '}Unrated tower items in mastery difficulty data:{' '}
-              {progressState.derivedProgress.unratedItemCount.toLocaleString()}
-            </p>
-
-            <p className="subtle-text">
-              These mismatches stay visible and non-fatal. Missing snapshot matches are treated as 0 mastery, while
-              missing mastery difficulty matches stay in the planning view as Unrated for later reference-data
-              maintenance.
-            </p>
           </section>
 
           <section className="page-card page-stack" aria-labelledby="tower-progress-difficulty-title">
             <div>
               <h2 id="tower-progress-difficulty-title">Difficulty Breakdown</h2>
               <p className="supporting-text">
-                Difficulty buckets come from local mastery difficulty data. Missing matches stay visible under
-                Unrated instead of failing the planning view.
+                Group remaining Tower items by difficulty so rare or slower goals are easier to scan.
               </p>
             </div>
 
@@ -309,10 +291,10 @@ export function TowerProgressPage() {
                                     Range {detailRow.towerLevelRange} | Slot {detailRow.slotIndex}
                                   </p>
                                   {!detailRow.matchedSnapshotRow ? (
-                                    <p className="subtle-text">Unmatched in latest snapshot; treated as 0 mastery.</p>
+                                    <p className="subtle-text">Not found in the latest snapshot; counted from 0 mastery.</p>
                                   ) : null}
                                   {!detailRow.matchedDifficultyRow ? (
-                                    <p className="subtle-text">Missing from mastery difficulty data; shown as Unrated.</p>
+                                    <p className="subtle-text">Difficulty not rated yet.</p>
                                   ) : null}
                                   {detailRow.method ? <p className="subtle-text">Method: {detailRow.method}</p> : null}
                                 </td>
@@ -340,8 +322,7 @@ export function TowerProgressPage() {
             <div>
               <h2 id="tower-progress-items-title">Remaining Tower Items</h2>
               <p className="supporting-text">
-                Items are shown once each using their highest required tower target, with visual progress toward that
-                planning threshold.
+                Each item appears once at the highest Tower mastery tier it still needs.
               </p>
             </div>
 
@@ -390,10 +371,10 @@ export function TowerProgressPage() {
                       </span>
                     </div>
                     {!item.matchedSnapshotRow ? (
-                      <p className="progress-list__notes">Unmatched in latest snapshot; treated as 0 mastery.</p>
+                      <p className="progress-list__notes">Not found in the latest snapshot; counted from 0 mastery.</p>
                     ) : null}
                     {!item.matchedDifficultyRow ? (
-                      <p className="progress-list__notes">Missing from mastery difficulty data; shown as Unrated.</p>
+                      <p className="progress-list__notes">Difficulty not rated yet.</p>
                     ) : null}
                         </>
                       );
