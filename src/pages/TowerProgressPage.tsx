@@ -207,11 +207,11 @@ export function TowerProgressPage() {
 
             <dl className="summary-grid">
               <div className="summary-grid__item">
-                <dt>Items left to Grand Mastery</dt>
+                <dt>Items left to GM</dt>
                 <dd>{progressState.derivedProgress.gmItemsLeftCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Items left to Mega Mastery</dt>
+                <dt>Items left to MM</dt>
                 <dd>{progressState.derivedProgress.mmItemsLeftCount.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">

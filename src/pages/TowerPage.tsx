@@ -266,13 +266,10 @@ export function TowerPage() {
 
       {!towerState.isLoading && towerState.snapshot && towerState.derivedTowerRequirements ? (
         <>
-          <section className="page-card page-stack" aria-labelledby="tower-results-title">
-            <div>
-              <h2 id="tower-results-title">Tower Requirement Status</h2>
-              <p className="supporting-text">
-                {formatRequirementCompletionSummary(completedRequirements, totalRequirements)}
-              </p>
-            </div>
+          <section className="page-card page-stack" aria-label="Tower requirement status">
+            <p className="supporting-text">
+              {formatRequirementCompletionSummary(completedRequirements, totalRequirements)}
+            </p>
 
             <div className="filter-grid">
               <label className="page-stack page-stack--tight">

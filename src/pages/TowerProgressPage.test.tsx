@@ -180,8 +180,8 @@ describe('TowerProgressPage', () => {
       expect(screen.getByRole('heading', { name: 'Tower Progress' })).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Items left to Grand Mastery')).toBeInTheDocument();
-    expect(screen.getByText('Items left to Mega Mastery')).toBeInTheDocument();
+    expect(screen.getByText('Items left to GM')).toBeInTheDocument();
+    expect(screen.getByText('Items left to MM')).toBeInTheDocument();
     expect(screen.getByText('Total mastery remaining')).toBeInTheDocument();
     const difficultySection = screen.getByRole('heading', { name: 'Difficulty Breakdown' }).closest('section');
     const difficultyNineBucket = within(difficultySection as HTMLElement).getByRole('heading', { name: 'Difficulty 9' }).closest('details');

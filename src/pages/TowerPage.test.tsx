@@ -110,7 +110,7 @@ describe('TowerPage', () => {
     const { container } = render(<TowerPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Tower Requirement Status')).toBeInTheDocument();
+      expect(screen.getByRole('region', { name: 'Tower requirement status' })).toBeInTheDocument();
     });
 
     const completedRanges = screen.getByText('Completed ranges').closest('details');
@@ -203,7 +203,7 @@ describe('TowerPage', () => {
     render(<TowerPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Tower Requirement Status')).toBeInTheDocument();
+      expect(screen.getByRole('region', { name: 'Tower requirement status' })).toBeInTheDocument();
     });
 
     const incompleteRange = screen.getByText('Tower Levels 201-220').closest('details');
@@ -307,10 +307,11 @@ describe('TowerPage', () => {
     render(<TowerPage />);
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'Tower Requirement Status' })).toBeInTheDocument();
+      expect(screen.getByRole('region', { name: 'Tower requirement status' })).toBeInTheDocument();
     });
 
     expect(screen.getByText('Completed 1/3 tower mastery requirements (33%), with 2 remaining.')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Tower Requirement Status' })).not.toBeInTheDocument();
     expect(screen.queryByText('Tower Filters')).not.toBeInTheDocument();
     expect(screen.queryByText('Visible ranges')).not.toBeInTheDocument();
     expect(screen.queryByText(/Closest visible blocker/)).not.toBeInTheDocument();
@@ -475,7 +476,7 @@ describe('TowerPage', () => {
     render(<TowerPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Tower Requirement Status')).toBeInTheDocument();
+      expect(screen.getByRole('region', { name: 'Tower requirement status' })).toBeInTheDocument();
     });
 
     expect(screen.getAllByText('MM').length).toBeGreaterThan(0);
