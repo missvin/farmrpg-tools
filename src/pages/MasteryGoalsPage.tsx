@@ -38,6 +38,18 @@ function formatPjCount(value: number | null): string {
   return value === null ? 'Needs baseline mastery' : value.toLocaleString();
 }
 
+function formatShortItemList(itemNames: string[]): string {
+  if (itemNames.length <= 2) {
+    return itemNames.join(' and ');
+  }
+
+  if (itemNames.length <= 4) {
+    return `${itemNames.slice(0, -1).join(', ')}, and ${itemNames[itemNames.length - 1]}`;
+  }
+
+  return `${itemNames.slice(0, 3).join(', ')}, and ${itemNames.length - 3} more`;
+}
+
 function getStatusLabel(status: PumpkinJuiceEstimateStatus): string {
   if (status === 'complete') {
     return 'Complete';
@@ -245,7 +257,8 @@ export function MasteryGoalsPage() {
   const calculablePjTotal = goalRows.reduce((total, row) => {
     return total + (row.pumpkinJuiceEstimate.totalPumpkinJuices ?? 0);
   }, 0);
-  const blockedGoalCount = goalRows.filter((row) => row.pumpkinJuiceEstimate.status === 'needs_baseline').length;
+  const blockedGoalRows = goalRows.filter((row) => row.pumpkinJuiceEstimate.status === 'needs_baseline');
+  const blockedGoalCount = blockedGoalRows.length;
   const completeGoalCount = goalRows.filter((row) => row.pumpkinJuiceEstimate.status === 'complete').length;
 
   function parseOptionalCount(value: string): number | null {
@@ -412,7 +425,8 @@ export function MasteryGoalsPage() {
             <dd>{calculablePjTotal.toLocaleString()}</dd>
             {blockedGoalCount > 0 ? (
               <p className="subtle-text">
-                {blockedGoalCount.toLocaleString()} goal{blockedGoalCount === 1 ? '' : 's'} need baseline mastery first
+                {blockedGoalCount.toLocaleString()} goal{blockedGoalCount === 1 ? ' needs' : 's need'} baseline
+                mastery first: {formatShortItemList(blockedGoalRows.map((row) => row.itemName))}
               </p>
             ) : null}
           </div>

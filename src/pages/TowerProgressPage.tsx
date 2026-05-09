@@ -53,6 +53,18 @@ function formatPumpkinJuiceEstimate(totalPumpkinJuices: number | null): string {
   return totalPumpkinJuices === null ? 'Needs baseline mastery' : totalPumpkinJuices.toLocaleString();
 }
 
+function formatShortItemList(itemNames: string[]): string {
+  if (itemNames.length <= 2) {
+    return itemNames.join(' and ');
+  }
+
+  if (itemNames.length <= 4) {
+    return `${itemNames.slice(0, -1).join(', ')}, and ${itemNames[itemNames.length - 1]}`;
+  }
+
+  return `${itemNames.slice(0, 3).join(', ')}, and ${itemNames.length - 3} more`;
+}
+
 function buildItemTooltip(notes: string | null): string | null {
   const parts: string[] = [];
 
@@ -250,6 +262,9 @@ export function TowerProgressPage() {
         <>
           {(() => {
             const derivedProgress = progressState.derivedProgress;
+            const baselineMasteryItems = derivedProgress.remainingItems.filter(
+              (item) => item.pumpkinJuiceEstimate.status === 'needs_baseline',
+            );
 
             return (
               <>
@@ -281,7 +296,8 @@ export function TowerProgressPage() {
                 {progressState.derivedProgress.pumpkinJuiceBlockedItemCount > 0 ? (
                   <p className="subtle-text">
                     {progressState.derivedProgress.pumpkinJuiceBlockedItemCount.toLocaleString()} item
-                    {progressState.derivedProgress.pumpkinJuiceBlockedItemCount === 1 ? '' : 's'} need baseline mastery first
+                    {progressState.derivedProgress.pumpkinJuiceBlockedItemCount === 1 ? ' needs' : 's need'} baseline
+                    mastery first: {formatShortItemList(baselineMasteryItems.map((item) => item.itemName))}
                   </p>
                 ) : null}
               </div>

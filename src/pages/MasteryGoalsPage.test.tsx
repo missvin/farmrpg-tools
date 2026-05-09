@@ -115,6 +115,24 @@ describe('MasteryGoalsPage', () => {
     );
   });
 
+  it('names goals that need baseline mastery before Pumpkin Juice can help', async () => {
+    const user = userEvent.setup();
+    mockResources();
+
+    render(<MasteryGoalsPage />);
+
+    await screen.findByRole('heading', { name: 'Mastery Goals' });
+    await user.type(screen.getByLabelText('Item', { selector: '#personal-goal-item' }), 'Gold Cucumber');
+    await user.selectOptions(screen.getByLabelText('Target'), 'MM');
+    await user.click(screen.getByRole('button', { name: 'Save Goal' }));
+
+    const summarySection = screen.getByRole('heading', { name: 'Goal Summary' }).closest('section');
+    expect(summarySection).not.toBeNull();
+    expect(
+      within(summarySection as HTMLElement).getByText(/1 goal needs baseline mastery first: Gold Cucumber/),
+    ).toBeInTheDocument();
+  });
+
   it('saves local race-count context and shows it on matching goals', async () => {
     const user = userEvent.setup();
     mockResources();

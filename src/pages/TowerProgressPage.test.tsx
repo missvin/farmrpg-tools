@@ -312,6 +312,9 @@ describe('TowerProgressPage', () => {
     expect(summarySection).not.toBeNull();
     expect(within(summarySection as HTMLElement).queryByText(/Unmatched tower items/i)).not.toBeInTheDocument();
     expect(within(summarySection as HTMLElement).queryByText(/mastery difficulty data/i)).not.toBeInTheDocument();
+    expect(
+      within(summarySection as HTMLElement).getByText(/1 item needs baseline mastery first: Gold Flier/),
+    ).toBeInTheDocument();
     const remainingItemsSection = screen.getByRole('heading', { name: 'Remaining Tower Items' }).closest('section');
     expect(within(remainingItemsSection as HTMLElement).getByText('Gold Flier')).toBeInTheDocument();
     expect(within(remainingItemsSection as HTMLElement).queryByText('Difficulty not rated yet.')).not.toBeInTheDocument();
