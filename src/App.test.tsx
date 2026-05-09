@@ -323,4 +323,21 @@ describe('App shell', () => {
     expect(document.documentElement.dataset.theme).toBe('light');
     expect(window.localStorage.getItem(APP_THEME_STORAGE_KEY)).toBe('light');
   });
+
+  it('renders a lazy-loaded route through the app shell', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={['/history']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('Loading page')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Snapshot History' })).toBeInTheDocument();
+  });
 });

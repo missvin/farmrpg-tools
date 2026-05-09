@@ -53,6 +53,7 @@ describe('deriveSnapshotComparison', () => {
     expect(comparison.changedRows).toEqual([
       {
         canonicalKey: 'durian',
+        itemName: 'Durian',
         fromValue: 0,
         toValue: 50,
         delta: 50,
@@ -60,6 +61,7 @@ describe('deriveSnapshotComparison', () => {
       },
       {
         canonicalKey: 'carrot',
+        itemName: 'Carrot',
         fromValue: 40,
         toValue: 0,
         delta: -40,
@@ -67,6 +69,7 @@ describe('deriveSnapshotComparison', () => {
       },
       {
         canonicalKey: 'banana',
+        itemName: 'Banana',
         fromValue: 25,
         toValue: 10,
         delta: -15,
@@ -74,6 +77,7 @@ describe('deriveSnapshotComparison', () => {
       },
       {
         canonicalKey: 'apple',
+        itemName: 'Apple',
         fromValue: 10,
         toValue: 15,
         delta: 5,

@@ -1,19 +1,36 @@
-import type { ReactElement } from 'react';
+import { lazy, type ReactElement } from 'react';
 
-import { BacklogGraphPage } from '../pages/BacklogGraphPage';
-import { ComparePage } from '../pages/ComparePage';
 import { DashboardPage } from '../pages/DashboardPage';
-import { HistoryPage } from '../pages/HistoryPage';
-import { IngredientDemandListPage } from '../pages/IngredientDemandListPage';
-import { IngredientDemandPage } from '../pages/IngredientDemandPage';
 import { ImportPage } from '../pages/ImportPage';
-import { MasteryGoalsPage } from '../pages/MasteryGoalsPage';
-import { MuseumToolsPage } from '../pages/MuseumToolsPage';
-import { SettingsPage } from '../pages/SettingsPage';
-import { SortedPage } from '../pages/SortedPage';
-import { TowerPage } from '../pages/TowerPage';
-import { TowerProgressPage } from '../pages/TowerProgressPage';
-import { TowerReferenceMaintenancePage } from '../pages/TowerReferenceMaintenancePage';
+
+const BacklogGraphPage = lazy(() =>
+  import('../pages/BacklogGraphPage').then((module) => ({ default: module.BacklogGraphPage })),
+);
+const ComparePage = lazy(() => import('../pages/ComparePage').then((module) => ({ default: module.ComparePage })));
+const HistoryPage = lazy(() => import('../pages/HistoryPage').then((module) => ({ default: module.HistoryPage })));
+const IngredientDemandListPage = lazy(() =>
+  import('../pages/IngredientDemandListPage').then((module) => ({ default: module.IngredientDemandListPage })),
+);
+const IngredientDemandPage = lazy(() =>
+  import('../pages/IngredientDemandPage').then((module) => ({ default: module.IngredientDemandPage })),
+);
+const MasteryGoalsPage = lazy(() =>
+  import('../pages/MasteryGoalsPage').then((module) => ({ default: module.MasteryGoalsPage })),
+);
+const MuseumToolsPage = lazy(() =>
+  import('../pages/MuseumToolsPage').then((module) => ({ default: module.MuseumToolsPage })),
+);
+const SettingsPage = lazy(() => import('../pages/SettingsPage').then((module) => ({ default: module.SettingsPage })));
+const SortedPage = lazy(() => import('../pages/SortedPage').then((module) => ({ default: module.SortedPage })));
+const TowerPage = lazy(() => import('../pages/TowerPage').then((module) => ({ default: module.TowerPage })));
+const TowerProgressPage = lazy(() =>
+  import('../pages/TowerProgressPage').then((module) => ({ default: module.TowerProgressPage })),
+);
+const TowerReferenceMaintenancePage = lazy(() =>
+  import('../pages/TowerReferenceMaintenancePage').then((module) => ({
+    default: module.TowerReferenceMaintenancePage,
+  })),
+);
 
 type AppRoute = {
   path: string;

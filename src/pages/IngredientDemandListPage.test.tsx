@@ -324,7 +324,7 @@ describe('IngredientDemandListPage', () => {
 
     expect(await screen.findByText('Scope')).toBeInTheDocument();
     expect(
-      screen.getByText(/This list is scoped to Tower and keeps recursive burden separate from raw direct recipe use\./),
+      screen.getByText(/This list is scoped to Tower and includes nested crafting demand\./),
     ).toBeInTheDocument();
     expect(screen.getByRole('table')).toHaveTextContent('Twine');
     expect(screen.getByRole('table')).toHaveTextContent('4');
