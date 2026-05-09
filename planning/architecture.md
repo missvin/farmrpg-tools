@@ -138,6 +138,13 @@ Identity compatibility rules:
 - The checked-in file may be header-only until a museum workflow export is reviewed and intentionally added
 - Loader validation keeps unresolved or suspicious rows explicit rather than silently remapping item identity
 
+### `drop_rate_reference.csv`
+
+- Reviewed local source-coverage dataset for Buddy-derived drop-rate rows
+- Preserves normalized target/source names, source type, raw rate, source URLs, page-data URLs, and setting-variant metadata without making Buddy IDs canonical
+- The checked-in file may be header-only until probe output is reviewed and intentionally added
+- Loader validation keeps missing item/source recognition non-fatal so acquisition planning can surface reference gaps without blocking the app
+
 ## UI/View Architecture
 
 Normal user-facing pages should explain player status, attention, and next useful action. Repo maintenance, reference-data upkeep, and debug details belong in explicit internal/dev tooling or secondary detail surfaces unless a warning must stay visible to preserve trust.
@@ -186,6 +193,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `src/lib/itemAliases.ts`
 - `src/lib/loadMuseumLookupCoverage.ts`
 - `src/lib/localItemReferenceLookup.ts`
+- `src/lib/loadDropRateReference.ts`
 - `src/lib/deriveMasteryDifficultyStats.ts`
 - `src/lib/deriveTowerRequirements.ts`
 - `src/pages/ImportPage.tsx`
@@ -197,6 +205,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `data/item_catalog.csv`
 - `data/item_aliases.csv`
 - `data/museum_lookup_coverage.csv`
+- `data/drop_rate_reference.csv`
 
 ## Change Guidance
 
