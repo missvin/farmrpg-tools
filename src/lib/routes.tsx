@@ -6,6 +6,9 @@ import { ImportPage } from '../pages/ImportPage';
 const BacklogGraphPage = lazy(() =>
   import('../pages/BacklogGraphPage').then((module) => ({ default: module.BacklogGraphPage })),
 );
+const AcquisitionBreakdownPage = lazy(() =>
+  import('../pages/AcquisitionBreakdownPage').then((module) => ({ default: module.AcquisitionBreakdownPage })),
+);
 const ComparePage = lazy(() => import('../pages/ComparePage').then((module) => ({ default: module.ComparePage })));
 const HistoryPage = lazy(() => import('../pages/HistoryPage').then((module) => ({ default: module.HistoryPage })));
 const IngredientDemandListPage = lazy(() =>
@@ -83,6 +86,11 @@ export const appRoutes: AppRoute[] = [
     element: <MasteryGoalsPage />,
   },
   {
+    path: '/acquisition-breakdown',
+    label: 'Acquisition Breakdown',
+    element: <AcquisitionBreakdownPage />,
+  },
+  {
     path: '/sorted',
     label: 'Sorted',
     element: <SortedPage />,
@@ -127,6 +135,7 @@ export const navigationSections: NavigationSection[] = [
       { to: '/ingredient-demand', label: 'Ingredient Lookup' },
       { to: '/ingredient-demand-list', label: 'Material Planner' },
       { to: '/mastery-goals', label: 'Mastery Goals' },
+      { to: '/acquisition-breakdown', label: 'Acquisition Breakdown' },
     ],
   },
   {

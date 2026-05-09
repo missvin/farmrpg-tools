@@ -2,7 +2,7 @@
 
 This file is for milestone-level planning; use [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for the detailed backlog and dependencies.
 
-## Completed Through v1.8
+## Completed Through v1.10
 
 - `v1.5` established the core local tracker and Tower workflow
   - Tower requirements loading and read-only Tower view
@@ -44,24 +44,16 @@ The app is easier to keep current, easier to host as a local-first tool, and les
 User-facing story:
 The app is safer to migrate between local and hosted browser contexts, and import/restore flows give clearer confidence before the next planning surfaces expand.
 
-## Next Acquisition Milestone
+## v1.10 (Complete)
 
-- First non-crafting acquisition answers
-  - consumable acquisition assumptions for Cider, Lemonade, and Arnold Palmer
-  - manual explore acquisition modeling
+- First acquisition answers and recommendations
+  - reusable consumable estimates for Apple Cider, Lemonade, and Arnold Palmer
+  - manual explore expected-value estimates from explicit local assumptions
   - first per-item acquisition breakdown view
+  - compact source recommendations with provenance details
 
 User-facing story:
-You can start asking not just "what do I need to craft?" but "what are my practical acquisition paths for this item under my current assumptions?"
-
-## Following Acquisition Milestone
-
-- Acquisition recommendations and trust
-  - first cross-source recommendation MVP
-  - acquisition explainability and provenance
-
-User-facing story:
-The app moves from showing possible acquisition sources to recommending a practical next path and explaining why.
+You can start asking not just "what do I need to craft?" but "what are my practical acquisition paths for this item under my current assumptions, and why?"
 
 ## v2.0
 
