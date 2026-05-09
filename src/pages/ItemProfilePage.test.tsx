@@ -134,7 +134,7 @@ describe('ItemProfilePage', () => {
     });
   }
 
-  it('shows item mastery, Tower, PJ, and direct recipe context', async () => {
+  it('shows item mastery, Tower, PJ, and recipe context', async () => {
     mockResources();
 
     render(
@@ -147,21 +147,22 @@ describe('ItemProfilePage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Red Dye' })).toBeInTheDocument();
 
-    const masterySection = screen.getByRole('heading', { name: 'Mastery Status' }).closest('section');
-    expect(masterySection).not.toBeNull();
-    expect(within(masterySection as HTMLElement).getByText('50,000')).toBeInTheDocument();
-    expect(within(masterySection as HTMLElement).getByText(/PJs: 8/)).toBeInTheDocument();
+    expect(screen.getByText('50,000 / 1,000,000')).toBeInTheDocument();
+    expect(screen.getByText('5.0% to MM')).toBeInTheDocument();
 
     const towerSection = screen.getByRole('heading', { name: 'Tower Need' }).closest('section');
     expect(towerSection).not.toBeNull();
-    expect(within(towerSection as HTMLElement).getByText('Tower Level 304')).toBeInTheDocument();
+    expect(within(towerSection as HTMLElement).getByText('GM at Tower Level 304')).toBeInTheDocument();
+    expect(within(towerSection as HTMLElement).getByText('Pumpkin Juice needed to finish tower')).toBeInTheDocument();
+    expect(within(towerSection as HTMLElement).getByText('8')).toBeInTheDocument();
 
-    const recipeSection = screen.getByRole('heading', { name: 'Direct Recipe Inputs' }).closest('section');
+    const recipeSection = screen.getByRole('heading', { name: 'Made From' }).closest('section');
     expect(recipeSection).not.toBeNull();
-    expect(within(recipeSection as HTMLElement).getByRole('link', { name: 'Glass Orb' })).toHaveAttribute(
+    expect(within(recipeSection as HTMLElement).getByRole('link', { name: /Glass Orb/ })).toHaveAttribute(
       'href',
       '/items/glass%20orb',
     );
+    expect(screen.getByRole('heading', { name: 'Used In' })).toBeInTheDocument();
   });
 
   it('shows a safe unknown-item state', async () => {

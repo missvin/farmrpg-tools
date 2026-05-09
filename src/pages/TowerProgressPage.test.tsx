@@ -1,4 +1,5 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { TowerProgressPage } from './TowerProgressPage';
@@ -18,6 +19,14 @@ vi.mock('../lib/loadTowerRequirements', () => ({
 vi.mock('../lib/loadMasteryDifficulty', () => ({
   loadMasteryDifficulty: (...args: unknown[]) => loadMasteryDifficultyMock(...args),
 }));
+
+function renderTowerProgressPage(initialEntries = ['/tower-progress']) {
+  return render(
+    <MemoryRouter initialEntries={initialEntries}>
+      <TowerProgressPage />
+    </MemoryRouter>,
+  );
+}
 
 describe('TowerProgressPage', () => {
   afterEach(() => {
@@ -174,7 +183,7 @@ describe('TowerProgressPage', () => {
       },
     });
 
-    render(<TowerProgressPage />);
+    renderTowerProgressPage();
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Tower Progress' })).toBeInTheDocument();
@@ -302,7 +311,7 @@ describe('TowerProgressPage', () => {
       },
     });
 
-    render(<TowerProgressPage />);
+    renderTowerProgressPage();
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Tower Progress' })).toBeInTheDocument();
@@ -414,7 +423,7 @@ describe('TowerProgressPage', () => {
       },
     });
 
-    render(<TowerProgressPage />);
+    renderTowerProgressPage();
 
     const difficultySection = await screen.findByRole('heading', { name: 'Difficulty Breakdown' });
     const difficultyOneBucket = within(difficultySection.closest('section') as HTMLElement)

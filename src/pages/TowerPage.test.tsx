@@ -1,5 +1,6 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { TowerPage } from './TowerPage';
@@ -15,6 +16,14 @@ vi.mock('../lib/storage/masterySnapshots', () => ({
 vi.mock('../lib/loadTowerRequirements', () => ({
   loadTowerRequirements: (...args: unknown[]) => loadTowerRequirementsMock(...args),
 }));
+
+function renderTowerPage(initialEntries = ['/tower']) {
+  return render(
+    <MemoryRouter initialEntries={initialEntries}>
+      <TowerPage />
+    </MemoryRouter>,
+  );
+}
 
 describe('TowerPage', () => {
   afterEach(() => {
@@ -107,7 +116,7 @@ describe('TowerPage', () => {
       },
     });
 
-    const { container } = render(<TowerPage />);
+    const { container } = renderTowerPage();
 
     await waitFor(() => {
       expect(screen.getByRole('region', { name: 'Tower requirement status' })).toBeInTheDocument();
@@ -200,7 +209,7 @@ describe('TowerPage', () => {
       },
     });
 
-    render(<TowerPage />);
+    renderTowerPage();
 
     await waitFor(() => {
       expect(screen.getByRole('region', { name: 'Tower requirement status' })).toBeInTheDocument();
@@ -304,7 +313,7 @@ describe('TowerPage', () => {
       },
     });
 
-    render(<TowerPage />);
+    renderTowerPage();
 
     await waitFor(() => {
       expect(screen.getByRole('region', { name: 'Tower requirement status' })).toBeInTheDocument();
@@ -472,7 +481,7 @@ describe('TowerPage', () => {
       },
     });
 
-    render(<TowerPage />);
+    renderTowerPage();
 
     await waitFor(() => {
       expect(screen.getByRole('region', { name: 'Tower requirement status' })).toBeInTheDocument();

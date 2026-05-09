@@ -1,4 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
@@ -86,7 +87,13 @@ function TowerProgressItemName({ canonicalKey, itemName }: { canonicalKey: strin
   );
 }
 
+function getTowerProgressItemElementId(canonicalKey: string): string {
+  return `tower-progress-item-${canonicalKey.replace(/[^a-z0-9]+/gi, '-')}`;
+}
+
 export function TowerProgressPage() {
+  const [searchParams] = useSearchParams();
+  const targetCanonicalKey = searchParams.get('item')?.trim().toLowerCase() ?? null;
   const [pumpkinJuicePlannerState, setPumpkinJuicePlannerState] = useState(() => {
     try {
       return loadPumpkinJuicePlannerState();
@@ -220,6 +227,22 @@ export function TowerProgressPage() {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!targetCanonicalKey || !progressState.derivedProgress) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      document
+        .getElementById(getTowerProgressItemElementId(targetCanonicalKey))
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [progressState.derivedProgress, targetCanonicalKey]);
 
   return (
     <div className="page-stack">
@@ -445,7 +468,13 @@ export function TowerProgressPage() {
             ) : (
               <ul className="progress-list">
                 {progressState.derivedProgress.remainingItems.map((item) => (
-                  <li key={item.canonicalKey} className="progress-list__item">
+                  <li
+                    key={item.canonicalKey}
+                    id={getTowerProgressItemElementId(item.canonicalKey)}
+                    className={`progress-list__item${
+                      item.canonicalKey === targetCanonicalKey ? ' progress-list__item--highlight' : ''
+                    }`}
+                  >
                     {(() => {
                       const tooltipText = buildItemTooltip(item.notes);
 

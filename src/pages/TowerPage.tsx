@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
@@ -21,6 +22,14 @@ function formatCompactRequirementLabel(requiredThreshold: number): 'M' | 'GM' | 
 
 function getLevelKey(towerLevelRange: string, towerLevel: number): string {
   return `${towerLevelRange}:${towerLevel}`;
+}
+
+function getTowerLevelElementId(towerLevel: number): string {
+  return `tower-level-${towerLevel}`;
+}
+
+function getTowerRowElementId(towerLevel: number, canonicalKey: string): string {
+  return `tower-level-${towerLevel}-item-${canonicalKey.replace(/[^a-z0-9]+/gi, '-')}`;
 }
 
 function formatLevelSummary(remainingCount: number, totalCount: number): string {
@@ -95,6 +104,7 @@ function TowerItemCell({
 }
 
 export function TowerPage() {
+  const [searchParams] = useSearchParams();
   const [selectedRange, setSelectedRange] = useState<string>('all');
   const [rowStateFilter, setRowStateFilter] = useState<TowerRowStateFilter>('all');
   const [tierFilter, setTierFilter] = useState<TowerTierFilter>('all');
@@ -183,6 +193,9 @@ export function TowerPage() {
   const completedRequirements =
     towerState.derivedTowerRequirements?.rows.filter((row) => row.achieved).length ?? 0;
   const availableRanges = towerState.derivedTowerRequirements?.groups.map((group) => group.towerLevelRange) ?? [];
+  const targetLevel = Number(searchParams.get('level'));
+  const targetCanonicalKey = searchParams.get('item')?.trim().toLowerCase() ?? null;
+  const hasTargetLevel = Number.isInteger(targetLevel) && targetLevel > 0;
   const filteredGroups = useMemo(() => {
     if (!towerState.derivedTowerRequirements) {
       return [];
@@ -229,6 +242,32 @@ export function TowerPage() {
   const completedRangeGroups = filteredGroups.filter((rangeGroup) =>
     rangeGroup.levels.every((levelGroup) => levelGroup.rows.every((row) => row.achieved)),
   );
+  const completedSectionHasTarget =
+    hasTargetLevel &&
+    completedRangeGroups.some((rangeGroup) =>
+      rangeGroup.levels.some((levelGroup) => levelGroup.towerLevel === targetLevel),
+    );
+
+  useEffect(() => {
+    if (!hasTargetLevel || filteredGroups.length === 0) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      const rowElement =
+        targetCanonicalKey === null
+          ? null
+          : document.getElementById(getTowerRowElementId(targetLevel, targetCanonicalKey));
+      const levelElement = document.getElementById(getTowerLevelElementId(targetLevel));
+
+      (rowElement ?? levelElement)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [filteredGroups.length, hasTargetLevel, targetCanonicalKey, targetLevel]);
+
   return (
     <div className="page-stack">
       <PageIntro
@@ -341,12 +380,14 @@ export function TowerPage() {
                           const blockingRows = levelGroup.rows.filter((row) => !row.achieved);
                           const remainingCount = blockingRows.length;
                           const isNextRelevantLevel = firstIncompleteLevelKey === levelKey;
+                          const isTargetLevel = hasTargetLevel && levelGroup.towerLevel === targetLevel;
 
                           return (
                             <details
                               key={levelGroup.towerLevel}
+                              id={getTowerLevelElementId(levelGroup.towerLevel)}
                               className={`tower-level-card${isNextRelevantLevel ? ' tower-level-card--next' : ''}`}
-                              open={!isCompleted}
+                              open={!isCompleted || isTargetLevel}
                             >
                               <summary className="tower-level-summary">
                                 <div className="tower-level-summary__text">
@@ -381,9 +422,11 @@ export function TowerPage() {
                                     {levelGroup.rows.map((row) => (
                                       <tr
                                         key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}-${row.requiredThreshold}`}
+                                        id={getTowerRowElementId(row.towerLevel, row.canonicalKey)}
                                         className={[
                                           row.achieved ? 'summary-table__row--complete' : '',
-                                          isNextRelevantLevel && !row.achieved
+                                          (isNextRelevantLevel && !row.achieved) ||
+                                          (isTargetLevel && row.canonicalKey === targetCanonicalKey)
                                             ? 'summary-table__row--highlight'
                                             : '',
                                         ]
@@ -431,7 +474,7 @@ export function TowerPage() {
             ) : null}
 
             {filteredGroups.length > 0 && completedRangeGroups.length > 0 ? (
-              <details className="tower-range-group-card">
+              <details className="tower-range-group-card" open={completedSectionHasTarget}>
                 <summary className="tower-range-summary">
                   <div className="tower-range-summary__text">
                     <h3 className="section-title">Completed ranges</h3>
@@ -444,8 +487,13 @@ export function TowerPage() {
                 </summary>
 
                 <div className="page-stack">
-                  {completedRangeGroups.map((rangeGroup) => (
-                    <details key={rangeGroup.towerLevelRange} className="tower-range-card">
+                  {completedRangeGroups.map((rangeGroup) => {
+                    const isTargetRange = hasTargetLevel
+                      ? rangeGroup.levels.some((levelGroup) => levelGroup.towerLevel === targetLevel)
+                      : false;
+
+                    return (
+                      <details key={rangeGroup.towerLevelRange} className="tower-range-card" open={isTargetRange}>
                       <summary className="tower-range-summary">
                         <div className="tower-range-summary__text">
                           <h4 className="section-title">Tower Levels {rangeGroup.towerLevelRange}</h4>
@@ -456,8 +504,16 @@ export function TowerPage() {
                       </summary>
 
                       <div className="page-stack">
-                        {rangeGroup.levels.map((levelGroup) => (
-                          <details key={levelGroup.towerLevel} className="tower-level-card">
+                        {rangeGroup.levels.map((levelGroup) => {
+                          const isTargetLevel = hasTargetLevel && levelGroup.towerLevel === targetLevel;
+
+                          return (
+                          <details
+                            key={levelGroup.towerLevel}
+                            id={getTowerLevelElementId(levelGroup.towerLevel)}
+                            className="tower-level-card"
+                            open={isTargetLevel}
+                          >
                             <summary className="tower-level-summary">
                               <div className="tower-level-summary__text">
                                 <h4 className="section-title">
@@ -486,7 +542,15 @@ export function TowerPage() {
                                   {levelGroup.rows.map((row) => (
                                     <tr
                                       key={`${row.towerLevel}-${row.slotIndex}-${row.canonicalKey}-${row.requiredThreshold}`}
-                                      className={row.achieved ? 'summary-table__row--complete' : undefined}
+                                      id={getTowerRowElementId(row.towerLevel, row.canonicalKey)}
+                                      className={[
+                                        row.achieved ? 'summary-table__row--complete' : '',
+                                        isTargetLevel && row.canonicalKey === targetCanonicalKey
+                                          ? 'summary-table__row--highlight'
+                                          : '',
+                                      ]
+                                        .filter(Boolean)
+                                        .join(' ')}
                                     >
                                       <td>{row.towerLevel}</td>
                                       <td>
@@ -519,10 +583,12 @@ export function TowerPage() {
                               </table>
                             </div>
                           </details>
-                        ))}
+                          );
+                        })}
                       </div>
-                    </details>
-                  ))}
+                      </details>
+                    );
+                  })}
                 </div>
               </details>
             ) : null}

@@ -35,6 +35,7 @@ export type ItemProfile = {
   currentMastery: number;
   matchedSnapshotRow: boolean;
   masteryTargets: ItemProfileMasteryTarget[];
+  towerTargets: ItemProfileTowerTarget[];
   towerTarget: ItemProfileTowerTarget | null;
   directRecipe: RecipeNode | null;
   usedInRecipes: RecipeNode[];
@@ -125,36 +126,57 @@ function buildMasteryTargets(
   });
 }
 
-function buildTowerTarget(
+function compareTowerTargets(left: ItemProfileTowerTarget, right: ItemProfileTowerTarget): number {
+  if (left.requiredThreshold !== right.requiredThreshold) {
+    return right.requiredThreshold - left.requiredThreshold;
+  }
+
+  return (left.levels[0] ?? 0) - (right.levels[0] ?? 0);
+}
+
+function buildTowerTargets(
   itemName: string,
   canonicalKey: string,
   currentMastery: number,
   entries: TowerRequirementEntry[],
-): ItemProfileTowerTarget | null {
+): ItemProfileTowerTarget[] {
   if (entries.length === 0) {
-    return null;
+    return [];
   }
 
-  const requiredThreshold = Math.max(...entries.map((entry) => getTowerRequirementThreshold(entry.masteryLevelNeeded)));
-  const masteryLevelLabel = getMasteryTierForTarget(requiredThreshold);
-  const matchingEntries = entries.filter(
-    (entry) => getTowerRequirementThreshold(entry.masteryLevelNeeded) === requiredThreshold,
-  );
+  const entriesByThreshold = new Map<number, TowerRequirementEntry[]>();
 
-  return {
-    requiredThreshold,
-    masteryLevelLabel,
-    levels: [...new Set(matchingEntries.map((entry) => entry.towerLevel))].sort((left, right) => left - right),
-    entries: matchingEntries,
-    estimate: estimatePumpkinJuiceForTarget({
-      itemName,
-      canonicalKey,
-      currentMastery,
-      targetTier: masteryLevelLabel,
-      targetMastery: requiredThreshold,
-      sourceScope: 'tower',
-    }),
-  };
+  for (const entry of entries) {
+    const threshold = getTowerRequirementThreshold(entry.masteryLevelNeeded);
+    entriesByThreshold.set(threshold, [...(entriesByThreshold.get(threshold) ?? []), entry]);
+  }
+
+  return [...entriesByThreshold.entries()]
+    .map(([requiredThreshold, matchingEntries]) => {
+      const masteryLevelLabel = getMasteryTierForTarget(requiredThreshold);
+
+      return {
+        requiredThreshold,
+        masteryLevelLabel,
+        levels: [...new Set(matchingEntries.map((entry) => entry.towerLevel))].sort((left, right) => left - right),
+        entries: [...matchingEntries].sort((left, right) => {
+          if (left.towerLevel !== right.towerLevel) {
+            return left.towerLevel - right.towerLevel;
+          }
+
+          return left.slotIndex - right.slotIndex;
+        }),
+        estimate: estimatePumpkinJuiceForTarget({
+          itemName,
+          canonicalKey,
+          currentMastery,
+          targetTier: masteryLevelLabel,
+          targetMastery: requiredThreshold,
+          sourceScope: 'tower',
+        }),
+      };
+    })
+    .sort(compareTowerTargets);
 }
 
 export function resolveItemProfile(input: ResolveItemProfileInput): ItemProfile {
@@ -163,6 +185,7 @@ export function resolveItemProfile(input: ResolveItemProfileInput): ItemProfile 
   const sources = collectSources(input);
   const currentMastery = input.snapshot?.masteryByItem[canonicalKey] ?? 0;
   const towerEntries = input.towerRequirementsData?.byCanonicalKey[canonicalKey] ?? [];
+  const towerTargets = buildTowerTargets(itemName, canonicalKey, currentMastery, towerEntries);
 
   return {
     canonicalKey,
@@ -172,7 +195,8 @@ export function resolveItemProfile(input: ResolveItemProfileInput): ItemProfile 
     currentMastery,
     matchedSnapshotRow: canonicalKey in (input.snapshot?.masteryByItem ?? {}),
     masteryTargets: buildMasteryTargets(itemName, canonicalKey, currentMastery),
-    towerTarget: buildTowerTarget(itemName, canonicalKey, currentMastery, towerEntries),
+    towerTargets,
+    towerTarget: towerTargets[0] ?? null,
     directRecipe: input.recipeGraph?.byOutputCanonicalKey[canonicalKey] ?? null,
     usedInRecipes: input.recipeGraph?.byInputCanonicalKey[canonicalKey] ?? [],
   };

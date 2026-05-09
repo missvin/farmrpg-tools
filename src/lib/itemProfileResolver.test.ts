@@ -211,6 +211,8 @@ describe('resolveItemProfile', () => {
     expect(profile.currentMastery).toBe(50_000);
     expect(profile.towerTarget?.masteryLevelLabel).toBe('MM');
     expect(profile.towerTarget?.levels).toEqual([201]);
+    expect(profile.towerTargets.map((target) => target.masteryLevelLabel)).toEqual(['MM', 'GM']);
+    expect(profile.towerTargets.map((target) => target.levels)).toEqual([[201], [202]]);
     expect(profile.usedInRecipes).toHaveLength(1);
     expect(profile.masteryTargets.find((target) => target.tier === 'GM')?.estimate.totalPumpkinJuices).toBe(8);
   });
