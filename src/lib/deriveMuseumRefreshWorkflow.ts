@@ -827,6 +827,36 @@ export function toMuseumRefreshActionableCsv(items: MuseumRefreshItem[]): string
   return rows.join('\n');
 }
 
+export function toMuseumLookupCoverageCsv(items: MuseumRefreshItem[]): string {
+  const rows = [
+    'item_name,canonical_key,museum_category,category,obtainable,generated_buddy_slug,alternate_buddy_slug,planning_reference_status,icon_ready_coverage_status,candidate_review_status,unresolved_case_type,source_workflow,notes',
+  ];
+
+  for (const item of items) {
+    rows.push(
+      [
+        item.itemName,
+        item.canonicalKey,
+        item.museumCategory,
+        item.category,
+        item.obtainable ? 'Y' : 'N',
+        item.generatedBuddySlug,
+        item.alternateBuddySlug ?? '',
+        item.planningReferenceStatus,
+        item.iconReadyCoverageStatus,
+        item.candidateReviewStatus,
+        item.unresolvedCaseType ?? '',
+        'museum_refresh',
+        item.followUpReasons.join('; '),
+      ]
+        .map(escapeCsvValue)
+        .join(','),
+    );
+  }
+
+  return rows.join('\n');
+}
+
 export function toMuseumRefreshCandidateReviewCsv(items: MuseumRefreshItem[]): string {
   const rows = [
     'museum_category,category,item_name,canonical_key,generated_buddy_slug,alternate_buddy_slug,candidate_buddy_url,icon_candidate_status,candidate_icon_key_hint,candidate_icon_url,candidate_icon_pathname,candidate_review_key,candidate_review_status,buddy_slug_coverage_status,flags,notes',

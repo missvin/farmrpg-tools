@@ -6,6 +6,7 @@ import {
   createMuseumUnresolvedTriageKey,
   deriveMuseumRefreshWorkflow,
   toMuseumIconCandidateInspectionCsv,
+  toMuseumLookupCoverageCsv,
   toMuseumRefreshCandidateReviewCsv,
   toMuseumRefreshActionableCsv,
   toMuseumUnresolvedTriageCsv,
@@ -618,6 +619,19 @@ export function MuseumToolsPage() {
     setExportMessage('Museum icon candidate inspection CSV downloaded.');
   }
 
+  function handleExportLookupCoverageCsv(): void {
+    if (!workflowResult) {
+      return;
+    }
+
+    downloadTextFile(
+      'museum_lookup_coverage.csv',
+      toMuseumLookupCoverageCsv(workflowResult.items),
+      'text/csv;charset=utf-8',
+    );
+    setExportMessage('Museum lookup coverage CSV downloaded.');
+  }
+
   const runButtonsDisabled = coverageStatus === 'loading';
   const visibleActiveUnresolvedItems = workflowResult
     ? getVisibleActiveUnresolvedItems(workflowResult.activeUnresolvedItems, unresolvedSortMode, unresolvedCaseFilter)
@@ -883,6 +897,9 @@ export function MuseumToolsPage() {
               </button>
               <button type="button" className="button" onClick={handleExportIconCandidateCsv}>
                 Export Icon Candidate CSV
+              </button>
+              <button type="button" className="button" onClick={handleExportLookupCoverageCsv}>
+                Export Lookup Coverage CSV
               </button>
               <button
                 type="button"

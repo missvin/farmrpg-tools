@@ -228,5 +228,6 @@ Mystery Goo Mystery Goo
     expect(within(iconSection).getByText('No direct icon URL exposed from slug-only evidence')).toBeInTheDocument();
     expect(within(iconSection).queryByRole('link', { name: 'https://farmrpg.com/img/items/mystery-goo.png' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Export Icon Candidate CSV' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Export Lookup Coverage CSV' })).toBeInTheDocument();
   });
 });

@@ -123,6 +123,13 @@ Identity compatibility rules:
 - Uses `mastery_possible` as a small durable flag; `unknown` means the item is recognized locally but should not be treated as mastery-eligible by inference alone
 - Initial coverage is generated from current local reference CSVs and should be broadened through reviewed catalog, alias, and museum-input workflows rather than snapshots
 
+### `museum_lookup_coverage.csv`
+
+- Maintained local coverage input generated from the internal Museum Tools workflow
+- Supports broader item recognition and future catalog enrichment without making museum-only items mastery-eligible
+- The checked-in file may be header-only until a museum workflow export is reviewed and intentionally added
+- Loader validation keeps unresolved or suspicious rows explicit rather than silently remapping item identity
+
 ## UI/View Architecture
 
 Normal user-facing pages should explain player status, attention, and next useful action. Repo maintenance, reference-data upkeep, and debug details belong in explicit internal/dev tooling or secondary detail surfaces unless a warning must stay visible to preserve trust.
@@ -168,6 +175,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `src/lib/loadMasteryDifficulty.ts`
 - `src/lib/loadTowerRequirements.ts`
 - `src/lib/loadItemCatalog.ts`
+- `src/lib/loadMuseumLookupCoverage.ts`
 - `src/lib/deriveMasteryDifficultyStats.ts`
 - `src/lib/deriveTowerRequirements.ts`
 - `src/pages/ImportPage.tsx`
@@ -177,6 +185,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `data/mastery_difficulty.csv`
 - `data/tower_requirements.csv`
 - `data/item_catalog.csv`
+- `data/museum_lookup_coverage.csv`
 
 ## Change Guidance
 

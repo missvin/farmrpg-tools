@@ -7,6 +7,7 @@ import {
   createMuseumUnresolvedTriageKey,
   deriveMuseumRefreshWorkflow,
   toMuseumIconCandidateInspectionCsv,
+  toMuseumLookupCoverageCsv,
   toMuseumRefreshActionableCsv,
   toMuseumRefreshCandidateReviewCsv,
   toMuseumUnresolvedTriageCsv,
@@ -330,6 +331,39 @@ Mystery Goo Mystery Goo
     expect(toMuseumIconCandidateInspectionCsv(result.items)).toContain('candidate_icon_key_hint');
     expect(toMuseumIconCandidateInspectionCsv(result.items)).toContain('https://farmrpg.com/img/items/5885.png');
     expect(toMuseumIconCandidateInspectionCsv(result.items)).toContain('mystery-goo');
+  });
+
+  it('exports lookup coverage rows in the app-readable museum coverage schema', () => {
+    const parseResult = parseMuseumExport(`Items Count = 2
+Fancy Pipe Fancy Pipe
+Mystery Goo Mystery Goo`);
+
+    const result = deriveMuseumRefreshWorkflow(
+      parseResult,
+      {
+        masteryEntries: [
+          {
+            itemName: 'Fancy Pipe',
+            canonicalKey: 'fancy pipe',
+            method: 'Crafting',
+            farmrpgItemId: null,
+            buddySlug: null,
+          },
+        ],
+        towerEntries: [],
+        recipeRows: [],
+      },
+      null,
+    );
+
+    const csv = toMuseumLookupCoverageCsv(result.items);
+
+    expect(csv).toContain('planning_reference_status');
+    expect(csv).toContain('icon_ready_coverage_status');
+    expect(csv).toContain('source_workflow');
+    expect(csv).toContain('Fancy Pipe,fancy pipe');
+    expect(csv).toContain('museum_only_icon_ready');
+    expect(csv).toContain('museum_refresh');
   });
 
   it('credits recipe source URLs as local buddy slug coverage for known matched items', () => {
