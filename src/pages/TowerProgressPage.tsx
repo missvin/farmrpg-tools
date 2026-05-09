@@ -2,6 +2,7 @@ import { useEffect, useState, type CSSProperties } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveTowerProgress } from '../lib/deriveTowerProgress';
+import { getItemIcon } from '../lib/itemIconManifest';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import { loadTowerRequirements } from '../lib/loadTowerRequirements';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
@@ -43,18 +44,25 @@ function formatRequirementLabel(requiredThreshold: number): string {
   return 'MM (1M)';
 }
 
-function buildItemTooltip(method: string | null, notes: string | null): string | null {
+function buildItemTooltip(notes: string | null): string | null {
   const parts: string[] = [];
-
-  if (method) {
-    parts.push(`Method: ${method}`);
-  }
 
   if (notes) {
     parts.push(`Notes: ${notes}`);
   }
 
   return parts.length > 0 ? parts.join('\n') : null;
+}
+
+function TowerProgressItemName({ canonicalKey, itemName }: { canonicalKey: string; itemName: string }) {
+  const icon = getItemIcon(canonicalKey);
+
+  return (
+    <span className="tower-item-cell">
+      {icon ? <img className="item-icon" src={icon.src} alt="" aria-hidden="true" loading="lazy" /> : null}
+      <strong>{itemName}</strong>
+    </span>
+  );
 }
 
 export function TowerProgressPage() {
@@ -286,17 +294,13 @@ export function TowerProgressPage() {
                               >
                                 <td>{detailRow.towerLevel}</td>
                                 <td>
-                                  <strong>{detailRow.itemName}</strong>
-                                  <p className="subtle-text">
-                                    Range {detailRow.towerLevelRange} | Slot {detailRow.slotIndex}
-                                  </p>
+                                  <TowerProgressItemName
+                                    canonicalKey={detailRow.canonicalKey}
+                                    itemName={detailRow.itemName}
+                                  />
                                   {!detailRow.matchedSnapshotRow ? (
-                                    <p className="subtle-text">Not found in the latest snapshot; counted from 0 mastery.</p>
+                                    <p className="subtle-text">Not in your latest import; counted from 0 mastery.</p>
                                   ) : null}
-                                  {!detailRow.matchedDifficultyRow ? (
-                                    <p className="subtle-text">Difficulty not rated yet.</p>
-                                  ) : null}
-                                  {detailRow.method ? <p className="subtle-text">Method: {detailRow.method}</p> : null}
                                 </td>
                                 <td>{detailRow.masteryLevelLabel}</td>
                                 <td>{formatPercent(detailRow.progressPercent)}</td>
@@ -333,20 +337,20 @@ export function TowerProgressPage() {
                 {progressState.derivedProgress.remainingItems.map((item) => (
                   <li key={item.canonicalKey} className="progress-list__item">
                     {(() => {
-                      const tooltipText = buildItemTooltip(item.method, item.notes);
+                      const tooltipText = buildItemTooltip(item.notes);
 
                       return (
                         <>
                     <div className="progress-list__header">
                       <div className="progress-list__title-row">
-                        <strong>{item.itemName}</strong>
+                        <TowerProgressItemName canonicalKey={item.canonicalKey} itemName={item.itemName} />
                         {tooltipText ? (
                           <span
                             className="progress-list__tooltip"
                             title={tooltipText}
-                            aria-label={`Extra reference details for ${item.itemName}`}
+                            aria-label={`Details for ${item.itemName}`}
                           >
-                            Info
+                            Details
                           </span>
                         ) : null}
                       </div>
@@ -371,10 +375,7 @@ export function TowerProgressPage() {
                       </span>
                     </div>
                     {!item.matchedSnapshotRow ? (
-                      <p className="progress-list__notes">Not found in the latest snapshot; counted from 0 mastery.</p>
-                    ) : null}
-                    {!item.matchedDifficultyRow ? (
-                      <p className="progress-list__notes">Difficulty not rated yet.</p>
+                      <p className="progress-list__notes">Not in your latest import; counted from 0 mastery.</p>
                     ) : null}
                         </>
                       );

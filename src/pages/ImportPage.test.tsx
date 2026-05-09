@@ -187,7 +187,7 @@ describe('ImportPage', () => {
     ).toBeInTheDocument();
   });
 
-  it('filters parsed rows by raw item name or canonical key', async () => {
+  it('filters advanced parsed row details by item name', async () => {
     const user = userEvent.setup();
 
     render(<ImportPage />);
@@ -200,6 +200,7 @@ describe('ImportPage', () => {
     });
     await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
 
+    await user.click(screen.getByText('Advanced parsed row details'));
     await user.type(screen.getByLabelText('Filter parsed rows'), 'diamond');
 
     expect(screen.queryByText('Gold Cucumber')).not.toBeInTheDocument();

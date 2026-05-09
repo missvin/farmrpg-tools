@@ -314,8 +314,8 @@ export function IngredientDemandListPage() {
         <div>
           <h2 id="ingredient-demand-list-controls-title">List Controls</h2>
           <p className="supporting-text">
-            Pick a goal scope, adjust the temporary planning assumptions, and sort the ingredient list without
-            introducing any page-specific planning math.
+            Pick a goal scope, adjust your saved perks and temporary bonuses, then sort the ingredients by what still
+            needs the most work.
           </p>
         </div>
 
@@ -551,9 +551,8 @@ export function IngredientDemandListPage() {
             </label>
 
             <p className="subtle-text">
-              List values come from the shared recursive burden engine. Permanent saver perks, temporary mastery
-              bonuses, and Iron Depot all flow through the shared planning model, and dominated craft recipes stay
-              excluded by default unless planner policy changes later.
+              Resource Saver perks, Mushroom Stew, event bonuses, and Iron Depot all affect the totals shown below.
+              The Tower limit lets you focus only on levels you care about right now.
             </p>
           </>
         ) : null}
@@ -564,9 +563,8 @@ export function IngredientDemandListPage() {
           <div>
             <h2 id="ingredient-demand-list-results-title">Ingredient Burden List</h2>
             <p className="supporting-text">
-              This list is scoped to {formatScopeLabel(selectedScope)} and keeps recursive burden separate from raw
-              direct recipe use. Terminal ingredients are highlighted in the final column and indicate ingredients
-              that are not craftable locally.
+              This list is scoped to {formatScopeLabel(selectedScope)} and includes nested crafting demand. Ingredients
+              marked Terminal are not craftable from other local recipes.
             </p>
           </div>
 

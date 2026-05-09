@@ -195,7 +195,6 @@ describe('TowerProgressPage', () => {
     expect(within(difficultyNineBucket as HTMLElement).getByText('50.0% complete toward target mastery')).toBeInTheDocument();
     expect(within(unratedBucket as HTMLElement).getByText('5k / 10k mastery remaining')).toBeInTheDocument();
     expect(within(difficultyNineBucket as HTMLElement).getByText('Gold Cucumber')).toBeInTheDocument();
-    expect(within(difficultyNineBucket as HTMLElement).getByText('Range 301-320 | Slot 1')).toBeInTheDocument();
     expect(within(difficultyNineBucket as HTMLElement).getByText('GM')).toBeInTheDocument();
 
     const remainingItemsSection = screen.getByRole('heading', { name: 'Remaining Tower Items' }).closest('section');
@@ -204,9 +203,9 @@ describe('TowerProgressPage', () => {
     expect(within(boardItem as HTMLElement).getByText('150,000 / 1,000,000')).toBeInTheDocument();
     expect(within(boardItem as HTMLElement).getByText('Target: MM (1M)')).toBeInTheDocument();
     expect(screen.getByLabelText('Board progress')).toBeInTheDocument();
-    expect(within(boardItem as HTMLElement).getByLabelText('Extra reference details for Board')).toHaveAttribute(
+    expect(within(boardItem as HTMLElement).getByLabelText('Details for Board')).toHaveAttribute(
       'title',
-      'Method: Crafting\nNotes: Passive',
+      'Notes: Passive',
     );
     expect(within(boardItem as HTMLElement).queryByText('Method: Crafting')).not.toBeInTheDocument();
     expect(within(boardItem as HTMLElement).queryByText('Notes: Passive')).not.toBeInTheDocument();
@@ -315,9 +314,10 @@ describe('TowerProgressPage', () => {
     expect(within(summarySection as HTMLElement).queryByText(/mastery difficulty data/i)).not.toBeInTheDocument();
     const remainingItemsSection = screen.getByRole('heading', { name: 'Remaining Tower Items' }).closest('section');
     expect(within(remainingItemsSection as HTMLElement).getByText('Gold Flier')).toBeInTheDocument();
-    expect(within(remainingItemsSection as HTMLElement).getByText('Difficulty not rated yet.')).toBeInTheDocument();
+    expect(within(remainingItemsSection as HTMLElement).queryByText('Difficulty not rated yet.')).not.toBeInTheDocument();
+    expect(within(remainingItemsSection as HTMLElement).queryByText('No difficulty rating yet.')).not.toBeInTheDocument();
     expect(
-      within(remainingItemsSection as HTMLElement).getByText('Not found in the latest snapshot; counted from 0 mastery.'),
+      within(remainingItemsSection as HTMLElement).getByText('Not in your latest import; counted from 0 mastery.'),
     ).toBeInTheDocument();
   });
 
@@ -420,7 +420,6 @@ describe('TowerProgressPage', () => {
 
     expect(difficultyOneBucket).not.toBeNull();
     expect(within(difficultyOneBucket as HTMLElement).getAllByText('Board')).toHaveLength(2);
-    expect(within(difficultyOneBucket as HTMLElement).getByText('Range 201-220 | Slot 1')).toBeInTheDocument();
-    expect(within(difficultyOneBucket as HTMLElement).getByText('Range 301-320 | Slot 2')).toBeInTheDocument();
+    expect(within(difficultyOneBucket as HTMLElement).queryByText(/Slot/)).not.toBeInTheDocument();
   });
 });

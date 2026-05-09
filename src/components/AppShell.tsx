@@ -6,6 +6,7 @@ import {
   persistAppTheme,
   type AppTheme,
 } from '../lib/themePreference';
+import { GlobalSearch } from './GlobalSearch';
 import { TopNav } from './TopNav';
 
 export function AppShell({ children }: PropsWithChildren) {
@@ -53,15 +54,18 @@ export function AppShell({ children }: PropsWithChildren) {
               <span className="site-title">FarmRPG Planning Tools</span>
               <span className="site-tagline">Local-first progress and material planning.</span>
             </Link>
-            <button
-              type="button"
-              className="button site-theme-toggle"
-              onClick={handleThemeToggle}
-              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-              aria-pressed={theme === 'dark'}
-            >
-              {theme === 'light' ? 'Dark mode' : 'Light mode'}
-            </button>
+            <div className="site-header__actions">
+              <GlobalSearch />
+              <button
+                type="button"
+                className="button site-theme-toggle"
+                onClick={handleThemeToggle}
+                aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                aria-pressed={theme === 'dark'}
+              >
+                {theme === 'light' ? 'Dark mode' : 'Light mode'}
+              </button>
+            </div>
           </div>
           <TopNav />
         </div>

@@ -2,7 +2,6 @@ import { useEffect, useState, type CSSProperties } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import { deriveMasteryDifficultyStats } from '../lib/deriveMasteryDifficultyStats';
-import { downloadMissingMasteryDifficultyCsv } from '../lib/exportMissingMasteryDifficultyCsv';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
 
@@ -163,8 +162,6 @@ function buildTierBuckets(
 export function SortedPage() {
   const [mode, setMode] = useState<SortedMode>('m');
   const [filterText, setFilterText] = useState('');
-  const [exportMessage, setExportMessage] = useState<string | null>(null);
-  const [exportError, setExportError] = useState<string | null>(null);
   const [sortedState, setSortedState] = useState<{
     isLoading: boolean;
     snapshotError: string | null;
@@ -261,23 +258,6 @@ export function SortedPage() {
     }))
     .filter((group) => group.items.length > 0);
   const tierBuckets = buildTierBuckets(filteredGroups);
-  const unmatchedCount = sortedState.derivedStats?.unmatchedItemCount ?? 0;
-
-  function handleExportMissingItemsCsv(): void {
-    if (!sortedState.derivedStats || sortedState.derivedStats.unmatchedItems.length === 0) {
-      return;
-    }
-
-    try {
-      downloadMissingMasteryDifficultyCsv(sortedState.derivedStats.unmatchedItems);
-      setExportError(null);
-      setExportMessage('Missing-items CSV downloaded for manual review and append.');
-    } catch (error) {
-      setExportMessage(null);
-      setExportError(error instanceof Error ? error.message : 'Unable to export missing-items CSV.');
-    }
-  }
-
   return (
     <div className="page-stack">
       <PageIntro
@@ -360,8 +340,7 @@ export function SortedPage() {
             <div>
               <h2 id="sorted-results-title">{formatRemainingLabel(mode)}</h2>
               <p className="supporting-text">
-                Items are grouped by mastery difficulty, with Unrated covering items missing from the mastery
-                difficulty data or lacking a difficulty value.
+                Items are grouped by mastery difficulty, with Unrated covering items without a current rating.
               </p>
             </div>
 
@@ -430,63 +409,6 @@ export function SortedPage() {
                   </details>
                 );
               })
-            )}
-          </section>
-
-          <section className="page-card page-stack" aria-labelledby="unmatched-items-title">
-            <div>
-              <h2 id="unmatched-items-title">Items Missing From Mastery Difficulty Data</h2>
-              <p className="supporting-text">
-                These items were parsed from the latest snapshot but do not currently match the local mastery
-                difficulty data. They stay visible as Unrated in the sorted lists, and the export downloads
-                append-ready template rows for `mastery_difficulty.csv`.
-              </p>
-            </div>
-
-            <dl className="summary-grid">
-              <div className="summary-grid__item">
-                <dt>Unmatched snapshot items</dt>
-                <dd>{unmatchedCount.toLocaleString()}</dd>
-              </div>
-              <div className="summary-grid__item">
-                <dt>Export-ready CSV rows</dt>
-                <dd>{unmatchedCount.toLocaleString()}</dd>
-              </div>
-            </dl>
-
-            <p className="subtle-text">
-              Missing mastery difficulty matches are non-fatal. Review the item names below, then export the CSV if
-              you want template rows for local reference-data maintenance.
-            </p>
-
-            <div className="button-row">
-              <button
-                type="button"
-                className="button"
-                onClick={handleExportMissingItemsCsv}
-                disabled={sortedState.derivedStats.unmatchedItems.length === 0}
-              >
-                Export Missing Items CSV
-              </button>
-            </div>
-
-            {exportMessage ? <p className="status-message status-message--success">{exportMessage}</p> : null}
-            {exportError ? <p className="status-message status-message--error">{exportError}</p> : null}
-
-            {sortedState.derivedStats.unmatchedItems.length === 0 ? (
-              <p className="empty-state">No unmatched items in the latest snapshot.</p>
-            ) : (
-              <ul className="data-list">
-                {sortedState.derivedStats.unmatchedItems.map((item) => (
-                  <li key={item.canonicalKey}>
-                    <div>
-                      <strong>{item.itemName}</strong>
-                      <p className="subtle-text">Canonical key: {item.canonicalKey}</p>
-                    </div>
-                    <strong>{item.currentMastery.toLocaleString()}</strong>
-                  </li>
-                ))}
-              </ul>
             )}
           </section>
         </>

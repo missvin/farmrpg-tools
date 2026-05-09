@@ -21,7 +21,7 @@ describe('SortedPage', () => {
     loadMasteryDifficultyMock.mockReset();
   });
 
-  it('explains unmatched mastery rows and the existing CSV export affordance', async () => {
+  it('keeps unrated items in progress lists without showing reference-maintenance tools', async () => {
     getLatestSnapshotMock.mockResolvedValue({
       snapshotId: 'snapshot-1',
       createdAt: '2026-03-18T00:00:00.000Z',
@@ -96,14 +96,12 @@ describe('SortedPage', () => {
     render(<SortedPage />);
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'Items Missing From Mastery Difficulty Data' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Remaining to Mastery (10,000)' })).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/They stay visible as Unrated in the sorted lists/)).toBeInTheDocument();
-    expect(screen.getByText('Unmatched snapshot items')).toBeInTheDocument();
-    expect(screen.getByText('Export-ready CSV rows')).toBeInTheDocument();
-    expect(screen.getByText(/Missing mastery difficulty matches are non-fatal/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Export Missing Items CSV' })).toBeEnabled();
+    expect(screen.getByText(/with Unrated covering items without a current rating/)).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Items Missing From Mastery Difficulty Data' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Export Missing Items CSV' })).not.toBeInTheDocument();
     expect(screen.getAllByText('Mystery Item').length).toBeGreaterThan(0);
   });
 

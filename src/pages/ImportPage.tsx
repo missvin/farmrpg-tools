@@ -488,7 +488,7 @@ export function ImportPage() {
             <div className="page-stack">
               <h3 className="section-title">Parsed Items Preview</h3>
               <p className="supporting-text">
-                Showing the first {previewEntries.length} canonical item entries.
+                Showing the first {previewEntries.length} parsed item entries.
               </p>
               <ul className="data-list">
                 {previewEntries.map(([itemKey, count]) => (
@@ -500,67 +500,70 @@ export function ImportPage() {
               </ul>
             </div>
 
-            <div className="page-stack">
-              <h3 className="section-title">Parsed Row Details</h3>
-              <p className="supporting-text">
-                Use this detail view to inspect exactly which rows were parsed from the pasted export.
-              </p>
+            <details className="advanced-details">
+              <summary className="advanced-details__summary">Advanced parsed row details</summary>
 
-              <dl className="summary-grid">
-                <div className="summary-grid__item">
-                  <dt>Total parsed rows</dt>
-                  <dd>{parseResult.parseSummary.parsedRowsCount.toLocaleString()}</dd>
-                </div>
-                <div className="summary-grid__item">
-                  <dt>Unique canonical items</dt>
-                  <dd>{parseResult.parseSummary.itemsParsed.toLocaleString()}</dd>
-                </div>
-                <div className="summary-grid__item">
-                  <dt>Tier row groups</dt>
-                  <dd>{tierDebugEntries.map(([tier, count]) => `${tier}: ${count}`).join(', ') || 'None'}</dd>
-                </div>
-              </dl>
+              <div className="page-stack">
+                <p className="supporting-text">
+                  Optional troubleshooting details for checking how the pasted export was interpreted.
+                </p>
 
-              <div className="page-stack page-stack--tight">
-                <label className="field-label" htmlFor="parsed-row-filter">
-                  Filter parsed rows
-                </label>
-                <input
-                  id="parsed-row-filter"
-                  className="text-input"
-                  type="text"
-                  value={debugFilter}
-                  onChange={(event) => setDebugFilter(event.target.value)}
-                  placeholder="Filter by raw item name or canonical key"
-                />
+                <dl className="summary-grid">
+                  <div className="summary-grid__item">
+                    <dt>Total parsed rows</dt>
+                    <dd>{parseResult.parseSummary.parsedRowsCount.toLocaleString()}</dd>
+                  </div>
+                  <div className="summary-grid__item">
+                    <dt>Unique items</dt>
+                    <dd>{parseResult.parseSummary.itemsParsed.toLocaleString()}</dd>
+                  </div>
+                  <div className="summary-grid__item">
+                    <dt>Tier row groups</dt>
+                    <dd>{tierDebugEntries.map(([tier, count]) => `${tier}: ${count}`).join(', ') || 'None'}</dd>
+                  </div>
+                </dl>
+
+                <div className="page-stack page-stack--tight">
+                  <label className="field-label" htmlFor="parsed-row-filter">
+                    Filter parsed rows
+                  </label>
+                  <input
+                    id="parsed-row-filter"
+                    className="text-input"
+                    type="text"
+                    value={debugFilter}
+                    onChange={(event) => setDebugFilter(event.target.value)}
+                    placeholder="Filter by item name"
+                  />
+                </div>
+
+                {filteredParsedRows.length === 0 ? (
+                  <p className="empty-state">No parsed rows match the current filter.</p>
+                ) : (
+                  <ul className="debug-list">
+                    {filteredParsedRows.map((row, rowIndex) => (
+                      <li
+                        key={`${row.sourceLineIndex}-${row.canonicalKey}-${rowIndex}`}
+                        className="debug-list__item"
+                      >
+                        <p>
+                          <strong>Item:</strong> {row.rawItemName}
+                        </p>
+                        <p>
+                          <strong>Stored item key:</strong> {row.canonicalKey}
+                        </p>
+                        <p>
+                          <strong>Count:</strong> {row.count.toLocaleString()}
+                        </p>
+                        <p>
+                          <strong>Target tier:</strong> {formatTierLabel(row.targetTier)}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-
-              {filteredParsedRows.length === 0 ? (
-                <p className="empty-state">No parsed rows match the current filter.</p>
-              ) : (
-                <ul className="debug-list">
-                  {filteredParsedRows.map((row, rowIndex) => (
-                    <li
-                      key={`${row.sourceLineIndex}-${row.canonicalKey}-${rowIndex}`}
-                      className="debug-list__item"
-                    >
-                      <p>
-                        <strong>Raw item:</strong> {row.rawItemName}
-                      </p>
-                      <p>
-                        <strong>Canonical key:</strong> {row.canonicalKey}
-                      </p>
-                      <p>
-                        <strong>Count:</strong> {row.count.toLocaleString()}
-                      </p>
-                      <p>
-                        <strong>Target tier:</strong> {formatTierLabel(row.targetTier)}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            </details>
           </>
         )}
       </section>

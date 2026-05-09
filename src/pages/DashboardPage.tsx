@@ -294,19 +294,6 @@ export function DashboardPage() {
                   of parsed items
                 </p>
               </div>
-              <div
-                className="summary-grid__item summary-grid__item--progress"
-                style={getSummaryProgressStyle(dashboardState.derivedStats.unmatchedItemCount, parsedItemsCount)}
-              >
-                <dt>Unmatched snapshot items</dt>
-                <dd>{dashboardState.derivedStats.unmatchedItemCount.toLocaleString()}</dd>
-                <p className="subtle-text">
-                  {formatPercent(
-                    getSummaryProgressPercent(dashboardState.derivedStats.unmatchedItemCount, parsedItemsCount),
-                  )}{' '}
-                  of parsed items
-                </p>
-              </div>
             </dl>
           </section>
             );
@@ -316,8 +303,7 @@ export function DashboardPage() {
             <div>
               <h2 id="difficulty-summary-title">Mastery Difficulty Summary</h2>
               <p className="supporting-text">
-                Snapshot items grouped by mastery difficulty data, including an Unrated bucket for unmatched or
-                unrated entries.
+                Snapshot items grouped by mastery difficulty, including Unrated for items without a current rating.
               </p>
             </div>
 

@@ -293,7 +293,7 @@ export function ComparePage() {
                   <tbody>
                     {comparison.changedRows.map((row) => (
                       <tr key={row.canonicalKey}>
-                        <td>{row.canonicalKey}</td>
+                        <td>{row.itemName}</td>
                         <td>{row.fromValue.toLocaleString()}</td>
                         <td>{row.toValue.toLocaleString()}</td>
                         <td>{formatCompactDelta(row.delta)}</td>

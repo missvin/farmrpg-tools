@@ -339,13 +339,12 @@ describe('DashboardPage', () => {
     const masteredCard = achievedSectionQueries.getByText('Mastered (>= 10,000)').closest('div');
     const grandMasteredCard = achievedSectionQueries.getByText('Grand Mastered (>= 100,000)').closest('div');
     const megaMasteredCard = achievedSectionQueries.getByText('Mega Mastered (>= 1,000,000)').closest('div');
-    const unmatchedCard = achievedSectionQueries.getByText('Unmatched snapshot items').closest('div');
 
     expect(masteredCard).toHaveClass('summary-grid__item', 'summary-grid__item--progress');
     expect(masteredCard).toHaveStyle('--summary-progress-fill: 50%');
     expect(grandMasteredCard).toHaveStyle('--summary-progress-fill: 25%');
     expect(megaMasteredCard).toHaveStyle('--summary-progress-fill: 0%');
-    expect(unmatchedCard).toHaveStyle('--summary-progress-fill: 25%');
+    expect(achievedSectionQueries.queryByText('Unmatched snapshot items')).not.toBeInTheDocument();
     expect(achievedSectionQueries.getByText('50.0% of parsed items')).toBeInTheDocument();
   });
 });

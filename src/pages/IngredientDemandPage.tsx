@@ -283,8 +283,8 @@ export function IngredientDemandPage() {
         <div>
           <h2 id="ingredient-demand-controls-title">Lookup Controls</h2>
           <p className="supporting-text">
-            Search the local item universe, then review recursive ingredient burden by scope. This stays read-only and
-            uses the existing recipe and modifier engines instead of page-specific math.
+            Pick an ingredient, adjust your saved perks and temporary bonuses, then see where that ingredient is still
+            needed.
           </p>
         </div>
 
@@ -504,9 +504,8 @@ export function IngredientDemandPage() {
             </div>
 
             <p className="subtle-text">
-              Planner controls feed the shared modifier model and burden engine. Permanent saver perks stack with event
-              saver bonuses, Iron Depot treats Iron as auto-supplied and non-blocking, and dominated craft recipes such
-              as Unpolished Shimmer Stone stay excluded by default in planning.
+              Resource Saver perks and event bonuses change the crafting totals. Iron Depot treats Iron as already
+              covered, and the Tower limit lets you focus only on levels you care about right now.
             </p>
           </>
         ) : null}
@@ -517,7 +516,8 @@ export function IngredientDemandPage() {
           <div>
             <h2 id="ingredient-demand-results-title">Lookup Result</h2>
             <p className="supporting-text">
-              The values below represent recursive burden from the shared planning engine, not only direct recipe use.
+              Totals include nested crafted items, so an ingredient can show demand even when it is several recipes
+              below the item you ultimately want.
             </p>
           </div>
 
@@ -566,7 +566,7 @@ export function IngredientDemandPage() {
                     Downstream drivers
                   </h3>
                   <p className="subtle-text">
-                    These are the downstream crafted outputs currently contributing to this ingredient&apos;s burden.
+                    These are the crafted items currently creating demand for this ingredient.
                   </p>
                 </div>
 

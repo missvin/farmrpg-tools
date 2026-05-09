@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
@@ -11,6 +11,13 @@ vi.mock('./lib/storage/masterySnapshots', () => ({
 
 vi.mock('./lib/loadMasteryDifficulty', () => ({
   loadMasteryDifficulty: vi.fn().mockResolvedValue({
+    entries: [],
+    byCanonicalKey: {},
+  }),
+}));
+
+vi.mock('./lib/loadTowerRequirements', () => ({
+  loadTowerRequirements: vi.fn().mockResolvedValue({
     entries: [],
     byCanonicalKey: {},
   }),
@@ -247,6 +254,31 @@ describe('App shell', () => {
     expect(document.documentElement.dataset.theme).toBe('dark');
     expect(window.localStorage.getItem(APP_THEME_STORAGE_KEY)).toBe('dark');
     expect(screen.getByRole('button', { name: 'Switch to light mode' })).toBeInTheDocument();
+  });
+
+  it('searches pages from the app header', async () => {
+    const user = userEvent.setup();
+    setWindowScrollY(0);
+
+    render(
+      <MemoryRouter
+        initialEntries={['/']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText('Search pages and items'), 'tower');
+
+    const searchResults = await screen.findByRole('region', { name: 'Search results' });
+    expect(within(searchResults).getByRole('link', { name: /Tower Progress/ })).toBeVisible();
+    expect(within(searchResults).getByRole('link', { name: /Tower \/tower/ })).toBeVisible();
   });
 
   it('applies a persisted dark theme preference on initial render', async () => {

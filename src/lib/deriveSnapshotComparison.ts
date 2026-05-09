@@ -2,6 +2,7 @@ import type { MasterySnapshot } from './storage/masterySnapshots';
 
 export type SnapshotComparisonRow = {
   canonicalKey: string;
+  itemName: string;
   fromValue: number;
   toValue: number;
   delta: number;
@@ -32,18 +33,77 @@ function getChangeType(fromValue: number, toValue: number): SnapshotComparisonRo
   return toValue > fromValue ? 'increased' : 'decreased';
 }
 
+const LEGACY_MOJIBAKE_REPLACEMENTS: Record<string, string> = {
+  'Ã±': 'ñ',
+};
+
+function normalizeLegacyComparisonKey(canonicalKey: string): string {
+  return Object.entries(LEGACY_MOJIBAKE_REPLACEMENTS).reduce(
+    (normalizedKey, [legacyText, correctedText]) => normalizedKey.split(legacyText).join(correctedText),
+    canonicalKey,
+  );
+}
+
+function formatFallbackItemName(canonicalKey: string): string {
+  return canonicalKey
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
+    .join(' ');
+}
+
+function buildDisplayNameByComparisonKey(snapshot: MasterySnapshot): Map<string, string> {
+  const displayNames = new Map<string, string>();
+
+  for (const row of snapshot.parsedRows ?? []) {
+    const comparisonKey = normalizeLegacyComparisonKey(row.canonicalKey);
+    const displayName = normalizeLegacyComparisonKey(row.rawItemName);
+
+    if (!displayNames.has(comparisonKey)) {
+      displayNames.set(comparisonKey, displayName);
+    }
+  }
+
+  for (const canonicalKey of Object.keys(snapshot.masteryByItem)) {
+    const comparisonKey = normalizeLegacyComparisonKey(canonicalKey);
+
+    if (!displayNames.has(comparisonKey)) {
+      displayNames.set(comparisonKey, formatFallbackItemName(comparisonKey));
+    }
+  }
+
+  return displayNames;
+}
+
+function buildMasteryByComparisonKey(snapshot: MasterySnapshot): Record<string, number> {
+  const masteryByComparisonKey: Record<string, number> = {};
+
+  for (const [canonicalKey, mastery] of Object.entries(snapshot.masteryByItem)) {
+    const comparisonKey = normalizeLegacyComparisonKey(canonicalKey);
+    masteryByComparisonKey[comparisonKey] = Math.max(masteryByComparisonKey[comparisonKey] ?? 0, mastery);
+  }
+
+  return masteryByComparisonKey;
+}
+
 export function deriveSnapshotComparison(
   fromSnapshot: MasterySnapshot,
   toSnapshot: MasterySnapshot,
 ): SnapshotComparison {
+  const fromMasteryByComparisonKey = buildMasteryByComparisonKey(fromSnapshot);
+  const toMasteryByComparisonKey = buildMasteryByComparisonKey(toSnapshot);
+  const displayNames = new Map([
+    ...buildDisplayNameByComparisonKey(fromSnapshot),
+    ...buildDisplayNameByComparisonKey(toSnapshot),
+  ]);
   const allKeys = new Set([
-    ...Object.keys(fromSnapshot.masteryByItem),
-    ...Object.keys(toSnapshot.masteryByItem),
+    ...Object.keys(fromMasteryByComparisonKey),
+    ...Object.keys(toMasteryByComparisonKey),
   ]);
   const changedRows = [...allKeys]
     .map((canonicalKey) => {
-      const fromValue = fromSnapshot.masteryByItem[canonicalKey] ?? 0;
-      const toValue = toSnapshot.masteryByItem[canonicalKey] ?? 0;
+      const fromValue = fromMasteryByComparisonKey[canonicalKey] ?? 0;
+      const toValue = toMasteryByComparisonKey[canonicalKey] ?? 0;
       const delta = toValue - fromValue;
 
       if (delta === 0) {
@@ -52,6 +112,7 @@ export function deriveSnapshotComparison(
 
       return {
         canonicalKey,
+        itemName: displayNames.get(canonicalKey) ?? formatFallbackItemName(canonicalKey),
         fromValue,
         toValue,
         delta,
@@ -66,7 +127,7 @@ export function deriveSnapshotComparison(
         return magnitudeDifference;
       }
 
-      return left.canonicalKey.localeCompare(right.canonicalKey);
+      return left.itemName.localeCompare(right.itemName);
     });
 
   return {

@@ -66,12 +66,8 @@ function getPercentCellStyle(
   };
 }
 
-type TowerRowStateFilter = 'all' | 'blocking' | 'completed' | 'tbd';
+type TowerRowStateFilter = 'all' | 'blocking' | 'completed';
 type TowerTierFilter = 'all' | 'M' | 'GM' | 'MM';
-
-function isTbdTowerRow(itemName: string): boolean {
-  return itemName.trim().toUpperCase() === 'TBD';
-}
 
 function TowerItemCell({
   canonicalKey,
@@ -92,7 +88,7 @@ function TowerItemCell({
       <div>
         <strong>{itemName}</strong>
         {shouldShowTowerNote(notes) ? <p className="subtle-text">Note: {notes}</p> : null}
-        {!matchedSnapshotRow ? <p className="subtle-text">Unmatched in latest snapshot</p> : null}
+        {!matchedSnapshotRow ? <p className="subtle-text">Not in your latest import</p> : null}
       </div>
     </div>
   );
@@ -212,10 +208,6 @@ export function TowerPage() {
                 return false;
               }
 
-              if (rowStateFilter === 'tbd' && !isTbdTowerRow(row.itemName)) {
-                return false;
-              }
-
               return true;
             }),
           }))
@@ -299,7 +291,6 @@ export function TowerPage() {
                   <option value="all">All rows</option>
                   <option value="blocking">Remaining only</option>
                   <option value="completed">Completed only</option>
-                  <option value="tbd">TBD only</option>
                 </select>
               </label>
 

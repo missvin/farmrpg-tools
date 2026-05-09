@@ -321,9 +321,8 @@ describe('TowerPage', () => {
     expect(await screen.findByText('Tower Level 311 - 1/1 items remaining')).toBeInTheDocument();
     expect(screen.queryByText('Board')).not.toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText('Row state'), 'tbd');
-
     expect(screen.queryByText('Visible TBD rows')).not.toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'TBD only' })).not.toBeInTheDocument();
     expect(screen.getByText('Tower Level 311 - 1/1 items remaining')).toBeInTheDocument();
     expect(screen.getByText('TBD').closest('td')?.querySelector('.item-icon')).toBeNull();
 
