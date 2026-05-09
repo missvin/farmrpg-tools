@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { loadItemCatalog } from '../lib/loadItemCatalog';
+import { loadRecipeGraph } from '../lib/loadRecipeGraph';
 import { loadTowerRequirements } from '../lib/loadTowerRequirements';
+import { toItemProfilePath } from '../lib/itemProfileRoutes';
 import { appRoutes } from '../lib/routes';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
 
@@ -24,6 +27,24 @@ function matchesQuery(value: string, query: string): boolean {
   return value.toLowerCase().includes(query);
 }
 
+function setSearchableItem(
+  byCanonicalKey: Map<string, SearchableItem>,
+  canonicalKey: string,
+  itemName: string,
+  sourceLabel: string,
+): void {
+  if (byCanonicalKey.has(canonicalKey)) {
+    return;
+  }
+
+  byCanonicalKey.set(canonicalKey, {
+    canonicalKey,
+    itemName,
+    sourceLabel,
+    to: toItemProfilePath(canonicalKey),
+  });
+}
+
 export function GlobalSearch() {
   const [query, setQuery] = useState('');
   const [searchableItems, setSearchableItems] = useState<SearchableItem[]>([]);
@@ -41,44 +62,35 @@ export function GlobalSearch() {
       };
     }
 
-    void Promise.all([getLatestSnapshot(), loadTowerRequirements()])
-      .then(([snapshot, towerRequirementsData]) => {
+    void Promise.all([getLatestSnapshot(), loadTowerRequirements(), loadItemCatalog(), loadRecipeGraph()])
+      .then(([snapshot, towerRequirementsData, itemCatalog, recipeGraph]) => {
         if (!isMounted) {
           return;
         }
 
         const byCanonicalKey = new Map<string, SearchableItem>();
 
+        for (const entry of itemCatalog.entries) {
+          setSearchableItem(byCanonicalKey, entry.canonicalKey, entry.itemName, 'Item profile');
+        }
+
         for (const row of snapshot?.parsedRows ?? []) {
-          if (!byCanonicalKey.has(row.canonicalKey)) {
-            byCanonicalKey.set(row.canonicalKey, {
-              canonicalKey: row.canonicalKey,
-              itemName: row.rawItemName,
-              sourceLabel: 'Latest import',
-              to: '/sorted',
-            });
-          }
+          setSearchableItem(byCanonicalKey, row.canonicalKey, row.rawItemName, 'Latest import');
         }
 
         for (const canonicalKey of Object.keys(snapshot?.masteryByItem ?? {})) {
-          if (!byCanonicalKey.has(canonicalKey)) {
-            byCanonicalKey.set(canonicalKey, {
-              canonicalKey,
-              itemName: formatFallbackItemName(canonicalKey),
-              sourceLabel: 'Latest import',
-              to: '/sorted',
-            });
-          }
+          setSearchableItem(byCanonicalKey, canonicalKey, formatFallbackItemName(canonicalKey), 'Latest import');
         }
 
         for (const row of towerRequirementsData.entries) {
-          if (!byCanonicalKey.has(row.canonicalKey)) {
-            byCanonicalKey.set(row.canonicalKey, {
-              canonicalKey: row.canonicalKey,
-              itemName: row.itemName,
-              sourceLabel: 'Tower requirements',
-              to: '/tower-progress',
-            });
+          setSearchableItem(byCanonicalKey, row.canonicalKey, row.itemName, 'Tower requirements');
+        }
+
+        for (const recipe of recipeGraph.recipes) {
+          setSearchableItem(byCanonicalKey, recipe.outputCanonicalKey, recipe.outputItemName, 'Recipe data');
+
+          for (const input of recipe.inputs) {
+            setSearchableItem(byCanonicalKey, input.canonicalKey, input.itemName, 'Recipe data');
           }
         }
 
@@ -105,6 +117,7 @@ export function GlobalSearch() {
       normalizedQuery.length < 2
         ? []
         : appRoutes
+            .filter((route) => !route.path.includes(':'))
             .filter((route) => matchesQuery(route.label, normalizedQuery) || matchesQuery(route.path, normalizedQuery))
             .slice(0, 6),
     [normalizedQuery],

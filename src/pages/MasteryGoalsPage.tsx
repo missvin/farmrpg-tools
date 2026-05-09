@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import { derivePersonalMasteryGoalPlanning } from '../lib/derivePersonalMasteryGoalPlanning';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
@@ -617,7 +618,7 @@ export function MasteryGoalsPage() {
                 {visibleGoalRows.map((row) => (
                   <tr key={row.goalId}>
                     <td>
-                      <strong>{row.itemName}</strong>
+                      <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} />
                       {!row.matchedSnapshotRow ? (
                         <p className="subtle-text">Not in your latest import; counted from 0 mastery.</p>
                       ) : null}
@@ -764,7 +765,9 @@ export function MasteryGoalsPage() {
               <tbody>
                 {raceCountsState.entries.map((entry) => (
                   <tr key={entry.canonicalKey}>
-                    <td>{entry.itemName}</td>
+                    <td>
+                      <ItemProfileLink canonicalKey={entry.canonicalKey} itemName={entry.itemName} />
+                    </td>
                     <td>{entry.masteredCount === null ? '-' : entry.masteredCount.toLocaleString()}</td>
                     <td>{entry.grandMasteredCount === null ? '-' : entry.grandMasteredCount.toLocaleString()}</td>
                     <td>{entry.megaMasteredCount === null ? '-' : entry.megaMasteredCount.toLocaleString()}</td>

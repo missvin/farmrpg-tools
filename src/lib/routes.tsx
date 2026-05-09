@@ -17,6 +17,9 @@ const IngredientDemandListPage = lazy(() =>
 const IngredientDemandPage = lazy(() =>
   import('../pages/IngredientDemandPage').then((module) => ({ default: module.IngredientDemandPage })),
 );
+const ItemProfilePage = lazy(() =>
+  import('../pages/ItemProfilePage').then((module) => ({ default: module.ItemProfilePage })),
+);
 const MasteryGoalsPage = lazy(() =>
   import('../pages/MasteryGoalsPage').then((module) => ({ default: module.MasteryGoalsPage })),
 );
@@ -79,6 +82,11 @@ export const appRoutes: AppRoute[] = [
     path: '/ingredient-demand-list',
     label: 'Material Planner',
     element: <IngredientDemandListPage />,
+  },
+  {
+    path: '/items/:canonicalKey',
+    label: 'Item Profile',
+    element: <ItemProfilePage />,
   },
   {
     path: '/mastery-goals',

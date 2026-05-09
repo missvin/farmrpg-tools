@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import { deriveSnapshotComparison } from '../lib/deriveSnapshotComparison';
 import {
@@ -293,7 +294,9 @@ export function ComparePage() {
                   <tbody>
                     {comparison.changedRows.map((row) => (
                       <tr key={row.canonicalKey}>
-                        <td>{row.itemName}</td>
+                        <td>
+                          <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} />
+                        </td>
                         <td>{row.fromValue.toLocaleString()}</td>
                         <td>{row.toValue.toLocaleString()}</td>
                         <td>{formatCompactDelta(row.delta)}</td>

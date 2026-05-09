@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
+import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import {
   createDefaultCraftingModifierState,
@@ -61,6 +63,7 @@ function getSelectedBurden(
 }
 
 export function IngredientDemandPage() {
+  const [searchParams] = useSearchParams();
   const [resourcesState, setResourcesState] = useState<{
     isLoading: boolean;
     snapshotError: string | null;
@@ -231,6 +234,7 @@ export function IngredientDemandPage() {
     () => buildItemOptions(burdenResult?.ingredientBurdenByCanonicalKey ?? {}),
     [burdenResult],
   );
+  const requestedCanonicalKey = searchParams.get('item')?.trim().toLowerCase() ?? '';
 
   useEffect(() => {
     if (itemOptions.length === 0) {
@@ -240,6 +244,10 @@ export function IngredientDemandPage() {
     }
 
     setSelectedCanonicalKey((currentSelectedCanonicalKey) => {
+      if (requestedCanonicalKey && itemOptions.some((option) => option.canonicalKey === requestedCanonicalKey)) {
+        return requestedCanonicalKey;
+      }
+
       if (currentSelectedCanonicalKey && itemOptions.some((option) => option.canonicalKey === currentSelectedCanonicalKey)) {
         return currentSelectedCanonicalKey;
       }
@@ -248,6 +256,14 @@ export function IngredientDemandPage() {
     });
 
     setIngredientQuery((currentQuery) => {
+      if (requestedCanonicalKey) {
+        const requestedOption = itemOptions.find((option) => option.canonicalKey === requestedCanonicalKey);
+
+        if (requestedOption) {
+          return requestedOption.itemName;
+        }
+      }
+
       if (
         currentQuery &&
         itemOptions.some((option) => option.itemName.toLowerCase() === currentQuery.trim().toLowerCase())
@@ -257,7 +273,7 @@ export function IngredientDemandPage() {
 
       return itemOptions[0].itemName;
     });
-  }, [itemOptions]);
+  }, [itemOptions, requestedCanonicalKey]);
 
   const selectedBurden = getSelectedBurden(burdenResult, selectedCanonicalKey);
 
@@ -528,7 +544,12 @@ export function IngredientDemandPage() {
               <dl className="summary-grid">
                 <div className="summary-grid__item">
                   <dt>Selected ingredient</dt>
-                  <dd>{selectedBurden.itemName}</dd>
+                  <dd>
+                    <ItemProfileLink
+                      canonicalKey={selectedBurden.canonicalKey}
+                      itemName={selectedBurden.itemName}
+                    />
+                  </dd>
                 </div>
                 <div className="summary-grid__item">
                   <dt>Total recursive burden</dt>
@@ -588,7 +609,10 @@ export function IngredientDemandPage() {
                     .map((contribution) => (
                       <li key={`${contribution.scope}-${contribution.rootGoalId}`}>
                         <div>
-                          <strong>{contribution.rootOutputItemName}</strong>
+                          <ItemProfileLink
+                            canonicalKey={contribution.rootOutputCanonicalKey}
+                            itemName={contribution.rootOutputItemName}
+                          />
                           <p className="subtle-text">Scope: {formatScopeLabel(contribution.scope)}</p>
                         </div>
                         <strong>{formatAmount(contribution.requiredEffectiveOutput)}</strong>

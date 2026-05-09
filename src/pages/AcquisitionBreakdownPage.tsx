@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
+import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import {
   createDefaultAcquisitionPlannerInputState,
@@ -125,6 +126,7 @@ function getCoverageTotal(coverage: KnownCoverage): number {
 }
 
 export function AcquisitionBreakdownPage() {
+  const [searchParams] = useSearchParams();
   const [resourcesState, setResourcesState] = useState<{
     isLoading: boolean;
     snapshotError: string | null;
@@ -288,6 +290,7 @@ export function AcquisitionBreakdownPage() {
     () => buildItemOptions(burdenResult?.ingredientBurdenByCanonicalKey ?? {}),
     [burdenResult],
   );
+  const requestedCanonicalKey = searchParams.get('item')?.trim().toLowerCase() ?? '';
 
   useEffect(() => {
     if (itemOptions.length === 0) {
@@ -297,6 +300,10 @@ export function AcquisitionBreakdownPage() {
     }
 
     setSelectedCanonicalKey((currentSelectedCanonicalKey) => {
+      if (requestedCanonicalKey && itemOptions.some((option) => option.canonicalKey === requestedCanonicalKey)) {
+        return requestedCanonicalKey;
+      }
+
       if (currentSelectedCanonicalKey && itemOptions.some((option) => option.canonicalKey === currentSelectedCanonicalKey)) {
         return currentSelectedCanonicalKey;
       }
@@ -305,6 +312,14 @@ export function AcquisitionBreakdownPage() {
     });
 
     setItemQuery((currentQuery) => {
+      if (requestedCanonicalKey) {
+        const requestedOption = itemOptions.find((option) => option.canonicalKey === requestedCanonicalKey);
+
+        if (requestedOption) {
+          return requestedOption.itemName;
+        }
+      }
+
       if (
         currentQuery &&
         itemOptions.some((option) => option.itemName.toLowerCase() === currentQuery.trim().toLowerCase())
@@ -314,7 +329,7 @@ export function AcquisitionBreakdownPage() {
 
       return itemOptions[0].itemName;
     });
-  }, [itemOptions]);
+  }, [itemOptions, requestedCanonicalKey]);
 
   const selectedBurden = getSelectedBurden(burdenResult, selectedCanonicalKey);
   const selectedRequiredQuantity = selectedBurden
@@ -472,7 +487,12 @@ export function AcquisitionBreakdownPage() {
               <dl className="summary-grid">
                 <div className="summary-grid__item">
                   <dt>Selected item</dt>
-                  <dd>{selectedBurden.itemName}</dd>
+                  <dd>
+                    <ItemProfileLink
+                      canonicalKey={selectedBurden.canonicalKey}
+                      itemName={selectedBurden.itemName}
+                    />
+                  </dd>
                 </div>
                 <div className="summary-grid__item">
                   <dt>Total needed</dt>

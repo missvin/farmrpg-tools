@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 
+import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import { deriveTowerRequirements } from '../lib/deriveTowerRequirements';
 import { getItemIcon } from '../lib/itemIconManifest';
@@ -84,9 +85,8 @@ function TowerItemCell({
 
   return (
     <div className="tower-item-cell">
-      {icon ? <img className="item-icon" src={icon.src} alt="" aria-hidden="true" loading="lazy" /> : null}
       <div>
-        <strong>{itemName}</strong>
+        <ItemProfileLink canonicalKey={canonicalKey} itemName={itemName} iconSrc={icon?.src ?? null} />
         {shouldShowTowerNote(notes) ? <p className="subtle-text">Note: {notes}</p> : null}
         {!matchedSnapshotRow ? <p className="subtle-text">Not in your latest import</p> : null}
       </div>

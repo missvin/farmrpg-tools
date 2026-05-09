@@ -23,6 +23,33 @@ vi.mock('./lib/loadTowerRequirements', () => ({
   }),
 }));
 
+vi.mock('./lib/loadItemCatalog', () => ({
+  loadItemCatalog: vi.fn().mockResolvedValue({
+    entries: [
+      {
+        itemName: 'Red Dye',
+        canonicalKey: 'red dye',
+        masteryPossible: 'yes',
+        farmrpgItemId: null,
+        buddySlug: null,
+        sourceDatasets: ['test'],
+        notes: null,
+      },
+    ],
+    byCanonicalKey: {},
+  }),
+}));
+
+vi.mock('./lib/loadRecipeGraph', () => ({
+  loadRecipeGraph: vi.fn().mockResolvedValue({
+    recipes: [],
+    byOutputCanonicalKey: {},
+    byInputCanonicalKey: {},
+    craftRecipes: [],
+    cookingRecipes: [],
+  }),
+}));
+
 import App from './App';
 
 describe('App shell', () => {
@@ -280,6 +307,33 @@ describe('App shell', () => {
     const searchResults = await screen.findByRole('region', { name: 'Search results' });
     expect(within(searchResults).getByRole('link', { name: /Tower Progress/ })).toBeVisible();
     expect(within(searchResults).getByRole('link', { name: /Tower \/tower/ })).toBeVisible();
+  });
+
+  it('searches local items from the app header and opens item profiles', async () => {
+    const user = userEvent.setup();
+    setWindowScrollY(0);
+
+    render(
+      <MemoryRouter
+        initialEntries={['/']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText('Search pages and items'), 'red');
+
+    const searchResults = await screen.findByRole('region', { name: 'Search results' });
+    expect(within(searchResults).getByRole('link', { name: /Red Dye/ })).toHaveAttribute(
+      'href',
+      '/items/red%20dye',
+    );
   });
 
   it('applies a persisted dark theme preference on initial render', async () => {

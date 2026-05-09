@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 
+import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import { deriveMasteryDifficultyStats } from '../lib/deriveMasteryDifficultyStats';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
@@ -388,7 +389,10 @@ export function SortedPage() {
                               {tierItems.map((item) => (
                                 <li key={`${item.canonicalKey}-${mode}`} className="progress-list__item">
                                   <div className="progress-list__header">
-                                    <strong>{item.itemName}</strong>
+                                    <ItemProfileLink
+                                      canonicalKey={item.canonicalKey}
+                                      itemName={item.itemName}
+                                    />
                                     <span>{item.currentMastery.toLocaleString()}</span>
                                   </div>
                                   <div

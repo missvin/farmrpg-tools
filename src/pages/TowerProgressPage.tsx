@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 
+import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import { deriveTowerProgress } from '../lib/deriveTowerProgress';
 import { getItemIcon } from '../lib/itemIconManifest';
@@ -80,8 +81,7 @@ function TowerProgressItemName({ canonicalKey, itemName }: { canonicalKey: strin
 
   return (
     <span className="tower-item-cell">
-      {icon ? <img className="item-icon" src={icon.src} alt="" aria-hidden="true" loading="lazy" /> : null}
-      <strong>{itemName}</strong>
+      <ItemProfileLink canonicalKey={canonicalKey} itemName={itemName} iconSrc={icon?.src ?? null} />
     </span>
   );
 }

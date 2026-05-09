@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import {
   createDefaultCraftingModifierState,
@@ -640,7 +641,9 @@ export function IngredientDemandListPage() {
                 <tbody>
                   {rows.map((row) => (
                     <tr key={row.canonicalKey}>
-                      <td>{row.itemName}</td>
+                      <td>
+                        <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} />
+                      </td>
                       <td>{formatAmount(row.selectedScopeRequiredEffectiveOutput)}</td>
                       <td>{formatAmount(row.selectedScopeRequiredCraftOperations)}</td>
                       <td>{formatAmount(row.totalRequiredEffectiveOutput)}</td>

@@ -33,6 +33,7 @@ This document summarizes the current runtime architecture of the local-first Far
 - Derivation layer
   - Computes view-friendly progress/status data from latest snapshot plus reference data
   - Lives in [`src/lib/deriveMasteryDifficultyStats.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/deriveMasteryDifficultyStats.ts) and [`src/lib/deriveTowerRequirements.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/deriveTowerRequirements.ts)
+  - Item profile data is resolved through [`src/lib/itemProfileResolver.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/itemProfileResolver.ts) so item pages, links, and search reuse the same snapshot/reference joins
 - Page/view layer
   - React pages load latest snapshot/reference data and render read-only or local-only flows
   - Lives in [`src/pages/ImportPage.tsx`](/C:/Users/liqui/Documents/farmrpg-tools/src/pages/ImportPage.tsx), [`src/pages/DashboardPage.tsx`](/C:/Users/liqui/Documents/farmrpg-tools/src/pages/DashboardPage.tsx), [`src/pages/SortedPage.tsx`](/C:/Users/liqui/Documents/farmrpg-tools/src/pages/SortedPage.tsx), and [`src/pages/TowerPage.tsx`](/C:/Users/liqui/Documents/farmrpg-tools/src/pages/TowerPage.tsx)
@@ -101,6 +102,7 @@ Identity compatibility rules:
 - Latest snapshot is loaded from IndexedDB
 - Reference data is loaded from CSV
 - Derivation helpers join by canonical key and compute view-specific status
+- Item profile pages use a shared resolver over item catalog, snapshots, Tower requirements, recipes, and Pumpkin Juice estimates; unknown items degrade to a safe local fallback instead of failing
 - Pages render read-only summaries, grouped lists, and warnings
 
 ## Reference Datasets

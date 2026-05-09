@@ -801,10 +801,37 @@ a {
   gap: 0.65rem;
 }
 
+.item-profile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--color-text-strong);
+  text-decoration: none;
+}
+
+.item-profile-link:hover,
+.item-profile-link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.18rem;
+}
+
 .item-icon {
   flex: 0 0 auto;
   width: 2rem;
   height: 2rem;
+  object-fit: contain;
+}
+
+.item-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.item-profile-header__icon {
+  flex: 0 0 auto;
+  width: 4rem;
+  height: 4rem;
   object-fit: contain;
 }
 
