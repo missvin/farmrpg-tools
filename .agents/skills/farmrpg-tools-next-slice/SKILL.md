@@ -1,6 +1,6 @@
 ---
 name: farmrpg-tools-next-slice
-description: Backlog-driven plan-and-do workflow for the FarmRPG local-first mastery and planning tool. Use when Codex is asked to pick and implement the next practical backlog slice in this repository, continue project work without a named item, or run a dependency-aware FarmRPG implementation pass grounded in planning/backlog.csv. Do not use for planning-only, review-only, broad audits, or one-off tasks where the user names an exact change instead of asking for next-slice selection.
+description: Backlog-driven plan-and-do workflow for the FarmRPG local-first mastery and planning tool. Use when Codex is asked to pick and implement the next practical backlog slice, implement a selected or named backlog path in order, continue project work without a named item, or run a dependency-aware FarmRPG implementation pass grounded in planning/backlog.csv. Do not use for planning-only, review-only, broad audits, comparing multiple possible paths, or one-off tasks where the user names an exact change instead of asking for next-slice or selected-path implementation.
 ---
 
 # FarmRPG Tools Next Slice
@@ -8,6 +8,8 @@ description: Backlog-driven plan-and-do workflow for the FarmRPG local-first mas
 Use this skill to choose and implement the next small, dependency-valid backlog slice for this FarmRPG local-first planning tool.
 
 Default to plan-and-do. If the user explicitly says planning-only or review-only, stop after the requested plan or review.
+
+For comparing multiple possible 5-10 item work paths, use `$farmrpg-backlog-paths` instead. This skill implements one selected slice or one selected path; it should not generate competing path recommendations.
 
 ## Start-Up Read
 
@@ -46,6 +48,22 @@ Before editing, briefly state:
 - short implementation plan
 
 Proceed unless the user pauses, redirects, or asked for planning-only/review-only.
+
+## Selected Path Mode
+
+If the user provides a named path, screenshot/list of path items, or ordered backlog-item list, treat that as the selected implementation path.
+
+- Do not reselect a different path.
+- Resolve each named row against `planning/backlog.csv`.
+- Implement items in dependency-valid order, preserving the user's order when dependencies allow it.
+- Pause before ambiguous, risky, data-dependent, or manual-input-dependent items.
+- Prefer sensible slice boundaries over one giant undifferentiated change.
+- Keep each change scoped to the current path row or tightly coupled row group.
+- Update `planning/backlog.csv` status and notes as each row advances or completes.
+- Run proportional verification after each meaningful slice, or at clearly justified checkpoints when a path consists of several small tightly related rows.
+- Keep readouts clear about which path item or items were completed and which remain.
+
+If the provided path includes an item blocked by unshipped dependencies outside the path, explain the blocker and pause unless the dependency is already included and can be implemented first.
 
 ## Implementation Discipline
 
@@ -122,6 +140,7 @@ End with a concise readout that includes:
 - backlog item implemented/updated
 - tests/lint/build run, or why not
 - concise implementation summary
+- selected path item(s) completed and remaining, when using selected-path mode
 - commit hash and branch/push status, or the reason work was not committed
 - next reasonable backlog item plus short justification
 - any recommended user testing or Rebecca actions needed because of the completed work or to unlock the next backlog item

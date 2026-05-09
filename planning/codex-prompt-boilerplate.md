@@ -18,6 +18,22 @@ Use a one-off prompt instead when:
 
 Next-slice runs should land completed work by default: commit, merge, and push unless you explicitly ask Codex not to.
 
+## Backlog Path Invocation
+
+Use the backlog-paths skill when you want to compare coherent batches before choosing implementation work:
+
+```text
+Use $farmrpg-backlog-paths to recommend three possible paths for the next 5-10 backlog items. Do not edit files.
+```
+
+Then hand a selected path to next-slice:
+
+```text
+Use $farmrpg-tools-next-slice to implement Path 1 in order, pausing on ambiguity.
+```
+
+Path recommendation stays planning-only; next-slice implements the selected path.
+
 ## Durable Repo Defaults
 
 - Next-slice work lands by default; one-off prompts do not commit unless asked.
