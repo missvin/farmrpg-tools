@@ -249,6 +249,7 @@ a {
 .global-search__result {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   padding: 0.5rem 0.6rem;
   border: 1px solid transparent;
@@ -258,9 +259,17 @@ a {
 }
 
 .global-search__result:hover,
-.global-search__result:focus-visible {
+.global-search__result:focus-visible,
+.global-search__result--active {
   border-color: var(--color-button-hover-border);
   background: var(--color-surface-muted);
+}
+
+.global-search__result-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
 }
 
 .global-search__meta,
@@ -967,9 +976,80 @@ a {
 }
 
 .recipe-link-row__item {
-  display: grid;
-  gap: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
   color: var(--color-text-strong);
+}
+
+.tower-need-card .status-pill,
+.item-burden-card .status-pill {
+  width: fit-content;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  background: var(--color-surface-subtle);
+  color: var(--color-text-strong);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.item-burden-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.75rem;
+}
+
+.item-burden-card {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+}
+
+.item-burden-card h3 {
+  margin: 0;
+}
+
+.item-burden-card__details {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.item-burden-card__details summary {
+  cursor: pointer;
+  color: var(--color-text-strong);
+  font-weight: 700;
+}
+
+.compact-stat-grid {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.compact-stat-grid div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.compact-stat-grid dt {
+  color: var(--color-text-muted);
+}
+
+.compact-stat-grid dd {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-weight: 700;
 }
 
 .subtle-text {

@@ -1,12 +1,26 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
+import {
+  createDefaultCraftingModifierState,
+  loadCraftingModifierState,
+  type UserCraftingModifierState,
+} from '../lib/craftingModifierState';
 import { decodeItemProfileParam, toItemProfilePath } from '../lib/itemProfileRoutes';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { resolveItemProfile, type ItemProfile, type ItemProfileTowerTarget } from '../lib/itemProfileResolver';
 import { loadItemCatalog, type ItemCatalogData } from '../lib/loadItemCatalog';
 import { loadRecipeGraph, type RecipeGraph, type RecipeInput, type RecipeNode } from '../lib/loadRecipeGraph';
+import {
+  calculateRecursiveIngredientBurden,
+  type IngredientBurdenEntry,
+  type IngredientBurdenGoalScope,
+  type IngredientBurdenRootGoal,
+  type IngredientBurdenUnresolvedGoal,
+  type RecursiveIngredientBurdenResult,
+} from '../lib/recursiveIngredientBurden';
 import {
   type TowerRequirementEntry,
   loadTowerRequirements,
@@ -20,6 +34,26 @@ type ItemProfileResources = {
   towerRequirementsData: TowerRequirementsData | null;
   recipeGraph: RecipeGraph | null;
 };
+
+type MasteryMilestone = {
+  label: 'M' | 'GM' | 'MM';
+  targetMastery: number;
+};
+
+type ItemBurdenTarget = {
+  scope: IngredientBurdenGoalScope;
+  label: string;
+  rootGoal: IngredientBurdenRootGoal | null;
+  unresolvedGoal: IngredientBurdenUnresolvedGoal | null;
+  entries: IngredientBurdenEntry[];
+  isComplete: boolean;
+};
+
+const MASTERY_MILESTONES: MasteryMilestone[] = [
+  { label: 'M', targetMastery: 10_000 },
+  { label: 'GM', targetMastery: 100_000 },
+  { label: 'MM', targetMastery: 1_000_000 },
+];
 
 function formatMastery(value: number): string {
   return value.toLocaleString();
@@ -69,9 +103,94 @@ function getMasteryProgressStyle(currentMastery: number): CSSProperties & Record
   };
 }
 
-function formatMmPercent(currentMastery: number): string {
-  const percent = Math.max(0, Math.min(100, (currentMastery / 1_000_000) * 100));
-  return `${percent.toFixed(percent >= 100 ? 0 : 1)}%`;
+function getNextMasteryMilestone(currentMastery: number): MasteryMilestone | null {
+  const mastery = Math.max(0, currentMastery);
+
+  return MASTERY_MILESTONES.find((milestone) => mastery < milestone.targetMastery) ?? null;
+}
+
+function formatNextMasteryMilestoneProgress(currentMastery: number): string {
+  const nextMilestone = getNextMasteryMilestone(currentMastery);
+
+  if (!nextMilestone) {
+    return 'MM complete';
+  }
+
+  const percent = Math.max(0, Math.min(100, (currentMastery / nextMilestone.targetMastery) * 100));
+  return `${percent.toFixed(percent >= 100 ? 0 : 1)}% to ${nextMilestone.label}`;
+}
+
+function isTowerTargetComplete(profile: ItemProfile, towerTarget: ItemProfileTowerTarget): boolean {
+  return profile.currentMastery >= towerTarget.requiredThreshold;
+}
+
+function formatBurdenReason(reason: IngredientBurdenUnresolvedGoal['reason']): string {
+  switch (reason) {
+    case 'not_craft_recipe':
+      return 'This item is not a craft recipe in local recipe data.';
+    case 'missing_recipe':
+      return 'No local recipe was found for this item.';
+    case 'excluded_recipe_policy':
+      return 'This recipe is excluded by your saved crafting assumptions.';
+  }
+}
+
+function getIngredientEntriesForRootGoal(
+  burdenResult: RecursiveIngredientBurdenResult,
+  scope: IngredientBurdenGoalScope,
+  rootGoal: IngredientBurdenRootGoal,
+): IngredientBurdenEntry[] {
+  return Object.values(burdenResult.scopeResults[scope].ingredientBurdenByCanonicalKey)
+    .filter((entry) => entry.canonicalKey !== rootGoal.outputCanonicalKey)
+    .filter((entry) => entry.contributions.some((contribution) => contribution.rootGoalId === rootGoal.goalId))
+    .sort((left, right) => {
+      if (right.totalRequiredEffectiveOutput !== left.totalRequiredEffectiveOutput) {
+        return right.totalRequiredEffectiveOutput - left.totalRequiredEffectiveOutput;
+      }
+
+      return left.itemName.localeCompare(right.itemName);
+    });
+}
+
+function buildBurdenTargets(
+  profile: ItemProfile,
+  burdenResult: RecursiveIngredientBurdenResult | null,
+): ItemBurdenTarget[] {
+  if (!burdenResult) {
+    return [];
+  }
+
+  const masteryTargets = MASTERY_MILESTONES.map((milestone) => ({
+    scope: milestone.label,
+    label: `To ${milestone.label}`,
+    targetMastery: milestone.targetMastery,
+  }));
+  const towerTarget = profile.towerTarget
+    ? [
+        {
+          scope: 'Tower' as const,
+          label: 'To finish Tower need',
+          targetMastery: profile.towerTarget.requiredThreshold,
+        },
+      ]
+    : [];
+
+  return [...masteryTargets, ...towerTarget].map((target) => {
+    const scopeResult = burdenResult.scopeResults[target.scope];
+    const rootGoal =
+      scopeResult.rootGoals.find((goal) => goal.outputCanonicalKey === profile.canonicalKey) ?? null;
+    const unresolvedGoal =
+      scopeResult.unresolvedGoals.find((goal) => goal.outputCanonicalKey === profile.canonicalKey) ?? null;
+
+    return {
+      scope: target.scope,
+      label: target.label,
+      rootGoal,
+      unresolvedGoal,
+      entries: rootGoal ? getIngredientEntriesForRootGoal(burdenResult, target.scope, rootGoal) : [],
+      isComplete: profile.currentMastery >= target.targetMastery,
+    };
+  });
 }
 
 function getFirstTowerEntry(profile: ItemProfile): TowerRequirementEntry | null {
@@ -112,10 +231,13 @@ function getTowerProgressPath(profile: ItemProfile): string {
 }
 
 function RecipeInputRow({ input }: { input: RecipeInput }) {
+  const icon = getItemIcon(input.canonicalKey);
+
   return (
     <li>
       <Link className="recipe-link-row" to={toItemProfilePath(input.canonicalKey)}>
         <span className="recipe-link-row__item">
+          {icon ? <img className="item-icon" src={icon.src} alt="" aria-hidden="true" loading="lazy" /> : null}
           <strong>{input.itemName}</strong>
         </span>
         <strong>{input.quantity.toLocaleString()}</strong>
@@ -125,12 +247,17 @@ function RecipeInputRow({ input }: { input: RecipeInput }) {
 }
 
 function UsedInRecipeRow({ recipe }: { recipe: RecipeNode }) {
+  const icon = getItemIcon(recipe.outputCanonicalKey);
+
   return (
     <li>
       <Link className="recipe-link-row" to={toItemProfilePath(recipe.outputCanonicalKey)}>
         <span className="recipe-link-row__item">
-          <strong>{recipe.outputItemName}</strong>
-          <span className="subtle-text">{formatRecipeType(recipe.recipeType)} recipe</span>
+          {icon ? <img className="item-icon" src={icon.src} alt="" aria-hidden="true" loading="lazy" /> : null}
+          <span>
+            <strong>{recipe.outputItemName}</strong>
+            <span className="subtle-text">{formatRecipeType(recipe.recipeType)} recipe</span>
+          </span>
         </span>
         <span className="subtle-text">
           {recipe.inputs.length.toLocaleString()} input{recipe.inputs.length === 1 ? '' : 's'}
@@ -140,9 +267,86 @@ function UsedInRecipeRow({ recipe }: { recipe: RecipeNode }) {
   );
 }
 
+function ItemBurdenTargetCard({ target }: { target: ItemBurdenTarget }) {
+  if (target.isComplete) {
+    return (
+      <div className="item-burden-card">
+        <h3>{target.label}</h3>
+        <p className="status-pill">Complete</p>
+      </div>
+    );
+  }
+
+  if (target.unresolvedGoal) {
+    return (
+      <div className="item-burden-card">
+        <h3>{target.label}</h3>
+        <p className="empty-state">{formatBurdenReason(target.unresolvedGoal.reason)}</p>
+      </div>
+    );
+  }
+
+  if (!target.rootGoal) {
+    return (
+      <div className="item-burden-card">
+        <h3>{target.label}</h3>
+        <p className="empty-state">No recursive material estimate is needed for this target.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="item-burden-card">
+      <h3>{target.label}</h3>
+      <dl className="compact-stat-grid">
+        <div>
+          <dt>Craft operations</dt>
+          <dd>{formatMastery(target.rootGoal.requiredCraftOperations)}</dd>
+        </div>
+        <div>
+          <dt>Mastery left</dt>
+          <dd>{formatMastery(target.rootGoal.remainingMastery)}</dd>
+        </div>
+      </dl>
+      {target.entries.length > 0 ? (
+        <details className="item-burden-card__details">
+          <summary>Show materials</summary>
+          <ul className="data-list data-list--clickable">
+            {target.entries.map((entry) => {
+              const icon = getItemIcon(entry.canonicalKey);
+
+              return (
+                <li key={entry.canonicalKey}>
+                  <div className="recipe-link-row">
+                    <ItemProfileLink
+                      canonicalKey={entry.canonicalKey}
+                      itemName={entry.itemName}
+                      iconSrc={icon?.src}
+                    />
+                    <strong>{formatMastery(entry.totalRequiredEffectiveOutput)}</strong>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </details>
+      ) : (
+        <p className="empty-state">No additional recipe inputs found for this target.</p>
+      )}
+    </div>
+  );
+}
+
 export function ItemProfilePage() {
   const { canonicalKey: canonicalKeyParam } = useParams();
   const canonicalKey = decodeItemProfileParam(canonicalKeyParam);
+  const [modifierState] = useState<UserCraftingModifierState>(() => {
+    try {
+      return loadCraftingModifierState();
+    } catch {
+      return createDefaultCraftingModifierState();
+    }
+  });
   const [resourcesState, setResourcesState] = useState<{
     isLoading: boolean;
     error: string | null;
@@ -205,6 +409,27 @@ export function ItemProfilePage() {
   }, [canonicalKey, resourcesState.resources]);
 
   const icon = profile ? getItemIcon(profile.canonicalKey) : null;
+  const burdenResult = useMemo(() => {
+    if (
+      !profile ||
+      !resourcesState.resources?.snapshot ||
+      !resourcesState.resources.recipeGraph ||
+      !resourcesState.resources.towerRequirementsData
+    ) {
+      return null;
+    }
+
+    return calculateRecursiveIngredientBurden({
+      snapshot: resourcesState.resources.snapshot,
+      recipeGraph: resourcesState.resources.recipeGraph,
+      modifierState,
+      towerRequirementsData: resourcesState.resources.towerRequirementsData,
+    });
+  }, [modifierState, profile, resourcesState.resources]);
+  const burdenTargets = useMemo(() => (profile ? buildBurdenTargets(profile, burdenResult) : []), [
+    burdenResult,
+    profile,
+  ]);
 
   return (
     <div className="page-stack">
@@ -251,7 +476,9 @@ export function ItemProfilePage() {
                 <strong>
                   {formatMastery(profile.currentMastery)} / 1,000,000
                 </strong>
-                <span className="subtle-text">{formatMmPercent(profile.currentMastery)} to MM</span>
+                <span className="subtle-text">
+                  {formatNextMasteryMilestoneProgress(profile.currentMastery)}
+                </span>
                 <div className="item-mastery-progress__track" aria-hidden="true">
                   <span className="item-mastery-progress__tick item-mastery-progress__tick--m">M</span>
                   <span className="item-mastery-progress__tick item-mastery-progress__tick--gm">GM</span>
@@ -272,6 +499,9 @@ export function ItemProfilePage() {
                   <div key={towerTarget.requiredThreshold} className="tower-need-card">
                     <p className="supporting-text">Required for Tower</p>
                     <p className="tower-need-card__target">{formatTowerLevelForTarget(towerTarget)}</p>
+                    {isTowerTargetComplete(profile, towerTarget) ? (
+                      <p className="status-pill">Complete</p>
+                    ) : null}
                     <dl className="summary-grid">
                       <div className="summary-grid__item">
                         <dt>Mastery left</dt>
@@ -308,6 +538,24 @@ export function ItemProfilePage() {
               </>
             ) : (
               <p className="empty-state">No direct recipe found in local recipe data.</p>
+            )}
+          </section>
+
+          <section className="page-card page-stack" aria-labelledby="item-profile-burden-title">
+            <div>
+              <h2 id="item-profile-burden-title">Material Burden</h2>
+              <p className="supporting-text">
+                Recursive crafting estimate using your saved crafting assumptions.
+              </p>
+            </div>
+            {burdenTargets.length > 0 ? (
+              <div className="item-burden-grid">
+                {burdenTargets.map((target) => (
+                  <ItemBurdenTargetCard key={target.scope} target={target} />
+                ))}
+              </div>
+            ) : (
+              <p className="empty-state">Import a mastery snapshot to estimate recursive material needs.</p>
             )}
           </section>
 

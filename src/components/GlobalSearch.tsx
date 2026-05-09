@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
+import { getItemIcon } from '../lib/itemIconManifest';
 import { loadItemCatalog } from '../lib/loadItemCatalog';
 import { loadRecipeGraph } from '../lib/loadRecipeGraph';
 import { loadTowerRequirements } from '../lib/loadTowerRequirements';
@@ -13,6 +14,14 @@ type SearchableItem = {
   itemName: string;
   sourceLabel: string;
   to: string;
+};
+
+type SearchResult = {
+  id: string;
+  label: string;
+  meta: string;
+  to: string;
+  iconSrc?: string | null;
 };
 
 function formatFallbackItemName(canonicalKey: string): string {
@@ -46,10 +55,12 @@ function setSearchableItem(
 }
 
 export function GlobalSearch() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [searchableItems, setSearchableItems] = useState<SearchableItem[]>([]);
   const [hasLoadedItems, setHasLoadedItems] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [activeResultIndex, setActiveResultIndex] = useState(-1);
 
   const normalizedQuery = query.trim().toLowerCase();
 
@@ -137,9 +148,75 @@ export function GlobalSearch() {
   );
 
   const shouldShowResults = normalizedQuery.length >= 2;
+  const combinedResults = useMemo<SearchResult[]>(
+    () => [
+      ...pageResults.map((route) => ({
+        id: `page:${route.path}`,
+        label: route.label,
+        meta: route.path,
+        to: route.path,
+        iconSrc: null,
+      })),
+      ...itemResults.map((item) => ({
+        id: `item:${item.canonicalKey}`,
+        label: item.itemName,
+        meta: item.sourceLabel,
+        to: item.to,
+        iconSrc: getItemIcon(item.canonicalKey)?.src ?? null,
+      })),
+    ],
+    [itemResults, pageResults],
+  );
+  const activeResultId =
+    activeResultIndex >= 0 && combinedResults[activeResultIndex]
+      ? `global-search-result-${activeResultIndex}`
+      : undefined;
+
+  useEffect(() => {
+    setActiveResultIndex(-1);
+  }, [normalizedQuery]);
 
   function handleResultClick(): void {
     setQuery('');
+    setActiveResultIndex(-1);
+  }
+
+  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
+    if (!shouldShowResults || combinedResults.length === 0) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setActiveResultIndex((currentIndex) =>
+        currentIndex < 0 ? 0 : (currentIndex + 1) % combinedResults.length,
+      );
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActiveResultIndex((currentIndex) =>
+        currentIndex < 0
+          ? combinedResults.length - 1
+          : (currentIndex - 1 + combinedResults.length) % combinedResults.length,
+      );
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const result = combinedResults[activeResultIndex] ?? combinedResults[0];
+      setQuery('');
+      setActiveResultIndex(-1);
+      navigate(result.to);
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      setQuery('');
+      setActiveResultIndex(-1);
+    }
   }
 
   return (
@@ -153,21 +230,32 @@ export function GlobalSearch() {
         type="search"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
+        onKeyDown={handleInputKeyDown}
         placeholder="Search pages or items"
         autoComplete="off"
+        aria-controls={shouldShowResults ? 'global-search-results' : undefined}
+        aria-expanded={shouldShowResults}
+        aria-activedescendant={activeResultId}
       />
 
       {shouldShowResults ? (
-        <div className="global-search__panel" role="region" aria-label="Search results">
+        <div id="global-search-results" className="global-search__panel" role="region" aria-label="Search results">
           {pageResults.length > 0 ? (
             <section className="global-search__section" aria-labelledby="global-search-pages">
               <h2 id="global-search-pages" className="global-search__section-title">
                 Pages
               </h2>
               <ul className="global-search__result-list">
-                {pageResults.map((route) => (
+                {pageResults.map((route, resultIndex) => (
                   <li key={route.path}>
-                    <Link className="global-search__result" to={route.path} onClick={handleResultClick}>
+                    <Link
+                      id={`global-search-result-${resultIndex}`}
+                      className={`global-search__result${
+                        activeResultIndex === resultIndex ? ' global-search__result--active' : ''
+                      }`}
+                      to={route.path}
+                      onClick={handleResultClick}
+                    >
                       <span>{route.label}</span>
                       <span className="global-search__meta">{route.path}</span>
                     </Link>
@@ -183,14 +271,31 @@ export function GlobalSearch() {
                 Items
               </h2>
               <ul className="global-search__result-list">
-                {itemResults.map((item) => (
+                {itemResults.map((item, itemIndex) => {
+                  const resultIndex = pageResults.length + itemIndex;
+                  const icon = getItemIcon(item.canonicalKey);
+
+                  return (
                   <li key={item.canonicalKey}>
-                    <Link className="global-search__result" to={item.to} onClick={handleResultClick}>
-                      <span>{item.itemName}</span>
+                    <Link
+                      id={`global-search-result-${resultIndex}`}
+                      className={`global-search__result${
+                        activeResultIndex === resultIndex ? ' global-search__result--active' : ''
+                      }`}
+                      to={item.to}
+                      onClick={handleResultClick}
+                    >
+                      <span className="global-search__result-label">
+                        {icon ? (
+                          <img className="item-icon" src={icon.src} alt="" aria-hidden="true" loading="lazy" />
+                        ) : null}
+                        <span>{item.itemName}</span>
+                      </span>
                       <span className="global-search__meta">{item.sourceLabel}</span>
                     </Link>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </section>
           ) : null}

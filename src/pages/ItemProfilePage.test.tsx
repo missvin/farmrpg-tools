@@ -8,6 +8,7 @@ const getLatestSnapshotMock = vi.fn();
 const loadItemCatalogMock = vi.fn();
 const loadTowerRequirementsMock = vi.fn();
 const loadRecipeGraphMock = vi.fn();
+const getItemIconMock = vi.fn();
 
 vi.mock('../lib/storage/masterySnapshots', () => ({
   getLatestSnapshot: (...args: unknown[]) => getLatestSnapshotMock(...args),
@@ -26,7 +27,7 @@ vi.mock('../lib/loadRecipeGraph', () => ({
 }));
 
 vi.mock('../lib/itemIconManifest', () => ({
-  getItemIcon: vi.fn().mockReturnValue(null),
+  getItemIcon: (...args: unknown[]) => getItemIconMock(...args),
 }));
 
 describe('ItemProfilePage', () => {
@@ -35,6 +36,7 @@ describe('ItemProfilePage', () => {
     loadItemCatalogMock.mockReset();
     loadTowerRequirementsMock.mockReset();
     loadRecipeGraphMock.mockReset();
+    getItemIconMock.mockReset();
   });
 
   function mockResources(): void {
@@ -106,32 +108,38 @@ describe('ItemProfilePage', () => {
       },
     });
 
-    loadRecipeGraphMock.mockResolvedValue({
-      recipes: [],
-      byOutputCanonicalKey: {
-        'red dye': {
-          outputItemName: 'Red Dye',
-          outputCanonicalKey: 'red dye',
-          recipeType: 'craft',
-          recipeBookItemName: null,
-          recipeBookCanonicalKey: null,
-          cookingLevel: null,
-          baseTime: null,
-          sourceBuddyUrl: 'https://buddy.farm/i/red-dye/',
-          inputs: [
-            {
-              inputOrder: 1,
-              itemName: 'Glass Orb',
-              canonicalKey: 'glass orb',
-              quantity: 2,
-            },
-          ],
+    const redDyeRecipe = {
+      outputItemName: 'Red Dye',
+      outputCanonicalKey: 'red dye',
+      recipeType: 'craft',
+      recipeBookItemName: null,
+      recipeBookCanonicalKey: null,
+      cookingLevel: null,
+      baseTime: null,
+      sourceBuddyUrl: 'https://buddy.farm/i/red-dye/',
+      inputs: [
+        {
+          inputOrder: 1,
+          itemName: 'Glass Orb',
+          canonicalKey: 'glass orb',
+          quantity: 2,
         },
+      ],
+    };
+
+    loadRecipeGraphMock.mockResolvedValue({
+      recipes: [redDyeRecipe],
+      byOutputCanonicalKey: {
+        'red dye': redDyeRecipe,
       },
       byInputCanonicalKey: {},
-      craftRecipes: [],
+      craftRecipes: [redDyeRecipe],
       cookingRecipes: [],
     });
+
+    getItemIconMock.mockImplementation((canonicalKey: string) =>
+      canonicalKey === 'glass orb' ? { src: '/icons/glass-orb.png' } : null,
+    );
   }
 
   it('shows item mastery, Tower, PJ, and recipe context', async () => {
@@ -148,7 +156,7 @@ describe('ItemProfilePage', () => {
     expect(await screen.findByRole('heading', { name: 'Red Dye' })).toBeInTheDocument();
 
     expect(screen.getByText('50,000 / 1,000,000')).toBeInTheDocument();
-    expect(screen.getByText('5.0% to MM')).toBeInTheDocument();
+    expect(screen.getByText('50.0% to GM')).toBeInTheDocument();
 
     const towerSection = screen.getByRole('heading', { name: 'Tower Need' }).closest('section');
     expect(towerSection).not.toBeNull();
@@ -162,7 +170,60 @@ describe('ItemProfilePage', () => {
       'href',
       '/items/glass%20orb',
     );
+    expect((recipeSection as HTMLElement).querySelector('img')).toHaveAttribute(
+      'src',
+      '/icons/glass-orb.png',
+    );
+
+    const burdenSection = screen.getByRole('heading', { name: 'Material Burden' }).closest('section');
+    expect(burdenSection).not.toBeNull();
+    expect(within(burdenSection as HTMLElement).getByText('To GM')).toBeInTheDocument();
+    expect(within(burdenSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);
     expect(screen.getByRole('heading', { name: 'Used In' })).toBeInTheDocument();
+  });
+
+  it('marks completed Tower targets clearly', async () => {
+    mockResources();
+    getLatestSnapshotMock.mockResolvedValue({
+      snapshotId: 'snapshot-1',
+      createdAt: '2026-05-08T00:00:00.000Z',
+      rawText: '',
+      masteryByItem: {
+        'red dye': 100_000,
+      },
+      parseSummary: {
+        itemsParsed: 1,
+        parsedRowsCount: 1,
+        tiersDetected: [100_000],
+        duplicateRowsCount: 0,
+        skippedNonItemLinesCount: 0,
+        skippedNonItemLineSamples: [],
+        unknownItemsCount: 0,
+        warnings: [],
+      },
+      parsedRows: [
+        {
+          rawItemName: 'Red Dye',
+          canonicalKey: 'red dye',
+          count: 100_000,
+          targetTier: 100_000,
+          sourceLineIndex: 0,
+        },
+      ],
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/items/red%20dye']}>
+        <Routes>
+          <Route path="/items/:canonicalKey" element={<ItemProfilePage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    const towerSection = (await screen.findByRole('heading', { name: 'Tower Need' })).closest('section');
+    expect(towerSection).not.toBeNull();
+    expect(within(towerSection as HTMLElement).getByText('Complete')).toBeInTheDocument();
+    expect(within(towerSection as HTMLElement).getAllByText('0')).toHaveLength(2);
   });
 
   it('shows a safe unknown-item state', async () => {
