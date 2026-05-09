@@ -7,6 +7,7 @@ import { HistoryPage } from '../pages/HistoryPage';
 import { IngredientDemandListPage } from '../pages/IngredientDemandListPage';
 import { IngredientDemandPage } from '../pages/IngredientDemandPage';
 import { ImportPage } from '../pages/ImportPage';
+import { MasteryGoalsPage } from '../pages/MasteryGoalsPage';
 import { MuseumToolsPage } from '../pages/MuseumToolsPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { SortedPage } from '../pages/SortedPage';
@@ -60,6 +61,11 @@ export const appRoutes: AppRoute[] = [
     element: <IngredientDemandListPage />,
   },
   {
+    path: '/mastery-goals',
+    label: 'Mastery Goals',
+    element: <MasteryGoalsPage />,
+  },
+  {
     path: '/sorted',
     label: 'Sorted',
     element: <SortedPage />,
@@ -103,6 +109,7 @@ export const navigationSections: NavigationSection[] = [
       { to: '/', label: 'Dashboard' },
       { to: '/ingredient-demand', label: 'Ingredient Lookup' },
       { to: '/ingredient-demand-list', label: 'Material Planner' },
+      { to: '/mastery-goals', label: 'Mastery Goals' },
     ],
   },
   {

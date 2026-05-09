@@ -478,6 +478,10 @@ a {
   font: inherit;
 }
 
+.text-input--short {
+  width: min(10rem, 100%);
+}
+
 .checkbox-field {
   display: inline-flex;
   align-items: center;
@@ -542,6 +546,13 @@ a {
 .button-row {
   display: flex;
   flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.inline-control-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
   gap: 0.75rem;
 }
 

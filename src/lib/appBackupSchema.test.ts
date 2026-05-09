@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { createDefaultAcquisitionPlannerInputState } from './acquisitionPlannerState';
 import { createDefaultCraftingModifierState } from './craftingModifierState';
+import { createDefaultPumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
 import {
   APP_BACKUP_PAYLOAD_KIND,
   APP_BACKUP_RESTORE_STRATEGY,
@@ -72,6 +73,33 @@ describe('appBackupSchema', () => {
       },
     };
     const acquisitionPlannerState = createAcquisitionPlannerStateFixture();
+    const pumpkinJuicePlannerState = createDefaultPumpkinJuicePlannerState();
+    const personalMasteryGoalsState = {
+      schemaVersion: 1 as const,
+      goals: [
+        {
+          goalId: 'goal-1',
+          itemName: 'Board',
+          canonicalKey: 'board',
+          targetTier: 'GM' as const,
+          createdAt: '2026-05-08T00:00:00.000Z',
+          updatedAt: '2026-05-08T00:00:00.000Z',
+        },
+      ],
+    };
+    const masteryRaceCountsState = {
+      schemaVersion: 1 as const,
+      entries: [
+        {
+          canonicalKey: 'board',
+          itemName: 'Board',
+          masteredCount: 1000,
+          grandMasteredCount: 42,
+          megaMasteredCount: null,
+          updatedAt: '2026-05-08T00:00:00.000Z',
+        },
+      ],
+    };
 
     const payload = createAppBackupPayload({
       appVersion: '1.1.0',
@@ -79,6 +107,9 @@ describe('appBackupSchema', () => {
       snapshots,
       craftingModifierState,
       acquisitionPlannerState,
+      pumpkinJuicePlannerState,
+      personalMasteryGoalsState,
+      masteryRaceCountsState,
       themePreference: 'dark',
     });
 
@@ -94,6 +125,9 @@ describe('appBackupSchema', () => {
         preferences: {
           craftingModifierState,
           acquisitionPlannerState,
+          pumpkinJuicePlannerState,
+          personalMasteryGoalsState,
+          masteryRaceCountsState,
           themePreference: 'dark',
         },
       },

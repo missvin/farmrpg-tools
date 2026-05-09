@@ -1,6 +1,11 @@
 import type { MasteryDifficultyData, MasteryDifficultyEntry } from './loadMasteryDifficulty';
 import type { TowerRequirementsData } from './loadTowerRequirements';
 import { getTowerRequirementThreshold } from './deriveTowerRequirements';
+import {
+  estimatePumpkinJuiceForTarget,
+  getMasteryTierForTarget,
+  type PumpkinJuiceEstimate,
+} from './pumpkinJuiceEstimator';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 
 type DifficultyBucket = number | null;
@@ -19,6 +24,7 @@ export type TowerProgressItem = {
   matchedDifficultyRow: boolean;
   method: string | null;
   notes: string | null;
+  pumpkinJuiceEstimate: PumpkinJuiceEstimate;
 };
 
 export type TowerProgressDifficultySummaryRow = {
@@ -50,6 +56,7 @@ export type TowerProgressDifficultyDrilldownRow = {
   matchedDifficultyRow: boolean;
   method: string | null;
   notes: string | null;
+  pumpkinJuiceEstimate: PumpkinJuiceEstimate;
 };
 
 export type TowerProgressDifficultyDrilldownGroup = {
@@ -66,6 +73,8 @@ export type DerivedTowerProgress = {
   gmItemsLeftCount: number;
   mmItemsLeftCount: number;
   totalMasteryRemaining: number;
+  totalPumpkinJuicesNeeded: number;
+  pumpkinJuiceBlockedItemCount: number;
   unmatchedSnapshotItemCount: number;
   unratedItemCount: number;
 };
@@ -191,6 +200,8 @@ export function deriveTowerProgress(
   let gmItemsLeftCount = 0;
   let mmItemsLeftCount = 0;
   let totalMasteryRemaining = 0;
+  let totalPumpkinJuicesNeeded = 0;
+  let pumpkinJuiceBlockedItemCount = 0;
   let unmatchedSnapshotItemCount = 0;
   let unratedItemCount = 0;
 
@@ -202,6 +213,15 @@ export function deriveTowerProgress(
       currentMastery >= aggregatedItem.requiredThreshold ? 0 : aggregatedItem.requiredThreshold - currentMastery;
     const difficulty = matchedDifficultyEntry?.difficulty ?? null;
     const difficultyLabel = getDifficultyLabel(difficulty);
+    const targetTier = getMasteryTierForTarget(aggregatedItem.requiredThreshold);
+    const pumpkinJuiceEstimate = estimatePumpkinJuiceForTarget({
+      itemName: matchedDifficultyEntry?.itemName ?? aggregatedItem.itemName,
+      canonicalKey: aggregatedItem.canonicalKey,
+      currentMastery,
+      targetTier,
+      targetMastery: aggregatedItem.requiredThreshold,
+      sourceScope: 'tower',
+    });
 
     const item: TowerProgressItem = {
       itemName: matchedDifficultyEntry?.itemName ?? aggregatedItem.itemName,
@@ -217,6 +237,7 @@ export function deriveTowerProgress(
       matchedDifficultyRow: Boolean(matchedDifficultyEntry),
       method: matchedDifficultyEntry?.method ?? null,
       notes: matchedDifficultyEntry?.notes ?? null,
+      pumpkinJuiceEstimate,
     };
 
     items.push(item);
@@ -238,6 +259,14 @@ export function deriveTowerProgress(
     }
 
     totalMasteryRemaining += item.remainingToTarget;
+
+    if (item.remainingToTarget > 0) {
+      if (pumpkinJuiceEstimate.status === 'calculable' && pumpkinJuiceEstimate.totalPumpkinJuices !== null) {
+        totalPumpkinJuicesNeeded += pumpkinJuiceEstimate.totalPumpkinJuices;
+      } else if (pumpkinJuiceEstimate.status === 'needs_baseline') {
+        pumpkinJuiceBlockedItemCount += 1;
+      }
+    }
 
     const bucket = difficultySummaryByLabel.get(difficultyLabel) ?? {
       difficulty,
@@ -273,6 +302,7 @@ export function deriveTowerProgress(
 
     const difficulty = matchedDifficultyEntry?.difficulty ?? null;
     const difficultyLabel = getDifficultyLabel(difficulty);
+    const targetTier = getMasteryTierForTarget(requiredThreshold);
     const bucket = difficultyDrilldownByLabel.get(difficultyLabel) ?? {
       difficulty,
       label: difficultyLabel,
@@ -296,6 +326,14 @@ export function deriveTowerProgress(
       matchedDifficultyRow: Boolean(matchedDifficultyEntry),
       method: matchedDifficultyEntry?.method ?? null,
       notes: entry.notes ?? matchedDifficultyEntry?.notes ?? null,
+      pumpkinJuiceEstimate: estimatePumpkinJuiceForTarget({
+        itemName: entry.itemName,
+        canonicalKey: entry.canonicalKey,
+        currentMastery,
+        targetTier,
+        targetMastery: requiredThreshold,
+        sourceScope: 'tower',
+      }),
     });
 
     difficultyDrilldownByLabel.set(difficultyLabel, bucket);
@@ -337,6 +375,8 @@ export function deriveTowerProgress(
     gmItemsLeftCount,
     mmItemsLeftCount,
     totalMasteryRemaining,
+    totalPumpkinJuicesNeeded,
+    pumpkinJuiceBlockedItemCount,
     unmatchedSnapshotItemCount,
     unratedItemCount,
   };

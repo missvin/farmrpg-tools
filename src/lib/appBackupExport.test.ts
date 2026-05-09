@@ -6,11 +6,17 @@ const {
   mockListSnapshots,
   mockLoadCraftingModifierState,
   mockLoadAcquisitionPlannerInputState,
+  mockLoadPumpkinJuicePlannerState,
+  mockLoadPersonalMasteryGoalsState,
+  mockLoadMasteryRaceCountsState,
   mockReadStoredAppTheme,
 } = vi.hoisted(() => ({
   mockListSnapshots: vi.fn<() => Promise<MasterySnapshot[]>>(),
   mockLoadCraftingModifierState: vi.fn(),
   mockLoadAcquisitionPlannerInputState: vi.fn(),
+  mockLoadPumpkinJuicePlannerState: vi.fn(),
+  mockLoadPersonalMasteryGoalsState: vi.fn(),
+  mockLoadMasteryRaceCountsState: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
 }));
 
@@ -24,6 +30,18 @@ vi.mock('./craftingModifierState', () => ({
 
 vi.mock('./acquisitionPlannerState', () => ({
   loadAcquisitionPlannerInputState: mockLoadAcquisitionPlannerInputState,
+}));
+
+vi.mock('./pumpkinJuicePlannerState', () => ({
+  loadPumpkinJuicePlannerState: mockLoadPumpkinJuicePlannerState,
+}));
+
+vi.mock('./personalMasteryGoals', () => ({
+  loadPersonalMasteryGoalsState: mockLoadPersonalMasteryGoalsState,
+}));
+
+vi.mock('./masteryRaceCounts', () => ({
+  loadMasteryRaceCountsState: mockLoadMasteryRaceCountsState,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -154,11 +172,60 @@ function createAcquisitionPlannerStateFixture() {
   };
 }
 
+function createPumpkinJuicePlannerStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    ownedPumpkinJuiceCount: 12,
+    valueThresholds: {
+      enabled: false,
+      minNextApSaved: 0,
+      minTotalApSaved: 0,
+      minNextStaminaSaved: 0,
+      minTotalStaminaSaved: 0,
+    },
+  };
+}
+
+function createPersonalMasteryGoalsStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    goals: [
+      {
+        goalId: 'goal-1',
+        itemName: 'Board',
+        canonicalKey: 'board',
+        targetTier: 'GM' as const,
+        createdAt: '2026-05-08T00:00:00.000Z',
+        updatedAt: '2026-05-08T00:00:00.000Z',
+      },
+    ],
+  };
+}
+
+function createMasteryRaceCountsStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    entries: [
+      {
+        canonicalKey: 'board',
+        itemName: 'Board',
+        masteredCount: 1000,
+        grandMasteredCount: 42,
+        megaMasteredCount: null,
+        updatedAt: '2026-05-08T00:00:00.000Z',
+      },
+    ],
+  };
+}
+
 describe('appBackupExport', () => {
   beforeEach(() => {
     mockListSnapshots.mockReset();
     mockLoadCraftingModifierState.mockReset();
     mockLoadAcquisitionPlannerInputState.mockReset();
+    mockLoadPumpkinJuicePlannerState.mockReset();
+    mockLoadPersonalMasteryGoalsState.mockReset();
+    mockLoadMasteryRaceCountsState.mockReset();
     mockReadStoredAppTheme.mockReset();
   });
 
@@ -177,10 +244,16 @@ describe('appBackupExport', () => {
       },
     };
     const acquisitionPlannerState = createAcquisitionPlannerStateFixture();
+    const pumpkinJuicePlannerState = createPumpkinJuicePlannerStateFixture();
+    const personalMasteryGoalsState = createPersonalMasteryGoalsStateFixture();
+    const masteryRaceCountsState = createMasteryRaceCountsStateFixture();
 
     mockListSnapshots.mockResolvedValue(snapshots);
     mockLoadCraftingModifierState.mockReturnValue(craftingModifierState);
     mockLoadAcquisitionPlannerInputState.mockReturnValue(acquisitionPlannerState);
+    mockLoadPumpkinJuicePlannerState.mockReturnValue(pumpkinJuicePlannerState);
+    mockLoadPersonalMasteryGoalsState.mockReturnValue(personalMasteryGoalsState);
+    mockLoadMasteryRaceCountsState.mockReturnValue(masteryRaceCountsState);
     mockReadStoredAppTheme.mockReturnValue('dark');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -195,6 +268,9 @@ describe('appBackupExport', () => {
     expect(payload.state.snapshots).toEqual(snapshots);
     expect(payload.state.preferences.craftingModifierState).toEqual(craftingModifierState);
     expect(payload.state.preferences.acquisitionPlannerState).toEqual(acquisitionPlannerState);
+    expect(payload.state.preferences.pumpkinJuicePlannerState).toEqual(pumpkinJuicePlannerState);
+    expect(payload.state.preferences.personalMasteryGoalsState).toEqual(personalMasteryGoalsState);
+    expect(payload.state.preferences.masteryRaceCountsState).toEqual(masteryRaceCountsState);
     expect(payload.state.preferences.themePreference).toBe('dark');
   });
 
@@ -202,6 +278,9 @@ describe('appBackupExport', () => {
     mockListSnapshots.mockResolvedValue([createSnapshot('snapshot-1')]);
     mockLoadCraftingModifierState.mockReturnValue(createModifierStateFixture());
     mockLoadAcquisitionPlannerInputState.mockReturnValue(createAcquisitionPlannerStateFixture());
+    mockLoadPumpkinJuicePlannerState.mockReturnValue(createPumpkinJuicePlannerStateFixture());
+    mockLoadPersonalMasteryGoalsState.mockReturnValue(createPersonalMasteryGoalsStateFixture());
+    mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -227,6 +306,9 @@ describe('appBackupExport', () => {
     mockListSnapshots.mockResolvedValue([createSnapshot('snapshot-1')]);
     mockLoadCraftingModifierState.mockReturnValue(createModifierStateFixture());
     mockLoadAcquisitionPlannerInputState.mockReturnValue(createAcquisitionPlannerStateFixture());
+    mockLoadPumpkinJuicePlannerState.mockReturnValue(createPumpkinJuicePlannerStateFixture());
+    mockLoadPersonalMasteryGoalsState.mockReturnValue(createPersonalMasteryGoalsStateFixture());
+    mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
     mockReadStoredAppTheme.mockReturnValue(null);
 
     Object.defineProperty(URL, 'createObjectURL', {

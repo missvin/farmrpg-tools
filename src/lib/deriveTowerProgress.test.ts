@@ -168,9 +168,15 @@ describe('deriveTowerProgress', () => {
       requiredThreshold: 1_000_000,
       remainingToTarget: 850_000,
       masteryLevelLabel: 'MM',
+      pumpkinJuiceEstimate: {
+        status: 'calculable',
+        totalPumpkinJuices: 20,
+        nextPumpkinJuiceGain: 15_000,
+      },
     });
     expect(derived.gmItemsLeftCount).toBe(1);
     expect(derived.mmItemsLeftCount).toBe(1);
+    expect(derived.totalPumpkinJuicesNeeded).toBe(36);
   });
 
   it('builds difficulty summaries with item and mastery remaining percentages', () => {
@@ -261,6 +267,7 @@ describe('deriveTowerProgress', () => {
     });
     expect(derived.unmatchedSnapshotItemCount).toBe(2);
     expect(derived.unratedItemCount).toBe(1);
+    expect(derived.pumpkinJuiceBlockedItemCount).toBe(2);
   });
 
   it('sorts remaining items by percent complete before remaining amount', () => {

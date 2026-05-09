@@ -1,5 +1,8 @@
 import type { AcquisitionPlannerInputState } from './acquisitionPlannerState';
 import type { UserCraftingModifierState } from './craftingModifierState';
+import type { MasteryRaceCountsState } from './masteryRaceCounts';
+import type { PersonalMasteryGoalsState } from './personalMasteryGoals';
+import type { PumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
 import type { AppTheme } from './themePreference';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 
@@ -16,6 +19,9 @@ export type AppBackupStateV1 = {
   preferences: {
     craftingModifierState: UserCraftingModifierState | null;
     acquisitionPlannerState?: AcquisitionPlannerInputState | null;
+    pumpkinJuicePlannerState?: PumpkinJuicePlannerState | null;
+    personalMasteryGoalsState?: PersonalMasteryGoalsState | null;
+    masteryRaceCountsState?: MasteryRaceCountsState | null;
     themePreference: AppTheme | null;
   };
 };
@@ -36,6 +42,9 @@ export type CreateAppBackupPayloadInput = {
   snapshots: MasterySnapshot[];
   craftingModifierState: UserCraftingModifierState | null;
   acquisitionPlannerState: AcquisitionPlannerInputState | null;
+  pumpkinJuicePlannerState?: PumpkinJuicePlannerState | null;
+  personalMasteryGoalsState?: PersonalMasteryGoalsState | null;
+  masteryRaceCountsState?: MasteryRaceCountsState | null;
   themePreference: AppTheme | null;
 };
 
@@ -59,7 +68,10 @@ export type AppBackupPayloadValidationErrorCode =
   | 'missing_preferences'
   | 'invalid_theme_preference'
   | 'invalid_modifier_state'
-  | 'invalid_acquisition_planner_state';
+  | 'invalid_acquisition_planner_state'
+  | 'invalid_pumpkin_juice_planner_state'
+  | 'invalid_personal_mastery_goals_state'
+  | 'invalid_mastery_race_counts_state';
 
 export type AppBackupPayloadValidationResult =
   | { ok: true; payload: AppBackupPayloadV1 }
@@ -239,6 +251,79 @@ function isValidAcquisitionPlannerState(value: unknown): value is AcquisitionPla
   );
 }
 
+function isValidPumpkinJuicePlannerState(value: unknown): value is PumpkinJuicePlannerState {
+  if (!isRecord(value) || value.schemaVersion !== 1 || !isRecord(value.valueThresholds)) {
+    return false;
+  }
+
+  return (
+    isFiniteNonNegativeNumber(value.ownedPumpkinJuiceCount) &&
+    isBoolean(value.valueThresholds.enabled) &&
+    isFiniteNonNegativeNumber(value.valueThresholds.minNextApSaved) &&
+    isFiniteNonNegativeNumber(value.valueThresholds.minTotalApSaved) &&
+    isFiniteNonNegativeNumber(value.valueThresholds.minNextStaminaSaved) &&
+    isFiniteNonNegativeNumber(value.valueThresholds.minTotalStaminaSaved)
+  );
+}
+
+function isValidPersonalMasteryGoal(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.goalId === 'string' &&
+    value.goalId.length > 0 &&
+    typeof value.itemName === 'string' &&
+    value.itemName.length > 0 &&
+    typeof value.canonicalKey === 'string' &&
+    value.canonicalKey.length > 0 &&
+    (value.targetTier === 'M' || value.targetTier === 'GM' || value.targetTier === 'MM') &&
+    typeof value.createdAt === 'string' &&
+    value.createdAt.length > 0 &&
+    typeof value.updatedAt === 'string' &&
+    value.updatedAt.length > 0
+  );
+}
+
+function isValidPersonalMasteryGoalsState(value: unknown): value is PersonalMasteryGoalsState {
+  if (!isRecord(value) || value.schemaVersion !== 1 || !Array.isArray(value.goals)) {
+    return false;
+  }
+
+  return value.goals.every((goal) => isValidPersonalMasteryGoal(goal));
+}
+
+function isValidMasteryRaceCountEntry(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const validOptionalCount = (count: unknown): boolean => {
+    return count === null || isFiniteNonNegativeNumber(count);
+  };
+
+  return (
+    typeof value.canonicalKey === 'string' &&
+    value.canonicalKey.length > 0 &&
+    typeof value.itemName === 'string' &&
+    value.itemName.length > 0 &&
+    validOptionalCount(value.masteredCount) &&
+    validOptionalCount(value.grandMasteredCount) &&
+    validOptionalCount(value.megaMasteredCount) &&
+    typeof value.updatedAt === 'string' &&
+    value.updatedAt.length > 0
+  );
+}
+
+function isValidMasteryRaceCountsState(value: unknown): value is MasteryRaceCountsState {
+  if (!isRecord(value) || value.schemaVersion !== 1 || !Array.isArray(value.entries)) {
+    return false;
+  }
+
+  return value.entries.every((entry) => isValidMasteryRaceCountEntry(entry));
+}
+
 function isValidParseSummary(value: unknown): boolean {
   if (!isRecord(value)) {
     return false;
@@ -354,6 +439,9 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
         preferences: {
           craftingModifierState: input.craftingModifierState,
           acquisitionPlannerState: input.acquisitionPlannerState,
+          pumpkinJuicePlannerState: input.pumpkinJuicePlannerState ?? null,
+          personalMasteryGoalsState: input.personalMasteryGoalsState ?? null,
+          masteryRaceCountsState: input.masteryRaceCountsState ?? null,
           themePreference: input.themePreference,
         },
       },
@@ -500,6 +588,45 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       ok: false,
       code: 'invalid_acquisition_planner_state',
       message: 'The backup file contains malformed acquisition planner state.',
+    };
+  }
+
+  const pumpkinJuicePlannerState = value.state.preferences.pumpkinJuicePlannerState;
+  if (
+    pumpkinJuicePlannerState !== undefined &&
+    pumpkinJuicePlannerState !== null &&
+    !isValidPumpkinJuicePlannerState(pumpkinJuicePlannerState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_pumpkin_juice_planner_state',
+      message: 'The backup file contains malformed Pumpkin Juice planner state.',
+    };
+  }
+
+  const personalMasteryGoalsState = value.state.preferences.personalMasteryGoalsState;
+  if (
+    personalMasteryGoalsState !== undefined &&
+    personalMasteryGoalsState !== null &&
+    !isValidPersonalMasteryGoalsState(personalMasteryGoalsState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_personal_mastery_goals_state',
+      message: 'The backup file contains malformed personal mastery goals state.',
+    };
+  }
+
+  const masteryRaceCountsState = value.state.preferences.masteryRaceCountsState;
+  if (
+    masteryRaceCountsState !== undefined &&
+    masteryRaceCountsState !== null &&
+    !isValidMasteryRaceCountsState(masteryRaceCountsState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_mastery_race_counts_state',
+      message: 'The backup file contains malformed mastery race-count state.',
     };
   }
 

@@ -130,6 +130,7 @@ describe('App shell', () => {
     await user.click(screen.getByRole('button', { name: 'Plan' }));
     expect(screen.getByRole('link', { name: 'Ingredient Lookup' })).toBeVisible();
     expect(screen.getByRole('link', { name: 'Material Planner' })).toBeVisible();
+    expect(screen.getByRole('link', { name: 'Mastery Goals' })).toBeVisible();
     expect(screen.queryByRole('link', { name: 'Museum Tools' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Backlog Graph' })).not.toBeInTheDocument();
 

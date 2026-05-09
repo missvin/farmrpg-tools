@@ -9,6 +9,21 @@ import {
   saveCraftingModifierState,
 } from './craftingModifierState';
 import { validateAppBackupPayloadV1, type AppBackupPayloadV1 } from './appBackupSchema';
+import {
+  clearMasteryRaceCountsState,
+  loadMasteryRaceCountsState,
+  saveMasteryRaceCountsState,
+} from './masteryRaceCounts';
+import {
+  clearPersonalMasteryGoalsState,
+  loadPersonalMasteryGoalsState,
+  savePersonalMasteryGoalsState,
+} from './personalMasteryGoals';
+import {
+  clearPumpkinJuicePlannerState,
+  loadPumpkinJuicePlannerState,
+  savePumpkinJuicePlannerState,
+} from './pumpkinJuicePlannerState';
 import { listSnapshots, replaceSnapshots } from './storage/masterySnapshots';
 import { clearStoredAppTheme, persistAppTheme, readStoredAppTheme } from './themePreference';
 
@@ -42,6 +57,9 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   const currentSnapshots = await listSnapshots();
   const currentCraftingModifierState = loadCraftingModifierState();
   const currentAcquisitionPlannerState = loadAcquisitionPlannerInputState();
+  const currentPumpkinJuicePlannerState = loadPumpkinJuicePlannerState();
+  const currentPersonalMasteryGoalsState = loadPersonalMasteryGoalsState();
+  const currentMasteryRaceCountsState = loadMasteryRaceCountsState();
   const currentThemePreference = readStoredAppTheme();
 
   try {
@@ -59,6 +77,24 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       clearAcquisitionPlannerInputState();
     }
 
+    if (payload.state.preferences.pumpkinJuicePlannerState) {
+      savePumpkinJuicePlannerState(payload.state.preferences.pumpkinJuicePlannerState);
+    } else {
+      clearPumpkinJuicePlannerState();
+    }
+
+    if (payload.state.preferences.personalMasteryGoalsState) {
+      savePersonalMasteryGoalsState(payload.state.preferences.personalMasteryGoalsState);
+    } else {
+      clearPersonalMasteryGoalsState();
+    }
+
+    if (payload.state.preferences.masteryRaceCountsState) {
+      saveMasteryRaceCountsState(payload.state.preferences.masteryRaceCountsState);
+    } else {
+      clearMasteryRaceCountsState();
+    }
+
     if (payload.state.preferences.themePreference) {
       persistAppTheme(payload.state.preferences.themePreference);
     } else {
@@ -68,6 +104,9 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     await replaceSnapshots(currentSnapshots);
     saveCraftingModifierState(currentCraftingModifierState);
     saveAcquisitionPlannerInputState(currentAcquisitionPlannerState);
+    savePumpkinJuicePlannerState(currentPumpkinJuicePlannerState);
+    savePersonalMasteryGoalsState(currentPersonalMasteryGoalsState);
+    saveMasteryRaceCountsState(currentMasteryRaceCountsState);
 
     if (currentThemePreference) {
       persistAppTheme(currentThemePreference);

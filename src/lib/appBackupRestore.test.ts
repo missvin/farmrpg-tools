@@ -9,6 +9,15 @@ const {
   mockSaveAcquisitionPlannerInputState,
   mockLoadAcquisitionPlannerInputState,
   mockClearAcquisitionPlannerInputState,
+  mockSavePumpkinJuicePlannerState,
+  mockLoadPumpkinJuicePlannerState,
+  mockClearPumpkinJuicePlannerState,
+  mockSavePersonalMasteryGoalsState,
+  mockLoadPersonalMasteryGoalsState,
+  mockClearPersonalMasteryGoalsState,
+  mockSaveMasteryRaceCountsState,
+  mockLoadMasteryRaceCountsState,
+  mockClearMasteryRaceCountsState,
   mockPersistAppTheme,
   mockClearStoredAppTheme,
   mockReadStoredAppTheme,
@@ -21,6 +30,15 @@ const {
   mockSaveAcquisitionPlannerInputState: vi.fn(),
   mockLoadAcquisitionPlannerInputState: vi.fn(),
   mockClearAcquisitionPlannerInputState: vi.fn(),
+  mockSavePumpkinJuicePlannerState: vi.fn(),
+  mockLoadPumpkinJuicePlannerState: vi.fn(),
+  mockClearPumpkinJuicePlannerState: vi.fn(),
+  mockSavePersonalMasteryGoalsState: vi.fn(),
+  mockLoadPersonalMasteryGoalsState: vi.fn(),
+  mockClearPersonalMasteryGoalsState: vi.fn(),
+  mockSaveMasteryRaceCountsState: vi.fn(),
+  mockLoadMasteryRaceCountsState: vi.fn(),
+  mockClearMasteryRaceCountsState: vi.fn(),
   mockPersistAppTheme: vi.fn(),
   mockClearStoredAppTheme: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
@@ -41,6 +59,24 @@ vi.mock('./acquisitionPlannerState', () => ({
   loadAcquisitionPlannerInputState: mockLoadAcquisitionPlannerInputState,
   saveAcquisitionPlannerInputState: mockSaveAcquisitionPlannerInputState,
   clearAcquisitionPlannerInputState: mockClearAcquisitionPlannerInputState,
+}));
+
+vi.mock('./pumpkinJuicePlannerState', () => ({
+  loadPumpkinJuicePlannerState: mockLoadPumpkinJuicePlannerState,
+  savePumpkinJuicePlannerState: mockSavePumpkinJuicePlannerState,
+  clearPumpkinJuicePlannerState: mockClearPumpkinJuicePlannerState,
+}));
+
+vi.mock('./personalMasteryGoals', () => ({
+  loadPersonalMasteryGoalsState: mockLoadPersonalMasteryGoalsState,
+  savePersonalMasteryGoalsState: mockSavePersonalMasteryGoalsState,
+  clearPersonalMasteryGoalsState: mockClearPersonalMasteryGoalsState,
+}));
+
+vi.mock('./masteryRaceCounts', () => ({
+  loadMasteryRaceCountsState: mockLoadMasteryRaceCountsState,
+  saveMasteryRaceCountsState: mockSaveMasteryRaceCountsState,
+  clearMasteryRaceCountsState: mockClearMasteryRaceCountsState,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -102,6 +138,9 @@ function createBackupPayload() {
     ],
     craftingModifierState: createModifierStateFixture(),
     acquisitionPlannerState: createAcquisitionPlannerStateFixture(),
+    pumpkinJuicePlannerState: createPumpkinJuicePlannerStateFixture(),
+    personalMasteryGoalsState: createPersonalMasteryGoalsStateFixture(),
+    masteryRaceCountsState: createMasteryRaceCountsStateFixture(),
     themePreference: 'dark',
   });
 }
@@ -179,6 +218,52 @@ function createAcquisitionPlannerStateFixture() {
   };
 }
 
+function createPumpkinJuicePlannerStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    ownedPumpkinJuiceCount: 7,
+    valueThresholds: {
+      enabled: false,
+      minNextApSaved: 0,
+      minTotalApSaved: 0,
+      minNextStaminaSaved: 0,
+      minTotalStaminaSaved: 0,
+    },
+  };
+}
+
+function createPersonalMasteryGoalsStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    goals: [
+      {
+        goalId: 'goal-1',
+        itemName: 'Board',
+        canonicalKey: 'board',
+        targetTier: 'GM' as const,
+        createdAt: '2026-05-08T00:00:00.000Z',
+        updatedAt: '2026-05-08T00:00:00.000Z',
+      },
+    ],
+  };
+}
+
+function createMasteryRaceCountsStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    entries: [
+      {
+        canonicalKey: 'board',
+        itemName: 'Board',
+        masteredCount: 1000,
+        grandMasteredCount: 42,
+        megaMasteredCount: null,
+        updatedAt: '2026-05-08T00:00:00.000Z',
+      },
+    ],
+  };
+}
+
 describe('appBackupRestore', () => {
   beforeEach(() => {
     mockReplaceSnapshots.mockReset();
@@ -189,12 +274,24 @@ describe('appBackupRestore', () => {
     mockSaveAcquisitionPlannerInputState.mockReset();
     mockLoadAcquisitionPlannerInputState.mockReset();
     mockClearAcquisitionPlannerInputState.mockReset();
+    mockSavePumpkinJuicePlannerState.mockReset();
+    mockLoadPumpkinJuicePlannerState.mockReset();
+    mockClearPumpkinJuicePlannerState.mockReset();
+    mockSavePersonalMasteryGoalsState.mockReset();
+    mockLoadPersonalMasteryGoalsState.mockReset();
+    mockClearPersonalMasteryGoalsState.mockReset();
+    mockSaveMasteryRaceCountsState.mockReset();
+    mockLoadMasteryRaceCountsState.mockReset();
+    mockClearMasteryRaceCountsState.mockReset();
     mockPersistAppTheme.mockReset();
     mockClearStoredAppTheme.mockReset();
     mockReadStoredAppTheme.mockReset();
     mockListSnapshots.mockResolvedValue([]);
     mockLoadCraftingModifierState.mockReturnValue(createModifierStateFixture());
     mockLoadAcquisitionPlannerInputState.mockReturnValue(createAcquisitionPlannerStateFixture());
+    mockLoadPumpkinJuicePlannerState.mockReturnValue(createPumpkinJuicePlannerStateFixture());
+    mockLoadPersonalMasteryGoalsState.mockReturnValue(createPersonalMasteryGoalsStateFixture());
+    mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
   });
 
@@ -241,9 +338,21 @@ describe('appBackupRestore', () => {
     expect(mockSaveAcquisitionPlannerInputState).toHaveBeenCalledWith(
       payload.state.preferences.acquisitionPlannerState,
     );
+    expect(mockSavePumpkinJuicePlannerState).toHaveBeenCalledWith(
+      payload.state.preferences.pumpkinJuicePlannerState,
+    );
+    expect(mockSavePersonalMasteryGoalsState).toHaveBeenCalledWith(
+      payload.state.preferences.personalMasteryGoalsState,
+    );
+    expect(mockSaveMasteryRaceCountsState).toHaveBeenCalledWith(
+      payload.state.preferences.masteryRaceCountsState,
+    );
     expect(mockPersistAppTheme).toHaveBeenCalledWith('dark');
     expect(mockClearCraftingModifierState).not.toHaveBeenCalled();
     expect(mockClearAcquisitionPlannerInputState).not.toHaveBeenCalled();
+    expect(mockClearPumpkinJuicePlannerState).not.toHaveBeenCalled();
+    expect(mockClearPersonalMasteryGoalsState).not.toHaveBeenCalled();
+    expect(mockClearMasteryRaceCountsState).not.toHaveBeenCalled();
     expect(mockClearStoredAppTheme).not.toHaveBeenCalled();
   });
 
@@ -254,6 +363,9 @@ describe('appBackupRestore', () => {
       snapshots: [],
       craftingModifierState: null,
       acquisitionPlannerState: null,
+      pumpkinJuicePlannerState: null,
+      personalMasteryGoalsState: null,
+      masteryRaceCountsState: null,
       themePreference: null,
     });
 
@@ -262,6 +374,9 @@ describe('appBackupRestore', () => {
     expect(mockReplaceSnapshots).toHaveBeenCalledWith([]);
     expect(mockClearCraftingModifierState).toHaveBeenCalledTimes(1);
     expect(mockClearAcquisitionPlannerInputState).toHaveBeenCalledTimes(1);
+    expect(mockClearPumpkinJuicePlannerState).toHaveBeenCalledTimes(1);
+    expect(mockClearPersonalMasteryGoalsState).toHaveBeenCalledTimes(1);
+    expect(mockClearMasteryRaceCountsState).toHaveBeenCalledTimes(1);
     expect(mockClearStoredAppTheme).toHaveBeenCalledTimes(1);
   });
 
@@ -350,10 +465,16 @@ describe('appBackupRestore', () => {
     ];
     const previousModifierState = createModifierStateFixture();
     const previousAcquisitionPlannerState = createAcquisitionPlannerStateFixture();
+    const previousPumpkinJuicePlannerState = createPumpkinJuicePlannerStateFixture();
+    const previousPersonalMasteryGoalsState = createPersonalMasteryGoalsStateFixture();
+    const previousMasteryRaceCountsState = createMasteryRaceCountsStateFixture();
 
     mockListSnapshots.mockResolvedValue(previousSnapshots);
     mockLoadCraftingModifierState.mockReturnValue(previousModifierState);
     mockLoadAcquisitionPlannerInputState.mockReturnValue(previousAcquisitionPlannerState);
+    mockLoadPumpkinJuicePlannerState.mockReturnValue(previousPumpkinJuicePlannerState);
+    mockLoadPersonalMasteryGoalsState.mockReturnValue(previousPersonalMasteryGoalsState);
+    mockLoadMasteryRaceCountsState.mockReturnValue(previousMasteryRaceCountsState);
     mockReadStoredAppTheme.mockReturnValue('dark');
     mockSaveCraftingModifierState
       .mockImplementationOnce(() => {
@@ -369,6 +490,9 @@ describe('appBackupRestore', () => {
     expect(mockReplaceSnapshots).toHaveBeenNthCalledWith(2, previousSnapshots);
     expect(mockSaveCraftingModifierState).toHaveBeenLastCalledWith(previousModifierState);
     expect(mockSaveAcquisitionPlannerInputState).toHaveBeenLastCalledWith(previousAcquisitionPlannerState);
+    expect(mockSavePumpkinJuicePlannerState).toHaveBeenLastCalledWith(previousPumpkinJuicePlannerState);
+    expect(mockSavePersonalMasteryGoalsState).toHaveBeenLastCalledWith(previousPersonalMasteryGoalsState);
+    expect(mockSaveMasteryRaceCountsState).toHaveBeenLastCalledWith(previousMasteryRaceCountsState);
     expect(mockPersistAppTheme).toHaveBeenLastCalledWith('dark');
   });
 

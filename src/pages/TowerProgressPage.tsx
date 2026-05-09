@@ -5,6 +5,11 @@ import { deriveTowerProgress } from '../lib/deriveTowerProgress';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import { loadTowerRequirements } from '../lib/loadTowerRequirements';
+import {
+  createDefaultPumpkinJuicePlannerState,
+  loadPumpkinJuicePlannerState,
+  savePumpkinJuicePlannerState,
+} from '../lib/pumpkinJuicePlannerState';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
 
 function formatCompactMastery(value: number): string {
@@ -44,6 +49,10 @@ function formatRequirementLabel(requiredThreshold: number): string {
   return 'MM (1M)';
 }
 
+function formatPumpkinJuiceEstimate(totalPumpkinJuices: number | null): string {
+  return totalPumpkinJuices === null ? 'Needs baseline mastery' : totalPumpkinJuices.toLocaleString();
+}
+
 function buildItemTooltip(notes: string | null): string | null {
   const parts: string[] = [];
 
@@ -66,6 +75,18 @@ function TowerProgressItemName({ canonicalKey, itemName }: { canonicalKey: strin
 }
 
 export function TowerProgressPage() {
+  const [pumpkinJuicePlannerState, setPumpkinJuicePlannerState] = useState(() => {
+    try {
+      return loadPumpkinJuicePlannerState();
+    } catch {
+      return createDefaultPumpkinJuicePlannerState();
+    }
+  });
+  const [ownedPumpkinJuiceInput, setOwnedPumpkinJuiceInput] = useState(
+    String(pumpkinJuicePlannerState.ownedPumpkinJuiceCount),
+  );
+  const [pumpkinJuiceMessage, setPumpkinJuiceMessage] = useState<string | null>(null);
+  const [pumpkinJuiceError, setPumpkinJuiceError] = useState<string | null>(null);
   const [progressState, setProgressState] = useState<{
     isLoading: boolean;
     snapshotError: string | null;
@@ -81,6 +102,33 @@ export function TowerProgressPage() {
     snapshot: null,
     derivedProgress: null,
   });
+
+  function handleSaveOwnedPumpkinJuiceCount(): void {
+    const normalizedCount = Number(ownedPumpkinJuiceInput);
+
+    if (!Number.isFinite(normalizedCount) || normalizedCount < 0) {
+      setPumpkinJuiceMessage(null);
+      setPumpkinJuiceError('Enter a non-negative Pumpkin Juice count.');
+      return;
+    }
+
+    try {
+      const savedState = savePumpkinJuicePlannerState({
+        ...pumpkinJuicePlannerState,
+        ownedPumpkinJuiceCount: Math.floor(normalizedCount),
+      });
+
+      setPumpkinJuicePlannerState(savedState);
+      setOwnedPumpkinJuiceInput(String(savedState.ownedPumpkinJuiceCount));
+      setPumpkinJuiceError(null);
+      setPumpkinJuiceMessage('Saved Pumpkin Juice count on this device.');
+    } catch (error) {
+      setPumpkinJuiceMessage(null);
+      setPumpkinJuiceError(
+        error instanceof Error ? error.message : 'Unable to save Pumpkin Juice count.',
+      );
+    }
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -227,7 +275,51 @@ export function TowerProgressPage() {
                 <dt>Remaining unique tower items</dt>
                 <dd>{progressState.derivedProgress.remainingItems.length.toLocaleString()}</dd>
               </div>
+              <div className="summary-grid__item">
+                <dt>Pumpkin Juice needed</dt>
+                <dd>{progressState.derivedProgress.totalPumpkinJuicesNeeded.toLocaleString()}</dd>
+                {progressState.derivedProgress.pumpkinJuiceBlockedItemCount > 0 ? (
+                  <p className="subtle-text">
+                    {progressState.derivedProgress.pumpkinJuiceBlockedItemCount.toLocaleString()} item
+                    {progressState.derivedProgress.pumpkinJuiceBlockedItemCount === 1 ? '' : 's'} need baseline mastery first
+                  </p>
+                ) : null}
+              </div>
+              <div className="summary-grid__item">
+                <dt>Owned Pumpkin Juice</dt>
+                <dd>{pumpkinJuicePlannerState.ownedPumpkinJuiceCount.toLocaleString()}</dd>
+                <p className="subtle-text">
+                  {pumpkinJuicePlannerState.ownedPumpkinJuiceCount >=
+                  progressState.derivedProgress.totalPumpkinJuicesNeeded
+                    ? `${(pumpkinJuicePlannerState.ownedPumpkinJuiceCount -
+                        progressState.derivedProgress.totalPumpkinJuicesNeeded).toLocaleString()} extra after calculable Tower goals`
+                    : `${(progressState.derivedProgress.totalPumpkinJuicesNeeded -
+                        pumpkinJuicePlannerState.ownedPumpkinJuiceCount).toLocaleString()} short for calculable Tower goals`}
+                </p>
+              </div>
             </dl>
+
+            <div className="inline-control-row" aria-label="Pumpkin Juice planner assumptions">
+              <label className="field-label" htmlFor="tower-owned-pumpkin-juice">
+                Owned Pumpkin Juice
+              </label>
+              <input
+                id="tower-owned-pumpkin-juice"
+                className="text-input text-input--short"
+                type="number"
+                min="0"
+                step="1"
+                value={ownedPumpkinJuiceInput}
+                onChange={(event) => {
+                  setOwnedPumpkinJuiceInput(event.target.value);
+                }}
+              />
+              <button type="button" className="button" onClick={handleSaveOwnedPumpkinJuiceCount}>
+                Save
+              </button>
+            </div>
+            {pumpkinJuiceMessage ? <p className="status-message status-message--success">{pumpkinJuiceMessage}</p> : null}
+            {pumpkinJuiceError ? <p className="status-message status-message--error">{pumpkinJuiceError}</p> : null}
           </section>
 
           <section className="page-card page-stack" aria-labelledby="tower-progress-difficulty-title">
@@ -285,6 +377,7 @@ export function TowerProgressPage() {
                               <th scope="col">% complete</th>
                               <th scope="col">Current mastery</th>
                               <th scope="col">Remaining</th>
+                              <th scope="col">PJs</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -306,6 +399,7 @@ export function TowerProgressPage() {
                                 <td>{formatPercent(detailRow.progressPercent)}</td>
                                 <td>{detailRow.currentMastery.toLocaleString()}</td>
                                 <td>{detailRow.remainingToRequirement.toLocaleString()}</td>
+                                <td>{formatPumpkinJuiceEstimate(detailRow.pumpkinJuiceEstimate.totalPumpkinJuices)}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -360,6 +454,16 @@ export function TowerProgressPage() {
                       <span>{item.difficultyLabel}</span>
                       {' | '}
                       <span>Target: {formatRequirementLabel(item.requiredThreshold)}</span>
+                      {' | '}
+                      <span>
+                        PJs: {formatPumpkinJuiceEstimate(item.pumpkinJuiceEstimate.totalPumpkinJuices)}
+                      </span>
+                      {item.pumpkinJuiceEstimate.nextPumpkinJuiceGain ? (
+                        <>
+                          {' | '}
+                          <span>Next PJ: +{item.pumpkinJuiceEstimate.nextPumpkinJuiceGain.toLocaleString()}</span>
+                        </>
+                      ) : null}
                     </p>
                     <div
                       className="progress-list__progress-cell"

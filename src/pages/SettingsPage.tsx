@@ -462,7 +462,8 @@ export function SettingsPage() {
           <h2 id="settings-backup-title">Local Backup</h2>
           <p className="supporting-text">
             Export one versioned backup file for this local profile. The backup currently includes snapshot history,
-            crafting and planner modifier settings, acquisition planner inputs, and your saved theme preference.
+            crafting and planner modifier settings, acquisition planner inputs, Pumpkin Juice planning, personal
+            mastery goals, race-count context, and your saved theme preference.
           </p>
         </div>
 
@@ -1014,6 +1015,18 @@ export function SettingsPage() {
               <div className="summary-grid__item">
                 <dt>Acquisition planner</dt>
                 <dd>{restorePreview.payload.state.preferences.acquisitionPlannerState ? 'Included' : 'Not included'}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Pumpkin Juice planner</dt>
+                <dd>{restorePreview.payload.state.preferences.pumpkinJuicePlannerState ? 'Included' : 'Not included'}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Personal goals</dt>
+                <dd>{restorePreview.payload.state.preferences.personalMasteryGoalsState ? 'Included' : 'Not included'}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Race counts</dt>
+                <dd>{restorePreview.payload.state.preferences.masteryRaceCountsState ? 'Included' : 'Not included'}</dd>
               </div>
             </dl>
 
