@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { normalizeName, toCanonicalItemKey } from './normalizeItemKey';
+import {
+  canonicalItemKeysMatch,
+  isCanonicalItemKey,
+  normalizeName,
+  toCanonicalItemIdentity,
+  toCanonicalItemKey,
+} from './normalizeItemKey';
 
 describe('normalizeName', () => {
   it('trims surrounding whitespace', () => {
@@ -23,5 +29,33 @@ describe('normalizeName', () => {
 describe('toCanonicalItemKey', () => {
   it('returns the normalized name for v1 canonical keys', () => {
     expect(toCanonicalItemKey('  GOLDEN  LEAF ')).toBe('golden leaf');
+  });
+});
+
+describe('toCanonicalItemIdentity', () => {
+  it('keeps display name and canonical key separate', () => {
+    expect(toCanonicalItemIdentity('  Golden  Leaf ')).toEqual({
+      itemName: 'Golden  Leaf',
+      canonicalKey: 'golden leaf',
+    });
+  });
+});
+
+describe('isCanonicalItemKey', () => {
+  it('accepts normalized non-empty keys', () => {
+    expect(isCanonicalItemKey('golden leaf')).toBe(true);
+  });
+
+  it('rejects display names, whitespace, and empty keys', () => {
+    expect(isCanonicalItemKey('Golden Leaf')).toBe(false);
+    expect(isCanonicalItemKey('golden  leaf')).toBe(false);
+    expect(isCanonicalItemKey('')).toBe(false);
+  });
+});
+
+describe('canonicalItemKeysMatch', () => {
+  it('compares item identities through the canonical key rules', () => {
+    expect(canonicalItemKeysMatch('Golden Leaf', '  golden   leaf ')).toBe(true);
+    expect(canonicalItemKeysMatch('Golden Leaf', 'Gold Leaf')).toBe(false);
   });
 });

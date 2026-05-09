@@ -41,6 +41,12 @@ The available data sources do not yet provide a stable cross-source identifier t
 Implications:
 Joins should continue using the normalization utilities. Future stronger identity support will need a deliberate migration path rather than an ad hoc change.
 
+The current compatibility contract is:
+- `canonicalKey` is the normalized item name produced by `toCanonicalItemKey`.
+- Display names may preserve capitalization or spacing, but joins must use canonical keys.
+- Snapshots, optional external IDs, Buddy slugs, icon asset keys, and convenience lookup layers must not redefine canonical item identity.
+- Later catalog and alias work may add reviewed metadata and lookup support, but canonical identity migration requires a separate explicit decision.
+
 ## `farmrpg_item_id` is optional external metadata, not the canonical key
 
 Status: Accepted

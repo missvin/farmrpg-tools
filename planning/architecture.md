@@ -73,6 +73,13 @@ This document summarizes the current runtime architecture of the local-first Far
 - `buddy_slug` is optional external metadata, not the canonical key
 - Current joins depend on normalized item keys and should be treated carefully
 
+Identity compatibility rules:
+- use `toCanonicalItemKey` or the adjacent compatibility helpers instead of ad hoc normalization
+- keep display item names and canonical keys as separate fields when both are available
+- treat snapshots as progress overlays, not item-existence truth
+- let the future item catalog and alias layers broaden recognition without making external IDs canonical
+- require a deliberate migration decision before replacing normalized-name identity with any stronger key
+
 ## Main Runtime Flows
 
 ### Import Flow
