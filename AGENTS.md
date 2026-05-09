@@ -74,6 +74,8 @@ Update planning files only when appropriate:
 
 Do not create backlog entries for tiny incidental edits.
 
+Use `$farmrpg-backlog-intake` when casual ideas or future-feature notes should be converted into backlog rows.
+
 ---
 
 ## How to work

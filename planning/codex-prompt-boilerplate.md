@@ -34,6 +34,22 @@ Use $farmrpg-tools-next-slice to implement Path 1 in order, pausing on ambiguity
 
 Path recommendation stays planning-only; next-slice implements the selected path.
 
+## Backlog Intake Invocation
+
+Use backlog intake when a casual idea should become backlog rows:
+
+```text
+Use $farmrpg-backlog-intake to turn this idea into backlog rows and land the planning update.
+```
+
+For review first:
+
+```text
+Use $farmrpg-backlog-intake in propose-only mode; do not edit files.
+```
+
+After rows exist, use `$farmrpg-backlog-paths` to compare implementation paths or `$farmrpg-tools-next-slice` to implement a selected row/path.
+
 ## Durable Repo Defaults
 
 - Next-slice work lands by default; one-off prompts do not commit unless asked.
