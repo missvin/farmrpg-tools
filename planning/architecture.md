@@ -116,6 +116,13 @@ Identity compatibility rules:
 - `tower_level_range` is authoritative for tower range grouping
 - Requirement tier comes from the CSV row, not inferred from tower level
 
+### `item_catalog.csv`
+
+- Canonical local item-existence catalog for reviewed local reference coverage
+- Preserves normalized-name canonical keys plus optional external metadata such as `farmrpg_item_id` and `buddy_slug`
+- Uses `mastery_possible` as a small durable flag; `unknown` means the item is recognized locally but should not be treated as mastery-eligible by inference alone
+- Initial coverage is generated from current local reference CSVs and should be broadened through reviewed catalog, alias, and museum-input workflows rather than snapshots
+
 ## UI/View Architecture
 
 Normal user-facing pages should explain player status, attention, and next useful action. Repo maintenance, reference-data upkeep, and debug details belong in explicit internal/dev tooling or secondary detail surfaces unless a warning must stay visible to preserve trust.
@@ -160,6 +167,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `src/lib/storage/masterySnapshots.ts`
 - `src/lib/loadMasteryDifficulty.ts`
 - `src/lib/loadTowerRequirements.ts`
+- `src/lib/loadItemCatalog.ts`
 - `src/lib/deriveMasteryDifficultyStats.ts`
 - `src/lib/deriveTowerRequirements.ts`
 - `src/pages/ImportPage.tsx`
@@ -168,6 +176,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `src/pages/TowerPage.tsx`
 - `data/mastery_difficulty.csv`
 - `data/tower_requirements.csv`
+- `data/item_catalog.csv`
 
 ## Change Guidance
 
