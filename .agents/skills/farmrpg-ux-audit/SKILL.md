@@ -17,6 +17,7 @@ Anchor every review in this product context:
 - Respect the single-profile, no-backend, local-first constraints.
 - Remember the product is evolving from a mastery tracker into a broader planning tool covering progress, acquisition, material planning, and later target planning.
 - Keep internal or dev tooling available, but do not let it dominate user-facing flows in recommendations.
+- Keep dev/debug/reference-maintenance framing out of normal user-facing pages unless the page is explicitly an internal tool.
 - Treat canonical item identity as normalized item name. `farmrpg_item_id` and `buddy_slug` are optional metadata, not canonical identity.
 - Expect missing reference-data matches to surface as warnings, not hard failures.
 - Avoid recommending backend, cloud, account, sync, or multi-profile solutions for local UX problems unless the user explicitly asks to revisit product scope.
@@ -54,6 +55,8 @@ Apply these checks during the review:
 - Naming honesty check: Do labels match what pages and controls actually do?
 - Remove-30-percent check: Would removing about 30% of what is visible improve clarity without harming the core task?
 - Advanced-vs-core check: Are internal, debug, or advanced tools visually competing with the main user workflow?
+- Text-load check: Is the page trying to become helpful by adding more explanatory copy instead of making the status, controls, or labels clearer?
+- Progressive-disclosure check: Would shorter or collapsible guidance preserve orientation while reducing repeat-user clutter?
 
 Use these checks to sharpen findings, not to force minimalist redesigns.
 

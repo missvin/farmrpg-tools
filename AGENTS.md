@@ -38,6 +38,8 @@ Rules:
 
 If a task appears to require modifying canonical reference data, pause and surface the issue instead of silently altering those files.
 
+If there is any ambiguity before changing `data/`, pause and ask. Do not guess through uncertain reference-data changes.
+
 ---
 
 ## Planning workflow
@@ -106,6 +108,18 @@ Be surgical:
 - treat storage/import/export changes as compatibility-sensitive
 - preserve user data unless destructive behavior is explicitly intended
 
+## User-facing UX defaults
+
+- normal user-facing pages should prioritize player status, what needs attention, and the next useful action
+- do not expose dev/debug/reference-maintenance framing in normal user workflows unless the page is explicitly an internal tool
+- prefer clearer data, controls, labels, and compact collapsible guidance over adding more explanatory text
+
+## Hosted deployment boundary
+
+- hosted/Vercel use remains static and local-first unless a backlog item explicitly changes that architecture
+- deploying to Vercel does not imply backend, auth, sync, Blob, Functions, or multi-device continuity
+- hosted work should preserve browser-local state and backup/restore expectations unless explicitly scoped otherwise
+
 ---
 
 ## Verification
@@ -152,6 +166,10 @@ Use the repo-local safe Codex git helpers for branch, stage, commit, push, and m
 The helpers read temporary input from `recovery/codex-branch-name.txt`, `recovery/codex-stage-paths.txt`, and `recovery/codex-commit-message.txt`. These files are ignored and should be removed automatically after successful helper use.
 
 If a helper fails, stop and report the failure. Do not silently fall back to raw `git add`, `git commit`, `git push`, or `git merge`.
+
+For normal one-off tasks, do not commit unless the user asks. For `farmrpg-tools-next-slice` runs, completed work should be committed, merged, and pushed by default unless the user explicitly asks not to land it, asks for planning-only/review-only, or the work is not safe to land.
+
+When landing next-slice work, use a short-lived `codex/...` task branch if needed, then use the helper workflow to stage exact files, commit, push the task branch, fast-forward merge into `master`, and push `master`. End by verifying whether `master` is up to date with `origin/master`.
 
 ## Secondary project consideration
 

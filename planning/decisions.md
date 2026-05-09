@@ -109,6 +109,19 @@ Reference data is expected to be incomplete during iterative maintenance, and th
 Implications:
 UI should show unmatched or unrated states clearly. Loaders and derived views should avoid crashing when reference rows are missing.
 
+## User-facing views prioritize player status over maintenance language
+
+Status: Accepted
+
+Decision:
+Normal user-facing views should prioritize player status, what needs attention, and the next useful action over repository, reference-maintenance, or debug framing.
+
+Rationale:
+Recent Tower and orientation work showed the app is clearer when maintenance context is separated from the user's planning task instead of explained on the main page.
+
+Implications:
+UX work should favor clearer status, controls, labels, and compact/collapsible guidance over long explanatory copy. Internal or dev-facing pages may still expose maintenance details, but normal planning pages should avoid labels such as planning summary, missing snapshot rows, TBD rows, or reference maintenance when simpler user-facing wording works.
+
 ## Tower requirements live in a separate CSV
 
 Status: Accepted

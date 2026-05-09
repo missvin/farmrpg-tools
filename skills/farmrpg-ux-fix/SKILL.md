@@ -17,6 +17,7 @@ Anchor every fix in this product context:
 - Respect the single-profile, no-backend, local-first constraints.
 - Remember the product is evolving from a mastery tracker into a broader planning tool covering progress, acquisition, material planning, and later target planning.
 - Keep internal or dev tooling available, but visually subordinate to user-facing planning flows.
+- Keep dev/debug/reference-maintenance language out of normal user-facing pages unless the page is explicitly an internal tool.
 - Treat canonical item identity as normalized item name. `farmrpg_item_id` and `buddy_slug` are optional metadata, not canonical identity.
 - Surface missing reference-data matches as warnings, not hard failures.
 - Preserve existing routes and workflows unless the UX problem clearly requires change.
@@ -31,6 +32,7 @@ Stay implementation-first, product-aware, and conservative:
 - Favor local consistency over one-off cleverness.
 - Avoid speculative churn, architecture drift, and design-system rewrites.
 - Keep advanced or dev-facing tools accessible without letting them dominate the main experience.
+- Prefer clearer status, controls, labels, and compact/collapsible guidance over adding more explanatory text.
 
 Unless the user explicitly asks for a broader pass:
 
@@ -113,6 +115,8 @@ Prefer fixes like these:
 - Improve a dense table's default readability without destroying density
 - Re-group related controls so assumptions and next actions are easier to scan
 - Clarify empty, warning, or error states so the next user action is obvious
+- Remove or collapse repeated page guidance when the useful information is already visible in the page state
+- Reword dev-facing labels into player-centered status, attention, or next-action language
 
 Prefer the smallest fix that materially improves:
 

@@ -55,10 +55,14 @@ Follow the repo rules in `AGENTS.md`:
 - Avoid broad "while I am here" refactors.
 - Prefer existing patterns and pure derivation helpers for business logic.
 - Preserve local-first, single-profile, no-backend behavior.
+- Preserve hosted-static, browser-local assumptions unless the selected backlog row explicitly introduces backend, auth, sync, Blob, Functions, or multi-device continuity.
 - Preserve normalized item name as canonical identity.
 - Keep missing reference-data matches non-fatal.
 - Do not modify `data/` unless the selected backlog item specifically requires reference/tooling data changes.
+- If there is any ambiguity before changing `data/`, stop and ask instead of guessing.
 - Treat storage/import/export changes as compatibility-sensitive.
+- Keep normal user-facing pages focused on player status, what needs attention, and the next useful action; move dev/debug/reference-maintenance framing to internal tools or secondary detail surfaces.
+- For UX-facing work, prefer clearer data, controls, labels, and compact collapsible guidance over adding more explanatory text.
 
 Update planning files only when appropriate:
 
@@ -80,10 +84,11 @@ Do not claim success without saying what was run or why a check was skipped.
 
 Use `AGENTS.md` as the source of truth for the repo-local safe git workflow.
 
-- Do not commit unless the user asks.
-- When the user asks to commit, merge, push, or otherwise land the work, use the `git codex-*` helpers described in `AGENTS.md`.
+- For this next-slice skill, commit, merge, and push completed work by default unless the user explicitly asks not to land it, asks for planning-only/review-only, or the work is not safe to land.
+- Use the `git codex-*` helpers described in `AGENTS.md` for branch, stage, commit, push, and merge work.
+- If the slice starts on `master`, create a short-lived `codex/...` task branch before staging so `git codex-merge` can land the work through the normal fast-forward path.
 - If a helper fails, stop and report it instead of silently falling back to raw git commands.
-- When asked to finish landing work, verify the final branch/upstream status and report whether `master` is up to date with `origin/master`.
+- After landing work, verify the final branch/upstream status and report whether `master` is up to date with `origin/master`.
 
 ## Field Notes
 
@@ -117,9 +122,10 @@ End with a concise readout that includes:
 - backlog item implemented/updated
 - tests/lint/build run, or why not
 - concise implementation summary
-- suggested commit command if not committing directly
+- commit hash and branch/push status, or the reason work was not committed
 - next reasonable backlog item plus short justification
 - any recommended user testing or Rebecca actions needed because of the completed work or to unlock the next backlog item
+- hosted/user-test implications when the work affects Vercel-visible behavior, local browser storage, backup/restore, import/export, or data durability
 
 Also include exactly one field-note status:
 
@@ -132,4 +138,4 @@ Only include these sections when actually needed:
 - `Blocker for Rebecca`: name the action Rebecca must take, why it is required, and what can continue after it.
 - `Recommended test for Rebecca`: name the manual check, what it validates, and whether work can continue without it.
 
-Do not commit unless the user asks. If committing, follow the Git And Landing section and use a concise conventional-style message.
+For next-slice runs, land completed work by default. If not landing, say why and include the exact suggested commit command.

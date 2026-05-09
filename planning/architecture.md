@@ -17,6 +17,7 @@ This document summarizes the current runtime architecture of the local-first Far
 - `data/` contains canonical reference data
 - Planning files are project workflow artifacts, not runtime data
 - Narrow exception: `planning/backlog.csv` may be consumed locally for an internal read-only backlog visualization feature only
+- Hosted deployments remain static SPA deployments unless an explicit backlog item introduces backend, auth, sync, Blob, Functions, or multi-device continuity
 
 ## High-Level System Shape
 
@@ -56,6 +57,13 @@ This document summarizes the current runtime architecture of the local-first Far
   - malformed or unavailable backlog metadata should degrade safely and must not break the rest of the app
   - this exception does not introduce app-side editing of backlog data
   - this exception does not change the local-first, single-profile, or no-backend constraints
+
+## Hosted Deployment Boundary
+
+- The hosted shape is a static Vite SPA unless a backlog item explicitly changes the architecture
+- Static reference files may be served from the deployment, but user snapshots, settings, and backup/restore remain browser-local
+- Do not introduce serverless functions, Blob storage, auth, sync, or multi-device continuity as incidental fallout from hosted work
+- Hosted work should call out local-data durability and backup/restore implications when they affect user testing or release confidence
 
 ## Identity Model
 
@@ -102,6 +110,10 @@ This document summarizes the current runtime architecture of the local-first Far
 - Requirement tier comes from the CSV row, not inferred from tower level
 
 ## UI/View Architecture
+
+Normal user-facing pages should explain player status, attention, and next useful action. Repo maintenance, reference-data upkeep, and debug details belong in explicit internal/dev tooling or secondary detail surfaces unless a warning must stay visible to preserve trust.
+
+Prefer compact/collapsible guidance and clearer controls over long explanatory blocks.
 
 ### Import Page
 

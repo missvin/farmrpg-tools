@@ -16,6 +16,15 @@ Use a one-off prompt instead when:
 - the task is planning-only, review-only, docs-only, or a narrow bug report
 - you want Codex to inspect something without implementing
 
+Next-slice runs should land completed work by default: commit, merge, and push unless you explicitly ask Codex not to.
+
+## Durable Repo Defaults
+
+- Next-slice work lands by default; one-off prompts do not commit unless asked.
+- User-facing UI should avoid dev/debug/reference-maintenance language unless the page is explicitly internal.
+- `data/` changes require clear source truth; pause on any ambiguity.
+- Hosted work stays static/local-first unless explicitly scoped otherwise.
+
 ## Standard Planning Read Block
 
 For non-trivial implementation work, start from:
@@ -48,7 +57,7 @@ Ask Codex to close with:
 - backlog item implemented/updated
 - tests/lint/build run, or why not
 - concise implementation summary
-- suggested commit command if Codex is not committing directly
+- commit hash and branch/push status, or why Codex did not commit
 - next reasonable backlog item plus short justification
 
 Field-note status should be one of:
@@ -61,8 +70,10 @@ Only request `Blocker for Rebecca` or `Recommended test for Rebecca` sections wh
 
 ## Commit Guidance
 
-Codex should not commit unless asked. When asking for a commit, give an explicit command such as:
+For one-off prompts, Codex should not commit unless asked. When asking for a one-off commit, give an explicit command such as:
 
 ```text
 Please commit this as: chore(tooling): add next-slice Codex workflow
 ```
+
+For next-slice prompts, no separate commit request should be needed unless you want a specific commit message or you want Codex to stop before landing.
