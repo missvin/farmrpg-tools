@@ -94,6 +94,7 @@ Identity compatibility rules:
 - App fetches CSV files from `data/`
 - Loader modules parse rows into typed entries plus keyed lookup structures
 - Blank optional fields are tolerated where intended
+- Shared local item reference lookup combines the item catalog, approved aliases, and maintained museum lookup coverage for recognition without changing canonical identity or mastery eligibility
 
 ### Derived-View Flow
 
@@ -184,6 +185,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `src/lib/loadItemCatalog.ts`
 - `src/lib/itemAliases.ts`
 - `src/lib/loadMuseumLookupCoverage.ts`
+- `src/lib/localItemReferenceLookup.ts`
 - `src/lib/deriveMasteryDifficultyStats.ts`
 - `src/lib/deriveTowerRequirements.ts`
 - `src/pages/ImportPage.tsx`
