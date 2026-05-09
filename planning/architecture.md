@@ -123,6 +123,13 @@ Identity compatibility rules:
 - Uses `mastery_possible` as a small durable flag; `unknown` means the item is recognized locally but should not be treated as mastery-eligible by inference alone
 - Initial coverage is generated from current local reference CSVs and should be broadened through reviewed catalog, alias, and museum-input workflows rather than snapshots
 
+### `item_aliases.csv`
+
+- Reviewed alias mapping layer on top of normalized-name canonical identity
+- Approved aliases may resolve alternate observed names to catalog canonical keys, but unresolved or unapproved names remain visible
+- The checked-in file may be header-only until a maintainer reviews and intentionally adds aliases
+- Aliases must not make external IDs, Buddy slugs, or snapshot-only names canonical
+
 ### `museum_lookup_coverage.csv`
 
 - Maintained local coverage input generated from the internal Museum Tools workflow
@@ -175,6 +182,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `src/lib/loadMasteryDifficulty.ts`
 - `src/lib/loadTowerRequirements.ts`
 - `src/lib/loadItemCatalog.ts`
+- `src/lib/itemAliases.ts`
 - `src/lib/loadMuseumLookupCoverage.ts`
 - `src/lib/deriveMasteryDifficultyStats.ts`
 - `src/lib/deriveTowerRequirements.ts`
@@ -185,6 +193,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `data/mastery_difficulty.csv`
 - `data/tower_requirements.csv`
 - `data/item_catalog.csv`
+- `data/item_aliases.csv`
 - `data/museum_lookup_coverage.csv`
 
 ## Change Guidance
