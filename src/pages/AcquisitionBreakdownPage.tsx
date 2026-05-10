@@ -20,6 +20,16 @@ import {
   type UserCraftingModifierState,
 } from '../lib/craftingModifierState';
 import { deriveFuturePetProductionForecast } from '../lib/deriveFuturePetProductionForecast';
+import {
+  createDefaultDropRateAcquisitionSettings,
+  loadDropRateAcquisitionSettings,
+  type DropRateAcquisitionSettings,
+} from '../lib/dropRateAcquisitionSettings';
+import {
+  loadDropRateReference,
+  type DropRateReferenceData,
+  type DropRateReferenceEntry,
+} from '../lib/loadDropRateReference';
 import { loadRecipeGraph, type RecipeGraph } from '../lib/loadRecipeGraph';
 import { loadTowerRequirements, type TowerRequirementsData } from '../lib/loadTowerRequirements';
 import {
@@ -41,6 +51,11 @@ type KnownCoverage = {
   futurePetQuantity: number;
 };
 
+type MatchingDropRateCoverage = {
+  matchingRows: DropRateReferenceEntry[];
+  hiddenSettingVariantCount: number;
+};
+
 const CONSUMABLE_LABELS: Record<ConsumableAcquisitionSourceKey, string> = {
   apple_cider: 'Apple Cider',
   lemonade: 'Lemonade',
@@ -49,6 +64,20 @@ const CONSUMABLE_LABELS: Record<ConsumableAcquisitionSourceKey, string> = {
 
 function formatAmount(value: number): string {
   return Math.round(value).toLocaleString();
+}
+
+function formatDropRate(value: number): string {
+  return value.toLocaleString(undefined, {
+    maximumFractionDigits: 3,
+  });
+}
+
+function formatSourceType(value: string): string {
+  return value
+    .split(/[_\s-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
 }
 
 function parseNumberInput(value: string): number {
@@ -125,6 +154,53 @@ function getCoverageTotal(coverage: KnownCoverage): number {
   );
 }
 
+function dropRateRowMatchesSettings(
+  row: DropRateReferenceEntry,
+  settings: DropRateAcquisitionSettings,
+): boolean {
+  if (row.ironDepot !== null && row.ironDepot !== settings.perks.ironDepotActive) {
+    return false;
+  }
+
+  if (row.runecube !== null && row.runecube !== settings.perks.eagleEyeRunecubeActive) {
+    return false;
+  }
+
+  return true;
+}
+
+function getMatchingDropRateCoverage(
+  dropRateReference: DropRateReferenceData | null,
+  selectedCanonicalKey: string,
+  settings: DropRateAcquisitionSettings,
+): MatchingDropRateCoverage {
+  const rows = dropRateReference?.byTargetCanonicalKey[selectedCanonicalKey] ?? [];
+  const matchingRows = rows.filter((row) => dropRateRowMatchesSettings(row, settings));
+
+  return {
+    matchingRows,
+    hiddenSettingVariantCount: rows.length - matchingRows.length,
+  };
+}
+
+function getDropRateVariantLabels(row: DropRateReferenceEntry): string {
+  const labels: string[] = [];
+
+  if (row.ironDepot !== null) {
+    labels.push(row.ironDepot ? 'Iron Depot on' : 'Iron Depot off');
+  }
+
+  if (row.runecube !== null) {
+    labels.push(row.runecube ? 'Runecube on' : 'Runecube off');
+  }
+
+  if (row.manualFishing !== null) {
+    labels.push(row.manualFishing ? 'Manual fishing' : 'Net fishing');
+  }
+
+  return labels.length > 0 ? labels.join(', ') : 'Default';
+}
+
 export function AcquisitionBreakdownPage() {
   const [searchParams] = useSearchParams();
   const [resourcesState, setResourcesState] = useState<{
@@ -132,17 +208,21 @@ export function AcquisitionBreakdownPage() {
     snapshotError: string | null;
     recipeError: string | null;
     towerError: string | null;
+    dropRateError: string | null;
     snapshot: MasterySnapshot | null;
     recipeGraph: RecipeGraph | null;
     towerRequirementsData: TowerRequirementsData | null;
+    dropRateReference: DropRateReferenceData | null;
   }>({
     isLoading: true,
     snapshotError: null,
     recipeError: null,
     towerError: null,
+    dropRateError: null,
     snapshot: null,
     recipeGraph: null,
     towerRequirementsData: null,
+    dropRateReference: null,
   });
   const [modifierState, setModifierState] = useState<UserCraftingModifierState>(() => {
     try {
@@ -156,6 +236,13 @@ export function AcquisitionBreakdownPage() {
       return loadAcquisitionPlannerInputState();
     } catch {
       return createDefaultAcquisitionPlannerInputState();
+    }
+  });
+  const [dropRateSettings, setDropRateSettings] = useState<DropRateAcquisitionSettings>(() => {
+    try {
+      return loadDropRateAcquisitionSettings();
+    } catch {
+      return createDefaultDropRateAcquisitionSettings();
     }
   });
   const [itemQuery, setItemQuery] = useState('');
@@ -174,6 +261,7 @@ export function AcquisitionBreakdownPage() {
     let isMounted = true;
     let loadedModifierState: UserCraftingModifierState;
     let loadedAcquisitionState: AcquisitionPlannerInputState;
+    let loadedDropRateSettings: DropRateAcquisitionSettings;
 
     try {
       loadedModifierState = loadCraftingModifierState();
@@ -187,8 +275,15 @@ export function AcquisitionBreakdownPage() {
       loadedAcquisitionState = createDefaultAcquisitionPlannerInputState();
     }
 
+    try {
+      loadedDropRateSettings = loadDropRateAcquisitionSettings();
+    } catch {
+      loadedDropRateSettings = createDefaultDropRateAcquisitionSettings();
+    }
+
     setModifierState(loadedModifierState);
     setAcquisitionState(loadedAcquisitionState);
+    setDropRateSettings(loadedDropRateSettings);
 
     void getLatestSnapshot()
       .then(async (snapshot) => {
@@ -202,9 +297,11 @@ export function AcquisitionBreakdownPage() {
             snapshotError: null,
             recipeError: null,
             towerError: null,
+            dropRateError: null,
             snapshot: null,
             recipeGraph: null,
             towerRequirementsData: null,
+            dropRateReference: null,
           });
           return;
         }
@@ -214,6 +311,15 @@ export function AcquisitionBreakdownPage() {
             loadRecipeGraph(),
             loadTowerRequirements(),
           ]);
+          let dropRateReference: DropRateReferenceData | null = null;
+          let dropRateError: string | null = null;
+
+          try {
+            dropRateReference = await loadDropRateReference();
+          } catch (error: unknown) {
+            dropRateError =
+              error instanceof Error ? error.message : 'Unable to load local drop-rate reference data.';
+          }
 
           if (!isMounted) {
             return;
@@ -224,9 +330,11 @@ export function AcquisitionBreakdownPage() {
             snapshotError: null,
             recipeError: null,
             towerError: null,
+            dropRateError,
             snapshot,
             recipeGraph,
             towerRequirementsData,
+            dropRateReference,
           });
         } catch (error: unknown) {
           if (!isMounted) {
@@ -241,9 +349,11 @@ export function AcquisitionBreakdownPage() {
             snapshotError: null,
             recipeError: message.includes('recipe') ? message : null,
             towerError: message.includes('tower') ? message : null,
+            dropRateError: message.includes('drop-rate') ? message : null,
             snapshot,
             recipeGraph: null,
             towerRequirementsData: null,
+            dropRateReference: null,
           });
         }
       })
@@ -257,9 +367,11 @@ export function AcquisitionBreakdownPage() {
           snapshotError: error instanceof Error ? error.message : 'Unable to load local snapshots.',
           recipeError: null,
           towerError: null,
+          dropRateError: null,
           snapshot: null,
           recipeGraph: null,
           towerRequirementsData: null,
+          dropRateReference: null,
         });
       });
 
@@ -332,6 +444,16 @@ export function AcquisitionBreakdownPage() {
   }, [itemOptions, requestedCanonicalKey]);
 
   const selectedBurden = getSelectedBurden(burdenResult, selectedCanonicalKey);
+  const selectedDropRateCoverage = selectedBurden
+    ? getMatchingDropRateCoverage(
+      resourcesState.dropRateReference,
+      selectedBurden.canonicalKey,
+      dropRateSettings,
+    )
+    : {
+      matchingRows: [],
+      hiddenSettingVariantCount: 0,
+    };
   const selectedRequiredQuantity = selectedBurden
     ? Math.ceil(selectedBurden.totalRequiredEffectiveOutput)
     : 0;
@@ -380,6 +502,9 @@ export function AcquisitionBreakdownPage() {
       : null,
     manualEstimate?.calculable && manualEstimate.requiredItemCount > 0
       ? `Manual Explore needs about ${formatAmount(manualEstimate.staminaNeeded)} stamina for the current remainder.`
+      : null,
+    selectedDropRateCoverage.matchingRows.length > 0
+      ? `${selectedDropRateCoverage.matchingRows.length.toLocaleString()} imported Buddy source${selectedDropRateCoverage.matchingRows.length === 1 ? '' : 's'} available for this item.`
       : null,
     selectedConsumableCapacity > 0
       ? `Selected consumables can cover up to ${formatAmount(selectedConsumableCapacity)} item(s) if this item is eligible for those drops.`
@@ -442,6 +567,12 @@ export function AcquisitionBreakdownPage() {
 
         {!resourcesState.isLoading && resourcesState.towerError ? (
           <p className="status-message status-message--error">{resourcesState.towerError}</p>
+        ) : null}
+
+        {!resourcesState.isLoading && resourcesState.dropRateError ? (
+          <p className="status-message">
+            Imported drop-rate coverage could not be loaded. Manual source comparison still works.
+          </p>
         ) : null}
 
         {!resourcesState.isLoading && resourcesState.snapshot && burdenResult ? (
@@ -541,6 +672,63 @@ export function AcquisitionBreakdownPage() {
                   </tbody>
                 </table>
               </div>
+
+              <section className="page-stack" aria-labelledby="acquisition-breakdown-imported-sources-title">
+                <div>
+                  <h3 id="acquisition-breakdown-imported-sources-title" className="section-title">
+                    Imported source coverage
+                  </h3>
+                  <p className="subtle-text">
+                    Buddy-derived rows are filtered by your saved drop-rate assumptions in Settings.
+                  </p>
+                </div>
+
+                {selectedDropRateCoverage.matchingRows.length > 0 ? (
+                  <div className="table-scroll">
+                    <table className="summary-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Source</th>
+                          <th scope="col">Type</th>
+                          <th scope="col">Buddy rate</th>
+                          <th scope="col">Setting match</th>
+                          <th scope="col">Provenance</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedDropRateCoverage.matchingRows.map((row) => (
+                          <tr key={`${row.sourceCanonicalKey}:${row.rawRate}:${row.sourcePageUrl}`}>
+                            <td>{row.sourceName}</td>
+                            <td>{formatSourceType(row.sourceType)}</td>
+                            <td>{formatDropRate(row.rawRate)}</td>
+                            <td>{getDropRateVariantLabels(row)}</td>
+                            <td>
+                              <a href={row.sourcePageUrl} target="_blank" rel="noreferrer">
+                                Buddy source page
+                              </a>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : resourcesState.dropRateReference && resourcesState.dropRateReference.entries.length > 0 ? (
+                  <p className="empty-state">
+                    No imported Buddy rows match this item under the current drop-rate assumptions.
+                  </p>
+                ) : (
+                  <p className="empty-state">
+                    No imported Buddy rows are available yet. Manual source comparison is still available below.
+                  </p>
+                )}
+
+                {selectedDropRateCoverage.hiddenSettingVariantCount > 0 ? (
+                  <p className="subtle-text">
+                    {selectedDropRateCoverage.hiddenSettingVariantCount.toLocaleString()} row
+                    {selectedDropRateCoverage.hiddenSettingVariantCount === 1 ? '' : 's'} hidden by current Settings.
+                  </p>
+                ) : null}
+              </section>
 
               <section className="page-stack" aria-labelledby="acquisition-breakdown-source-title">
                 <div>

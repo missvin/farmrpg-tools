@@ -9,6 +9,8 @@ const {
   loadTowerRequirements,
   loadCraftingModifierState,
   loadAcquisitionPlannerInputState,
+  loadDropRateAcquisitionSettings,
+  loadDropRateReference,
   calculateRecursiveIngredientBurden,
 } = vi.hoisted(() => ({
   getLatestSnapshot: vi.fn(),
@@ -16,6 +18,8 @@ const {
   loadTowerRequirements: vi.fn(),
   loadCraftingModifierState: vi.fn(),
   loadAcquisitionPlannerInputState: vi.fn(),
+  loadDropRateAcquisitionSettings: vi.fn(),
+  loadDropRateReference: vi.fn(),
   calculateRecursiveIngredientBurden: vi.fn(),
 }));
 
@@ -49,11 +53,25 @@ vi.mock('../lib/acquisitionPlannerState', async () => {
   };
 });
 
+vi.mock('../lib/dropRateAcquisitionSettings', async () => {
+  const actual = await vi.importActual('../lib/dropRateAcquisitionSettings');
+
+  return {
+    ...actual,
+    loadDropRateAcquisitionSettings,
+  };
+});
+
+vi.mock('../lib/loadDropRateReference', () => ({
+  loadDropRateReference,
+}));
+
 vi.mock('../lib/recursiveIngredientBurden', () => ({
   calculateRecursiveIngredientBurden,
 }));
 
 import { createDefaultAcquisitionPlannerInputState } from '../lib/acquisitionPlannerState';
+import { createDefaultDropRateAcquisitionSettings } from '../lib/dropRateAcquisitionSettings';
 import { AcquisitionBreakdownPage } from './AcquisitionBreakdownPage';
 
 const SNAPSHOT = {
@@ -179,6 +197,10 @@ describe('AcquisitionBreakdownPage', () => {
       entries: [],
       byCanonicalKey: {},
     });
+    loadDropRateReference.mockResolvedValue({
+      entries: [],
+      byTargetCanonicalKey: {},
+    });
     loadCraftingModifierState.mockReturnValue({
       schemaVersion: 1,
       persistent: {
@@ -197,6 +219,7 @@ describe('AcquisitionBreakdownPage', () => {
       },
     });
     loadAcquisitionPlannerInputState.mockReturnValue(acquisitionState);
+    loadDropRateAcquisitionSettings.mockReturnValue(createDefaultDropRateAcquisitionSettings());
     calculateRecursiveIngredientBurden.mockReturnValue(createBurdenResult());
   });
 
@@ -228,5 +251,123 @@ describe('AcquisitionBreakdownPage', () => {
     expect(screen.getByText('Use known stockpiles, containers, and stored pet inventory first: 30 item(s).')).toBeInTheDocument();
     expect(screen.getByText('Manual Explore needs about 224 stamina for the current remainder.')).toBeInTheDocument();
     expect(screen.getByText('Selected consumables can cover up to 20 item(s) if this item is eligible for those drops.')).toBeInTheDocument();
+  });
+
+  it('shows imported Buddy source coverage filtered by saved drop-rate settings', async () => {
+    loadDropRateReference.mockResolvedValue({
+      entries: [
+        {
+          targetItemName: 'Twine',
+          targetCanonicalKey: 'twine',
+          sourceName: 'Small Cave',
+          sourceCanonicalKey: 'small cave',
+          sourceType: 'explore',
+          sourceKind: 'location',
+          rowKind: 'location_item',
+          rawRate: 25,
+          baseDropRate: 0.4,
+          sourcePageType: 'location',
+          sourcePageName: 'Small Cave',
+          sourcePageUrl: 'https://buddy.farm/l/small-cave/',
+          pageDataUrl: 'https://buddy.farm/page-data/l/small-cave/page-data.json',
+          targetItemId: null,
+          targetItemImage: null,
+          sourceImage: null,
+          ironDepot: true,
+          manualFishing: null,
+          runecube: true,
+          flags: [],
+          notes: [],
+        },
+        {
+          targetItemName: 'Twine',
+          targetCanonicalKey: 'twine',
+          sourceName: 'Small Cave',
+          sourceCanonicalKey: 'small cave',
+          sourceType: 'explore',
+          sourceKind: 'location',
+          rowKind: 'location_item',
+          rawRate: 20,
+          baseDropRate: 0.4,
+          sourcePageType: 'location',
+          sourcePageName: 'Small Cave',
+          sourcePageUrl: 'https://buddy.farm/l/small-cave/',
+          pageDataUrl: 'https://buddy.farm/page-data/l/small-cave/page-data.json',
+          targetItemId: null,
+          targetItemImage: null,
+          sourceImage: null,
+          ironDepot: false,
+          manualFishing: null,
+          runecube: true,
+          flags: [],
+          notes: [],
+        },
+      ],
+      byTargetCanonicalKey: {
+        twine: [
+          {
+            targetItemName: 'Twine',
+            targetCanonicalKey: 'twine',
+            sourceName: 'Small Cave',
+            sourceCanonicalKey: 'small cave',
+            sourceType: 'explore',
+            sourceKind: 'location',
+            rowKind: 'location_item',
+            rawRate: 25,
+            baseDropRate: 0.4,
+            sourcePageType: 'location',
+            sourcePageName: 'Small Cave',
+            sourcePageUrl: 'https://buddy.farm/l/small-cave/',
+            pageDataUrl: 'https://buddy.farm/page-data/l/small-cave/page-data.json',
+            targetItemId: null,
+            targetItemImage: null,
+            sourceImage: null,
+            ironDepot: true,
+            manualFishing: null,
+            runecube: true,
+            flags: [],
+            notes: [],
+          },
+          {
+            targetItemName: 'Twine',
+            targetCanonicalKey: 'twine',
+            sourceName: 'Small Cave',
+            sourceCanonicalKey: 'small cave',
+            sourceType: 'explore',
+            sourceKind: 'location',
+            rowKind: 'location_item',
+            rawRate: 20,
+            baseDropRate: 0.4,
+            sourcePageType: 'location',
+            sourcePageName: 'Small Cave',
+            sourcePageUrl: 'https://buddy.farm/l/small-cave/',
+            pageDataUrl: 'https://buddy.farm/page-data/l/small-cave/page-data.json',
+            targetItemId: null,
+            targetItemImage: null,
+            sourceImage: null,
+            ironDepot: false,
+            manualFishing: null,
+            runecube: true,
+            flags: [],
+            notes: [],
+          },
+        ],
+      },
+    });
+
+    render(
+      <MemoryRouter>
+        <AcquisitionBreakdownPage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(await screen.findByLabelText('Item'), { target: { value: 'Twine' } });
+
+    expect(await screen.findByText('Imported source coverage')).toBeInTheDocument();
+    expect(screen.getByText('Small Cave')).toBeInTheDocument();
+    expect(screen.getByText('25')).toBeInTheDocument();
+    expect(screen.getByText('Iron Depot on, Runecube on')).toBeInTheDocument();
+    expect(screen.getByText('1 row hidden by current Settings.')).toBeInTheDocument();
+    expect(screen.getByText('1 imported Buddy source available for this item.')).toBeInTheDocument();
   });
 });
