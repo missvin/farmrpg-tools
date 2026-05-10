@@ -24,6 +24,13 @@ import {
 } from '../lib/appBackupRestore';
 import type { AppBackupPayloadV1 } from '../lib/appBackupSchema';
 import { deriveFuturePetProductionForecast } from '../lib/deriveFuturePetProductionForecast';
+import {
+  loadDropRateAcquisitionSettings,
+  saveDropRateAcquisitionSettings,
+  type DropRateExploringUnit,
+  type DropRateFarmingUnit,
+  type DropRateFishingUnit,
+} from '../lib/dropRateAcquisitionSettings';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import { parseStoredPetInventoryPaste } from '../lib/parseStoredPetInventoryPaste';
 
@@ -38,6 +45,9 @@ function formatForecastQuantity(value: number): string {
 
 export function SettingsPage() {
   const [acquisitionPlannerState, setAcquisitionPlannerState] = useState(() => loadAcquisitionPlannerInputState());
+  const [dropRateSettings, setDropRateSettings] = useState(() => loadDropRateAcquisitionSettings());
+  const [dropRateSettingsMessage, setDropRateSettingsMessage] = useState<string | null>(null);
+  const [dropRateSettingsError, setDropRateSettingsError] = useState<string | null>(null);
   const [ownedItemName, setOwnedItemName] = useState('');
   const [ownedItemCount, setOwnedItemCount] = useState('1');
   const [ownedItemSourceCategory, setOwnedItemSourceCategory] =
@@ -391,6 +401,21 @@ export function SettingsPage() {
     }
   }
 
+  function handleSaveDropRateSettings(): void {
+    try {
+      const savedSettings = saveDropRateAcquisitionSettings(dropRateSettings);
+
+      setDropRateSettings(savedSettings);
+      setDropRateSettingsError(null);
+      setDropRateSettingsMessage('Saved drop-rate assumptions.');
+    } catch (error) {
+      setDropRateSettingsMessage(null);
+      setDropRateSettingsError(
+        error instanceof Error ? error.message : 'Unable to save drop-rate assumptions.',
+      );
+    }
+  }
+
   async function handleExportBackup(): Promise<void> {
     setIsExporting(true);
     setExportMessage(null);
@@ -486,6 +511,258 @@ export function SettingsPage() {
 
         {exportMessage ? <p className="status-message status-message--success">{exportMessage}</p> : null}
         {exportError ? <p className="status-message status-message--error">{exportError}</p> : null}
+      </section>
+
+      <section className="page-card page-stack" aria-labelledby="settings-drop-rate-title">
+        <div>
+          <h2 id="settings-drop-rate-title">Drop-Rate Assumptions</h2>
+          <p className="supporting-text">
+            Set the perks and display units used by Buddy-style drop-rate planning. These settings are local-only and
+            default to the current all-perks testing setup.
+          </p>
+        </div>
+
+        <div className="summary-grid">
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={dropRateSettings.perks.ironDepotActive}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  perks: {
+                    ...dropRateSettings.perks,
+                    ironDepotActive: event.target.checked,
+                  },
+                });
+              }}
+            />
+            <span>Iron Depot</span>
+          </label>
+
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={dropRateSettings.perks.cinnamonSticksActive}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  perks: {
+                    ...dropRateSettings.perks,
+                    cinnamonSticksActive: event.target.checked,
+                  },
+                });
+              }}
+            />
+            <span>Cinnamon Sticks</span>
+          </label>
+
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={dropRateSettings.perks.lemonSqueezerActive}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  perks: {
+                    ...dropRateSettings.perks,
+                    lemonSqueezerActive: event.target.checked,
+                  },
+                });
+              }}
+            />
+            <span>Lemon Squeezer</span>
+          </label>
+
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={dropRateSettings.perks.reinforcedNettingActive}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  perks: {
+                    ...dropRateSettings.perks,
+                    reinforcedNettingActive: event.target.checked,
+                  },
+                });
+              }}
+            />
+            <span>Reinforced Netting</span>
+          </label>
+
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={dropRateSettings.perks.fishingTrawlActive}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  perks: {
+                    ...dropRateSettings.perks,
+                    fishingTrawlActive: event.target.checked,
+                  },
+                });
+              }}
+            />
+            <span>Fishing Trawl</span>
+          </label>
+
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={dropRateSettings.perks.eagleEyeRunecubeActive}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  perks: {
+                    ...dropRateSettings.perks,
+                    eagleEyeRunecubeActive: event.target.checked,
+                  },
+                });
+              }}
+            />
+            <span>Eagle Eye / Runecube</span>
+          </label>
+        </div>
+
+        <div className="summary-grid">
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="drop-rate-wanderer-percent">
+              Wanderer %
+            </label>
+            <input
+              id="drop-rate-wanderer-percent"
+              className="text-input"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              value={dropRateSettings.perks.wandererPercent}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  perks: {
+                    ...dropRateSettings.perks,
+                    wandererPercent: Number(event.target.value),
+                  },
+                });
+              }}
+            />
+          </div>
+
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="drop-rate-resource-saver-percent">
+              Resource Saver %
+            </label>
+            <input
+              id="drop-rate-resource-saver-percent"
+              className="text-input"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              value={dropRateSettings.perks.resourceSaverPercent}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  perks: {
+                    ...dropRateSettings.perks,
+                    resourceSaverPercent: Number(event.target.value),
+                  },
+                });
+              }}
+            />
+          </div>
+
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="drop-rate-exploring-unit">
+              Exploring unit
+            </label>
+            <select
+              id="drop-rate-exploring-unit"
+              className="text-input"
+              value={dropRateSettings.units.exploring}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  units: {
+                    ...dropRateSettings.units,
+                    exploring: event.target.value as DropRateExploringUnit,
+                  },
+                });
+              }}
+            >
+              <option value="explores">Explores</option>
+              <option value="stamina">Stamina</option>
+              <option value="orange_juices">Orange Juices</option>
+              <option value="apple_ciders">Apple Ciders</option>
+              <option value="lemonades">Lemonades</option>
+              <option value="arnold_palmers">Arnold Palmers</option>
+            </select>
+          </div>
+
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="drop-rate-fishing-unit">
+              Fishing unit
+            </label>
+            <select
+              id="drop-rate-fishing-unit"
+              className="text-input"
+              value={dropRateSettings.units.fishing}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  units: {
+                    ...dropRateSettings.units,
+                    fishing: event.target.value as DropRateFishingUnit,
+                  },
+                });
+              }}
+            >
+              <option value="fish">Fish</option>
+              <option value="fishing_nets">Fishing Nets</option>
+              <option value="large_nets">Large Nets</option>
+            </select>
+          </div>
+
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="drop-rate-farming-unit">
+              Farming unit
+            </label>
+            <select
+              id="drop-rate-farming-unit"
+              className="text-input"
+              value={dropRateSettings.units.farming}
+              onChange={(event) => {
+                setDropRateSettings({
+                  ...dropRateSettings,
+                  units: {
+                    ...dropRateSettings.units,
+                    farming: event.target.value as DropRateFarmingUnit,
+                  },
+                });
+              }}
+            >
+              <option value="crops">Crops</option>
+              <option value="seeds">Seeds</option>
+              <option value="harvest_alls">Harvest-Alls</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="button-row">
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={handleSaveDropRateSettings}
+          >
+            Save Drop-Rate Assumptions
+          </button>
+        </div>
+
+        {dropRateSettingsMessage ? <p className="status-message status-message--success">{dropRateSettingsMessage}</p> : null}
+        {dropRateSettingsError ? <p className="status-message status-message--error">{dropRateSettingsError}</p> : null}
       </section>
 
       <section className="page-card page-stack" aria-labelledby="settings-owned-stockpiles-title">
@@ -992,7 +1269,7 @@ export function SettingsPage() {
           <div className="page-stack">
             <p className="supporting-text">
               Loaded <strong>{restorePreview.filename}</strong>. Confirm restore to replace the current snapshot
-              history, saved crafting/planner modifier state, acquisition planner inputs, and saved theme preference.
+              history, saved planner settings, acquisition inputs, and saved theme preference.
             </p>
 
             <dl className="summary-grid">
@@ -1015,6 +1292,10 @@ export function SettingsPage() {
               <div className="summary-grid__item">
                 <dt>Acquisition planner</dt>
                 <dd>{restorePreview.payload.state.preferences.acquisitionPlannerState ? 'Included' : 'Not included'}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Drop-rate assumptions</dt>
+                <dd>{restorePreview.payload.state.preferences.dropRateAcquisitionSettings ? 'Included' : 'Not included'}</dd>
               </div>
               <div className="summary-grid__item">
                 <dt>Pumpkin Juice planner</dt>

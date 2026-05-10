@@ -9,6 +9,9 @@ const {
   mockSaveAcquisitionPlannerInputState,
   mockLoadAcquisitionPlannerInputState,
   mockClearAcquisitionPlannerInputState,
+  mockSaveDropRateAcquisitionSettings,
+  mockLoadDropRateAcquisitionSettings,
+  mockClearDropRateAcquisitionSettings,
   mockSavePumpkinJuicePlannerState,
   mockLoadPumpkinJuicePlannerState,
   mockClearPumpkinJuicePlannerState,
@@ -30,6 +33,9 @@ const {
   mockSaveAcquisitionPlannerInputState: vi.fn(),
   mockLoadAcquisitionPlannerInputState: vi.fn(),
   mockClearAcquisitionPlannerInputState: vi.fn(),
+  mockSaveDropRateAcquisitionSettings: vi.fn(),
+  mockLoadDropRateAcquisitionSettings: vi.fn(),
+  mockClearDropRateAcquisitionSettings: vi.fn(),
   mockSavePumpkinJuicePlannerState: vi.fn(),
   mockLoadPumpkinJuicePlannerState: vi.fn(),
   mockClearPumpkinJuicePlannerState: vi.fn(),
@@ -59,6 +65,12 @@ vi.mock('./acquisitionPlannerState', () => ({
   loadAcquisitionPlannerInputState: mockLoadAcquisitionPlannerInputState,
   saveAcquisitionPlannerInputState: mockSaveAcquisitionPlannerInputState,
   clearAcquisitionPlannerInputState: mockClearAcquisitionPlannerInputState,
+}));
+
+vi.mock('./dropRateAcquisitionSettings', () => ({
+  loadDropRateAcquisitionSettings: mockLoadDropRateAcquisitionSettings,
+  saveDropRateAcquisitionSettings: mockSaveDropRateAcquisitionSettings,
+  clearDropRateAcquisitionSettings: mockClearDropRateAcquisitionSettings,
 }));
 
 vi.mock('./pumpkinJuicePlannerState', () => ({
@@ -138,6 +150,7 @@ function createBackupPayload() {
     ],
     craftingModifierState: createModifierStateFixture(),
     acquisitionPlannerState: createAcquisitionPlannerStateFixture(),
+    dropRateAcquisitionSettings: createDropRateAcquisitionSettingsFixture(),
     pumpkinJuicePlannerState: createPumpkinJuicePlannerStateFixture(),
     personalMasteryGoalsState: createPersonalMasteryGoalsStateFixture(),
     masteryRaceCountsState: createMasteryRaceCountsStateFixture(),
@@ -232,6 +245,27 @@ function createPumpkinJuicePlannerStateFixture() {
   };
 }
 
+function createDropRateAcquisitionSettingsFixture() {
+  return {
+    schemaVersion: 1 as const,
+    perks: {
+      ironDepotActive: true,
+      wandererPercent: 33,
+      cinnamonSticksActive: true,
+      lemonSqueezerActive: true,
+      reinforcedNettingActive: true,
+      fishingTrawlActive: true,
+      resourceSaverPercent: 45,
+      eagleEyeRunecubeActive: true,
+    },
+    units: {
+      exploring: 'arnold_palmers' as const,
+      fishing: 'large_nets' as const,
+      farming: 'crops' as const,
+    },
+  };
+}
+
 function createPersonalMasteryGoalsStateFixture() {
   return {
     schemaVersion: 1 as const,
@@ -274,6 +308,9 @@ describe('appBackupRestore', () => {
     mockSaveAcquisitionPlannerInputState.mockReset();
     mockLoadAcquisitionPlannerInputState.mockReset();
     mockClearAcquisitionPlannerInputState.mockReset();
+    mockSaveDropRateAcquisitionSettings.mockReset();
+    mockLoadDropRateAcquisitionSettings.mockReset();
+    mockClearDropRateAcquisitionSettings.mockReset();
     mockSavePumpkinJuicePlannerState.mockReset();
     mockLoadPumpkinJuicePlannerState.mockReset();
     mockClearPumpkinJuicePlannerState.mockReset();
@@ -289,6 +326,7 @@ describe('appBackupRestore', () => {
     mockListSnapshots.mockResolvedValue([]);
     mockLoadCraftingModifierState.mockReturnValue(createModifierStateFixture());
     mockLoadAcquisitionPlannerInputState.mockReturnValue(createAcquisitionPlannerStateFixture());
+    mockLoadDropRateAcquisitionSettings.mockReturnValue(createDropRateAcquisitionSettingsFixture());
     mockLoadPumpkinJuicePlannerState.mockReturnValue(createPumpkinJuicePlannerStateFixture());
     mockLoadPersonalMasteryGoalsState.mockReturnValue(createPersonalMasteryGoalsStateFixture());
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
@@ -338,6 +376,9 @@ describe('appBackupRestore', () => {
     expect(mockSaveAcquisitionPlannerInputState).toHaveBeenCalledWith(
       payload.state.preferences.acquisitionPlannerState,
     );
+    expect(mockSaveDropRateAcquisitionSettings).toHaveBeenCalledWith(
+      payload.state.preferences.dropRateAcquisitionSettings,
+    );
     expect(mockSavePumpkinJuicePlannerState).toHaveBeenCalledWith(
       payload.state.preferences.pumpkinJuicePlannerState,
     );
@@ -350,6 +391,7 @@ describe('appBackupRestore', () => {
     expect(mockPersistAppTheme).toHaveBeenCalledWith('dark');
     expect(mockClearCraftingModifierState).not.toHaveBeenCalled();
     expect(mockClearAcquisitionPlannerInputState).not.toHaveBeenCalled();
+    expect(mockClearDropRateAcquisitionSettings).not.toHaveBeenCalled();
     expect(mockClearPumpkinJuicePlannerState).not.toHaveBeenCalled();
     expect(mockClearPersonalMasteryGoalsState).not.toHaveBeenCalled();
     expect(mockClearMasteryRaceCountsState).not.toHaveBeenCalled();
@@ -363,6 +405,7 @@ describe('appBackupRestore', () => {
       snapshots: [],
       craftingModifierState: null,
       acquisitionPlannerState: null,
+      dropRateAcquisitionSettings: null,
       pumpkinJuicePlannerState: null,
       personalMasteryGoalsState: null,
       masteryRaceCountsState: null,
@@ -374,6 +417,7 @@ describe('appBackupRestore', () => {
     expect(mockReplaceSnapshots).toHaveBeenCalledWith([]);
     expect(mockClearCraftingModifierState).toHaveBeenCalledTimes(1);
     expect(mockClearAcquisitionPlannerInputState).toHaveBeenCalledTimes(1);
+    expect(mockClearDropRateAcquisitionSettings).toHaveBeenCalledTimes(1);
     expect(mockClearPumpkinJuicePlannerState).toHaveBeenCalledTimes(1);
     expect(mockClearPersonalMasteryGoalsState).toHaveBeenCalledTimes(1);
     expect(mockClearMasteryRaceCountsState).toHaveBeenCalledTimes(1);
@@ -465,6 +509,7 @@ describe('appBackupRestore', () => {
     ];
     const previousModifierState = createModifierStateFixture();
     const previousAcquisitionPlannerState = createAcquisitionPlannerStateFixture();
+    const previousDropRateAcquisitionSettings = createDropRateAcquisitionSettingsFixture();
     const previousPumpkinJuicePlannerState = createPumpkinJuicePlannerStateFixture();
     const previousPersonalMasteryGoalsState = createPersonalMasteryGoalsStateFixture();
     const previousMasteryRaceCountsState = createMasteryRaceCountsStateFixture();
@@ -472,6 +517,7 @@ describe('appBackupRestore', () => {
     mockListSnapshots.mockResolvedValue(previousSnapshots);
     mockLoadCraftingModifierState.mockReturnValue(previousModifierState);
     mockLoadAcquisitionPlannerInputState.mockReturnValue(previousAcquisitionPlannerState);
+    mockLoadDropRateAcquisitionSettings.mockReturnValue(previousDropRateAcquisitionSettings);
     mockLoadPumpkinJuicePlannerState.mockReturnValue(previousPumpkinJuicePlannerState);
     mockLoadPersonalMasteryGoalsState.mockReturnValue(previousPersonalMasteryGoalsState);
     mockLoadMasteryRaceCountsState.mockReturnValue(previousMasteryRaceCountsState);
@@ -490,6 +536,7 @@ describe('appBackupRestore', () => {
     expect(mockReplaceSnapshots).toHaveBeenNthCalledWith(2, previousSnapshots);
     expect(mockSaveCraftingModifierState).toHaveBeenLastCalledWith(previousModifierState);
     expect(mockSaveAcquisitionPlannerInputState).toHaveBeenLastCalledWith(previousAcquisitionPlannerState);
+    expect(mockSaveDropRateAcquisitionSettings).toHaveBeenLastCalledWith(previousDropRateAcquisitionSettings);
     expect(mockSavePumpkinJuicePlannerState).toHaveBeenLastCalledWith(previousPumpkinJuicePlannerState);
     expect(mockSavePersonalMasteryGoalsState).toHaveBeenLastCalledWith(previousPersonalMasteryGoalsState);
     expect(mockSaveMasteryRaceCountsState).toHaveBeenLastCalledWith(previousMasteryRaceCountsState);

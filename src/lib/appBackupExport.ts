@@ -3,6 +3,7 @@ import packageJson from '../../package.json';
 
 import { loadCraftingModifierState } from './craftingModifierState';
 import { createAppBackupPayload, type AppBackupPayloadV1 } from './appBackupSchema';
+import { loadDropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import { loadMasteryRaceCountsState } from './masteryRaceCounts';
 import { loadPersonalMasteryGoalsState } from './personalMasteryGoals';
 import { loadPumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
@@ -43,6 +44,7 @@ export async function buildCurrentAppBackupPayload(
     snapshots,
     craftingModifierState: loadCraftingModifierState(),
     acquisitionPlannerState: loadAcquisitionPlannerInputState(),
+    dropRateAcquisitionSettings: loadDropRateAcquisitionSettings(),
     pumpkinJuicePlannerState: loadPumpkinJuicePlannerState(),
     personalMasteryGoalsState: loadPersonalMasteryGoalsState(),
     masteryRaceCountsState: loadMasteryRaceCountsState(),

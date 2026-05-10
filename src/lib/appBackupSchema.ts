@@ -1,5 +1,6 @@
 import type { AcquisitionPlannerInputState } from './acquisitionPlannerState';
 import type { UserCraftingModifierState } from './craftingModifierState';
+import type { DropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import type { MasteryRaceCountsState } from './masteryRaceCounts';
 import type { PersonalMasteryGoalsState } from './personalMasteryGoals';
 import type { PumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
@@ -19,6 +20,7 @@ export type AppBackupStateV1 = {
   preferences: {
     craftingModifierState: UserCraftingModifierState | null;
     acquisitionPlannerState?: AcquisitionPlannerInputState | null;
+    dropRateAcquisitionSettings?: DropRateAcquisitionSettings | null;
     pumpkinJuicePlannerState?: PumpkinJuicePlannerState | null;
     personalMasteryGoalsState?: PersonalMasteryGoalsState | null;
     masteryRaceCountsState?: MasteryRaceCountsState | null;
@@ -42,6 +44,7 @@ export type CreateAppBackupPayloadInput = {
   snapshots: MasterySnapshot[];
   craftingModifierState: UserCraftingModifierState | null;
   acquisitionPlannerState: AcquisitionPlannerInputState | null;
+  dropRateAcquisitionSettings?: DropRateAcquisitionSettings | null;
   pumpkinJuicePlannerState?: PumpkinJuicePlannerState | null;
   personalMasteryGoalsState?: PersonalMasteryGoalsState | null;
   masteryRaceCountsState?: MasteryRaceCountsState | null;
@@ -69,6 +72,7 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_theme_preference'
   | 'invalid_modifier_state'
   | 'invalid_acquisition_planner_state'
+  | 'invalid_drop_rate_acquisition_settings'
   | 'invalid_pumpkin_juice_planner_state'
   | 'invalid_personal_mastery_goals_state'
   | 'invalid_mastery_race_counts_state';
@@ -266,6 +270,45 @@ function isValidPumpkinJuicePlannerState(value: unknown): value is PumpkinJuiceP
   );
 }
 
+function isValidDropRateAcquisitionSettings(
+  value: unknown,
+): value is DropRateAcquisitionSettings {
+  if (!isRecord(value) || value.schemaVersion !== 1 || !isRecord(value.perks) || !isRecord(value.units)) {
+    return false;
+  }
+
+  return (
+    isBoolean(value.perks.ironDepotActive) &&
+    isFiniteNonNegativeNumber(value.perks.wandererPercent) &&
+    value.perks.wandererPercent <= 100 &&
+    isBoolean(value.perks.cinnamonSticksActive) &&
+    isBoolean(value.perks.lemonSqueezerActive) &&
+    isBoolean(value.perks.reinforcedNettingActive) &&
+    isBoolean(value.perks.fishingTrawlActive) &&
+    isFiniteNonNegativeNumber(value.perks.resourceSaverPercent) &&
+    value.perks.resourceSaverPercent <= 100 &&
+    isBoolean(value.perks.eagleEyeRunecubeActive) &&
+    (
+      value.units.exploring === 'explores' ||
+      value.units.exploring === 'stamina' ||
+      value.units.exploring === 'orange_juices' ||
+      value.units.exploring === 'apple_ciders' ||
+      value.units.exploring === 'lemonades' ||
+      value.units.exploring === 'arnold_palmers'
+    ) &&
+    (
+      value.units.fishing === 'fish' ||
+      value.units.fishing === 'fishing_nets' ||
+      value.units.fishing === 'large_nets'
+    ) &&
+    (
+      value.units.farming === 'crops' ||
+      value.units.farming === 'seeds' ||
+      value.units.farming === 'harvest_alls'
+    )
+  );
+}
+
 function isValidPersonalMasteryGoal(value: unknown): boolean {
   if (!isRecord(value)) {
     return false;
@@ -439,6 +482,7 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
         preferences: {
           craftingModifierState: input.craftingModifierState,
           acquisitionPlannerState: input.acquisitionPlannerState,
+          dropRateAcquisitionSettings: input.dropRateAcquisitionSettings ?? null,
           pumpkinJuicePlannerState: input.pumpkinJuicePlannerState ?? null,
           personalMasteryGoalsState: input.personalMasteryGoalsState ?? null,
           masteryRaceCountsState: input.masteryRaceCountsState ?? null,
@@ -601,6 +645,19 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       ok: false,
       code: 'invalid_pumpkin_juice_planner_state',
       message: 'The backup file contains malformed Pumpkin Juice planner state.',
+    };
+  }
+
+  const dropRateAcquisitionSettings = value.state.preferences.dropRateAcquisitionSettings;
+  if (
+    dropRateAcquisitionSettings !== undefined &&
+    dropRateAcquisitionSettings !== null &&
+    !isValidDropRateAcquisitionSettings(dropRateAcquisitionSettings)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_drop_rate_acquisition_settings',
+      message: 'The backup file contains malformed drop-rate acquisition settings.',
     };
   }
 

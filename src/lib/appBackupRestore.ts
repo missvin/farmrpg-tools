@@ -8,6 +8,11 @@ import {
   clearCraftingModifierState,
   saveCraftingModifierState,
 } from './craftingModifierState';
+import {
+  clearDropRateAcquisitionSettings,
+  loadDropRateAcquisitionSettings,
+  saveDropRateAcquisitionSettings,
+} from './dropRateAcquisitionSettings';
 import { validateAppBackupPayloadV1, type AppBackupPayloadV1 } from './appBackupSchema';
 import {
   clearMasteryRaceCountsState,
@@ -57,6 +62,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   const currentSnapshots = await listSnapshots();
   const currentCraftingModifierState = loadCraftingModifierState();
   const currentAcquisitionPlannerState = loadAcquisitionPlannerInputState();
+  const currentDropRateAcquisitionSettings = loadDropRateAcquisitionSettings();
   const currentPumpkinJuicePlannerState = loadPumpkinJuicePlannerState();
   const currentPersonalMasteryGoalsState = loadPersonalMasteryGoalsState();
   const currentMasteryRaceCountsState = loadMasteryRaceCountsState();
@@ -75,6 +81,12 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       saveAcquisitionPlannerInputState(payload.state.preferences.acquisitionPlannerState);
     } else {
       clearAcquisitionPlannerInputState();
+    }
+
+    if (payload.state.preferences.dropRateAcquisitionSettings) {
+      saveDropRateAcquisitionSettings(payload.state.preferences.dropRateAcquisitionSettings);
+    } else {
+      clearDropRateAcquisitionSettings();
     }
 
     if (payload.state.preferences.pumpkinJuicePlannerState) {
@@ -104,6 +116,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     await replaceSnapshots(currentSnapshots);
     saveCraftingModifierState(currentCraftingModifierState);
     saveAcquisitionPlannerInputState(currentAcquisitionPlannerState);
+    saveDropRateAcquisitionSettings(currentDropRateAcquisitionSettings);
     savePumpkinJuicePlannerState(currentPumpkinJuicePlannerState);
     savePersonalMasteryGoalsState(currentPersonalMasteryGoalsState);
     saveMasteryRaceCountsState(currentMasteryRaceCountsState);

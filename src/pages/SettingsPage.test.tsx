@@ -7,6 +7,10 @@ import {
   loadAcquisitionPlannerInputState,
 } from '../lib/acquisitionPlannerState';
 import { createAppBackupPayload } from '../lib/appBackupSchema';
+import {
+  DROP_RATE_ACQUISITION_SETTINGS_STORAGE_KEY,
+  loadDropRateAcquisitionSettings,
+} from '../lib/dropRateAcquisitionSettings';
 
 const {
   mockExportCurrentAppBackupFile,
@@ -111,6 +115,7 @@ describe('SettingsPage', () => {
       },
     });
     window.localStorage.removeItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY);
+    window.localStorage.removeItem(DROP_RATE_ACQUISITION_SETTINGS_STORAGE_KEY);
   });
 
   it('exports the full local backup file from the settings page', async () => {
@@ -217,6 +222,33 @@ describe('SettingsPage', () => {
 
     expect(screen.getByText('No owned-now stockpile items saved yet.')).toBeInTheDocument();
     expect(loadAcquisitionPlannerInputState().ownedNow.entries).toEqual([]);
+  });
+
+  it('saves local drop-rate assumptions from settings', async () => {
+    const user = userEvent.setup();
+
+    render(<SettingsPage />);
+
+    await user.click(screen.getByLabelText('Iron Depot'));
+    await user.clear(screen.getByLabelText('Wanderer %'));
+    await user.type(screen.getByLabelText('Wanderer %'), '7');
+    await user.selectOptions(screen.getByLabelText('Exploring unit'), 'stamina');
+    await user.selectOptions(screen.getByLabelText('Fishing unit'), 'fish');
+    await user.selectOptions(screen.getByLabelText('Farming unit'), 'harvest_alls');
+    await user.click(screen.getByRole('button', { name: 'Save Drop-Rate Assumptions' }));
+
+    expect(await screen.findByText('Saved drop-rate assumptions.')).toBeInTheDocument();
+    expect(loadDropRateAcquisitionSettings()).toMatchObject({
+      perks: {
+        ironDepotActive: false,
+        wandererPercent: 7,
+      },
+      units: {
+        exploring: 'stamina',
+        fishing: 'fish',
+        farming: 'harvest_alls',
+      },
+    });
   });
 
   it('saves and imports stored pet inventory separately from owned-now stockpiles', async () => {

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { createDefaultAcquisitionPlannerInputState } from './acquisitionPlannerState';
 import { createDefaultCraftingModifierState } from './craftingModifierState';
+import { createDefaultDropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import { createDefaultPumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
 import {
   APP_BACKUP_PAYLOAD_KIND,
@@ -73,6 +74,7 @@ describe('appBackupSchema', () => {
       },
     };
     const acquisitionPlannerState = createAcquisitionPlannerStateFixture();
+    const dropRateAcquisitionSettings = createDefaultDropRateAcquisitionSettings();
     const pumpkinJuicePlannerState = createDefaultPumpkinJuicePlannerState();
     const personalMasteryGoalsState = {
       schemaVersion: 1 as const,
@@ -107,6 +109,7 @@ describe('appBackupSchema', () => {
       snapshots,
       craftingModifierState,
       acquisitionPlannerState,
+      dropRateAcquisitionSettings,
       pumpkinJuicePlannerState,
       personalMasteryGoalsState,
       masteryRaceCountsState,
@@ -125,6 +128,7 @@ describe('appBackupSchema', () => {
         preferences: {
           craftingModifierState,
           acquisitionPlannerState,
+          dropRateAcquisitionSettings,
           pumpkinJuicePlannerState,
           personalMasteryGoalsState,
           masteryRaceCountsState,
@@ -380,6 +384,36 @@ describe('appBackupSchema', () => {
       ok: false,
       code: 'invalid_acquisition_planner_state',
       message: 'The backup file contains malformed acquisition planner state.',
+    });
+
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: APP_BACKUP_SCHEMA_VERSION,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [],
+          preferences: {
+            craftingModifierState: null,
+            acquisitionPlannerState: null,
+            dropRateAcquisitionSettings: {
+              ...createDefaultDropRateAcquisitionSettings(),
+              perks: {
+                ...createDefaultDropRateAcquisitionSettings().perks,
+                resourceSaverPercent: 150,
+              },
+            },
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'invalid_drop_rate_acquisition_settings',
+      message: 'The backup file contains malformed drop-rate acquisition settings.',
     });
   });
 });
