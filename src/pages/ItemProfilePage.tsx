@@ -4,13 +4,23 @@ import { Link, useParams } from 'react-router-dom';
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import {
+  createDefaultAcquisitionPlannerInputState,
+  loadAcquisitionPlannerInputState,
+  type AcquisitionPlannerInputState,
+} from '../lib/acquisitionPlannerState';
+import {
   createDefaultCraftingModifierState,
   loadCraftingModifierState,
   type UserCraftingModifierState,
 } from '../lib/craftingModifierState';
+import {
+  deriveItemAcquisitionContext,
+  type ItemAcquisitionContext,
+} from '../lib/itemAcquisitionContext';
 import { decodeItemProfileParam, toItemProfilePath } from '../lib/itemProfileRoutes';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { resolveItemProfile, type ItemProfile, type ItemProfileTowerTarget } from '../lib/itemProfileResolver';
+import { loadDropRateReference, type DropRateReferenceData } from '../lib/loadDropRateReference';
 import { loadItemCatalog, type ItemCatalogData } from '../lib/loadItemCatalog';
 import { loadRecipeGraph, type RecipeGraph, type RecipeInput, type RecipeNode } from '../lib/loadRecipeGraph';
 import {
@@ -33,6 +43,7 @@ type ItemProfileResources = {
   itemCatalog: ItemCatalogData | null;
   towerRequirementsData: TowerRequirementsData | null;
   recipeGraph: RecipeGraph | null;
+  dropRateReference: DropRateReferenceData | null;
 };
 
 type MasteryMilestone = {
@@ -230,6 +241,14 @@ function getTowerProgressPath(profile: ItemProfile): string {
   return `/tower-progress?${searchParams.toString()}`;
 }
 
+function getAcquisitionBreakdownPath(profile: ItemProfile): string {
+  const searchParams = new URLSearchParams({
+    item: profile.canonicalKey,
+  });
+
+  return `/acquisition-breakdown?${searchParams.toString()}`;
+}
+
 function RecipeInputRow({ input }: { input: RecipeInput }) {
   const icon = getItemIcon(input.canonicalKey);
 
@@ -337,9 +356,66 @@ function ItemBurdenTargetCard({ target }: { target: ItemBurdenTarget }) {
   );
 }
 
+function ItemAcquisitionContextSection({
+  context,
+  profile,
+}: {
+  context: ItemAcquisitionContext;
+  profile: ItemProfile;
+}) {
+  return (
+    <section className="page-card page-stack" aria-labelledby="item-profile-acquisition-title">
+      <div>
+        <h2 id="item-profile-acquisition-title">Acquisition</h2>
+        <p className="supporting-text">
+          Saved source context for this item, with detailed source comparison kept in Acquisition Breakdown.
+        </p>
+      </div>
+
+      <dl className="summary-grid">
+        <div className="summary-grid__item">
+          <dt>Needed by Material Planner</dt>
+          <dd>{context.requiredQuantity === null ? 'Not currently needed' : formatMastery(context.requiredQuantity)}</dd>
+        </div>
+        <div className="summary-grid__item">
+          <dt>Saved sources</dt>
+          <dd>{formatMastery(context.totalSavedQuantity)}</dd>
+          <p className="subtle-text">
+            {formatMastery(context.immediateSavedQuantity)} now
+            {context.futurePetQuantity > 0 ? `, ${formatMastery(context.futurePetQuantity)} from future pets` : ''}
+          </p>
+        </div>
+        <div className="summary-grid__item">
+          <dt>Known drop sources</dt>
+          <dd>{context.dropRateSourceCount.toLocaleString()}</dd>
+        </div>
+      </dl>
+
+      {context.hasBreakdownTarget ? (
+        <Link className="quick-link-card" to={getAcquisitionBreakdownPath(profile)}>
+          <span className="quick-link-card__title">Open Acquisition Breakdown</span>
+          <span className="quick-link-card__description">Compare saved sources for this item.</span>
+        </Link>
+      ) : (
+        <p className="empty-state">
+          Acquisition Breakdown focuses on items needed by the current material plan, so this item is not selectable
+          there yet.
+        </p>
+      )}
+    </section>
+  );
+}
+
 export function ItemProfilePage() {
   const { canonicalKey: canonicalKeyParam } = useParams();
   const canonicalKey = decodeItemProfileParam(canonicalKeyParam);
+  const [acquisitionState, setAcquisitionState] = useState<AcquisitionPlannerInputState>(() => {
+    try {
+      return loadAcquisitionPlannerInputState();
+    } catch {
+      return createDefaultAcquisitionPlannerInputState();
+    }
+  });
   const [modifierState] = useState<UserCraftingModifierState>(() => {
     try {
       return loadCraftingModifierState();
@@ -359,9 +435,24 @@ export function ItemProfilePage() {
 
   useEffect(() => {
     let isMounted = true;
+    let loadedAcquisitionState: AcquisitionPlannerInputState;
 
-    void Promise.all([getLatestSnapshot(), loadItemCatalog(), loadTowerRequirements(), loadRecipeGraph()])
-      .then(([snapshot, itemCatalog, towerRequirementsData, recipeGraph]) => {
+    try {
+      loadedAcquisitionState = loadAcquisitionPlannerInputState();
+    } catch {
+      loadedAcquisitionState = createDefaultAcquisitionPlannerInputState();
+    }
+
+    setAcquisitionState(loadedAcquisitionState);
+
+    void Promise.all([
+      getLatestSnapshot(),
+      loadItemCatalog(),
+      loadTowerRequirements(),
+      loadRecipeGraph(),
+      loadDropRateReference().catch(() => null),
+    ])
+      .then(([snapshot, itemCatalog, towerRequirementsData, recipeGraph, dropRateReference]) => {
         if (!isMounted) {
           return;
         }
@@ -374,6 +465,7 @@ export function ItemProfilePage() {
             itemCatalog,
             towerRequirementsData,
             recipeGraph,
+            dropRateReference,
           },
         });
       })
@@ -430,6 +522,18 @@ export function ItemProfilePage() {
     burdenResult,
     profile,
   ]);
+  const acquisitionContext = useMemo(() => {
+    if (!profile) {
+      return null;
+    }
+
+    return deriveItemAcquisitionContext({
+      canonicalKey: profile.canonicalKey,
+      acquisitionState,
+      burdenResult,
+      dropRateReference: resourcesState.resources?.dropRateReference ?? null,
+    });
+  }, [acquisitionState, burdenResult, profile, resourcesState.resources?.dropRateReference]);
 
   return (
     <div className="page-stack">
@@ -572,6 +676,10 @@ export function ItemProfilePage() {
             )}
           </section>
 
+          {acquisitionContext ? (
+            <ItemAcquisitionContextSection context={acquisitionContext} profile={profile} />
+          ) : null}
+
           <section className="page-card page-stack" aria-labelledby="item-profile-links-title">
             <h2 id="item-profile-links-title">Open In</h2>
             <div className="quick-link-grid">
@@ -594,13 +702,6 @@ export function ItemProfilePage() {
               <Link className="quick-link-card" to={`/ingredient-demand?item=${encodeURIComponent(profile.canonicalKey)}`}>
                 <span className="quick-link-card__title">Ingredient Lookup</span>
                 <span className="quick-link-card__description">Check recursive material demand for this item.</span>
-              </Link>
-              <Link
-                className="quick-link-card"
-                to={`/acquisition-breakdown?item=${encodeURIComponent(profile.canonicalKey)}`}
-              >
-                <span className="quick-link-card__title">Acquisition Breakdown</span>
-                <span className="quick-link-card__description">Compare saved sources for this item.</span>
               </Link>
             </div>
           </section>

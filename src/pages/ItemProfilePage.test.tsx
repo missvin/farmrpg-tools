@@ -8,6 +8,7 @@ const getLatestSnapshotMock = vi.fn();
 const loadItemCatalogMock = vi.fn();
 const loadTowerRequirementsMock = vi.fn();
 const loadRecipeGraphMock = vi.fn();
+const loadDropRateReferenceMock = vi.fn();
 const getItemIconMock = vi.fn();
 
 vi.mock('../lib/storage/masterySnapshots', () => ({
@@ -26,6 +27,10 @@ vi.mock('../lib/loadRecipeGraph', () => ({
   loadRecipeGraph: (...args: unknown[]) => loadRecipeGraphMock(...args),
 }));
 
+vi.mock('../lib/loadDropRateReference', () => ({
+  loadDropRateReference: (...args: unknown[]) => loadDropRateReferenceMock(...args),
+}));
+
 vi.mock('../lib/itemIconManifest', () => ({
   getItemIcon: (...args: unknown[]) => getItemIconMock(...args),
 }));
@@ -36,7 +41,9 @@ describe('ItemProfilePage', () => {
     loadItemCatalogMock.mockReset();
     loadTowerRequirementsMock.mockReset();
     loadRecipeGraphMock.mockReset();
+    loadDropRateReferenceMock.mockReset();
     getItemIconMock.mockReset();
+    window.localStorage.clear();
   });
 
   function mockResources(): void {
@@ -137,6 +144,37 @@ describe('ItemProfilePage', () => {
       cookingRecipes: [],
     });
 
+    loadDropRateReferenceMock.mockResolvedValue({
+      entries: [],
+      byTargetCanonicalKey: {
+        'red dye': [
+          {
+            targetItemName: 'Red Dye',
+            targetCanonicalKey: 'red dye',
+            sourceName: 'Small Cave',
+            sourceCanonicalKey: 'small cave',
+            sourceType: 'explore',
+            sourceKind: 'location',
+            rowKind: 'item_source',
+            rawRate: 20,
+            baseDropRate: 0.25,
+            sourcePageType: 'item',
+            sourcePageName: 'Red Dye',
+            sourcePageUrl: 'https://buddy.farm/i/red-dye/',
+            pageDataUrl: 'https://buddy.farm/page-data/i/red-dye/page-data.json',
+            targetItemId: null,
+            targetItemImage: null,
+            sourceImage: null,
+            ironDepot: null,
+            manualFishing: null,
+            runecube: null,
+            flags: [],
+            notes: [],
+          },
+        ],
+      },
+    });
+
     getItemIconMock.mockImplementation((canonicalKey: string) =>
       canonicalKey === 'glass orb' ? { src: '/icons/glass-orb.png' } : null,
     );
@@ -180,6 +218,13 @@ describe('ItemProfilePage', () => {
     expect(within(burdenSection as HTMLElement).getByText('To GM')).toBeInTheDocument();
     expect(within(burdenSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);
     expect(screen.getByRole('heading', { name: 'Used In' })).toBeInTheDocument();
+
+    const acquisitionSection = screen.getByRole('heading', { name: 'Acquisition' }).closest('section');
+    expect(acquisitionSection).not.toBeNull();
+    expect(within(acquisitionSection as HTMLElement).getByText('Needed by Material Planner')).toBeInTheDocument();
+    expect(within(acquisitionSection as HTMLElement).getByText('1')).toBeInTheDocument();
+    expect(within(acquisitionSection as HTMLElement).getByRole('link', { name: /Open Acquisition Breakdown/ }))
+      .toHaveAttribute('href', '/acquisition-breakdown?item=red+dye');
   });
 
   it('marks completed Tower targets clearly', async () => {
