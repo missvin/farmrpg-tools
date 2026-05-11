@@ -363,11 +363,11 @@ describe('AcquisitionBreakdownPage', () => {
 
     fireEvent.change(await screen.findByLabelText('Item'), { target: { value: 'Twine' } });
 
-    expect(await screen.findByText('Imported source coverage')).toBeInTheDocument();
+    expect(await screen.findByText('Known Sources')).toBeInTheDocument();
     expect(screen.getByText('Small Cave')).toBeInTheDocument();
     expect(screen.getByText('25')).toBeInTheDocument();
     expect(screen.getByText('Iron Depot on, Runecube on')).toBeInTheDocument();
-    expect(screen.getByText('1 row hidden by current Settings.')).toBeInTheDocument();
-    expect(screen.getByText('1 imported Buddy source available for this item.')).toBeInTheDocument();
+    expect(screen.getByText('1 source row not shown by current Settings.')).toBeInTheDocument();
+    expect(screen.getByText('1 known source available for this item.')).toBeInTheDocument();
   });
 });

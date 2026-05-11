@@ -71,7 +71,7 @@ function formatMastery(value: number): string {
 }
 
 function formatPumpkinJuiceCount(value: number | null): string {
-  return value === null ? 'Needs baseline mastery' : value.toLocaleString();
+  return value === null ? 'Needs baseline mastery first' : value.toLocaleString();
 }
 
 function formatTowerLevels(levels: number[]): string {
@@ -394,7 +394,7 @@ function ItemAcquisitionContextSection({
       {context.hasBreakdownTarget ? (
         <Link className="quick-link-card" to={getAcquisitionBreakdownPath(profile)}>
           <span className="quick-link-card__title">Open Acquisition Breakdown</span>
-          <span className="quick-link-card__description">Compare saved sources for this item.</span>
+          <span className="quick-link-card__description">Compare ways to get this item.</span>
         </Link>
       ) : (
         <p className="empty-state">
@@ -589,7 +589,9 @@ export function ItemProfilePage() {
                   <span className="item-mastery-progress__tick item-mastery-progress__tick--mm">MM</span>
                 </div>
                 {!profile.matchedSnapshotRow ? (
-                  <span className="subtle-text">Not in your latest import; counted from 0 mastery.</span>
+                  <span className="subtle-text">
+                    Not in your latest import yet. Get at least 1 mastery and import again to estimate Pumpkin Juice.
+                  </span>
                 ) : null}
               </div>
             </div>
@@ -647,17 +649,20 @@ export function ItemProfilePage() {
 
           <section className="page-card page-stack" aria-labelledby="item-profile-burden-title">
             <div>
-              <h2 id="item-profile-burden-title">Material Burden</h2>
+              <h2 id="item-profile-burden-title">Materials Needed</h2>
               <p className="supporting-text">
-                Recursive crafting estimate using your saved crafting assumptions.
+                Estimated recipe materials for each mastery or Tower target, using your saved crafting settings.
               </p>
             </div>
             {burdenTargets.length > 0 ? (
-              <div className="item-burden-grid">
-                {burdenTargets.map((target) => (
-                  <ItemBurdenTargetCard key={target.scope} target={target} />
-                ))}
-              </div>
+              <details className="advanced-details">
+                <summary>Show material estimates</summary>
+                <div className="item-burden-grid">
+                  {burdenTargets.map((target) => (
+                    <ItemBurdenTargetCard key={target.scope} target={target} />
+                  ))}
+                </div>
+              </details>
             ) : (
               <p className="empty-state">Import a mastery snapshot to estimate recursive material needs.</p>
             )}

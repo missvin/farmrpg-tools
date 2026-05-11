@@ -52,7 +52,7 @@ function formatRequirementLabel(requiredThreshold: number): string {
 }
 
 function formatPumpkinJuiceEstimate(totalPumpkinJuices: number | null): string {
-  return totalPumpkinJuices === null ? 'Needs baseline mastery' : totalPumpkinJuices.toLocaleString();
+  return totalPumpkinJuices === null ? 'Needs baseline mastery first' : totalPumpkinJuices.toLocaleString();
 }
 
 function formatShortItemList(itemNames: string[]): string {
@@ -431,7 +431,10 @@ export function TowerProgressPage() {
                                     itemName={detailRow.itemName}
                                   />
                                   {!detailRow.matchedSnapshotRow ? (
-                                    <p className="subtle-text">Not in your latest import; counted from 0 mastery.</p>
+                                    <p className="subtle-text">
+                                      Not in your latest import yet. Get at least 1 mastery and import again to estimate
+                                      Pumpkin Juice.
+                                    </p>
                                   ) : null}
                                 </td>
                                 <td>{detailRow.masteryLevelLabel}</td>
@@ -524,7 +527,10 @@ export function TowerProgressPage() {
                       </span>
                     </div>
                     {!item.matchedSnapshotRow ? (
-                      <p className="progress-list__notes">Not in your latest import; counted from 0 mastery.</p>
+                      <p className="progress-list__notes">
+                        Not in your latest import yet. Get at least 1 mastery and import again to estimate Pumpkin
+                        Juice.
+                      </p>
                     ) : null}
                         </>
                       );

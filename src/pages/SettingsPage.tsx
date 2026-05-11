@@ -124,13 +124,13 @@ export function SettingsPage() {
 
     if (ownedItemName.trim().length === 0) {
       setOwnedItemsMessage(null);
-      setOwnedItemsError('Enter an item name to save an owned-now stockpile entry.');
+      setOwnedItemsError('Enter an item name to save a supply entry.');
       return;
     }
 
     if (!Number.isFinite(normalizedCount) || normalizedCount < 0) {
       setOwnedItemsMessage(null);
-      setOwnedItemsError('Enter a non-negative quantity for the owned-now stockpile entry.');
+      setOwnedItemsError('Enter a non-negative quantity for the saved supply.');
       return;
     }
 
@@ -146,15 +146,15 @@ export function SettingsPage() {
       setOwnedItemsError(null);
       setOwnedItemsMessage(
         normalizedCount > 0
-          ? `Saved ${ownedItemName.trim()} as an owned-now ${ownedItemSourceCategory} entry.`
-          : `Removed ${ownedItemName.trim()} from owned-now ${ownedItemSourceCategory} entries.`,
+          ? `Saved ${ownedItemName.trim()} as a saved ${ownedItemSourceCategory}.`
+          : `Removed ${ownedItemName.trim()} from saved ${ownedItemSourceCategory} entries.`,
       );
       setOwnedItemName('');
       setOwnedItemCount('1');
     } catch (error) {
       setOwnedItemsMessage(null);
       setOwnedItemsError(
-        error instanceof Error ? error.message : 'Unable to save the owned-now stockpile entry.',
+        error instanceof Error ? error.message : 'Unable to save the supply entry.',
       );
     }
   }
@@ -166,11 +166,11 @@ export function SettingsPage() {
 
       setAcquisitionPlannerState(savedState);
       setOwnedItemsError(null);
-      setOwnedItemsMessage(`Removed ${canonicalItemKey} from owned-now ${sourceCategory} entries.`);
+      setOwnedItemsMessage(`Removed ${canonicalItemKey} from saved ${sourceCategory} entries.`);
     } catch (error) {
       setOwnedItemsMessage(null);
       setOwnedItemsError(
-        error instanceof Error ? error.message : 'Unable to remove the owned-now stockpile entry.',
+        error instanceof Error ? error.message : 'Unable to remove the supply entry.',
       );
     }
   }
@@ -407,11 +407,11 @@ export function SettingsPage() {
 
       setDropRateSettings(savedSettings);
       setDropRateSettingsError(null);
-      setDropRateSettingsMessage('Saved drop-rate assumptions.');
+      setDropRateSettingsMessage('Saved drop rate settings.');
     } catch (error) {
       setDropRateSettingsMessage(null);
       setDropRateSettingsError(
-        error instanceof Error ? error.message : 'Unable to save drop-rate assumptions.',
+        error instanceof Error ? error.message : 'Unable to save drop rate settings.',
       );
     }
   }
@@ -478,7 +478,7 @@ export function SettingsPage() {
     <div className="page-stack">
       <PageIntro
         title="Settings"
-        description="Manage local backups, restore a saved backup, and adjust planner assumptions stored in this browser."
+        description="Manage local backups and the planning settings stored in this browser."
         storageKey="settings"
       />
 
@@ -515,15 +515,15 @@ export function SettingsPage() {
 
       <section className="page-card page-stack" aria-labelledby="settings-drop-rate-title">
         <div>
-          <h2 id="settings-drop-rate-title">Drop-Rate Assumptions</h2>
+          <h2 id="settings-drop-rate-title">Drop Rate Settings</h2>
           <p className="supporting-text">
-            Set the perks and display units used by Buddy-style drop-rate planning. These settings are local-only and
-            default to the current all-perks testing setup.
+            Set the perks and display units used for Buddy.farm source estimates. These settings are saved only in
+            this browser.
           </p>
         </div>
 
         <div className="summary-grid">
-          <label className="checkbox-row">
+          <label className="checkbox-field">
             <input
               type="checkbox"
               checked={dropRateSettings.perks.ironDepotActive}
@@ -540,7 +540,7 @@ export function SettingsPage() {
             <span>Iron Depot</span>
           </label>
 
-          <label className="checkbox-row">
+          <label className="checkbox-field">
             <input
               type="checkbox"
               checked={dropRateSettings.perks.cinnamonSticksActive}
@@ -557,7 +557,7 @@ export function SettingsPage() {
             <span>Cinnamon Sticks</span>
           </label>
 
-          <label className="checkbox-row">
+          <label className="checkbox-field">
             <input
               type="checkbox"
               checked={dropRateSettings.perks.lemonSqueezerActive}
@@ -574,7 +574,7 @@ export function SettingsPage() {
             <span>Lemon Squeezer</span>
           </label>
 
-          <label className="checkbox-row">
+          <label className="checkbox-field">
             <input
               type="checkbox"
               checked={dropRateSettings.perks.reinforcedNettingActive}
@@ -591,7 +591,7 @@ export function SettingsPage() {
             <span>Reinforced Netting</span>
           </label>
 
-          <label className="checkbox-row">
+          <label className="checkbox-field">
             <input
               type="checkbox"
               checked={dropRateSettings.perks.fishingTrawlActive}
@@ -608,7 +608,7 @@ export function SettingsPage() {
             <span>Fishing Trawl</span>
           </label>
 
-          <label className="checkbox-row">
+          <label className="checkbox-field">
             <input
               type="checkbox"
               checked={dropRateSettings.perks.eagleEyeRunecubeActive}
@@ -757,7 +757,7 @@ export function SettingsPage() {
             className="button button--primary"
             onClick={handleSaveDropRateSettings}
           >
-            Save Drop-Rate Assumptions
+            Save Drop Rate Settings
           </button>
         </div>
 
@@ -769,8 +769,8 @@ export function SettingsPage() {
         <div>
           <h2 id="settings-owned-stockpiles-title">Owned Stockpiles</h2>
           <p className="supporting-text">
-            Track immediate-use bags, chests, and similar owned-now items for later acquisition planning. These
-            entries are local-only and stay separate from stored pet inventory or future production.
+            Track bags, chests, and similar supplies you can use now for acquisition planning. These entries stay
+            separate from stored pet inventory and future pet production.
           </p>
         </div>
 
@@ -792,7 +792,7 @@ export function SettingsPage() {
 
         <div className="page-stack page-stack--tight">
           <label className="field-label" htmlFor="owned-stockpile-category">
-            Owned-now source type
+            Supply type
           </label>
           <select
             id="owned-stockpile-category"
@@ -835,12 +835,11 @@ export function SettingsPage() {
         </div>
 
         <p className="supporting-text">
-          Item identity is stored by normalized item name so unknown or unmatched entries stay non-fatal for later
-          planning work.
+          Unknown item names are kept as entered so planning can continue even when local reference data is incomplete.
         </p>
 
         {ownedNowEntries.length > 0 ? (
-          <table className="data-table">
+          <table className="summary-table">
             <thead>
               <tr>
                 <th scope="col">Item</th>
@@ -871,7 +870,7 @@ export function SettingsPage() {
             </tbody>
           </table>
         ) : (
-          <p className="supporting-text">No owned-now stockpile items saved yet.</p>
+          <p className="supporting-text">No saved supplies yet.</p>
         )}
 
         {ownedItemsMessage ? <p className="status-message status-message--success">{ownedItemsMessage}</p> : null}
@@ -963,7 +962,7 @@ export function SettingsPage() {
         </p>
 
         {storedPetEntries.length > 0 ? (
-          <table className="data-table">
+          <table className="summary-table">
             <thead>
               <tr>
                 <th scope="col">Item</th>
@@ -1010,12 +1009,12 @@ export function SettingsPage() {
         <div>
           <h2 id="settings-future-pet-title">Future Pet Production</h2>
           <p className="supporting-text">
-            Track a simple future-only pet production estimate separately from stored pet inventory. This first slice
-            assumes one collection window capped by offline hours instead of a full cadence-aware planner.
+            Estimate future pet items separately from stored pet inventory. This uses one collection window capped by
+            offline hours.
           </p>
         </div>
 
-        <label className="checkbox-row">
+        <label className="checkbox-field">
           <input
             type="checkbox"
             checked={futurePetForecastEnabled}
@@ -1060,7 +1059,7 @@ export function SettingsPage() {
           />
         </div>
 
-        <label className="checkbox-row">
+        <label className="checkbox-field">
           <input
             type="checkbox"
             checked={futurePetForecastRespectSeasonality}
@@ -1071,7 +1070,7 @@ export function SettingsPage() {
           <span>Respect seasonal pet availability</span>
         </label>
 
-        <label className="checkbox-row">
+        <label className="checkbox-field">
           <input
             type="checkbox"
             checked={futurePetForecastCrunchyOmeletteActive}
@@ -1141,7 +1140,7 @@ export function SettingsPage() {
           />
         </div>
 
-        <label className="checkbox-row">
+        <label className="checkbox-field">
           <input
             type="checkbox"
             checked={futurePetSeasonalActive}
@@ -1169,7 +1168,7 @@ export function SettingsPage() {
         </p>
 
         {futurePetEntries.length > 0 ? (
-          <table className="data-table">
+          <table className="summary-table">
             <thead>
               <tr>
                 <th scope="col">Pet</th>
@@ -1206,7 +1205,7 @@ export function SettingsPage() {
         )}
 
         {futurePetForecast.enabled && futurePetForecast.entries.length > 0 ? (
-          <table className="data-table">
+          <table className="summary-table">
             <thead>
               <tr>
                 <th scope="col">Item</th>
@@ -1246,7 +1245,7 @@ export function SettingsPage() {
           <h2 id="settings-restore-title">Restore Backup</h2>
           <p className="supporting-text">
             Select a previously exported backup file, review the loaded payload, then confirm restore. Restoring a
-            backup replaces the currently supported local state for this single local profile.
+            backup replaces the saved app data for this browser profile.
           </p>
         </div>
 
@@ -1294,7 +1293,7 @@ export function SettingsPage() {
                 <dd>{restorePreview.payload.state.preferences.acquisitionPlannerState ? 'Included' : 'Not included'}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Drop-rate assumptions</dt>
+                <dt>Drop rate settings</dt>
                 <dd>{restorePreview.payload.state.preferences.dropRateAcquisitionSettings ? 'Included' : 'Not included'}</dd>
               </div>
               <div className="summary-grid__item">

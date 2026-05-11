@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ImportPage } from './ImportPage';
@@ -37,6 +38,14 @@ function buildFullExport(): string {
   ].join('\n\n');
 }
 
+function renderImportPage(): void {
+  render(
+    <MemoryRouter>
+      <ImportPage />
+    </MemoryRouter>,
+  );
+}
+
 describe('ImportPage', () => {
   beforeEach(() => {
     saveSnapshotMock.mockReset();
@@ -46,7 +55,7 @@ describe('ImportPage', () => {
   it('produces no import validation warning for a full export', async () => {
     const user = userEvent.setup();
 
-    render(<ImportPage />);
+    renderImportPage();
 
     const saveButton = screen.getByRole('button', { name: 'Save Snapshot' });
     expect(saveButton).toBeDisabled();
@@ -67,7 +76,7 @@ describe('ImportPage', () => {
   it('shows a warning when Tier II is missing', async () => {
     const user = userEvent.setup();
 
-    render(<ImportPage />);
+    renderImportPage();
 
     const missingTierTwoExport = [
       ...buildTierRows('No Tier', 10, 15, 1),
@@ -93,7 +102,7 @@ describe('ImportPage', () => {
   it('does not warn that Tier II is missing when Tier II rows are present', async () => {
     const user = userEvent.setup();
 
-    render(<ImportPage />);
+    renderImportPage();
 
     const exportWithTierTwoRows = [
       ...buildTierRows('No Tier', 10, 8, 1),
@@ -117,7 +126,7 @@ describe('ImportPage', () => {
   it('shows a warning listing multiple missing tiers', async () => {
     const user = userEvent.setup();
 
-    render(<ImportPage />);
+    renderImportPage();
 
     const missingMultipleTiersExport = [
       ...buildTierRows('Tier IV', 100_000, 30, 301),
@@ -136,7 +145,7 @@ describe('ImportPage', () => {
   it('still allows saving when warnings exist after choosing import anyway', async () => {
     const user = userEvent.setup();
 
-    render(<ImportPage />);
+    renderImportPage();
 
     const saveButton = screen.getByRole('button', { name: 'Save Snapshot' });
 
@@ -163,7 +172,7 @@ describe('ImportPage', () => {
   it('shows a validation message when no mastery items are detected', async () => {
     const user = userEvent.setup();
 
-    render(<ImportPage />);
+    renderImportPage();
 
     fireEvent.change(screen.getByLabelText('Raw mastery export'), {
       target: { value: 'Home\nSettings\nInventory' },
@@ -177,7 +186,7 @@ describe('ImportPage', () => {
   });
 
   it('shows realistic raw export guidance near the textarea', () => {
-    render(<ImportPage />);
+    renderImportPage();
 
     expect(screen.getByPlaceholderText(/Farm RPG/)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Item Mastery/)).toBeInTheDocument();
@@ -190,7 +199,7 @@ describe('ImportPage', () => {
   it('filters advanced parsed row details by item name', async () => {
     const user = userEvent.setup();
 
-    render(<ImportPage />);
+    renderImportPage();
 
     fireEvent.change(screen.getByLabelText('Raw mastery export'), {
       target: {
@@ -207,10 +216,10 @@ describe('ImportPage', () => {
     expect(screen.getByText('Red Diamond Fish')).toBeInTheDocument();
   });
 
-  it('shows an import validation report for duplicate rows and ignored lines', async () => {
+  it('shows import details for duplicate rows and ignored lines', async () => {
     const user = userEvent.setup();
 
-    render(<ImportPage />);
+    renderImportPage();
 
     fireEvent.change(screen.getByLabelText('Raw mastery export'), {
       target: {
@@ -225,7 +234,7 @@ describe('ImportPage', () => {
     });
     await user.click(screen.getByRole('button', { name: 'Parse Preview' }));
 
-    expect(screen.getByRole('heading', { name: 'Import Validation Report' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Import Details' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Import Trust Summary' })).toBeInTheDocument();
     expect(screen.getByText(/Medium confidence/)).toBeInTheDocument();
     expect(screen.getByText(/Usable after review/)).toBeInTheDocument();

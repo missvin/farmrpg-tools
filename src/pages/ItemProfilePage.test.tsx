@@ -213,7 +213,7 @@ describe('ItemProfilePage', () => {
       '/icons/glass-orb.png',
     );
 
-    const burdenSection = screen.getByRole('heading', { name: 'Material Burden' }).closest('section');
+    const burdenSection = screen.getByRole('heading', { name: 'Materials Needed' }).closest('section');
     expect(burdenSection).not.toBeNull();
     expect(within(burdenSection as HTMLElement).getByText('To GM')).toBeInTheDocument();
     expect(within(burdenSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);

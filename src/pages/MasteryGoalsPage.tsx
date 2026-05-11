@@ -36,7 +36,7 @@ type GoalStatusFilter = 'all' | PumpkinJuiceEstimateStatus;
 type GoalSortMode = 'fewest_pj' | 'most_pj' | 'item_name' | 'remaining_mastery' | 'race_count';
 
 function formatPjCount(value: number | null): string {
-  return value === null ? 'Needs baseline mastery' : value.toLocaleString();
+  return value === null ? 'Needs baseline mastery first' : value.toLocaleString();
 }
 
 function formatShortItemList(itemNames: string[]): string {
@@ -57,7 +57,7 @@ function getStatusLabel(status: PumpkinJuiceEstimateStatus): string {
   }
 
   if (status === 'needs_baseline') {
-    return 'Needs baseline mastery';
+    return 'Needs baseline mastery first';
   }
 
   return 'Calculable';
@@ -620,7 +620,10 @@ export function MasteryGoalsPage() {
                     <td>
                       <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} />
                       {!row.matchedSnapshotRow ? (
-                        <p className="subtle-text">Not in your latest import; counted from 0 mastery.</p>
+                        <p className="subtle-text">
+                          Not in your latest import yet. Get at least 1 mastery and import again to estimate Pumpkin
+                          Juice.
+                        </p>
                       ) : null}
                     </td>
                     <td>

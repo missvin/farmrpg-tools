@@ -197,13 +197,13 @@ describe('SettingsPage', () => {
     expect(mockRestoreAppBackupPayload).not.toHaveBeenCalled();
   });
 
-  it('saves and removes owned-now stockpile inputs through shared local planner state', async () => {
+  it('saves and removes supply inputs through shared local planner state', async () => {
     const user = userEvent.setup();
 
     render(<SettingsPage />);
 
     await user.type(screen.getByLabelText('Item name'), 'Large Chest');
-    await user.selectOptions(screen.getByLabelText('Owned-now source type'), 'container');
+    await user.selectOptions(screen.getByLabelText('Supply type'), 'container');
     await user.clear(screen.getByLabelText('Owned quantity'));
     await user.type(screen.getByLabelText('Owned quantity'), '4');
     await user.click(screen.getByRole('button', { name: 'Save Owned Item' }));
@@ -220,11 +220,11 @@ describe('SettingsPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Remove' }));
 
-    expect(screen.getByText('No owned-now stockpile items saved yet.')).toBeInTheDocument();
+    expect(screen.getByText('No saved supplies yet.')).toBeInTheDocument();
     expect(loadAcquisitionPlannerInputState().ownedNow.entries).toEqual([]);
   });
 
-  it('saves local drop-rate assumptions from settings', async () => {
+  it('saves local drop rate settings', async () => {
     const user = userEvent.setup();
 
     render(<SettingsPage />);
@@ -235,9 +235,9 @@ describe('SettingsPage', () => {
     await user.selectOptions(screen.getByLabelText('Exploring unit'), 'stamina');
     await user.selectOptions(screen.getByLabelText('Fishing unit'), 'fish');
     await user.selectOptions(screen.getByLabelText('Farming unit'), 'harvest_alls');
-    await user.click(screen.getByRole('button', { name: 'Save Drop-Rate Assumptions' }));
+    await user.click(screen.getByRole('button', { name: 'Save Drop Rate Settings' }));
 
-    expect(await screen.findByText('Saved drop-rate assumptions.')).toBeInTheDocument();
+    expect(await screen.findByText('Saved drop rate settings.')).toBeInTheDocument();
     expect(loadDropRateAcquisitionSettings()).toMatchObject({
       perks: {
         ironDepotActive: false,

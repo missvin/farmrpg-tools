@@ -3,6 +3,9 @@ import { lazy, type ReactElement } from 'react';
 import { DashboardPage } from '../pages/DashboardPage';
 import { ImportPage } from '../pages/ImportPage';
 
+const ImportHelpPage = lazy(() =>
+  import('../pages/ImportHelpPage').then((module) => ({ default: module.ImportHelpPage })),
+);
 const BacklogGraphPage = lazy(() =>
   import('../pages/BacklogGraphPage').then((module) => ({ default: module.BacklogGraphPage })),
 );
@@ -62,6 +65,11 @@ export const appRoutes: AppRoute[] = [
     path: '/import',
     label: 'Import',
     element: <ImportPage />,
+  },
+  {
+    path: '/import-help',
+    label: 'Import Help',
+    element: <ImportHelpPage />,
   },
   {
     path: '/museum-tools',

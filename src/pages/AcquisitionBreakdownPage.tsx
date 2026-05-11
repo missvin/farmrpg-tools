@@ -504,7 +504,7 @@ export function AcquisitionBreakdownPage() {
       ? `Manual Explore needs about ${formatAmount(manualEstimate.staminaNeeded)} stamina for the current remainder.`
       : null,
     selectedDropRateCoverage.matchingRows.length > 0
-      ? `${selectedDropRateCoverage.matchingRows.length.toLocaleString()} imported Buddy source${selectedDropRateCoverage.matchingRows.length === 1 ? '' : 's'} available for this item.`
+      ? `${selectedDropRateCoverage.matchingRows.length.toLocaleString()} known source${selectedDropRateCoverage.matchingRows.length === 1 ? '' : 's'} available for this item.`
       : null,
     selectedConsumableCapacity > 0
       ? `Selected consumables can cover up to ${formatAmount(selectedConsumableCapacity)} item(s) if this item is eligible for those drops.`
@@ -543,7 +543,7 @@ export function AcquisitionBreakdownPage() {
         <div>
           <h2 id="acquisition-breakdown-controls-title">Item to check</h2>
           <p className="supporting-text">
-            Uses your latest snapshot, current material burden, and saved acquisition assumptions.
+            Uses your latest snapshot, recipe material estimate, and saved acquisition settings.
           </p>
         </div>
 
@@ -598,8 +598,8 @@ export function AcquisitionBreakdownPage() {
             </div>
 
             <p className="subtle-text">
-              Source availability comes from <Link to="/settings">Settings</Link>. Item-specific drop choices on this
-              page are temporary so you can test a source before making it part of your regular assumptions.
+              Source availability comes from <Link to="/settings">Settings</Link>. Item-specific choices on this page
+              are not saved, so you can test a source before making it part of your regular settings.
             </p>
           </>
         ) : null}
@@ -673,13 +673,45 @@ export function AcquisitionBreakdownPage() {
                 </table>
               </div>
 
+              <section className="page-stack" aria-labelledby="acquisition-breakdown-recommendations-title">
+                <div>
+                  <h3 id="acquisition-breakdown-recommendations-title" className="section-title">
+                    Suggested Next Sources
+                  </h3>
+                </div>
+
+                <ul className="data-list">
+                  {recommendationRows.map((recommendation) => (
+                    <li key={recommendation}>{recommendation}</li>
+                  ))}
+                </ul>
+
+                <details>
+                  <summary>Why these numbers look this way</summary>
+                  <ul className="data-list">
+                    <li>
+                      The item need comes from the same recipe estimate used by Material Planner.
+                    </li>
+                    <li>
+                      Saved supplies, containers, stored pets, and future pets come from Settings.
+                    </li>
+                    <li>
+                      Manual Explore uses the drop rate you enter here when no saved source rate is selected.
+                    </li>
+                    <li>
+                      Consumables are shown only as capacity until you mark this item as eligible for that source.
+                    </li>
+                  </ul>
+                </details>
+              </section>
+
               <section className="page-stack" aria-labelledby="acquisition-breakdown-imported-sources-title">
                 <div>
                   <h3 id="acquisition-breakdown-imported-sources-title" className="section-title">
-                    Imported source coverage
+                    Known Sources
                   </h3>
                   <p className="subtle-text">
-                    Buddy-derived rows are filtered by your saved drop-rate assumptions in Settings.
+                    These sources are filtered by the drop rate settings saved in Settings.
                   </p>
                 </div>
 
@@ -690,9 +722,9 @@ export function AcquisitionBreakdownPage() {
                         <tr>
                           <th scope="col">Source</th>
                           <th scope="col">Type</th>
-                          <th scope="col">Buddy rate</th>
-                          <th scope="col">Setting match</th>
-                          <th scope="col">Provenance</th>
+                          <th scope="col">Rate</th>
+                          <th scope="col">Settings</th>
+                          <th scope="col">Source page</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -704,7 +736,7 @@ export function AcquisitionBreakdownPage() {
                             <td>{getDropRateVariantLabels(row)}</td>
                             <td>
                               <a href={row.sourcePageUrl} target="_blank" rel="noreferrer">
-                                Buddy source page
+                                Open source page
                               </a>
                             </td>
                           </tr>
@@ -714,18 +746,18 @@ export function AcquisitionBreakdownPage() {
                   </div>
                 ) : resourcesState.dropRateReference && resourcesState.dropRateReference.entries.length > 0 ? (
                   <p className="empty-state">
-                    No imported Buddy rows match this item under the current drop-rate assumptions.
+                    No saved source rows match this item under the current drop rate settings.
                   </p>
                 ) : (
                   <p className="empty-state">
-                    No imported Buddy rows are available yet. Manual source comparison is still available below.
+                    No saved source rows are available yet. Manual source comparison is still available below.
                   </p>
                 )}
 
                 {selectedDropRateCoverage.hiddenSettingVariantCount > 0 ? (
                   <p className="subtle-text">
-                    {selectedDropRateCoverage.hiddenSettingVariantCount.toLocaleString()} row
-                    {selectedDropRateCoverage.hiddenSettingVariantCount === 1 ? '' : 's'} hidden by current Settings.
+                    {selectedDropRateCoverage.hiddenSettingVariantCount.toLocaleString()} source row
+                    {selectedDropRateCoverage.hiddenSettingVariantCount === 1 ? '' : 's'} not shown by current Settings.
                   </p>
                 ) : null}
               </section>
@@ -733,7 +765,7 @@ export function AcquisitionBreakdownPage() {
               <section className="page-stack" aria-labelledby="acquisition-breakdown-source-title">
                 <div>
                   <h3 id="acquisition-breakdown-source-title" className="section-title">
-                    Compare more sources
+                    Try Unsaved Sources
                   </h3>
                   <p className="subtle-text">
                     Only turn on a consumable if this item can actually come from that source.
@@ -798,39 +830,6 @@ export function AcquisitionBreakdownPage() {
                     </div>
                   ))}
                 </div>
-              </section>
-
-              <section className="page-stack" aria-labelledby="acquisition-breakdown-recommendations-title">
-                <div>
-                  <h3 id="acquisition-breakdown-recommendations-title" className="section-title">
-                    Recommended next sources
-                  </h3>
-                </div>
-
-                <ul className="data-list">
-                  {recommendationRows.map((recommendation) => (
-                    <li key={recommendation}>{recommendation}</li>
-                  ))}
-                </ul>
-
-                <details>
-                  <summary>Why these numbers show here</summary>
-                  <ul className="data-list">
-                    <li>
-                      The item need comes from the same recursive material burden used by Material Planner.
-                    </li>
-                    <li>
-                      Saved stockpiles, containers, stored pets, and future pets come from Settings.
-                    </li>
-                    <li>
-                      Manual Explore uses the drop rate you enter here because item drop coverage is not part of the
-                      local reference data yet.
-                    </li>
-                    <li>
-                      Consumables are shown only as capacity until you mark this item as eligible for that source.
-                    </li>
-                  </ul>
-                </details>
               </section>
             </>
           )}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { PageIntro } from '../components/PageIntro';
 import { parseMasteryPaste } from '../lib/parseMasteryPaste';
@@ -289,7 +290,8 @@ export function ImportPage() {
         <div>
           <h2 id="import-form-title">Paste Export</h2>
           <p className="supporting-text">
-            Paste the raw mastery export from FarmRPG. This stays local to your browser.
+            Paste the raw mastery export from FarmRPG. This stays local to your browser.{' '}
+            <Link to="/import-help">How do I export mastery data?</Link>
           </p>
         </div>
 
@@ -420,59 +422,63 @@ export function ImportPage() {
               </div>
             ) : null}
 
-            <div className="page-stack">
-              <h3 className="section-title">Import Validation Report</h3>
-              <p className="supporting-text">
-                This read-only summary shows what the parser kept, any actual review-worthy findings, and the expected
-                non-item lines it ignored before you save.
-              </p>
+            <details className="advanced-details" open={validationSummaryFindings.length > 0}>
+              <summary className="advanced-details__summary">
+                {validationSummaryFindings.length > 0 ? 'Review import details' : 'Show import details'}
+              </summary>
+              <div className="page-stack">
+                <h3 className="section-title">Import Details</h3>
+                <p className="supporting-text">
+                  Optional detail about what was kept, what may need review, and which non-item lines were ignored.
+                </p>
 
-              {validationSummaryFindings.length > 0 ? (
-                <ul className="data-list">
-                  {validationSummaryFindings.map((finding) => (
-                    <li key={finding}>
-                      <span>{finding}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="empty-state">No duplicate-row merges or other review-worthy parser findings were detected.</p>
-              )}
-
-              {parseResult.parseSummary.skippedNonItemLinesCount > 0 ? (
-                <div className="page-stack page-stack--tight">
-                  <h4 className="section-title">Expected Ignored Lines</h4>
-                  <p className="supporting-text">
-                    {formatCountLabel(
-                      parseResult.parseSummary.skippedNonItemLinesCount,
-                      'non-item line was',
-                      'non-item lines were',
-                    )}{' '}
-                    ignored during parsing. This is normal when the pasted export includes headers, navigation, or
-                    standalone percent lines.
-                  </p>
-                </div>
-              ) : null}
-
-              {parseResult.parseSummary.skippedNonItemLineSamples.length > 0 ? (
-                <div className="page-stack page-stack--tight">
-                  <h4 className="section-title">Ignored line samples</h4>
-                  <p className="supporting-text">
-                    These non-item lines were ignored on purpose and can help explain why the skipped-line count is
-                    higher than the number of parsed rows.
-                  </p>
+                {validationSummaryFindings.length > 0 ? (
                   <ul className="data-list">
-                    {parseResult.parseSummary.skippedNonItemLineSamples.map((sample) => (
-                      <li key={`${sample.lineNumber}-${sample.text}`}>
-                        <span>
-                          Line {sample.lineNumber}: {sample.text}
-                        </span>
+                    {validationSummaryFindings.map((finding) => (
+                      <li key={finding}>
+                        <span>{finding}</span>
                       </li>
                     ))}
                   </ul>
-                </div>
-              ) : null}
-            </div>
+                ) : (
+                  <p className="empty-state">No duplicate-row merges or other review-worthy findings were detected.</p>
+                )}
+
+                {parseResult.parseSummary.skippedNonItemLinesCount > 0 ? (
+                  <div className="page-stack page-stack--tight">
+                    <h4 className="section-title">Expected Ignored Lines</h4>
+                    <p className="supporting-text">
+                      {formatCountLabel(
+                        parseResult.parseSummary.skippedNonItemLinesCount,
+                        'non-item line was',
+                        'non-item lines were',
+                      )}{' '}
+                      ignored during parsing. This is normal when the pasted export includes headers, navigation, or
+                      standalone percent lines.
+                    </p>
+                  </div>
+                ) : null}
+
+                {parseResult.parseSummary.skippedNonItemLineSamples.length > 0 ? (
+                  <div className="page-stack page-stack--tight">
+                    <h4 className="section-title">Ignored line samples</h4>
+                    <p className="supporting-text">
+                      These non-item lines were ignored on purpose and can help explain why the skipped-line count is
+                      higher than the number of parsed rows.
+                    </p>
+                    <ul className="data-list">
+                      {parseResult.parseSummary.skippedNonItemLineSamples.map((sample) => (
+                        <li key={`${sample.lineNumber}-${sample.text}`}>
+                          <span>
+                            Line {sample.lineNumber}: {sample.text}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+            </details>
 
             {parseResult.parseSummary.warnings.length > 0 ? (
               <div className="page-stack">

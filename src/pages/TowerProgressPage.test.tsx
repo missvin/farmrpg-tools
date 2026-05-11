@@ -329,7 +329,9 @@ describe('TowerProgressPage', () => {
     expect(within(remainingItemsSection as HTMLElement).queryByText('Difficulty not rated yet.')).not.toBeInTheDocument();
     expect(within(remainingItemsSection as HTMLElement).queryByText('No difficulty rating yet.')).not.toBeInTheDocument();
     expect(
-      within(remainingItemsSection as HTMLElement).getByText('Not in your latest import; counted from 0 mastery.'),
+      within(remainingItemsSection as HTMLElement).getByText(
+        'Not in your latest import yet. Get at least 1 mastery and import again to estimate Pumpkin Juice.',
+      ),
     ).toBeInTheDocument();
   });
 
