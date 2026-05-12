@@ -5,6 +5,7 @@ import { loadCraftingModifierState } from './craftingModifierState';
 import { createAppBackupPayload, type AppBackupPayloadV1 } from './appBackupSchema';
 import { loadDropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import { loadMasteryRaceCountsState } from './masteryRaceCounts';
+import { loadMuseumCompletionState } from './museumCompletionState';
 import { loadPersonalMasteryGoalsState } from './personalMasteryGoals';
 import { loadPumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
 import { listSnapshots } from './storage/masterySnapshots';
@@ -48,6 +49,7 @@ export async function buildCurrentAppBackupPayload(
     pumpkinJuicePlannerState: loadPumpkinJuicePlannerState(),
     personalMasteryGoalsState: loadPersonalMasteryGoalsState(),
     masteryRaceCountsState: loadMasteryRaceCountsState(),
+    museumCompletionState: loadMuseumCompletionState(),
     themePreference: readStoredAppTheme(),
   });
 }

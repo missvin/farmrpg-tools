@@ -26,6 +26,9 @@ const ItemProfilePage = lazy(() =>
 const MasteryGoalsPage = lazy(() =>
   import('../pages/MasteryGoalsPage').then((module) => ({ default: module.MasteryGoalsPage })),
 );
+const MuseumCompletionPage = lazy(() =>
+  import('../pages/MuseumCompletionPage').then((module) => ({ default: module.MuseumCompletionPage })),
+);
 const MuseumToolsPage = lazy(() =>
   import('../pages/MuseumToolsPage').then((module) => ({ default: module.MuseumToolsPage })),
 );
@@ -102,6 +105,11 @@ export const appRoutes: AppRoute[] = [
     element: <MasteryGoalsPage />,
   },
   {
+    path: '/museum-completion',
+    label: 'Museum Completion',
+    element: <MuseumCompletionPage />,
+  },
+  {
     path: '/acquisition-breakdown',
     label: 'Acquisition Breakdown',
     element: <AcquisitionBreakdownPage />,
@@ -158,6 +166,7 @@ export const navigationSections: NavigationSection[] = [
     title: 'Progress',
     items: [
       { to: '/tower-progress', label: 'Tower Progress' },
+      { to: '/museum-completion', label: 'Museum Completion' },
       { to: '/sorted', label: 'Sorted' },
       { to: '/tower', label: 'Tower' },
     ],

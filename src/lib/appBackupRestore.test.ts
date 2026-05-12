@@ -21,6 +21,9 @@ const {
   mockSaveMasteryRaceCountsState,
   mockLoadMasteryRaceCountsState,
   mockClearMasteryRaceCountsState,
+  mockSaveMuseumCompletionState,
+  mockLoadMuseumCompletionState,
+  mockClearMuseumCompletionState,
   mockPersistAppTheme,
   mockClearStoredAppTheme,
   mockReadStoredAppTheme,
@@ -45,6 +48,9 @@ const {
   mockSaveMasteryRaceCountsState: vi.fn(),
   mockLoadMasteryRaceCountsState: vi.fn(),
   mockClearMasteryRaceCountsState: vi.fn(),
+  mockSaveMuseumCompletionState: vi.fn(),
+  mockLoadMuseumCompletionState: vi.fn(),
+  mockClearMuseumCompletionState: vi.fn(),
   mockPersistAppTheme: vi.fn(),
   mockClearStoredAppTheme: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
@@ -89,6 +95,12 @@ vi.mock('./masteryRaceCounts', () => ({
   loadMasteryRaceCountsState: mockLoadMasteryRaceCountsState,
   saveMasteryRaceCountsState: mockSaveMasteryRaceCountsState,
   clearMasteryRaceCountsState: mockClearMasteryRaceCountsState,
+}));
+
+vi.mock('./museumCompletionState', () => ({
+  loadMuseumCompletionState: mockLoadMuseumCompletionState,
+  saveMuseumCompletionState: mockSaveMuseumCompletionState,
+  clearMuseumCompletionState: mockClearMuseumCompletionState,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -154,6 +166,7 @@ function createBackupPayload() {
     pumpkinJuicePlannerState: createPumpkinJuicePlannerStateFixture(),
     personalMasteryGoalsState: createPersonalMasteryGoalsStateFixture(),
     masteryRaceCountsState: createMasteryRaceCountsStateFixture(),
+    museumCompletionState: createMuseumCompletionStateFixture(),
     themePreference: 'dark',
   });
 }
@@ -298,6 +311,15 @@ function createMasteryRaceCountsStateFixture() {
   };
 }
 
+function createMuseumCompletionStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    savedAt: '2026-05-12T12:00:00.000Z',
+    fullMuseumText: 'Crops Count = 1\nBeet Beet',
+    personalMuseumText: 'Crops (0 / 1)\n-',
+  };
+}
+
 describe('appBackupRestore', () => {
   beforeEach(() => {
     mockReplaceSnapshots.mockReset();
@@ -320,6 +342,9 @@ describe('appBackupRestore', () => {
     mockSaveMasteryRaceCountsState.mockReset();
     mockLoadMasteryRaceCountsState.mockReset();
     mockClearMasteryRaceCountsState.mockReset();
+    mockSaveMuseumCompletionState.mockReset();
+    mockLoadMuseumCompletionState.mockReset();
+    mockClearMuseumCompletionState.mockReset();
     mockPersistAppTheme.mockReset();
     mockClearStoredAppTheme.mockReset();
     mockReadStoredAppTheme.mockReset();
@@ -330,6 +355,7 @@ describe('appBackupRestore', () => {
     mockLoadPumpkinJuicePlannerState.mockReturnValue(createPumpkinJuicePlannerStateFixture());
     mockLoadPersonalMasteryGoalsState.mockReturnValue(createPersonalMasteryGoalsStateFixture());
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
+    mockLoadMuseumCompletionState.mockReturnValue(createMuseumCompletionStateFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
   });
 
@@ -388,6 +414,9 @@ describe('appBackupRestore', () => {
     expect(mockSaveMasteryRaceCountsState).toHaveBeenCalledWith(
       payload.state.preferences.masteryRaceCountsState,
     );
+    expect(mockSaveMuseumCompletionState).toHaveBeenCalledWith(
+      payload.state.preferences.museumCompletionState,
+    );
     expect(mockPersistAppTheme).toHaveBeenCalledWith('dark');
     expect(mockClearCraftingModifierState).not.toHaveBeenCalled();
     expect(mockClearAcquisitionPlannerInputState).not.toHaveBeenCalled();
@@ -395,6 +424,7 @@ describe('appBackupRestore', () => {
     expect(mockClearPumpkinJuicePlannerState).not.toHaveBeenCalled();
     expect(mockClearPersonalMasteryGoalsState).not.toHaveBeenCalled();
     expect(mockClearMasteryRaceCountsState).not.toHaveBeenCalled();
+    expect(mockClearMuseumCompletionState).not.toHaveBeenCalled();
     expect(mockClearStoredAppTheme).not.toHaveBeenCalled();
   });
 
@@ -409,6 +439,7 @@ describe('appBackupRestore', () => {
       pumpkinJuicePlannerState: null,
       personalMasteryGoalsState: null,
       masteryRaceCountsState: null,
+      museumCompletionState: null,
       themePreference: null,
     });
 
@@ -421,6 +452,7 @@ describe('appBackupRestore', () => {
     expect(mockClearPumpkinJuicePlannerState).toHaveBeenCalledTimes(1);
     expect(mockClearPersonalMasteryGoalsState).toHaveBeenCalledTimes(1);
     expect(mockClearMasteryRaceCountsState).toHaveBeenCalledTimes(1);
+    expect(mockClearMuseumCompletionState).toHaveBeenCalledTimes(1);
     expect(mockClearStoredAppTheme).toHaveBeenCalledTimes(1);
   });
 
@@ -513,6 +545,7 @@ describe('appBackupRestore', () => {
     const previousPumpkinJuicePlannerState = createPumpkinJuicePlannerStateFixture();
     const previousPersonalMasteryGoalsState = createPersonalMasteryGoalsStateFixture();
     const previousMasteryRaceCountsState = createMasteryRaceCountsStateFixture();
+    const previousMuseumCompletionState = createMuseumCompletionStateFixture();
 
     mockListSnapshots.mockResolvedValue(previousSnapshots);
     mockLoadCraftingModifierState.mockReturnValue(previousModifierState);
@@ -521,6 +554,7 @@ describe('appBackupRestore', () => {
     mockLoadPumpkinJuicePlannerState.mockReturnValue(previousPumpkinJuicePlannerState);
     mockLoadPersonalMasteryGoalsState.mockReturnValue(previousPersonalMasteryGoalsState);
     mockLoadMasteryRaceCountsState.mockReturnValue(previousMasteryRaceCountsState);
+    mockLoadMuseumCompletionState.mockReturnValue(previousMuseumCompletionState);
     mockReadStoredAppTheme.mockReturnValue('dark');
     mockSaveCraftingModifierState
       .mockImplementationOnce(() => {
@@ -540,6 +574,7 @@ describe('appBackupRestore', () => {
     expect(mockSavePumpkinJuicePlannerState).toHaveBeenLastCalledWith(previousPumpkinJuicePlannerState);
     expect(mockSavePersonalMasteryGoalsState).toHaveBeenLastCalledWith(previousPersonalMasteryGoalsState);
     expect(mockSaveMasteryRaceCountsState).toHaveBeenLastCalledWith(previousMasteryRaceCountsState);
+    expect(mockSaveMuseumCompletionState).toHaveBeenLastCalledWith(previousMuseumCompletionState);
     expect(mockPersistAppTheme).toHaveBeenLastCalledWith('dark');
   });
 

@@ -102,6 +102,12 @@ describe('appBackupSchema', () => {
         },
       ],
     };
+    const museumCompletionState = {
+      schemaVersion: 1 as const,
+      savedAt: '2026-05-12T12:00:00.000Z',
+      fullMuseumText: 'Crops Count = 1\nBeet Beet',
+      personalMuseumText: 'Crops (0 / 1)\n-',
+    };
 
     const payload = createAppBackupPayload({
       appVersion: '1.1.0',
@@ -113,6 +119,7 @@ describe('appBackupSchema', () => {
       pumpkinJuicePlannerState,
       personalMasteryGoalsState,
       masteryRaceCountsState,
+      museumCompletionState,
       themePreference: 'dark',
     });
 
@@ -132,6 +139,7 @@ describe('appBackupSchema', () => {
           pumpkinJuicePlannerState,
           personalMasteryGoalsState,
           masteryRaceCountsState,
+          museumCompletionState,
           themePreference: 'dark',
         },
       },
@@ -414,6 +422,35 @@ describe('appBackupSchema', () => {
       ok: false,
       code: 'invalid_drop_rate_acquisition_settings',
       message: 'The backup file contains malformed drop-rate acquisition settings.',
+    });
+
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: APP_BACKUP_SCHEMA_VERSION,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [],
+          preferences: {
+            craftingModifierState: null,
+            acquisitionPlannerState: null,
+            museumCompletionState: {
+              schemaVersion: 1,
+              savedAt: null,
+              fullMuseumText: 123,
+              personalMuseumText: '',
+            },
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'invalid_museum_completion_state',
+      message: 'The backup file contains malformed museum completion state.',
     });
   });
 });

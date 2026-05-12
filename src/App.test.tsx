@@ -163,6 +163,7 @@ describe('App shell', () => {
 
     await user.click(screen.getByText('Progress'));
     expect(await screen.findByRole('link', { name: 'Tower Progress' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Museum Completion' })).toBeVisible();
     expect(screen.queryByRole('link', { name: 'History' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Compare' })).not.toBeInTheDocument();
 

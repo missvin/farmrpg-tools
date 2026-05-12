@@ -20,6 +20,11 @@ import {
   saveMasteryRaceCountsState,
 } from './masteryRaceCounts';
 import {
+  clearMuseumCompletionState,
+  loadMuseumCompletionState,
+  saveMuseumCompletionState,
+} from './museumCompletionState';
+import {
   clearPersonalMasteryGoalsState,
   loadPersonalMasteryGoalsState,
   savePersonalMasteryGoalsState,
@@ -66,6 +71,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   const currentPumpkinJuicePlannerState = loadPumpkinJuicePlannerState();
   const currentPersonalMasteryGoalsState = loadPersonalMasteryGoalsState();
   const currentMasteryRaceCountsState = loadMasteryRaceCountsState();
+  const currentMuseumCompletionState = loadMuseumCompletionState();
   const currentThemePreference = readStoredAppTheme();
 
   try {
@@ -107,6 +113,12 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       clearMasteryRaceCountsState();
     }
 
+    if (payload.state.preferences.museumCompletionState) {
+      saveMuseumCompletionState(payload.state.preferences.museumCompletionState);
+    } else {
+      clearMuseumCompletionState();
+    }
+
     if (payload.state.preferences.themePreference) {
       persistAppTheme(payload.state.preferences.themePreference);
     } else {
@@ -120,6 +132,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     savePumpkinJuicePlannerState(currentPumpkinJuicePlannerState);
     savePersonalMasteryGoalsState(currentPersonalMasteryGoalsState);
     saveMasteryRaceCountsState(currentMasteryRaceCountsState);
+    saveMuseumCompletionState(currentMuseumCompletionState);
 
     if (currentThemePreference) {
       persistAppTheme(currentThemePreference);

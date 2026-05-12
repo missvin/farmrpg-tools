@@ -10,6 +10,7 @@ const {
   mockLoadPumpkinJuicePlannerState,
   mockLoadPersonalMasteryGoalsState,
   mockLoadMasteryRaceCountsState,
+  mockLoadMuseumCompletionState,
   mockReadStoredAppTheme,
 } = vi.hoisted(() => ({
   mockListSnapshots: vi.fn<() => Promise<MasterySnapshot[]>>(),
@@ -19,6 +20,7 @@ const {
   mockLoadPumpkinJuicePlannerState: vi.fn(),
   mockLoadPersonalMasteryGoalsState: vi.fn(),
   mockLoadMasteryRaceCountsState: vi.fn(),
+  mockLoadMuseumCompletionState: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
 }));
 
@@ -48,6 +50,10 @@ vi.mock('./personalMasteryGoals', () => ({
 
 vi.mock('./masteryRaceCounts', () => ({
   loadMasteryRaceCountsState: mockLoadMasteryRaceCountsState,
+}));
+
+vi.mock('./museumCompletionState', () => ({
+  loadMuseumCompletionState: mockLoadMuseumCompletionState,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -245,6 +251,15 @@ function createMasteryRaceCountsStateFixture() {
   };
 }
 
+function createMuseumCompletionStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    savedAt: '2026-05-12T12:00:00.000Z',
+    fullMuseumText: 'Crops Count = 1\nBeet Beet',
+    personalMuseumText: 'Crops (0 / 1)\n-',
+  };
+}
+
 describe('appBackupExport', () => {
   beforeEach(() => {
     mockListSnapshots.mockReset();
@@ -254,6 +269,7 @@ describe('appBackupExport', () => {
     mockLoadPumpkinJuicePlannerState.mockReset();
     mockLoadPersonalMasteryGoalsState.mockReset();
     mockLoadMasteryRaceCountsState.mockReset();
+    mockLoadMuseumCompletionState.mockReset();
     mockReadStoredAppTheme.mockReset();
   });
 
@@ -276,6 +292,7 @@ describe('appBackupExport', () => {
     const pumpkinJuicePlannerState = createPumpkinJuicePlannerStateFixture();
     const personalMasteryGoalsState = createPersonalMasteryGoalsStateFixture();
     const masteryRaceCountsState = createMasteryRaceCountsStateFixture();
+    const museumCompletionState = createMuseumCompletionStateFixture();
 
     mockListSnapshots.mockResolvedValue(snapshots);
     mockLoadCraftingModifierState.mockReturnValue(craftingModifierState);
@@ -284,6 +301,7 @@ describe('appBackupExport', () => {
     mockLoadPumpkinJuicePlannerState.mockReturnValue(pumpkinJuicePlannerState);
     mockLoadPersonalMasteryGoalsState.mockReturnValue(personalMasteryGoalsState);
     mockLoadMasteryRaceCountsState.mockReturnValue(masteryRaceCountsState);
+    mockLoadMuseumCompletionState.mockReturnValue(museumCompletionState);
     mockReadStoredAppTheme.mockReturnValue('dark');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -302,6 +320,7 @@ describe('appBackupExport', () => {
     expect(payload.state.preferences.pumpkinJuicePlannerState).toEqual(pumpkinJuicePlannerState);
     expect(payload.state.preferences.personalMasteryGoalsState).toEqual(personalMasteryGoalsState);
     expect(payload.state.preferences.masteryRaceCountsState).toEqual(masteryRaceCountsState);
+    expect(payload.state.preferences.museumCompletionState).toEqual(museumCompletionState);
     expect(payload.state.preferences.themePreference).toBe('dark');
   });
 
@@ -313,6 +332,7 @@ describe('appBackupExport', () => {
     mockLoadPumpkinJuicePlannerState.mockReturnValue(createPumpkinJuicePlannerStateFixture());
     mockLoadPersonalMasteryGoalsState.mockReturnValue(createPersonalMasteryGoalsStateFixture());
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
+    mockLoadMuseumCompletionState.mockReturnValue(createMuseumCompletionStateFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -342,6 +362,7 @@ describe('appBackupExport', () => {
     mockLoadPumpkinJuicePlannerState.mockReturnValue(createPumpkinJuicePlannerStateFixture());
     mockLoadPersonalMasteryGoalsState.mockReturnValue(createPersonalMasteryGoalsStateFixture());
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
+    mockLoadMuseumCompletionState.mockReturnValue(createMuseumCompletionStateFixture());
     mockReadStoredAppTheme.mockReturnValue(null);
 
     Object.defineProperty(URL, 'createObjectURL', {

@@ -2,6 +2,7 @@ import type { AcquisitionPlannerInputState } from './acquisitionPlannerState';
 import type { UserCraftingModifierState } from './craftingModifierState';
 import type { DropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import type { MasteryRaceCountsState } from './masteryRaceCounts';
+import type { MuseumCompletionState } from './museumCompletionState';
 import type { PersonalMasteryGoalsState } from './personalMasteryGoals';
 import type { PumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
 import type { AppTheme } from './themePreference';
@@ -24,6 +25,7 @@ export type AppBackupStateV1 = {
     pumpkinJuicePlannerState?: PumpkinJuicePlannerState | null;
     personalMasteryGoalsState?: PersonalMasteryGoalsState | null;
     masteryRaceCountsState?: MasteryRaceCountsState | null;
+    museumCompletionState?: MuseumCompletionState | null;
     themePreference: AppTheme | null;
   };
 };
@@ -48,6 +50,7 @@ export type CreateAppBackupPayloadInput = {
   pumpkinJuicePlannerState?: PumpkinJuicePlannerState | null;
   personalMasteryGoalsState?: PersonalMasteryGoalsState | null;
   masteryRaceCountsState?: MasteryRaceCountsState | null;
+  museumCompletionState?: MuseumCompletionState | null;
   themePreference: AppTheme | null;
 };
 
@@ -75,7 +78,8 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_drop_rate_acquisition_settings'
   | 'invalid_pumpkin_juice_planner_state'
   | 'invalid_personal_mastery_goals_state'
-  | 'invalid_mastery_race_counts_state';
+  | 'invalid_mastery_race_counts_state'
+  | 'invalid_museum_completion_state';
 
 export type AppBackupPayloadValidationResult =
   | { ok: true; payload: AppBackupPayloadV1 }
@@ -367,6 +371,18 @@ function isValidMasteryRaceCountsState(value: unknown): value is MasteryRaceCoun
   return value.entries.every((entry) => isValidMasteryRaceCountEntry(entry));
 }
 
+function isValidMuseumCompletionState(value: unknown): value is MuseumCompletionState {
+  if (!isRecord(value) || value.schemaVersion !== 1) {
+    return false;
+  }
+
+  return (
+    (value.savedAt === null || typeof value.savedAt === 'string') &&
+    typeof value.fullMuseumText === 'string' &&
+    typeof value.personalMuseumText === 'string'
+  );
+}
+
 function isValidParseSummary(value: unknown): boolean {
   if (!isRecord(value)) {
     return false;
@@ -486,6 +502,7 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
           pumpkinJuicePlannerState: input.pumpkinJuicePlannerState ?? null,
           personalMasteryGoalsState: input.personalMasteryGoalsState ?? null,
           masteryRaceCountsState: input.masteryRaceCountsState ?? null,
+          museumCompletionState: input.museumCompletionState ?? null,
           themePreference: input.themePreference,
         },
       },
@@ -684,6 +701,19 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       ok: false,
       code: 'invalid_mastery_race_counts_state',
       message: 'The backup file contains malformed mastery race-count state.',
+    };
+  }
+
+  const museumCompletionState = value.state.preferences.museumCompletionState;
+  if (
+    museumCompletionState !== undefined &&
+    museumCompletionState !== null &&
+    !isValidMuseumCompletionState(museumCompletionState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_museum_completion_state',
+      message: 'The backup file contains malformed museum completion state.',
     };
   }
 
