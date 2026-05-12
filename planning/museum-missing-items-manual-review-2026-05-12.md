@@ -4,6 +4,13 @@ Purpose: planning and test evidence for the museum completion follow-up work. Th
 
 Source: Rebecca manually reviewed the missing slots from the personal museum Items section after the first parser/page pass could not safely name all missing items from the stale full museum list.
 
+Raw samples preserved:
+
+- `planning/museum-full-raw-sample-2026-05-12.txt`
+- `planning/museum-me-raw-sample-2026-05-12.txt`
+
+These are intentionally raw page-text samples, including surrounding page chrome, because that is the format parser/import workflows need to tolerate.
+
 Summary:
 
 - Personal museum Items section showed 907 / 963, so 56 item slots were missing.
