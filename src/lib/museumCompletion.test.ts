@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  deriveMuseumCompletionFromPersonalExport,
   deriveMuseumCompletionProgress,
   extractMuseumFullListMetadata,
   parsePersonalMuseumExport,
@@ -146,5 +147,78 @@ Newer Item`,
     );
     expect(result.possibleMissingItems.map((item) => item.itemName)).toEqual(['Board', 'Hammer']);
     expect(result.possibleMissingItems.every((item) => item.confidence === 'possible_stale_full_list')).toBe(true);
+  });
+
+  it('derives progress from a personal export plus reviewed local missing entries', () => {
+    const result = deriveMuseumCompletionFromPersonalExport(
+      `Items (2 / 4)
+Ant Apple
+-
+Corn Oil
+-`,
+      [
+        {
+          id: 'manual-board',
+          categoryKey: 'items',
+          categoryName: 'Items',
+          itemName: 'Board',
+          canonicalKey: 'board',
+          slotCount: 1,
+          note: 'manual review',
+        },
+      ],
+    );
+
+    expect(result.summary).toMatchObject({
+      totalSlots: 4,
+      seenItems: 2,
+      missingMarkers: 2,
+      namedMissingItems: 1,
+      namedMissingSlots: 1,
+      unresolvedMissingSlots: 1,
+    });
+    expect(result.namedMissingItems.map((item) => item.itemName)).toEqual(['Board']);
+    expect(result.categories[0]).toMatchObject({
+      categoryName: 'Items',
+      missingMarkerCount: 2,
+      namedMissingCount: 1,
+      unresolvedMissingCount: 1,
+    });
+  });
+
+  it('keeps reviewed entries non-fatal when they no longer line up with the current export', () => {
+    const result = deriveMuseumCompletionFromPersonalExport(
+      `Items (2 / 2)
+Board
+Corn Oil`,
+      [
+        {
+          id: 'manual-board',
+          categoryKey: 'items',
+          categoryName: 'Items',
+          itemName: 'Board',
+          canonicalKey: 'board',
+          slotCount: 1,
+          note: '',
+        },
+        {
+          id: 'manual-event',
+          categoryKey: 'event',
+          categoryName: 'Event',
+          itemName: 'Red Balloon',
+          canonicalKey: 'red balloon',
+          slotCount: 1,
+          note: '',
+        },
+      ],
+    );
+
+    expect(result.namedMissingItems).toEqual([]);
+    expect(result.warnings).toContain(
+      'Board: saved museum review entry looks resolved because this item appears in the current museum export.',
+    );
+    expect(result.warnings).toContain(
+      'Red Balloon: saved museum review entry is for Event, but that category was not found in the current museum export.',
+    );
   });
 });

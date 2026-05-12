@@ -3,27 +3,20 @@ import { useMemo, useState, type CSSProperties } from 'react';
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import {
-  deriveMuseumCompletionProgress,
-  type MuseumCompletionMissingItem,
-  type MuseumCompletionProgress,
-  type MuseumCompletionUnresolvedSlot,
+  deriveMuseumCompletionFromPersonalExport,
+  type MuseumCompletionManualProgress,
 } from '../lib/museumCompletion';
 import {
   clearMuseumCompletionState,
   loadMuseumCompletionState,
   saveMuseumCompletionState,
+  type MuseumCompletionManualMissingEntry,
 } from '../lib/museumCompletionState';
 import { getItemIcon } from '../lib/itemIconManifest';
+import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 
-const FULL_MUSEUM_PLACEHOLDER = `Museum Completion
-
-Crops Count = 2
-Beet Beet Corn Corn
-
-Library Home
-2026-03-16 19:37:49 by Lunarific`;
-
-const PERSONAL_MUSEUM_PLACEHOLDER = `Crops (1 / 2)
+const PERSONAL_MUSEUM_PLACEHOLDER = `Collection Progress
+Crops (1 / 2)
 Beet
 -`;
 
@@ -49,40 +42,26 @@ function formatSavedAt(value: string | null): string {
   return parsedDate.toLocaleString();
 }
 
-function formatCountStatus(status: MuseumCompletionProgress['categories'][number]['countStatus']): string {
-  switch (status) {
-    case 'matches_full_list':
-      return 'Matched';
-    case 'full_list_mismatch':
-      return 'Full list differs';
-    default:
-      return 'No full list match';
-  }
-}
-
-function formatUnresolvedReason(reason: MuseumCompletionUnresolvedSlot['reason']): string {
-  switch (reason) {
-    case 'candidate_seen_elsewhere':
-      return 'Candidate item appears elsewhere';
-    case 'missing_full_slot':
-      return 'Full list is missing this slot';
-    default:
-      return 'Full list is missing this category';
-  }
-}
-
-function renderMissingItem(item: MuseumCompletionMissingItem) {
+function renderReviewedItem(item: MuseumCompletionManualMissingEntry) {
   const icon = getItemIcon(item.canonicalKey);
 
   return (
-    <li key={`${item.categoryName}-${item.slotIndex}-${item.canonicalKey}`}>
-      <div>
-        <ItemProfileLink canonicalKey={item.canonicalKey} itemName={item.itemName} iconSrc={icon?.src} />
-        <p className="subtle-text">
-          {item.categoryName} slot {(item.slotIndex + 1).toLocaleString()}
-        </p>
-      </div>
-      <span>{item.confidence === 'known' ? 'Missing' : 'Possible match'}</span>
+    <div>
+      <ItemProfileLink canonicalKey={item.canonicalKey} itemName={item.itemName} iconSrc={icon?.src} />
+      <p className="subtle-text">
+        {item.categoryName}
+        {item.slotCount > 1 ? `, ${item.slotCount.toLocaleString()} slots` : ''}
+        {item.note ? ` - ${item.note}` : ''}
+      </p>
+    </div>
+  );
+}
+
+function renderNamedMissingItem(item: MuseumCompletionManualMissingEntry) {
+  return (
+    <li key={item.id}>
+      {renderReviewedItem(item)}
+      <span>{item.slotCount > 1 ? `${item.slotCount.toLocaleString()} slots` : 'Missing'}</span>
     </li>
   );
 }
@@ -97,49 +76,104 @@ export function MuseumCompletionPage() {
         savedAt: null,
         fullMuseumText: '',
         personalMuseumText: '',
+        manualMissingItems: [],
       };
     }
   });
-  const [fullMuseumText, setFullMuseumText] = useState(savedState.fullMuseumText);
   const [personalMuseumText, setPersonalMuseumText] = useState(savedState.personalMuseumText);
+  const [manualMissingItems, setManualMissingItems] = useState(savedState.manualMissingItems);
+  const [manualCategoryKey, setManualCategoryKey] = useState('');
+  const [manualItemName, setManualItemName] = useState('');
+  const [manualSlotCount, setManualSlotCount] = useState('1');
+  const [manualNote, setManualNote] = useState('');
   const [parseMessage, setParseMessage] = useState<string | null>(
-    savedState.fullMuseumText && savedState.personalMuseumText ? null : 'Paste both museum exports to preview progress.',
+    savedState.personalMuseumText ? null : 'Paste your museum export to preview progress.',
   );
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
-  const progress = useMemo(() => {
-    if (!fullMuseumText.trim() || !personalMuseumText.trim()) {
+  const progress = useMemo<MuseumCompletionManualProgress | null>(() => {
+    if (!personalMuseumText.trim()) {
       return null;
     }
 
-    return deriveMuseumCompletionProgress(fullMuseumText, personalMuseumText);
-  }, [fullMuseumText, personalMuseumText]);
+    return deriveMuseumCompletionFromPersonalExport(personalMuseumText, manualMissingItems);
+  }, [manualMissingItems, personalMuseumText]);
+
+  const categoriesWithMissing = useMemo(() => {
+    return progress?.categories.filter((category) => category.missingMarkerCount > 0) ?? [];
+  }, [progress]);
+  const selectedCategory =
+    categoriesWithMissing.find((category) => category.categoryKey === manualCategoryKey) ??
+    categoriesWithMissing[0] ??
+    null;
 
   function handlePreview(): void {
     setSaveMessage(null);
 
-    if (!fullMuseumText.trim() || !personalMuseumText.trim()) {
-      setParseMessage('Paste both the full museum list and your museum export before previewing progress.');
+    if (!personalMuseumText.trim()) {
+      setParseMessage('Paste your museum export before previewing progress.');
       return;
     }
 
     setParseMessage('Museum completion preview updated.');
   }
 
+  function handleAddManualItem(): void {
+    setSaveMessage(null);
+
+    if (!selectedCategory) {
+      setParseMessage('Paste a museum export with missing slots before adding a reviewed item.');
+      return;
+    }
+
+    const itemName = manualItemName.trim();
+    const canonicalKey = toCanonicalItemKey(itemName);
+
+    if (!itemName || !canonicalKey) {
+      setParseMessage('Enter the reviewed missing item name before saving it.');
+      return;
+    }
+
+    const parsedSlotCount = Number(manualSlotCount);
+    const slotCount = Number.isFinite(parsedSlotCount) ? Math.max(1, Math.floor(parsedSlotCount)) : 1;
+    const entry: MuseumCompletionManualMissingEntry = {
+      id: `${Date.now()}-${selectedCategory.categoryKey}-${canonicalKey}`,
+      categoryKey: selectedCategory.categoryKey,
+      categoryName: selectedCategory.categoryName,
+      itemName,
+      canonicalKey,
+      slotCount,
+      note: manualNote.trim(),
+    };
+
+    setManualMissingItems((currentItems) => [...currentItems, entry]);
+    setManualItemName('');
+    setManualSlotCount('1');
+    setManualNote('');
+    setParseMessage(`Saved ${itemName} as a reviewed missing museum item.`);
+  }
+
+  function handleRemoveManualItem(itemId: string): void {
+    setManualMissingItems((currentItems) => currentItems.filter((item) => item.id !== itemId));
+    setParseMessage('Reviewed missing item removed.');
+    setSaveMessage(null);
+  }
+
   function handleSave(): void {
     setParseMessage(null);
 
-    if (!fullMuseumText.trim() || !personalMuseumText.trim()) {
-      setSaveMessage('Paste both museum exports before saving.');
+    if (!personalMuseumText.trim()) {
+      setSaveMessage('Paste your museum export before saving.');
       return;
     }
 
     const nextSavedState = saveMuseumCompletionState({
-      fullMuseumText,
+      fullMuseumText: savedState.fullMuseumText,
       personalMuseumText,
+      manualMissingItems,
     });
     setSavedState(nextSavedState);
-    setSaveMessage('Museum completion inputs saved locally.');
+    setSaveMessage('Museum completion progress saved locally.');
   }
 
   function handleClear(): void {
@@ -149,11 +183,16 @@ export function MuseumCompletionPage() {
       savedAt: null,
       fullMuseumText: '',
       personalMuseumText: '',
+      manualMissingItems: [],
     };
     setSavedState(emptyState);
-    setFullMuseumText('');
     setPersonalMuseumText('');
-    setParseMessage('Saved museum completion inputs cleared.');
+    setManualMissingItems([]);
+    setManualCategoryKey('');
+    setManualItemName('');
+    setManualSlotCount('1');
+    setManualNote('');
+    setParseMessage('Saved museum completion progress cleared.');
     setSaveMessage(null);
   }
 
@@ -162,44 +201,29 @@ export function MuseumCompletionPage() {
       <PageIntro
         title="Museum Completion"
         storageKey="museum-completion"
-        description="Paste the full museum list and your own museum export to see seen, missing, and uncertain museum slots."
+        description="Paste your museum export to track seen items, missing slots, and reviewed missing-item names."
       />
 
       <section className="page-card page-stack" aria-labelledby="museum-completion-input-title">
         <div>
-          <h2 id="museum-completion-input-title">Museum Inputs</h2>
+          <h2 id="museum-completion-input-title">Museum Export</h2>
           <p className="supporting-text">
-            These stay in this browser. If the full list is older than your museum page, the app will still count your
-            progress and mark uncertain missing slots for review.
+            This stays in this browser. Missing slots can be named from reviewed local entries when the public list is
+            stale or incomplete.
           </p>
         </div>
 
-        <div className="two-column-grid">
-          <div className="page-stack page-stack--tight">
-            <label className="field-label" htmlFor="museum-full-list">
-              Full museum list
-            </label>
-            <textarea
-              id="museum-full-list"
-              className="text-area"
-              value={fullMuseumText}
-              placeholder={FULL_MUSEUM_PLACEHOLDER}
-              onChange={(event) => setFullMuseumText(event.target.value)}
-            />
-          </div>
-
-          <div className="page-stack page-stack--tight">
-            <label className="field-label" htmlFor="museum-personal-export">
-              My museum export
-            </label>
-            <textarea
-              id="museum-personal-export"
-              className="text-area"
-              value={personalMuseumText}
-              placeholder={PERSONAL_MUSEUM_PLACEHOLDER}
-              onChange={(event) => setPersonalMuseumText(event.target.value)}
-            />
-          </div>
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="museum-personal-export">
+            My museum export
+          </label>
+          <textarea
+            id="museum-personal-export"
+            className="text-area"
+            value={personalMuseumText}
+            placeholder={PERSONAL_MUSEUM_PLACEHOLDER}
+            onChange={(event) => setPersonalMuseumText(event.target.value)}
+          />
         </div>
 
         <div className="button-row">
@@ -207,10 +231,10 @@ export function MuseumCompletionPage() {
             Preview Progress
           </button>
           <button type="button" className="button button--primary" onClick={handleSave}>
-            Save Inputs
+            Save Progress
           </button>
           <button type="button" className="button" onClick={handleClear}>
-            Clear Saved Inputs
+            Clear Saved Progress
           </button>
         </div>
 
@@ -219,16 +243,109 @@ export function MuseumCompletionPage() {
         {saveMessage ? <p className="status-message status-message--success">{saveMessage}</p> : null}
       </section>
 
+      <section className="page-card page-stack" aria-labelledby="museum-manual-review-title">
+        <div>
+          <h2 id="museum-manual-review-title">Reviewed Missing Items</h2>
+          <p className="supporting-text">
+            Add names only after you have confirmed what an unnamed museum slot represents.
+          </p>
+        </div>
+
+        <div className="summary-grid">
+          <label className="summary-grid__item page-stack page-stack--tight" htmlFor="museum-review-category">
+            <span className="field-label">Category</span>
+            <select
+              id="museum-review-category"
+              className="text-input"
+              value={selectedCategory?.categoryKey ?? ''}
+              disabled={categoriesWithMissing.length === 0}
+              onChange={(event) => setManualCategoryKey(event.target.value)}
+            >
+              {categoriesWithMissing.length === 0 ? (
+                <option value="">No missing categories</option>
+              ) : (
+                categoriesWithMissing.map((category) => (
+                  <option key={category.categoryKey} value={category.categoryKey}>
+                    {category.categoryName}
+                  </option>
+                ))
+              )}
+            </select>
+          </label>
+
+          <label className="summary-grid__item page-stack page-stack--tight" htmlFor="museum-review-item-name">
+            <span className="field-label">Item name</span>
+            <input
+              id="museum-review-item-name"
+              className="text-input"
+              type="text"
+              value={manualItemName}
+              onChange={(event) => setManualItemName(event.target.value)}
+            />
+          </label>
+
+          <label className="summary-grid__item page-stack page-stack--tight" htmlFor="museum-review-slot-count">
+            <span className="field-label">Slots</span>
+            <input
+              id="museum-review-slot-count"
+              className="text-input text-input--short"
+              type="number"
+              min="1"
+              step="1"
+              value={manualSlotCount}
+              onChange={(event) => setManualSlotCount(event.target.value)}
+            />
+          </label>
+
+          <label className="summary-grid__item page-stack page-stack--tight" htmlFor="museum-review-note">
+            <span className="field-label">Note</span>
+            <input
+              id="museum-review-note"
+              className="text-input"
+              type="text"
+              value={manualNote}
+              onChange={(event) => setManualNote(event.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className="button-row">
+          <button
+            type="button"
+            className="button"
+            disabled={categoriesWithMissing.length === 0}
+            onClick={handleAddManualItem}
+          >
+            Add Reviewed Item
+          </button>
+        </div>
+
+        {manualMissingItems.length === 0 ? (
+          <p className="empty-state">No reviewed missing items saved yet.</p>
+        ) : (
+          <ul className="data-list">
+            {manualMissingItems.map((item) => (
+              <li key={item.id}>
+                {renderReviewedItem(item)}
+                <button type="button" className="button" onClick={() => handleRemoveManualItem(item.id)}>
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <section className="page-card page-stack" aria-labelledby="museum-completion-progress-title">
         <div>
           <h2 id="museum-completion-progress-title">Progress</h2>
           <p className="supporting-text">
-            Missing rows are named only when the full list and your export line up safely enough.
+            Unnamed slots are okay; they just need review before the app can show item names for them.
           </p>
         </div>
 
         {!progress ? (
-          <p className="empty-state">Paste both museum exports to see museum completion progress.</p>
+          <p className="empty-state">Paste your museum export to see museum completion progress.</p>
         ) : (
           <>
             <dl className="summary-grid">
@@ -247,26 +364,18 @@ export function MuseumCompletionPage() {
                 <p className="subtle-text">{formatPercent(progress.summary.completionPercent)} complete</p>
               </div>
               <div className="summary-grid__item">
-                <dt>Missing markers</dt>
+                <dt>Missing slots</dt>
                 <dd>{progress.summary.missingMarkers.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
-                <dt>Named missing items</dt>
-                <dd>{progress.summary.knownMissingItems.toLocaleString()}</dd>
+                <dt>Named missing slots</dt>
+                <dd>{progress.summary.namedMissingSlots.toLocaleString()}</dd>
               </div>
               <div className="summary-grid__item">
                 <dt>Needs review</dt>
-                <dd>
-                  {(progress.summary.possibleMissingItems + progress.summary.unresolvedMissingSlots).toLocaleString()}
-                </dd>
+                <dd>{progress.summary.unresolvedMissingSlots.toLocaleString()}</dd>
               </div>
             </dl>
-
-            {progress.metadata.footerUpdatedLabel || progress.metadata.lastUpdatedLabel ? (
-              <p className="supporting-text">
-                Full list source: {progress.metadata.footerUpdatedLabel ?? progress.metadata.lastUpdatedLabel}
-              </p>
-            ) : null}
 
             {progress.warnings.length > 0 ? (
               <div className="status-alert status-alert--warning page-stack" role="status">
@@ -287,9 +396,9 @@ export function MuseumCompletionPage() {
                     <tr>
                       <th scope="col">Category</th>
                       <th scope="col">Seen</th>
-                      <th scope="col">Missing</th>
-                      <th scope="col">Review</th>
-                      <th scope="col">Full list</th>
+                      <th scope="col">Missing slots</th>
+                      <th scope="col">Named</th>
+                      <th scope="col">Needs review</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -301,11 +410,9 @@ export function MuseumCompletionPage() {
                         <td>
                           {category.seenCount.toLocaleString()} / {category.expectedTotalCount.toLocaleString()}
                         </td>
-                        <td>{category.knownMissingCount.toLocaleString()}</td>
-                        <td>
-                          {(category.possibleMissingCount + category.unresolvedMissingCount).toLocaleString()}
-                        </td>
-                        <td>{formatCountStatus(category.countStatus)}</td>
+                        <td>{category.missingMarkerCount.toLocaleString()}</td>
+                        <td>{category.namedMissingCount.toLocaleString()}</td>
+                        <td>{category.unresolvedMissingCount.toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -315,46 +422,32 @@ export function MuseumCompletionPage() {
 
             <div className="page-stack">
               <h3 className="section-title">Named Missing Items</h3>
-              {progress.knownMissingItems.length === 0 ? (
-                <p className="empty-state">No safely named missing items yet.</p>
+              {progress.namedMissingItems.length === 0 ? (
+                <p className="empty-state">No reviewed missing item names yet.</p>
               ) : (
-                <ul className="data-list">{progress.knownMissingItems.map(renderMissingItem)}</ul>
+                <ul className="data-list">{progress.namedMissingItems.map(renderNamedMissingItem)}</ul>
               )}
             </div>
 
-            {progress.possibleMissingItems.length > 0 || progress.unresolvedSlots.length > 0 ? (
+            {progress.summary.unresolvedMissingSlots > 0 ? (
               <details className="advanced-details">
-                <summary className="advanced-details__summary">Review uncertain missing slots</summary>
-                <div className="page-stack">
-                  {progress.possibleMissingItems.length > 0 ? (
-                    <div className="page-stack page-stack--tight">
-                      <h3 className="section-title">Possible Missing Items</h3>
-                      <p className="supporting-text">
-                        These are named from the full list, but the category counts do not currently match.
-                      </p>
-                      <ul className="data-list">{progress.possibleMissingItems.map(renderMissingItem)}</ul>
-                    </div>
-                  ) : null}
-
-                  {progress.unresolvedSlots.length > 0 ? (
-                    <div className="page-stack page-stack--tight">
-                      <h3 className="section-title">Unnamed Slots</h3>
-                      <ul className="data-list">
-                        {progress.unresolvedSlots.map((slot) => (
-                          <li key={`${slot.categoryName}-${slot.slotIndex}-${slot.reason}`}>
-                            <div>
-                              <strong>
-                                {slot.categoryName} slot {(slot.slotIndex + 1).toLocaleString()}
-                              </strong>
-                              <p className="subtle-text">{formatUnresolvedReason(slot.reason)}</p>
-                            </div>
-                            <span>{slot.candidateItemName ?? 'Unnamed'}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                </div>
+                <summary className="advanced-details__summary">Review unnamed slots</summary>
+                <ul className="data-list">
+                  {progress.categories
+                    .filter((category) => category.unresolvedMissingCount > 0)
+                    .map((category) => (
+                      <li key={category.categoryKey}>
+                        <div>
+                          <strong>{category.categoryName}</strong>
+                          <p className="subtle-text">
+                            {category.unresolvedMissingCount.toLocaleString()} unnamed missing slot
+                            {category.unresolvedMissingCount === 1 ? '' : 's'}
+                          </p>
+                        </div>
+                        <span>Needs review</span>
+                      </li>
+                    ))}
+                </ul>
               </details>
             ) : null}
           </>

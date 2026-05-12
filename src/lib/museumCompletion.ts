@@ -1,5 +1,6 @@
 import { parseMuseumExport, type MuseumParseResult } from './parseMuseumExport';
 import { toCanonicalItemKey } from './normalizeItemKey';
+import type { MuseumCompletionManualMissingEntry } from './museumCompletionState';
 
 export type PersonalMuseumSlot =
   | {
@@ -94,6 +95,35 @@ export type MuseumCompletionProgress = {
   knownMissingItems: MuseumCompletionMissingItem[];
   possibleMissingItems: MuseumCompletionMissingItem[];
   unresolvedSlots: MuseumCompletionUnresolvedSlot[];
+  warnings: string[];
+};
+
+export type MuseumCompletionManualCategoryProgress = {
+  categoryName: string;
+  categoryKey: string;
+  seenCount: number;
+  expectedTotalCount: number;
+  missingMarkerCount: number;
+  namedMissingCount: number;
+  unresolvedMissingCount: number;
+};
+
+export type MuseumCompletionManualProgressSummary = {
+  categoriesCount: number;
+  totalSlots: number;
+  seenItems: number;
+  missingMarkers: number;
+  namedMissingItems: number;
+  namedMissingSlots: number;
+  unresolvedMissingSlots: number;
+  completionPercent: number | null;
+};
+
+export type MuseumCompletionManualProgress = {
+  personal: PersonalMuseumParseResult;
+  summary: MuseumCompletionManualProgressSummary;
+  categories: MuseumCompletionManualCategoryProgress[];
+  namedMissingItems: MuseumCompletionManualMissingEntry[];
   warnings: string[];
 };
 
@@ -403,6 +433,97 @@ export function deriveMuseumCompletionProgress(
     knownMissingItems,
     possibleMissingItems,
     unresolvedSlots,
+    warnings: Array.from(new Set(warnings)),
+  };
+}
+
+export function deriveMuseumCompletionFromPersonalExport(
+  personalRawText: string,
+  manualMissingItems: MuseumCompletionManualMissingEntry[],
+): MuseumCompletionManualProgress {
+  const personal = parsePersonalMuseumExport(personalRawText);
+  const warnings = [...personal.parseSummary.warnings];
+  const categoriesByKey = new Map(personal.categories.map((category) => [category.categoryKey, category]));
+  const seenCanonicalKeys = new Set<string>();
+
+  for (const category of personal.categories) {
+    for (const slot of category.slots) {
+      if (slot.status === 'seen') {
+        seenCanonicalKeys.add(slot.canonicalKey);
+      }
+    }
+  }
+
+  const usableManualItems: MuseumCompletionManualMissingEntry[] = [];
+  const manualSlotCountsByCategory = new Map<string, number>();
+
+  for (const entry of manualMissingItems) {
+    const category = categoriesByKey.get(entry.categoryKey);
+
+    if (!category) {
+      warnings.push(
+        `${entry.itemName}: saved museum review entry is for ${entry.categoryName}, but that category was not found in the current museum export.`,
+      );
+      continue;
+    }
+
+    if (seenCanonicalKeys.has(entry.canonicalKey)) {
+      warnings.push(
+        `${entry.itemName}: saved museum review entry looks resolved because this item appears in the current museum export.`,
+      );
+      continue;
+    }
+
+    usableManualItems.push(entry);
+    manualSlotCountsByCategory.set(
+      entry.categoryKey,
+      (manualSlotCountsByCategory.get(entry.categoryKey) ?? 0) + entry.slotCount,
+    );
+  }
+
+  const categories = personal.categories.map((category): MuseumCompletionManualCategoryProgress => {
+    const manualSlotCount = manualSlotCountsByCategory.get(category.categoryKey) ?? 0;
+    const namedMissingCount = Math.min(category.missingMarkerCount, manualSlotCount);
+
+    if (manualSlotCount > category.missingMarkerCount) {
+      warnings.push(
+        `${category.categoryName}: saved reviewed missing items cover ${manualSlotCount.toLocaleString()} slots, but the current museum export only has ${category.missingMarkerCount.toLocaleString()} missing markers in this category.`,
+      );
+    }
+
+    return {
+      categoryName: category.categoryName,
+      categoryKey: category.categoryKey,
+      seenCount: category.seenCount,
+      expectedTotalCount: category.expectedTotalCount,
+      missingMarkerCount: category.missingMarkerCount,
+      namedMissingCount,
+      unresolvedMissingCount: Math.max(0, category.missingMarkerCount - namedMissingCount),
+    };
+  });
+
+  const totalSlots = personal.parseSummary.totalSlotsParsed;
+  const seenItems = personal.parseSummary.seenItemsParsed;
+  const namedMissingSlots = categories.reduce((total, category) => total + category.namedMissingCount, 0);
+  const unresolvedMissingSlots = categories.reduce(
+    (total, category) => total + category.unresolvedMissingCount,
+    0,
+  );
+
+  return {
+    personal,
+    summary: {
+      categoriesCount: categories.length,
+      totalSlots,
+      seenItems,
+      missingMarkers: personal.parseSummary.missingMarkersParsed,
+      namedMissingItems: usableManualItems.length,
+      namedMissingSlots,
+      unresolvedMissingSlots,
+      completionPercent: totalSlots > 0 ? (seenItems / totalSlots) * 100 : null,
+    },
+    categories,
+    namedMissingItems: usableManualItems,
     warnings: Array.from(new Set(warnings)),
   };
 }

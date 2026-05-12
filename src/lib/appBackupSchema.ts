@@ -376,10 +376,32 @@ function isValidMuseumCompletionState(value: unknown): value is MuseumCompletion
     return false;
   }
 
+  const manualMissingItems = value.manualMissingItems;
+
   return (
     (value.savedAt === null || typeof value.savedAt === 'string') &&
     typeof value.fullMuseumText === 'string' &&
-    typeof value.personalMuseumText === 'string'
+    typeof value.personalMuseumText === 'string' &&
+    (manualMissingItems === undefined ||
+      (Array.isArray(manualMissingItems) &&
+        manualMissingItems.every((entry) => {
+          return (
+            isRecord(entry) &&
+            typeof entry.id === 'string' &&
+            entry.id.length > 0 &&
+            typeof entry.categoryKey === 'string' &&
+            entry.categoryKey.length > 0 &&
+            typeof entry.categoryName === 'string' &&
+            entry.categoryName.length > 0 &&
+            typeof entry.itemName === 'string' &&
+            entry.itemName.length > 0 &&
+            typeof entry.canonicalKey === 'string' &&
+            entry.canonicalKey.length > 0 &&
+            isFiniteNonNegativeNumber(entry.slotCount) &&
+            entry.slotCount >= 1 &&
+            typeof entry.note === 'string'
+          );
+        })))
   );
 }
 

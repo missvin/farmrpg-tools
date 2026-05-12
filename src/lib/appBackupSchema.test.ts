@@ -107,6 +107,17 @@ describe('appBackupSchema', () => {
       savedAt: '2026-05-12T12:00:00.000Z',
       fullMuseumText: 'Crops Count = 1\nBeet Beet',
       personalMuseumText: 'Crops (0 / 1)\n-',
+      manualMissingItems: [
+        {
+          id: 'manual-board',
+          categoryKey: 'items',
+          categoryName: 'Items',
+          itemName: 'Board',
+          canonicalKey: 'board',
+          slotCount: 1,
+          note: 'manual review',
+        },
+      ],
     };
 
     const payload = createAppBackupPayload({
@@ -440,8 +451,19 @@ describe('appBackupSchema', () => {
             museumCompletionState: {
               schemaVersion: 1,
               savedAt: null,
-              fullMuseumText: 123,
+              fullMuseumText: '',
               personalMuseumText: '',
+              manualMissingItems: [
+                {
+                  id: 'manual-board',
+                  categoryKey: 'items',
+                  categoryName: 'Items',
+                  itemName: 'Board',
+                  canonicalKey: 'board',
+                  slotCount: 0,
+                  note: 'manual review',
+                },
+              ],
             },
             themePreference: 'dark',
           },
