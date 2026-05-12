@@ -1,5 +1,6 @@
 import { parseMuseumExport, type MuseumParseResult } from './parseMuseumExport';
 import { toCanonicalItemKey } from './normalizeItemKey';
+import type { MuseumCompletionCanonData, MuseumCompletionCanonEntry } from './loadMuseumCompletionCanon';
 import type { MuseumCompletionManualMissingEntry } from './museumCompletionState';
 
 export type PersonalMuseumSlot =
@@ -440,6 +441,7 @@ export function deriveMuseumCompletionProgress(
 export function deriveMuseumCompletionFromPersonalExport(
   personalRawText: string,
   manualMissingItems: MuseumCompletionManualMissingEntry[],
+  canonData: MuseumCompletionCanonData | null = null,
 ): MuseumCompletionManualProgress {
   const personal = parsePersonalMuseumExport(personalRawText);
   const warnings = [...personal.parseSummary.warnings];
@@ -451,6 +453,53 @@ export function deriveMuseumCompletionFromPersonalExport(
       if (slot.status === 'seen') {
         seenCanonicalKeys.add(slot.canonicalKey);
       }
+    }
+  }
+
+  const canonNamedItems: MuseumCompletionManualMissingEntry[] = [];
+  const canonSlotCountsByCategory = new Map<string, number>();
+  const canonNamedKeys = new Set<string>();
+
+  for (const category of personal.categories) {
+    const canonEntries = canonData?.byCategoryKey[category.categoryKey] ?? [];
+
+    if (canonEntries.length === 0) {
+      continue;
+    }
+
+    if (canonEntries.length !== category.expectedTotalCount) {
+      warnings.push(
+        `${category.categoryName}: the reviewed museum list has ${canonEntries.length.toLocaleString()} slots, but your export expects ${category.expectedTotalCount.toLocaleString()}; unnamed slots remain until the list is updated.`,
+      );
+      continue;
+    }
+
+    const canonEntriesBySlot = new Map(canonEntries.map((entry) => [entry.slotIndex, entry]));
+
+    for (const slot of category.slots) {
+      if (slot.status !== 'missing') {
+        continue;
+      }
+
+      const canonEntry = canonEntriesBySlot.get(slot.slotIndex + 1) ?? null;
+
+      if (!canonEntry || canonEntry.reviewStatus === 'ambiguous' || canonEntry.reviewStatus === 'stale') {
+        continue;
+      }
+
+      if (seenCanonicalKeys.has(canonEntry.canonicalKey)) {
+        warnings.push(
+          `${canonEntry.itemName}: the reviewed museum list suggests this missing slot, but the item appears elsewhere in your current export.`,
+        );
+        continue;
+      }
+
+      canonNamedItems.push(toCanonMissingEntry(category, canonEntry));
+      canonNamedKeys.add(canonEntry.canonicalKey);
+      canonSlotCountsByCategory.set(
+        category.categoryKey,
+        (canonSlotCountsByCategory.get(category.categoryKey) ?? 0) + 1,
+      );
     }
   }
 
@@ -474,6 +523,10 @@ export function deriveMuseumCompletionFromPersonalExport(
       continue;
     }
 
+    if (canonNamedKeys.has(entry.canonicalKey)) {
+      continue;
+    }
+
     usableManualItems.push(entry);
     manualSlotCountsByCategory.set(
       entry.categoryKey,
@@ -483,7 +536,8 @@ export function deriveMuseumCompletionFromPersonalExport(
 
   const categories = personal.categories.map((category): MuseumCompletionManualCategoryProgress => {
     const manualSlotCount = manualSlotCountsByCategory.get(category.categoryKey) ?? 0;
-    const namedMissingCount = Math.min(category.missingMarkerCount, manualSlotCount);
+    const canonSlotCount = canonSlotCountsByCategory.get(category.categoryKey) ?? 0;
+    const namedMissingCount = Math.min(category.missingMarkerCount, canonSlotCount + manualSlotCount);
 
     if (manualSlotCount > category.missingMarkerCount) {
       warnings.push(
@@ -517,13 +571,28 @@ export function deriveMuseumCompletionFromPersonalExport(
       totalSlots,
       seenItems,
       missingMarkers: personal.parseSummary.missingMarkersParsed,
-      namedMissingItems: usableManualItems.length,
+      namedMissingItems: canonNamedItems.length + usableManualItems.length,
       namedMissingSlots,
       unresolvedMissingSlots,
       completionPercent: totalSlots > 0 ? (seenItems / totalSlots) * 100 : null,
     },
     categories,
-    namedMissingItems: usableManualItems,
+    namedMissingItems: [...canonNamedItems, ...usableManualItems],
     warnings: Array.from(new Set(warnings)),
+  };
+}
+
+function toCanonMissingEntry(
+  category: PersonalMuseumCategory,
+  canonEntry: MuseumCompletionCanonEntry,
+): MuseumCompletionManualMissingEntry {
+  return {
+    id: `canon-${category.categoryKey}-${canonEntry.slotIndex}`,
+    categoryKey: category.categoryKey,
+    categoryName: category.categoryName,
+    itemName: canonEntry.itemName,
+    canonicalKey: canonEntry.canonicalKey,
+    slotCount: 1,
+    note: canonEntry.notes ?? '',
   };
 }

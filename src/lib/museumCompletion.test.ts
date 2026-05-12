@@ -186,6 +186,180 @@ Corn Oil
     });
   });
 
+  it('names missing slots from checked-in canon only when category totals match', () => {
+    const result = deriveMuseumCompletionFromPersonalExport(
+      `Items (2 / 4)
+Ant Apple
+-
+Corn Oil
+-`,
+      [],
+      {
+        entries: [],
+        byCategoryKey: {
+          items: [
+            {
+              museumCategory: 'Items',
+              categoryKey: 'items',
+              slotIndex: 1,
+              itemName: 'Ant Apple',
+              canonicalKey: 'ant apple',
+              obtainable: true,
+              reviewStatus: 'source_parsed',
+              source: 'test',
+              notes: null,
+            },
+            {
+              museumCategory: 'Items',
+              categoryKey: 'items',
+              slotIndex: 2,
+              itemName: 'Board',
+              canonicalKey: 'board',
+              obtainable: true,
+              reviewStatus: 'source_parsed',
+              source: 'test',
+              notes: null,
+            },
+            {
+              museumCategory: 'Items',
+              categoryKey: 'items',
+              slotIndex: 3,
+              itemName: 'Corn Oil',
+              canonicalKey: 'corn oil',
+              obtainable: true,
+              reviewStatus: 'source_parsed',
+              source: 'test',
+              notes: null,
+            },
+            {
+              museumCategory: 'Items',
+              categoryKey: 'items',
+              slotIndex: 4,
+              itemName: 'Hammer',
+              canonicalKey: 'hammer',
+              obtainable: true,
+              reviewStatus: 'reviewed',
+              source: 'test',
+              notes: 'manual confirmation',
+            },
+          ],
+        },
+      },
+    );
+
+    expect(result.summary).toMatchObject({
+      namedMissingItems: 2,
+      namedMissingSlots: 2,
+      unresolvedMissingSlots: 0,
+    });
+    expect(result.namedMissingItems.map((item) => item.itemName)).toEqual(['Board', 'Hammer']);
+    expect(result.namedMissingItems[1].note).toBe('manual confirmation');
+  });
+
+  it('leaves canon-named slots unresolved when category totals look stale', () => {
+    const result = deriveMuseumCompletionFromPersonalExport(
+      `Items (1 / 3)
+Ant Apple
+-
+-`,
+      [],
+      {
+        entries: [],
+        byCategoryKey: {
+          items: [
+            {
+              museumCategory: 'Items',
+              categoryKey: 'items',
+              slotIndex: 1,
+              itemName: 'Ant Apple',
+              canonicalKey: 'ant apple',
+              obtainable: true,
+              reviewStatus: 'source_parsed',
+              source: 'test',
+              notes: null,
+            },
+            {
+              museumCategory: 'Items',
+              categoryKey: 'items',
+              slotIndex: 2,
+              itemName: 'Board',
+              canonicalKey: 'board',
+              obtainable: true,
+              reviewStatus: 'source_parsed',
+              source: 'test',
+              notes: null,
+            },
+          ],
+        },
+      },
+    );
+
+    expect(result.namedMissingItems).toEqual([]);
+    expect(result.summary.unresolvedMissingSlots).toBe(2);
+    expect(result.warnings).toContain(
+      'Items: the reviewed museum list has 2 slots, but your export expects 3; unnamed slots remain until the list is updated.',
+    );
+  });
+
+  it('does not use a canon candidate when that item appears elsewhere in the current export', () => {
+    const result = deriveMuseumCompletionFromPersonalExport(
+      `Items (1 / 2)
+-
+Board
+Event (1 / 1)
+Ant Apple`,
+      [],
+      {
+        entries: [],
+        byCategoryKey: {
+          items: [
+            {
+              museumCategory: 'Items',
+              categoryKey: 'items',
+              slotIndex: 1,
+              itemName: 'Ant Apple',
+              canonicalKey: 'ant apple',
+              obtainable: true,
+              reviewStatus: 'source_parsed',
+              source: 'test',
+              notes: null,
+            },
+            {
+              museumCategory: 'Items',
+              categoryKey: 'items',
+              slotIndex: 2,
+              itemName: 'Board',
+              canonicalKey: 'board',
+              obtainable: true,
+              reviewStatus: 'source_parsed',
+              source: 'test',
+              notes: null,
+            },
+          ],
+          event: [
+            {
+              museumCategory: 'Event',
+              categoryKey: 'event',
+              slotIndex: 1,
+              itemName: 'Ant Apple',
+              canonicalKey: 'ant apple',
+              obtainable: true,
+              reviewStatus: 'source_parsed',
+              source: 'test',
+              notes: null,
+            },
+          ],
+        },
+      },
+    );
+
+    expect(result.namedMissingItems).toEqual([]);
+    expect(result.summary.unresolvedMissingSlots).toBe(1);
+    expect(result.warnings).toContain(
+      'Ant Apple: the reviewed museum list suggests this missing slot, but the item appears elsewhere in your current export.',
+    );
+  });
+
   it('keeps reviewed entries non-fatal when they no longer line up with the current export', () => {
     const result = deriveMuseumCompletionFromPersonalExport(
       `Items (2 / 2)

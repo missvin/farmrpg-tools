@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
@@ -13,6 +13,7 @@ import {
   type MuseumCompletionManualMissingEntry,
 } from '../lib/museumCompletionState';
 import { getItemIcon } from '../lib/itemIconManifest';
+import { loadMuseumCompletionCanon, type MuseumCompletionCanonData } from '../lib/loadMuseumCompletionCanon';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 
 const PERSONAL_MUSEUM_PLACEHOLDER = `Collection Progress
@@ -86,18 +87,46 @@ export function MuseumCompletionPage() {
   const [manualItemName, setManualItemName] = useState('');
   const [manualSlotCount, setManualSlotCount] = useState('1');
   const [manualNote, setManualNote] = useState('');
+  const [canonData, setCanonData] = useState<MuseumCompletionCanonData | null>(null);
+  const [canonLoadMessage, setCanonLoadMessage] = useState<string | null>(null);
   const [parseMessage, setParseMessage] = useState<string | null>(
     savedState.personalMuseumText ? null : 'Paste your museum export to preview progress.',
   );
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    loadMuseumCompletionCanon()
+      .then((loadedCanonData) => {
+        if (!isCurrent) {
+          return;
+        }
+
+        setCanonData(loadedCanonData);
+        setCanonLoadMessage(null);
+      })
+      .catch(() => {
+        if (!isCurrent) {
+          return;
+        }
+
+        setCanonData(null);
+        setCanonLoadMessage('Reviewed museum slot names could not be loaded; locally reviewed names still work.');
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
 
   const progress = useMemo<MuseumCompletionManualProgress | null>(() => {
     if (!personalMuseumText.trim()) {
       return null;
     }
 
-    return deriveMuseumCompletionFromPersonalExport(personalMuseumText, manualMissingItems);
-  }, [manualMissingItems, personalMuseumText]);
+    return deriveMuseumCompletionFromPersonalExport(personalMuseumText, manualMissingItems, canonData);
+  }, [canonData, manualMissingItems, personalMuseumText]);
 
   const categoriesWithMissing = useMemo(() => {
     return progress?.categories.filter((category) => category.missingMarkerCount > 0) ?? [];
@@ -241,6 +270,7 @@ export function MuseumCompletionPage() {
         <p className="supporting-text">Saved: {formatSavedAt(savedState.savedAt)}</p>
         {parseMessage ? <p className="status-message">{parseMessage}</p> : null}
         {saveMessage ? <p className="status-message status-message--success">{saveMessage}</p> : null}
+        {canonLoadMessage ? <p className="status-message">{canonLoadMessage}</p> : null}
       </section>
 
       <section className="page-card page-stack" aria-labelledby="museum-manual-review-title">
