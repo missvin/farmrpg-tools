@@ -20,7 +20,7 @@ This file is for milestone-level planning; use [backlog.csv](/C:/Users/liqui/Doc
 - Planning foundations and durability
   - crafting rules, modifier handling, recursive ingredient burden, and ingredient-demand views
   - planner recipe exclusions and shared assumptions such as permanent saver and Iron Depot
-  - acquisition-planning foundations for source taxonomy, planner state, owned stockpiles, stored pet inventory, and future pet forecast
+  - acquisition-planning foundations for source taxonomy, planner state, owned stockpiles, stored pet inventory, and first-pass future pet forecasts
   - local snapshot history plus full backup export, restore, and restore safety
   - internal backlog-planning tooling including the backlog graph and overview mode
 
@@ -59,6 +59,7 @@ You can start asking not just "what do I need to craft?" but "what are my practi
 
 - Target-output planning workspace
   - target-output planning domain model
+  - corrected pet-source forecasting before future pet supply feeds the shared pool
   - normalized shared available-supply layer with override rules
   - recursive remaining-requirement engine
   - multi-target shared-demand support

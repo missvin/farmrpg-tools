@@ -1,5 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
+import { parseMuseumReviewedMissingItemsCsv } from './loadMuseumReviewedMissingItems';
 import {
   deriveMuseumCompletionFromPersonalExport,
   deriveMuseumCompletionProgress,
@@ -394,5 +396,20 @@ Corn Oil`,
     expect(result.warnings).toContain(
       'Red Balloon: saved museum review entry is for Event, but that category was not found in the current museum export.',
     );
+  });
+
+  it('uses the checked-in reviewed missing item file for Rebecca reviewed museum gaps', () => {
+    const personalExport = readFileSync('planning/museum-me-raw-sample-2026-05-12.txt', 'utf8');
+    const reviewedMissingItems = parseMuseumReviewedMissingItemsCsv(
+      readFileSync('data/museum_reviewed_missing_items.csv', 'utf8'),
+    );
+    const result = deriveMuseumCompletionFromPersonalExport(personalExport, reviewedMissingItems.entries);
+    const itemsCategory = result.categories.find((category) => category.categoryKey === 'items');
+
+    expect(result.summary.namedMissingItems).toBe(45);
+    expect(result.summary.namedMissingSlots).toBe(56);
+    expect(itemsCategory?.unresolvedMissingCount).toBe(0);
+    expect(result.namedMissingItems.map((item) => item.itemName)).toContain('Apple Basket');
+    expect(result.namedMissingItems.map((item) => item.itemName)).toContain('Vincent Bobblehead');
   });
 });

@@ -140,6 +140,20 @@ Identity compatibility rules:
 - The checked-in file may be header-only until a museum workflow export is reviewed and intentionally added
 - Loader validation keeps unresolved or suspicious rows explicit rather than silently remapping item identity
 
+### `museum_completion_canon.csv`
+
+- Reviewed ordered museum slot canon for naming missing Museum Completion slots from a personal export
+- Uses normalized-name canonical keys plus 1-based category slot order
+- The app only names missing slots from this canon when category and slot count match safely
+- Missing, stale, or ambiguous canon coverage remains a non-fatal unnamed slot rather than guessed item identity
+
+### `museum_reviewed_missing_items.csv`
+
+- Reviewed grouped missing-item coverage for known stale museum categories
+- Preserves Rebecca-reviewed missing labels and slot counts when full ordered canon cannot safely name a category
+- Grouped rows such as certificate/trophy families remain grouped until individual item identities are confirmed
+- This is a transitional checked-in source so users do not have to manually retype reviewed missing slots locally
+
 ### `drop_rate_reference.csv`
 
 - Reviewed local source-coverage dataset for Buddy-derived drop-rate rows

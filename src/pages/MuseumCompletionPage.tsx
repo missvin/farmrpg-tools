@@ -14,6 +14,10 @@ import {
 } from '../lib/museumCompletionState';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { loadMuseumCompletionCanon, type MuseumCompletionCanonData } from '../lib/loadMuseumCompletionCanon';
+import {
+  loadMuseumReviewedMissingItems,
+  type MuseumReviewedMissingItem,
+} from '../lib/loadMuseumReviewedMissingItems';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 
 const PERSONAL_MUSEUM_PLACEHOLDER = `Collection Progress
@@ -88,6 +92,7 @@ export function MuseumCompletionPage() {
   const [manualSlotCount, setManualSlotCount] = useState('1');
   const [manualNote, setManualNote] = useState('');
   const [canonData, setCanonData] = useState<MuseumCompletionCanonData | null>(null);
+  const [reviewedMissingItems, setReviewedMissingItems] = useState<MuseumReviewedMissingItem[]>([]);
   const [canonLoadMessage, setCanonLoadMessage] = useState<string | null>(null);
   const [parseMessage, setParseMessage] = useState<string | null>(
     savedState.personalMuseumText ? null : 'Paste your museum export to preview progress.',
@@ -97,13 +102,14 @@ export function MuseumCompletionPage() {
   useEffect(() => {
     let isCurrent = true;
 
-    loadMuseumCompletionCanon()
-      .then((loadedCanonData) => {
+    Promise.all([loadMuseumCompletionCanon(), loadMuseumReviewedMissingItems()])
+      .then(([loadedCanonData, loadedReviewedMissingItems]) => {
         if (!isCurrent) {
           return;
         }
 
         setCanonData(loadedCanonData);
+        setReviewedMissingItems(loadedReviewedMissingItems.entries);
         setCanonLoadMessage(null);
       })
       .catch(() => {
@@ -112,7 +118,8 @@ export function MuseumCompletionPage() {
         }
 
         setCanonData(null);
-        setCanonLoadMessage('Reviewed museum slot names could not be loaded; locally reviewed names still work.');
+        setReviewedMissingItems([]);
+        setCanonLoadMessage('Reviewed museum slot names could not be loaded; locally saved names still work.');
       });
 
     return () => {
@@ -120,13 +127,24 @@ export function MuseumCompletionPage() {
     };
   }, []);
 
+  const combinedMissingItems = useMemo(() => {
+    const reviewedKeys = new Set(
+      reviewedMissingItems.map((item) => `${item.categoryKey}:${item.canonicalKey}`),
+    );
+    const localOnlyMissingItems = manualMissingItems.filter(
+      (item) => !reviewedKeys.has(`${item.categoryKey}:${item.canonicalKey}`),
+    );
+
+    return [...reviewedMissingItems, ...localOnlyMissingItems];
+  }, [manualMissingItems, reviewedMissingItems]);
+
   const progress = useMemo<MuseumCompletionManualProgress | null>(() => {
     if (!personalMuseumText.trim()) {
       return null;
     }
 
-    return deriveMuseumCompletionFromPersonalExport(personalMuseumText, manualMissingItems, canonData);
-  }, [canonData, manualMissingItems, personalMuseumText]);
+    return deriveMuseumCompletionFromPersonalExport(personalMuseumText, combinedMissingItems, canonData);
+  }, [canonData, combinedMissingItems, personalMuseumText]);
 
   const categoriesWithMissing = useMemo(() => {
     return progress?.categories.filter((category) => category.missingMarkerCount > 0) ?? [];
@@ -277,7 +295,8 @@ export function MuseumCompletionPage() {
         <div>
           <h2 id="museum-manual-review-title">Reviewed Missing Items</h2>
           <p className="supporting-text">
-            Add names only after you have confirmed what an unnamed museum slot represents.
+            The app includes Rebecca-reviewed missing names when available. Add local names only after you have
+            confirmed what an unnamed museum slot represents.
           </p>
         </div>
 
@@ -351,7 +370,7 @@ export function MuseumCompletionPage() {
         </div>
 
         {manualMissingItems.length === 0 ? (
-          <p className="empty-state">No reviewed missing items saved yet.</p>
+          <p className="empty-state">No local reviewed missing items saved yet.</p>
         ) : (
           <ul className="data-list">
             {manualMissingItems.map((item) => (

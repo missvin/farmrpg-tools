@@ -194,7 +194,10 @@ Tower should support selected cutoffs/targets, for example:
 - Lemon Cream Pie: throughput / multi-use effect
 
 ### Pets
-- 1 item per pet level per hour
+- total hourly pet output is based on pet level, then distributed across the pet's currently available item pool
+- available item pool size is 4 before level 3, 8 before level 6, and 12 at level 6+
+- per-item forecast rate should be pet level divided by the available item pool size once that item has unlocked
+- Buddy pet-source coverage should provide which pets produce each item and the pet level where each item becomes available
 - each pet can hold up to inventory max of each item
 - pets stop producing after 48 hours offline
 - seasonal pets only produce during active 2-month windows
