@@ -59,7 +59,7 @@ You can start asking not just "what do I need to craft?" but "what are my practi
 
 - Target-output planning workspace
   - target-output planning domain model
-  - corrected pet-source forecasting before future pet supply feeds the shared pool
+  - corrected pet-source forecasting before future pet supply feeds the shared pool (shipped)
   - normalized shared available-supply layer with override rules
   - recursive remaining-requirement engine
   - multi-target shared-demand support

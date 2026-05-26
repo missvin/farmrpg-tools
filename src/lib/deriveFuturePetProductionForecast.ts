@@ -1,4 +1,5 @@
 import { type AcquisitionFuturePetProductionEntryInput, type AcquisitionPlannerInputState } from './acquisitionPlannerState';
+import { findPetSourceReference, type PetSourceReferenceData } from './loadPetSourceReference';
 import { toCanonicalItemKey } from './normalizeItemKey';
 
 export const FUTURE_PET_HOURLY_OUTPUT_PER_LEVEL = 1;
@@ -12,10 +13,13 @@ export type FuturePetProductionForecastPetDetail = {
   petLevel: number;
   seasonalActive: boolean;
   forecastHours: number;
+  availableItemPoolSize: number;
   baseQuantity: number;
   specialRuleMultiplier: number;
   collectionMultiplier: number;
   forecastQuantity: number;
+  petSourceUnlockLevel: number | null;
+  petSourceUrl: string | null;
   appliedRuleNotes: string[];
 };
 
@@ -35,9 +39,25 @@ export type FuturePetProductionForecastResult = {
   warnings: string[];
 };
 
+export type FuturePetProductionForecastOptions = {
+  petSourceReference?: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
+};
+
 function getForecastHours(state: AcquisitionPlannerInputState): number {
   const requestedHours = state.pets.futureProduction.horizonDays * 24;
   return Math.min(requestedHours, state.pets.futureProduction.offlineHoursCap);
+}
+
+export function getAvailablePetItemPoolSize(petLevel: number): number {
+  if (petLevel >= 6) {
+    return 12;
+  }
+
+  if (petLevel >= 3) {
+    return 8;
+  }
+
+  return 4;
 }
 
 function getSpecialRuleMultiplier(entry: AcquisitionFuturePetProductionEntryInput): {
@@ -67,8 +87,10 @@ function getSpecialRuleMultiplier(entry: AcquisitionFuturePetProductionEntryInpu
 
 export function deriveFuturePetProductionForecast(
   state: AcquisitionPlannerInputState,
+  options: FuturePetProductionForecastOptions = {},
 ): FuturePetProductionForecastResult {
   const warnings: string[] = [];
+  const warningKeys = new Set<string>();
 
   if (!state.pets.futureProduction.enabled) {
     return {
@@ -90,10 +112,40 @@ export function deriveFuturePetProductionForecast(
     const seasonallyAllowed =
       !state.pets.futureProduction.respectSeasonality || entry.seasonalActive;
     const { multiplier: specialRuleMultiplier, notes } = getSpecialRuleMultiplier(entry);
-    const baseQuantity = seasonallyAllowed
-      ? entry.petLevel * forecastHours * FUTURE_PET_HOURLY_OUTPUT_PER_LEVEL
+    const availableItemPoolSize = getAvailablePetItemPoolSize(entry.petLevel);
+    const petSourceReferenceLoaded = Boolean(options.petSourceReference);
+    const petSourceReference = petSourceReferenceLoaded
+      ? findPetSourceReference(
+        options.petSourceReference,
+        entry.petName,
+        entry.canonicalItemKey,
+      )
+      : null;
+    const unlockAllowed = !petSourceReference || entry.petLevel >= petSourceReference.unlockLevel;
+    const baseQuantity = seasonallyAllowed && unlockAllowed
+      ? (entry.petLevel * forecastHours * FUTURE_PET_HOURLY_OUTPUT_PER_LEVEL) / availableItemPoolSize
       : 0;
     const forecastQuantity = baseQuantity * specialRuleMultiplier * collectionMultiplier;
+    const appliedRuleNotes = [...notes];
+
+    if (petSourceReferenceLoaded && !petSourceReference) {
+      const warningKey = `${entry.petName}:${entry.canonicalItemKey}`;
+
+      if (!warningKeys.has(warningKey)) {
+        warnings.push(
+          `Pet source coverage is missing for ${entry.petName} -> ${entry.itemName}; using the level-based item pool and assuming the item is available.`,
+        );
+        warningKeys.add(warningKey);
+      }
+
+      appliedRuleNotes.push('Pet-source unlock level is not in local reference data.');
+    } else if (petSourceReference) {
+      appliedRuleNotes.push(`Buddy pet-source unlock level ${petSourceReference.unlockLevel}.`);
+    } else {
+      appliedRuleNotes.push('Pet-source coverage was not loaded for this forecast.');
+    }
+
+    appliedRuleNotes.push(`Pet level ${entry.petLevel} uses a ${availableItemPoolSize}-item output pool.`);
 
     const petDetail: FuturePetProductionForecastPetDetail = {
       canonicalItemKey: entry.canonicalItemKey,
@@ -102,12 +154,20 @@ export function deriveFuturePetProductionForecast(
       petLevel: entry.petLevel,
       seasonalActive: entry.seasonalActive,
       forecastHours: seasonallyAllowed ? forecastHours : 0,
+      availableItemPoolSize,
       baseQuantity,
       specialRuleMultiplier,
       collectionMultiplier,
       forecastQuantity,
+      petSourceUnlockLevel: petSourceReference?.unlockLevel ?? null,
+      petSourceUrl: petSourceReference?.sourceUrl ?? null,
       appliedRuleNotes: seasonallyAllowed
-        ? notes
+        ? unlockAllowed
+          ? appliedRuleNotes
+          : [
+            ...appliedRuleNotes,
+            `Pet level ${entry.petLevel} is below the local unlock level, so this pet contributes 0 in the current forecast.`,
+          ]
         : ['Seasonality respected, so this pet contributes 0 in the current forecast.'],
     };
 

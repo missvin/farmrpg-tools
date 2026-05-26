@@ -4,6 +4,7 @@ import {
 } from './acquisitionPlannerState';
 import { deriveFuturePetProductionForecast } from './deriveFuturePetProductionForecast';
 import type { DropRateReferenceData } from './loadDropRateReference';
+import type { PetSourceReferenceData } from './loadPetSourceReference';
 import type { RecursiveIngredientBurdenResult } from './recursiveIngredientBurden';
 
 export type ItemAcquisitionContext = {
@@ -21,6 +22,7 @@ export type DeriveItemAcquisitionContextInput = {
   acquisitionState: AcquisitionPlannerInputState;
   burdenResult?: RecursiveIngredientBurdenResult | null;
   dropRateReference?: DropRateReferenceData | null;
+  petSourceReference?: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
 };
 
 function sumOwnedNowEntries(
@@ -38,10 +40,11 @@ export function deriveItemAcquisitionContext({
   acquisitionState,
   burdenResult,
   dropRateReference,
+  petSourceReference,
 }: DeriveItemAcquisitionContextInput): ItemAcquisitionContext {
   const inclusionMap = resolveAcquisitionSourceInclusionMap(acquisitionState);
   const burdenEntry = burdenResult?.ingredientBurdenByCanonicalKey[canonicalKey] ?? null;
-  const futurePetForecast = deriveFuturePetProductionForecast(acquisitionState);
+  const futurePetForecast = deriveFuturePetProductionForecast(acquisitionState, { petSourceReference });
   const futurePetEntry = futurePetForecast.entries.find((entry) => entry.canonicalItemKey === canonicalKey);
   const stockpileQuantity = inclusionMap.owned_stockpiles
     ? sumOwnedNowEntries(acquisitionState, canonicalKey, 'stockpile')

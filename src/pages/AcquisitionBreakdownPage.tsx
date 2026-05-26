@@ -30,6 +30,10 @@ import {
   type DropRateReferenceData,
   type DropRateReferenceEntry,
 } from '../lib/loadDropRateReference';
+import {
+  loadPetSourceReference,
+  type PetSourceReferenceData,
+} from '../lib/loadPetSourceReference';
 import { loadRecipeGraph, type RecipeGraph } from '../lib/loadRecipeGraph';
 import { loadTowerRequirements, type TowerRequirementsData } from '../lib/loadTowerRequirements';
 import {
@@ -120,9 +124,10 @@ function sumOwnedNowEntries(
 function getKnownCoverage(
   acquisitionState: AcquisitionPlannerInputState,
   selectedCanonicalKey: string,
+  petSourceReference: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null,
 ): KnownCoverage {
   const inclusionMap = resolveAcquisitionSourceInclusionMap(acquisitionState);
-  const futurePetForecast = deriveFuturePetProductionForecast(acquisitionState);
+  const futurePetForecast = deriveFuturePetProductionForecast(acquisitionState, { petSourceReference });
   const futurePetEntry = futurePetForecast.entries.find(
     (entry) => entry.canonicalItemKey === selectedCanonicalKey,
   );
@@ -209,20 +214,24 @@ export function AcquisitionBreakdownPage() {
     recipeError: string | null;
     towerError: string | null;
     dropRateError: string | null;
+    petSourceError: string | null;
     snapshot: MasterySnapshot | null;
     recipeGraph: RecipeGraph | null;
     towerRequirementsData: TowerRequirementsData | null;
     dropRateReference: DropRateReferenceData | null;
+    petSourceReference: PetSourceReferenceData | null;
   }>({
     isLoading: true,
     snapshotError: null,
     recipeError: null,
     towerError: null,
     dropRateError: null,
+    petSourceError: null,
     snapshot: null,
     recipeGraph: null,
     towerRequirementsData: null,
     dropRateReference: null,
+    petSourceReference: null,
   });
   const [modifierState, setModifierState] = useState<UserCraftingModifierState>(() => {
     try {
@@ -298,10 +307,12 @@ export function AcquisitionBreakdownPage() {
             recipeError: null,
             towerError: null,
             dropRateError: null,
+            petSourceError: null,
             snapshot: null,
             recipeGraph: null,
             towerRequirementsData: null,
             dropRateReference: null,
+            petSourceReference: null,
           });
           return;
         }
@@ -313,12 +324,21 @@ export function AcquisitionBreakdownPage() {
           ]);
           let dropRateReference: DropRateReferenceData | null = null;
           let dropRateError: string | null = null;
+          let petSourceReference: PetSourceReferenceData | null = null;
+          let petSourceError: string | null = null;
 
           try {
             dropRateReference = await loadDropRateReference();
           } catch (error: unknown) {
             dropRateError =
               error instanceof Error ? error.message : 'Unable to load local drop-rate reference data.';
+          }
+
+          try {
+            petSourceReference = await loadPetSourceReference();
+          } catch (error: unknown) {
+            petSourceError =
+              error instanceof Error ? error.message : 'Unable to load local pet-source reference data.';
           }
 
           if (!isMounted) {
@@ -331,10 +351,12 @@ export function AcquisitionBreakdownPage() {
             recipeError: null,
             towerError: null,
             dropRateError,
+            petSourceError,
             snapshot,
             recipeGraph,
             towerRequirementsData,
             dropRateReference,
+            petSourceReference,
           });
         } catch (error: unknown) {
           if (!isMounted) {
@@ -350,10 +372,12 @@ export function AcquisitionBreakdownPage() {
             recipeError: message.includes('recipe') ? message : null,
             towerError: message.includes('tower') ? message : null,
             dropRateError: message.includes('drop-rate') ? message : null,
+            petSourceError: message.includes('pet-source') ? message : null,
             snapshot,
             recipeGraph: null,
             towerRequirementsData: null,
             dropRateReference: null,
+            petSourceReference: null,
           });
         }
       })
@@ -368,10 +392,12 @@ export function AcquisitionBreakdownPage() {
           recipeError: null,
           towerError: null,
           dropRateError: null,
+          petSourceError: null,
           snapshot: null,
           recipeGraph: null,
           towerRequirementsData: null,
           dropRateReference: null,
+          petSourceReference: null,
         });
       });
 
@@ -458,7 +484,11 @@ export function AcquisitionBreakdownPage() {
     ? Math.ceil(selectedBurden.totalRequiredEffectiveOutput)
     : 0;
   const knownCoverage = selectedBurden
-    ? getKnownCoverage(acquisitionState, selectedBurden.canonicalKey)
+    ? getKnownCoverage(
+      acquisitionState,
+      selectedBurden.canonicalKey,
+      resourcesState.petSourceReference,
+    )
     : {
       stockpileQuantity: 0,
       containerQuantity: 0,
@@ -572,6 +602,12 @@ export function AcquisitionBreakdownPage() {
         {!resourcesState.isLoading && resourcesState.dropRateError ? (
           <p className="status-message">
             Imported drop-rate coverage could not be loaded. Manual source comparison still works.
+          </p>
+        ) : null}
+
+        {!resourcesState.isLoading && resourcesState.petSourceError ? (
+          <p className="status-message">
+            Pet-source coverage could not be loaded. Future pet estimates will still use level-based item pools.
           </p>
         ) : null}
 

@@ -32,6 +32,10 @@ import {
   type DropRateFishingUnit,
 } from '../lib/dropRateAcquisitionSettings';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
+import {
+  loadPetSourceReference,
+  type PetSourceReferenceData,
+} from '../lib/loadPetSourceReference';
 import { parseStoredPetInventoryPaste } from '../lib/parseStoredPetInventoryPaste';
 
 function formatForecastQuantity(value: number): string {
@@ -83,6 +87,8 @@ export function SettingsPage() {
   const [futurePetError, setFuturePetError] = useState<string | null>(null);
   const [futurePetWarnings, setFuturePetWarnings] = useState<string[]>([]);
   const [knownItemKeys, setKnownItemKeys] = useState<Set<string> | null>(null);
+  const [petSourceReference, setPetSourceReference] = useState<PetSourceReferenceData | null>(null);
+  const [petSourceReferenceError, setPetSourceReferenceError] = useState<string | null>(null);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -97,7 +103,9 @@ export function SettingsPage() {
   const ownedNowEntries = getOwnedNowItemInputs(acquisitionPlannerState);
   const storedPetEntries = getStoredPetInventoryItemInputs(acquisitionPlannerState);
   const futurePetEntries = getFuturePetProductionEntries(acquisitionPlannerState);
-  const futurePetForecast = deriveFuturePetProductionForecast(acquisitionPlannerState);
+  const futurePetForecast = deriveFuturePetProductionForecast(acquisitionPlannerState, {
+    petSourceReference,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -111,6 +119,30 @@ export function SettingsPage() {
       .catch(() => {
         if (!cancelled) {
           setKnownItemKeys(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void loadPetSourceReference()
+      .then((data) => {
+        if (!cancelled) {
+          setPetSourceReference(data);
+          setPetSourceReferenceError(null);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setPetSourceReference(null);
+          setPetSourceReferenceError(
+            error instanceof Error ? error.message : 'Unable to load local pet-source reference data.',
+          );
         }
       });
 
@@ -1163,9 +1195,17 @@ export function SettingsPage() {
 
         <p className="supporting-text">
           This estimate uses <strong>{futurePetForecast.forecastHours.toLocaleString()}</strong> forecast hours from
-          the current horizon and offline-cap assumptions. Crunchy Omelette applies only as an explicit
+          the current horizon and offline-cap assumptions. Pet output is divided across the level item pool
+          (4 before level 3, 8 before level 6, then 12), and Crunchy Omelette applies only as an explicit
           collection-time multiplier when checked.
         </p>
+
+        {petSourceReferenceError ? (
+          <p className="status-message">
+            Local pet-source coverage could not be loaded. Forecasts still use the level item-pool model, but unlock
+            levels may need review.
+          </p>
+        ) : null}
 
         {futurePetEntries.length > 0 ? (
           <table className="summary-table">
@@ -1231,6 +1271,13 @@ export function SettingsPage() {
 
         {futurePetMessage ? <p className="status-message status-message--success">{futurePetMessage}</p> : null}
         {futurePetError ? <p className="status-message status-message--error">{futurePetError}</p> : null}
+        {futurePetForecast.warnings.length > 0 ? (
+          <ul className="supporting-text">
+            {futurePetForecast.warnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        ) : null}
         {futurePetWarnings.length > 0 ? (
           <ul className="supporting-text">
             {futurePetWarnings.map((warning) => (
