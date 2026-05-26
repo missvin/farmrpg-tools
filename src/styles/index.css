@@ -787,6 +787,104 @@ a {
   font-weight: 600;
 }
 
+.section-heading-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.quest-picker-section {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.quest-picker-list,
+.quest-progress-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.quest-picker-row,
+.quest-progress-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface-muted);
+}
+
+.quest-picker-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.quest-picker-row h3,
+.quest-progress-card h3 {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: 1rem;
+}
+
+.quest-action-row {
+  justify-content: flex-end;
+}
+
+.quest-progress-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.quest-progress-stats {
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.quest-warning-list {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+  color: var(--color-warning-border);
+}
+
+.quest-requirements-table .item-profile-link {
+  width: max-content;
+}
+
+.quest-inline-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quest-inline-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface-muted);
+}
+
+.quest-detail-disclosure summary {
+  cursor: pointer;
+  color: var(--color-text-strong);
+  font-weight: 600;
+}
+
+.quest-paste-input {
+  min-height: 12rem;
+  margin: 0.75rem 0;
+}
+
+.quest-hidden-review {
+  margin-top: 0.75rem;
+}
+
 .tower-percent-cell {
   position: relative;
   overflow: hidden;
