@@ -23,6 +23,12 @@ Then keep retrieval targeted:
 - Read relevant roadmap, decision, spec, or architecture sections only when needed to place the idea correctly.
 - Use `planning/positioning.md` only as a secondary tie-breaker when placement is otherwise equivalent.
 
+Before editing, check the working tree with `git status --short --branch`.
+
+- If unrelated product changes are already dirty, tell the user what is dirty in one concise sentence.
+- Choose and state one path before proceeding: defer intake, isolate the intake in a separate worktree, include the intake in the current dirty scope, or first finish and land the current work.
+- Do not silently mix a planning-only intake change into an unrelated dirty product-code tree.
+
 ## Operating Modes
 
 Determine the mode from the prompt:
@@ -45,6 +51,15 @@ Default to `create-and-land` only after the intake is clear enough to write rows
 5. Make dependencies explicit with `BL-###` tokens when rows need prior work.
 6. Keep local-first, single-profile, no-backend, static-hosting, and normalized-item-key constraints intact unless a planning decision explicitly changes them.
 7. Update `roadmap.md`, `decisions.md`, or a spec only when backlog placement alone would be misleading.
+
+## Implementation Handoff
+
+Keep intake as intake. If backlog intake creates or updates actionable rows and the user wants implementation to continue in the same conversation:
+
+- finish the intake readout first
+- name the row or rows that are now ready for implementation
+- recommend `$farmrpg-tools-next-slice` or explicitly confirm the user wants to continue into implementation
+- do not edit product code under this skill unless product code was already unexpectedly touched and must be cleaned up or reverted with user approval
 
 ## Ambiguity Guardrails
 
@@ -83,6 +98,8 @@ In `create-and-land` mode:
 
 If a helper fails, stop and report the failure instead of silently falling back to raw git commands.
 
+Before final readout, run `git status --short --branch`. If the tree is not clean, list the remaining dirty files and why they remain.
+
 ## Field Notes
 
 Do not add a field note for routine skill creation, ordinary backlog intake, or validator/tooling friction.
@@ -113,6 +130,7 @@ End with:
 - rows added or updated
 - validation run, including backlog CSV parse and header/schema preservation
 - commit hash and branch/push status, or why work was not committed
+- whether the final working tree is clean; if not, list what remains dirty and why
 - whether product code, `data/`, app tests, lint, or build were touched or skipped
 - field-note status
 - suggested next step: usually `$farmrpg-backlog-paths` to sequence rows or `$farmrpg-tools-next-slice` to implement a selected row/path

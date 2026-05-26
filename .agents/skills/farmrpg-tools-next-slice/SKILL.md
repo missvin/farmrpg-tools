@@ -47,6 +47,13 @@ Before editing, briefly state:
 - why it is the next reasonable slice
 - short implementation plan
 
+Backlog-first implementation gate:
+
+- Do not edit product code, UI files, storage/import/export code, or canonical `data/` files until the selected backlog row exists in `planning/backlog.csv`.
+- If the row does not exist, create or update the backlog row first, validate the backlog CSV, and state the new or updated `backlog_id` before continuing.
+- If the selected row was just created during the same turn, pause after the backlog edit long enough for the user to redirect before starting product-code changes.
+- Do not start implementation from an unbacklogged plan, even when the user provides a detailed product plan.
+
 Proceed unless the user pauses, redirects, or asked for planning-only/review-only.
 
 ## Selected Path Mode
@@ -82,6 +89,20 @@ Follow the repo rules in `AGENTS.md`:
 - Keep normal user-facing pages focused on player status, what needs attention, and the next useful action; move dev/debug/reference-maintenance framing to internal tools or secondary detail surfaces.
 - For UX-facing work, prefer clearer data, controls, labels, and compact collapsible guidance over adding more explanatory text.
 
+Dirty-tree and interruption handling:
+
+- If a new user request arrives while the working tree has uncommitted product changes, run `git status --short --branch` before taking action.
+- Tell the user what is dirty in one concise sentence.
+- Choose and state one path before proceeding: finish and land the current slice first, isolate the new request in a separate worktree, defer the new request, or explicitly include it in the current commit scope.
+- Do not silently accumulate unrelated work in the same dirty tree.
+
+Large-slice checkpointing:
+
+- When a slice touches three or more categories among product code, UI, `data/`, storage/import/export, tests, and planning files, treat it as a large slice.
+- For large slices, prefer finishing and landing promptly once a coherent verified state exists.
+- If interrupted before landing a large slice, give a status checkpoint that lists the selected row, dirty file groups, verification already run, and the recommended next action.
+- Avoid starting unrelated work until the large slice is committed, isolated, or intentionally folded into the same scope.
+
 Update planning files only when appropriate:
 
 - Update `planning/backlog.csv` status/notes when the slice advances or completes.
@@ -107,6 +128,7 @@ Use `AGENTS.md` as the source of truth for the repo-local safe git workflow.
 - If the slice starts on `master`, create a short-lived `codex/...` task branch before staging so `git codex-merge` can land the work through the normal fast-forward path.
 - If a helper fails, stop and report it instead of silently falling back to raw git commands.
 - After landing work, verify the final branch/upstream status and report whether `master` is up to date with `origin/master`.
+- Before final readout, run `git status --short --branch`. If the tree is not clean, list the remaining dirty files and why they remain.
 
 ## Field Notes
 
@@ -142,6 +164,7 @@ End with a concise readout that includes:
 - concise implementation summary
 - selected path item(s) completed and remaining, when using selected-path mode
 - commit hash and branch/push status, or the reason work was not committed
+- whether the final working tree is clean; if not, list what remains dirty and why
 - next reasonable backlog item plus short justification
 - any recommended user testing or Rebecca actions needed because of the completed work or to unlock the next backlog item
 - hosted/user-test implications when the work affects Vercel-visible behavior, local browser storage, backup/restore, import/export, or data durability
