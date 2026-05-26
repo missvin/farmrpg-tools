@@ -2,7 +2,7 @@
 
 This file is for milestone-level planning; use [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for the detailed backlog and dependencies.
 
-## Completed Through v1.10
+## Completed Through v2.0
 
 - `v1.5` established the core local tracker and Tower workflow
   - Tower requirements loading and read-only Tower view
@@ -55,15 +55,15 @@ The app is safer to migrate between local and hosted browser contexts, and impor
 User-facing story:
 You can start asking not just "what do I need to craft?" but "what are my practical acquisition paths for this item under my current assumptions, and why?"
 
-## v2.0
+## v2.0 (Complete)
 
 - Target-output planning workspace
-  - target-output planning domain model
+  - target-output planning domain model (shipped)
   - corrected pet-source forecasting before future pet supply feeds the shared pool (shipped)
-  - normalized shared available-supply layer with override rules
-  - recursive remaining-requirement engine
-  - multi-target shared-demand support
-  - first target-output planning page
+  - normalized shared available-supply layer with override rules (shipped)
+  - recursive remaining-requirement engine (shipped)
+  - multi-target shared-demand support (shipped)
+  - first target-output planning page (shipped)
 
 User-facing story:
 You can choose one or more target outputs and see what is still required after pooled available supply is consumed across the whole planning problem.

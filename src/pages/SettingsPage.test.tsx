@@ -342,6 +342,6 @@ describe('SettingsPage', () => {
         },
       ],
     });
-    expect(screen.getByText('432')).toBeInTheDocument();
+    expect(screen.getByText('36')).toBeInTheDocument();
   });
 });

@@ -145,8 +145,8 @@ describe('deriveItemAcquisitionContext', () => {
       requiredQuantity: 43,
       hasBreakdownTarget: true,
       immediateSavedQuantity: 12,
-      futurePetQuantity: 48,
-      totalSavedQuantity: 60,
+      futurePetQuantity: 12,
+      totalSavedQuantity: 24,
       dropRateSourceCount: 1,
     });
   });

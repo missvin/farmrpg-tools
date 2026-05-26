@@ -35,6 +35,11 @@ import {
   savePumpkinJuicePlannerState,
 } from './pumpkinJuicePlannerState';
 import { listSnapshots, replaceSnapshots } from './storage/masterySnapshots';
+import {
+  clearTargetOutputPlannerState,
+  loadTargetOutputPlannerState,
+  saveTargetOutputPlannerState,
+} from './targetOutputPlannerState';
 import { clearStoredAppTheme, persistAppTheme, readStoredAppTheme } from './themePreference';
 
 export async function readAppBackupFile(file: File): Promise<AppBackupPayloadV1> {
@@ -72,6 +77,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   const currentPersonalMasteryGoalsState = loadPersonalMasteryGoalsState();
   const currentMasteryRaceCountsState = loadMasteryRaceCountsState();
   const currentMuseumCompletionState = loadMuseumCompletionState();
+  const currentTargetOutputPlannerState = loadTargetOutputPlannerState();
   const currentThemePreference = readStoredAppTheme();
 
   try {
@@ -119,6 +125,12 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       clearMuseumCompletionState();
     }
 
+    if (payload.state.preferences.targetOutputPlannerState) {
+      saveTargetOutputPlannerState(payload.state.preferences.targetOutputPlannerState);
+    } else {
+      clearTargetOutputPlannerState();
+    }
+
     if (payload.state.preferences.themePreference) {
       persistAppTheme(payload.state.preferences.themePreference);
     } else {
@@ -133,6 +145,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     savePersonalMasteryGoalsState(currentPersonalMasteryGoalsState);
     saveMasteryRaceCountsState(currentMasteryRaceCountsState);
     saveMuseumCompletionState(currentMuseumCompletionState);
+    saveTargetOutputPlannerState(currentTargetOutputPlannerState);
 
     if (currentThemePreference) {
       persistAppTheme(currentThemePreference);

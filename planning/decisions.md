@@ -183,3 +183,19 @@ Implications:
 - Backlog metadata must not become a dependency for gameplay logic, mastery calculations, import behavior, or canonical `data/` flows.
 - Malformed backlog metadata should degrade safely and should not break the rest of the app.
 - This does not introduce app-side editing of backlog files or change the local-first, single-profile, and no-backend constraints.
+
+## Target-output planning uses a shared local supply pool
+
+Status: Accepted
+
+Decision:
+Target-output planning consumes one normalized item-keyed supply pool across the whole planning problem, with manual overrides replacing effective supply while preserving derived source detail.
+
+Rationale:
+Planning one output at a time can double-count owned inventory, pet output, and other shared sources when multiple goals need the same intermediate or raw item. A shared pool lets the engine spend available supply once before expanding remaining craft demand.
+
+Implications:
+- Supply joins continue to use normalized item names as canonical keys.
+- Derived supply and override supply should remain visible as separate concepts.
+- Future inventory import and quest-resource adapters should feed the same supply boundary instead of creating parallel supply math.
+- Missing source metadata should produce warnings and continue.

@@ -7,6 +7,7 @@ import type { PersonalMasteryGoalsState } from './personalMasteryGoals';
 import type { PumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
 import type { AppTheme } from './themePreference';
 import type { MasterySnapshot } from './storage/masterySnapshots';
+import type { TargetOutputPlannerState } from './targetOutputPlannerState';
 
 export const APP_BACKUP_PAYLOAD_KIND = 'farmrpg-tools-backup';
 export const APP_BACKUP_SCHEMA_VERSION = 1;
@@ -26,6 +27,7 @@ export type AppBackupStateV1 = {
     personalMasteryGoalsState?: PersonalMasteryGoalsState | null;
     masteryRaceCountsState?: MasteryRaceCountsState | null;
     museumCompletionState?: MuseumCompletionState | null;
+    targetOutputPlannerState?: TargetOutputPlannerState | null;
     themePreference: AppTheme | null;
   };
 };
@@ -51,6 +53,7 @@ export type CreateAppBackupPayloadInput = {
   personalMasteryGoalsState?: PersonalMasteryGoalsState | null;
   masteryRaceCountsState?: MasteryRaceCountsState | null;
   museumCompletionState?: MuseumCompletionState | null;
+  targetOutputPlannerState?: TargetOutputPlannerState | null;
   themePreference: AppTheme | null;
 };
 
@@ -79,7 +82,8 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_pumpkin_juice_planner_state'
   | 'invalid_personal_mastery_goals_state'
   | 'invalid_mastery_race_counts_state'
-  | 'invalid_museum_completion_state';
+  | 'invalid_museum_completion_state'
+  | 'invalid_target_output_planner_state';
 
 export type AppBackupPayloadValidationResult =
   | { ok: true; payload: AppBackupPayloadV1 }
@@ -405,6 +409,49 @@ function isValidMuseumCompletionState(value: unknown): value is MuseumCompletion
   );
 }
 
+function isValidTargetOutputPlannerTarget(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    (value.targetId === undefined || typeof value.targetId === 'string') &&
+    typeof value.itemName === 'string' &&
+    value.itemName.length > 0 &&
+    typeof value.canonicalKey === 'string' &&
+    value.canonicalKey.length > 0 &&
+    isFiniteNonNegativeNumber(value.desiredQuantity) &&
+    value.desiredQuantity > 0
+  );
+}
+
+function isValidTargetOutputSupplyOverride(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.itemName === 'string' &&
+    value.itemName.length > 0 &&
+    typeof value.canonicalKey === 'string' &&
+    value.canonicalKey.length > 0 &&
+    isFiniteNonNegativeNumber(value.quantity)
+  );
+}
+
+function isValidTargetOutputPlannerState(value: unknown): value is TargetOutputPlannerState {
+  if (!isRecord(value) || value.schemaVersion !== 1) {
+    return false;
+  }
+
+  return (
+    Array.isArray(value.targets) &&
+    value.targets.every((target) => isValidTargetOutputPlannerTarget(target)) &&
+    Array.isArray(value.supplyOverrides) &&
+    value.supplyOverrides.every((override) => isValidTargetOutputSupplyOverride(override))
+  );
+}
+
 function isValidParseSummary(value: unknown): boolean {
   if (!isRecord(value)) {
     return false;
@@ -525,6 +572,7 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
           personalMasteryGoalsState: input.personalMasteryGoalsState ?? null,
           masteryRaceCountsState: input.masteryRaceCountsState ?? null,
           museumCompletionState: input.museumCompletionState ?? null,
+          targetOutputPlannerState: input.targetOutputPlannerState ?? null,
           themePreference: input.themePreference,
         },
       },
@@ -736,6 +784,19 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       ok: false,
       code: 'invalid_museum_completion_state',
       message: 'The backup file contains malformed museum completion state.',
+    };
+  }
+
+  const targetOutputPlannerState = value.state.preferences.targetOutputPlannerState;
+  if (
+    targetOutputPlannerState !== undefined &&
+    targetOutputPlannerState !== null &&
+    !isValidTargetOutputPlannerState(targetOutputPlannerState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_target_output_planner_state',
+      message: 'The backup file contains malformed target-output planner state.',
     };
   }
 

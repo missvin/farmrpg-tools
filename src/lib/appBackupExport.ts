@@ -9,6 +9,7 @@ import { loadMuseumCompletionState } from './museumCompletionState';
 import { loadPersonalMasteryGoalsState } from './personalMasteryGoals';
 import { loadPumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
 import { listSnapshots } from './storage/masterySnapshots';
+import { loadTargetOutputPlannerState } from './targetOutputPlannerState';
 import { readStoredAppTheme } from './themePreference';
 
 export const APP_BACKUP_FILENAME_PREFIX = 'farmrpg-tools-backup';
@@ -50,6 +51,7 @@ export async function buildCurrentAppBackupPayload(
     personalMasteryGoalsState: loadPersonalMasteryGoalsState(),
     masteryRaceCountsState: loadMasteryRaceCountsState(),
     museumCompletionState: loadMuseumCompletionState(),
+    targetOutputPlannerState: loadTargetOutputPlannerState(),
     themePreference: readStoredAppTheme(),
   });
 }

@@ -520,7 +520,7 @@ export function SettingsPage() {
           <p className="supporting-text">
             Export one versioned backup file for this local profile. The backup currently includes snapshot history,
             crafting and planner modifier settings, acquisition planner inputs, Pumpkin Juice planning, personal
-            mastery goals, race-count context, and your saved theme preference.
+            mastery goals, race-count context, Target Planner state, and your saved theme preference.
           </p>
         </div>
 

@@ -24,6 +24,9 @@ const {
   mockSaveMuseumCompletionState,
   mockLoadMuseumCompletionState,
   mockClearMuseumCompletionState,
+  mockSaveTargetOutputPlannerState,
+  mockLoadTargetOutputPlannerState,
+  mockClearTargetOutputPlannerState,
   mockPersistAppTheme,
   mockClearStoredAppTheme,
   mockReadStoredAppTheme,
@@ -51,6 +54,9 @@ const {
   mockSaveMuseumCompletionState: vi.fn(),
   mockLoadMuseumCompletionState: vi.fn(),
   mockClearMuseumCompletionState: vi.fn(),
+  mockSaveTargetOutputPlannerState: vi.fn(),
+  mockLoadTargetOutputPlannerState: vi.fn(),
+  mockClearTargetOutputPlannerState: vi.fn(),
   mockPersistAppTheme: vi.fn(),
   mockClearStoredAppTheme: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
@@ -101,6 +107,12 @@ vi.mock('./museumCompletionState', () => ({
   loadMuseumCompletionState: mockLoadMuseumCompletionState,
   saveMuseumCompletionState: mockSaveMuseumCompletionState,
   clearMuseumCompletionState: mockClearMuseumCompletionState,
+}));
+
+vi.mock('./targetOutputPlannerState', () => ({
+  loadTargetOutputPlannerState: mockLoadTargetOutputPlannerState,
+  saveTargetOutputPlannerState: mockSaveTargetOutputPlannerState,
+  clearTargetOutputPlannerState: mockClearTargetOutputPlannerState,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -167,6 +179,7 @@ function createBackupPayload() {
     personalMasteryGoalsState: createPersonalMasteryGoalsStateFixture(),
     masteryRaceCountsState: createMasteryRaceCountsStateFixture(),
     museumCompletionState: createMuseumCompletionStateFixture(),
+    targetOutputPlannerState: createTargetOutputPlannerStateFixture(),
     themePreference: 'dark',
   });
 }
@@ -331,6 +344,27 @@ function createMuseumCompletionStateFixture() {
   };
 }
 
+function createTargetOutputPlannerStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    targets: [
+      {
+        targetId: 'target-1',
+        itemName: 'Fancy Pipe',
+        canonicalKey: 'fancy pipe',
+        desiredQuantity: 25,
+      },
+    ],
+    supplyOverrides: [
+      {
+        itemName: 'Wood',
+        canonicalKey: 'wood',
+        quantity: 100,
+      },
+    ],
+  };
+}
+
 describe('appBackupRestore', () => {
   beforeEach(() => {
     mockReplaceSnapshots.mockReset();
@@ -356,6 +390,9 @@ describe('appBackupRestore', () => {
     mockSaveMuseumCompletionState.mockReset();
     mockLoadMuseumCompletionState.mockReset();
     mockClearMuseumCompletionState.mockReset();
+    mockSaveTargetOutputPlannerState.mockReset();
+    mockLoadTargetOutputPlannerState.mockReset();
+    mockClearTargetOutputPlannerState.mockReset();
     mockPersistAppTheme.mockReset();
     mockClearStoredAppTheme.mockReset();
     mockReadStoredAppTheme.mockReset();
@@ -367,6 +404,7 @@ describe('appBackupRestore', () => {
     mockLoadPersonalMasteryGoalsState.mockReturnValue(createPersonalMasteryGoalsStateFixture());
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
     mockLoadMuseumCompletionState.mockReturnValue(createMuseumCompletionStateFixture());
+    mockLoadTargetOutputPlannerState.mockReturnValue(createTargetOutputPlannerStateFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
   });
 
@@ -428,6 +466,9 @@ describe('appBackupRestore', () => {
     expect(mockSaveMuseumCompletionState).toHaveBeenCalledWith(
       payload.state.preferences.museumCompletionState,
     );
+    expect(mockSaveTargetOutputPlannerState).toHaveBeenCalledWith(
+      payload.state.preferences.targetOutputPlannerState,
+    );
     expect(mockPersistAppTheme).toHaveBeenCalledWith('dark');
     expect(mockClearCraftingModifierState).not.toHaveBeenCalled();
     expect(mockClearAcquisitionPlannerInputState).not.toHaveBeenCalled();
@@ -436,6 +477,7 @@ describe('appBackupRestore', () => {
     expect(mockClearPersonalMasteryGoalsState).not.toHaveBeenCalled();
     expect(mockClearMasteryRaceCountsState).not.toHaveBeenCalled();
     expect(mockClearMuseumCompletionState).not.toHaveBeenCalled();
+    expect(mockClearTargetOutputPlannerState).not.toHaveBeenCalled();
     expect(mockClearStoredAppTheme).not.toHaveBeenCalled();
   });
 
@@ -451,6 +493,7 @@ describe('appBackupRestore', () => {
       personalMasteryGoalsState: null,
       masteryRaceCountsState: null,
       museumCompletionState: null,
+      targetOutputPlannerState: null,
       themePreference: null,
     });
 
@@ -464,6 +507,7 @@ describe('appBackupRestore', () => {
     expect(mockClearPersonalMasteryGoalsState).toHaveBeenCalledTimes(1);
     expect(mockClearMasteryRaceCountsState).toHaveBeenCalledTimes(1);
     expect(mockClearMuseumCompletionState).toHaveBeenCalledTimes(1);
+    expect(mockClearTargetOutputPlannerState).toHaveBeenCalledTimes(1);
     expect(mockClearStoredAppTheme).toHaveBeenCalledTimes(1);
   });
 
@@ -557,6 +601,7 @@ describe('appBackupRestore', () => {
     const previousPersonalMasteryGoalsState = createPersonalMasteryGoalsStateFixture();
     const previousMasteryRaceCountsState = createMasteryRaceCountsStateFixture();
     const previousMuseumCompletionState = createMuseumCompletionStateFixture();
+    const previousTargetOutputPlannerState = createTargetOutputPlannerStateFixture();
 
     mockListSnapshots.mockResolvedValue(previousSnapshots);
     mockLoadCraftingModifierState.mockReturnValue(previousModifierState);
@@ -566,6 +611,7 @@ describe('appBackupRestore', () => {
     mockLoadPersonalMasteryGoalsState.mockReturnValue(previousPersonalMasteryGoalsState);
     mockLoadMasteryRaceCountsState.mockReturnValue(previousMasteryRaceCountsState);
     mockLoadMuseumCompletionState.mockReturnValue(previousMuseumCompletionState);
+    mockLoadTargetOutputPlannerState.mockReturnValue(previousTargetOutputPlannerState);
     mockReadStoredAppTheme.mockReturnValue('dark');
     mockSaveCraftingModifierState
       .mockImplementationOnce(() => {
@@ -586,6 +632,7 @@ describe('appBackupRestore', () => {
     expect(mockSavePersonalMasteryGoalsState).toHaveBeenLastCalledWith(previousPersonalMasteryGoalsState);
     expect(mockSaveMasteryRaceCountsState).toHaveBeenLastCalledWith(previousMasteryRaceCountsState);
     expect(mockSaveMuseumCompletionState).toHaveBeenLastCalledWith(previousMuseumCompletionState);
+    expect(mockSaveTargetOutputPlannerState).toHaveBeenLastCalledWith(previousTargetOutputPlannerState);
     expect(mockPersistAppTheme).toHaveBeenLastCalledWith('dark');
   });
 

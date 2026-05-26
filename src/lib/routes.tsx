@@ -37,6 +37,9 @@ const QuestPlannerPage = lazy(() =>
 );
 const SettingsPage = lazy(() => import('../pages/SettingsPage').then((module) => ({ default: module.SettingsPage })));
 const SortedPage = lazy(() => import('../pages/SortedPage').then((module) => ({ default: module.SortedPage })));
+const TargetOutputPlannerPage = lazy(() =>
+  import('../pages/TargetOutputPlannerPage').then((module) => ({ default: module.TargetOutputPlannerPage })),
+);
 const TowerPage = lazy(() => import('../pages/TowerPage').then((module) => ({ default: module.TowerPage })));
 const TowerProgressPage = lazy(() =>
   import('../pages/TowerProgressPage').then((module) => ({ default: module.TowerProgressPage })),
@@ -113,6 +116,11 @@ export const appRoutes: AppRoute[] = [
     element: <QuestPlannerPage />,
   },
   {
+    path: '/target-planner',
+    label: 'Target Planner',
+    element: <TargetOutputPlannerPage />,
+  },
+  {
     path: '/museum-completion',
     label: 'Museum Completion',
     element: <MuseumCompletionPage />,
@@ -168,6 +176,7 @@ export const navigationSections: NavigationSection[] = [
       { to: '/ingredient-demand-list', label: 'Material Planner' },
       { to: '/mastery-goals', label: 'Mastery Goals' },
       { to: '/quest-planner', label: 'Quest Planner' },
+      { to: '/target-planner', label: 'Target Planner' },
       { to: '/acquisition-breakdown', label: 'Acquisition Breakdown' },
     ],
   },

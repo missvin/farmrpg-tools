@@ -4,6 +4,7 @@ import { createDefaultAcquisitionPlannerInputState } from './acquisitionPlannerS
 import { createDefaultCraftingModifierState } from './craftingModifierState';
 import { createDefaultDropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import { createDefaultPumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
+import { createDefaultTargetOutputPlannerState } from './targetOutputPlannerState';
 import {
   APP_BACKUP_PAYLOAD_KIND,
   APP_BACKUP_RESTORE_STRATEGY,
@@ -76,6 +77,24 @@ describe('appBackupSchema', () => {
     const acquisitionPlannerState = createAcquisitionPlannerStateFixture();
     const dropRateAcquisitionSettings = createDefaultDropRateAcquisitionSettings();
     const pumpkinJuicePlannerState = createDefaultPumpkinJuicePlannerState();
+    const targetOutputPlannerState = {
+      ...createDefaultTargetOutputPlannerState(),
+      targets: [
+        {
+          targetId: 'target-1',
+          itemName: 'Fancy Pipe',
+          canonicalKey: 'fancy pipe',
+          desiredQuantity: 25,
+        },
+      ],
+      supplyOverrides: [
+        {
+          itemName: 'Wood',
+          canonicalKey: 'wood',
+          quantity: 100,
+        },
+      ],
+    };
     const personalMasteryGoalsState = {
       schemaVersion: 1 as const,
       goals: [
@@ -131,6 +150,7 @@ describe('appBackupSchema', () => {
       personalMasteryGoalsState,
       masteryRaceCountsState,
       museumCompletionState,
+      targetOutputPlannerState,
       themePreference: 'dark',
     });
 
@@ -151,6 +171,7 @@ describe('appBackupSchema', () => {
           personalMasteryGoalsState,
           masteryRaceCountsState,
           museumCompletionState,
+          targetOutputPlannerState,
           themePreference: 'dark',
         },
       },
@@ -473,6 +494,40 @@ describe('appBackupSchema', () => {
       ok: false,
       code: 'invalid_museum_completion_state',
       message: 'The backup file contains malformed museum completion state.',
+    });
+
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: APP_BACKUP_SCHEMA_VERSION,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [],
+          preferences: {
+            craftingModifierState: null,
+            acquisitionPlannerState: null,
+            targetOutputPlannerState: {
+              schemaVersion: 1,
+              targets: [
+                {
+                  itemName: 'Fancy Pipe',
+                  canonicalKey: 'fancy pipe',
+                  desiredQuantity: -1,
+                },
+              ],
+              supplyOverrides: [],
+            },
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'invalid_target_output_planner_state',
+      message: 'The backup file contains malformed target-output planner state.',
     });
   });
 });
