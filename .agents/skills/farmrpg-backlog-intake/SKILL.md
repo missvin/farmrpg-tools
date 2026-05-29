@@ -108,18 +108,31 @@ Add a field note only when intake reveals a genuinely reusable product, planning
 
 ## Final Readout
 
-When rows are proposed, added, or materially updated, include a `Backlog Review Table` before the closing bullets. Keep it compact enough to review in chat:
+When rows are proposed, added, or materially updated, include a `Backlog Review Table` before the closing bullets. Keep the table narrow enough to read in chat; do not put long prose fields side by side because the renderer may squeeze useful columns such as `title`.
 
-| Change | backlog_id | title | status | dependencies | friendly_summary | friendly_description | proposed_solution |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+Use this compact table:
+
+| Change | backlog_id | title | status | dependencies | friendly_summary |
+| --- | --- | --- | --- | --- | --- |
+
+Then add a `Backlog Review Details` subsection immediately after the table for long fields:
+
+```md
+### Backlog Review Details
+
+**BL-### - Row title**
+- Friendly description: Plain-language review description.
+- Proposed solution: Implementation-facing summary, kept readable as normal wrapped text.
+```
 
 Column guidance:
 
 - `Change`: `Added`, `Updated`, or `Proposed`
 - `dependencies`: include only direct `BL-###` dependencies or `-` when blank
 - `friendly_summary`: one short sentence, falling back to `user_value` only if the friendly field is blank
-- `friendly_description`: the row's review-oriented plain-language description, truncated only if it would make the table hard to scan
-- `proposed_solution`: truncate to about 160 characters; if the full value matters for review, add a short `Full proposed_solution details` subsection below the table keyed by `backlog_id`
+- `title`: use the full title; if the table is still too wide, remove `status` before shortening titles
+- `friendly_description`: put in `Backlog Review Details`, not in the table
+- `proposed_solution`: put in `Backlog Review Details`, not in the table; keep it concise but do not force it into a single table cell
 
 Do not add wide operational fields such as `scope_v1`, `notes`, `source`, or `release_notes` to the table unless the user asks for them. Keep those in the normal final readout or mention only the important deltas.
 
