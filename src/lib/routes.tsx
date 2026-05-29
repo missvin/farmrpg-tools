@@ -26,6 +26,9 @@ const ItemProfilePage = lazy(() =>
 const MasteryGoalsPage = lazy(() =>
   import('../pages/MasteryGoalsPage').then((module) => ({ default: module.MasteryGoalsPage })),
 );
+const MemoryHelperPage = lazy(() =>
+  import('../pages/MemoryHelperPage').then((module) => ({ default: module.MemoryHelperPage })),
+);
 const MuseumCompletionPage = lazy(() =>
   import('../pages/MuseumCompletionPage').then((module) => ({ default: module.MuseumCompletionPage })),
 );
@@ -111,6 +114,11 @@ export const appRoutes: AppRoute[] = [
     element: <MasteryGoalsPage />,
   },
   {
+    path: '/memory-helper',
+    label: 'Memory Helper',
+    element: <MemoryHelperPage />,
+  },
+  {
     path: '/quest-planner',
     label: 'Quest Planner',
     element: <QuestPlannerPage />,
@@ -175,6 +183,7 @@ export const navigationSections: NavigationSection[] = [
       { to: '/ingredient-demand', label: 'Ingredient Lookup' },
       { to: '/ingredient-demand-list', label: 'Material Planner' },
       { to: '/mastery-goals', label: 'Mastery Goals' },
+      { to: '/memory-helper', label: 'Memory Helper' },
       { to: '/quest-planner', label: 'Quest Planner' },
       { to: '/target-planner', label: 'Target Planner' },
       { to: '/acquisition-breakdown', label: 'Acquisition Breakdown' },
