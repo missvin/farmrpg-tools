@@ -23,6 +23,13 @@ import {
   type TargetOutputPlannerUnresolvedReason,
 } from '../lib/targetOutputPlannerEngine';
 import {
+  buildTargetOutputPlanningGraph,
+  type TargetOutputPlanningGraph,
+  type TargetOutputPlanningGraphEdge,
+  type TargetOutputPlanningGraphNode,
+  type TargetOutputPlanningGraphStage,
+} from '../lib/targetOutputPlanningGraph';
+import {
   addTargetOutputPlannerTarget,
   loadTargetOutputPlannerState,
   removeTargetOutputPlannerTarget,
@@ -105,6 +112,184 @@ function formatUnresolvedReason(reason: TargetOutputPlannerUnresolvedReason | nu
     case null:
       return 'Craft inputs expanded';
   }
+}
+
+function getGraphEdgeQuantityForTarget(edge: TargetOutputPlanningGraphEdge, targetId: string): number {
+  const contribution = edge.targetContributions.find((entry) => entry.targetId === targetId);
+  return contribution?.quantity ?? 0;
+}
+
+function formatStage(stage: TargetOutputPlanningGraphStage): string {
+  return stage.quantity === null
+    ? stage.label
+    : `${stage.label}: ${formatQuantity(stage.quantity)}`;
+}
+
+function TargetPlanningTreeNode({
+  graph,
+  node,
+  targetId,
+  depth,
+  seenNodeIds,
+}: {
+  graph: TargetOutputPlanningGraph;
+  node: TargetOutputPlanningGraphNode;
+  targetId: string;
+  depth: number;
+  seenNodeIds: Set<string>;
+}) {
+  const childEdges = (graph.edgesByFromNodeId[node.nodeId] ?? []).filter((edge) => {
+    if (edge.kind !== 'recipe_input' && edge.kind !== 'target_demand') {
+      return false;
+    }
+
+    return getGraphEdgeQuantityForTarget(edge, targetId) > 0;
+  });
+  const isItemNode = node.kind === 'item' && node.canonicalKey !== null;
+  const iconSrc = isItemNode ? getItemIconSrc(node.canonicalKey ?? '') : null;
+
+  return (
+    <li className="target-planning-tree__node">
+      <details open={depth < 2}>
+        <summary>
+          {isItemNode ? (
+            <ItemProfileLink
+              canonicalKey={node.canonicalKey ?? ''}
+              itemName={node.itemName}
+              iconSrc={iconSrc}
+              className="target-planning-tree__item-link"
+            />
+          ) : (
+            <strong>{node.itemName}</strong>
+          )}
+          <span className="target-planning-tree__kind">{node.kind}</span>
+        </summary>
+        <ul className="target-planning-tree__stages">
+          {node.stages.map((stage) => (
+            <li key={`${stage.kind}:${stage.label}`}>
+              {formatStage(stage)}
+              {stage.notes.length > 0 ? (
+                <span className="subtle-text"> ({stage.notes.join('; ')})</span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+        {node.provenance.length > 0 ? (
+          <p className="subtle-text">{node.provenance.join(' ')}</p>
+        ) : null}
+      </details>
+      {childEdges.length > 0 ? (
+        <ul className="target-planning-tree__children">
+          {childEdges.map((edge) => {
+            const childNode = graph.nodesById[edge.toNodeId];
+            const edgeQuantity = getGraphEdgeQuantityForTarget(edge, targetId);
+
+            if (!childNode) {
+              return null;
+            }
+
+            if (seenNodeIds.has(childNode.nodeId)) {
+              return (
+                <li className="target-planning-tree__edge" key={edge.edgeId}>
+                  <span>{edge.label}: {formatQuantity(edgeQuantity)}</span>
+                  <span className="subtle-text"> Already shown above.</span>
+                </li>
+              );
+            }
+
+            return (
+              <li className="target-planning-tree__edge" key={edge.edgeId}>
+                <span>{edge.label}: {formatQuantity(edgeQuantity)}</span>
+                <TargetPlanningTreeNode
+                  graph={graph}
+                  node={childNode}
+                  targetId={targetId}
+                  depth={depth + 1}
+                  seenNodeIds={new Set([...seenNodeIds, childNode.nodeId])}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </li>
+  );
+}
+
+function TargetPlanningTree({ graph }: { graph: TargetOutputPlanningGraph | null }) {
+  if (!graph || graph.treeRoots.length === 0) {
+    return <p className="empty-state">Add targets to see the planning tree.</p>;
+  }
+
+  return (
+    <div className="target-planning-tree">
+      {graph.treeRoots.map((root) => {
+        const targetNode = graph.nodesById[root.targetNodeId];
+
+        if (!targetNode) {
+          return null;
+        }
+
+        return (
+          <section className="target-planning-tree__root" key={root.targetId}>
+            <h3>{root.targetLabel}</h3>
+            <ul className="target-planning-tree__children target-planning-tree__children--root">
+              <TargetPlanningTreeNode
+                graph={graph}
+                node={targetNode}
+                targetId={root.targetId}
+                depth={0}
+                seenNodeIds={new Set([targetNode.nodeId])}
+              />
+            </ul>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+function TargetPlanningProvenance({ graph }: { graph: TargetOutputPlanningGraph | null }) {
+  const itemNodes = graph?.nodes.filter((node) => node.kind === 'item' && node.canonicalKey !== null) ?? [];
+
+  if (itemNodes.length === 0) {
+    return <p className="empty-state">Add targets to see supply and recipe explanations.</p>;
+  }
+
+  return (
+    <div className="table-scroll">
+      <table className="summary-table target-output-provenance-table">
+        <thead>
+          <tr>
+            <th scope="col">Item</th>
+            <th scope="col">Stages</th>
+            <th scope="col">Explanation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {itemNodes.map((node) => (
+            <tr key={node.nodeId}>
+              <td>
+                <ItemProfileLink
+                  canonicalKey={node.canonicalKey ?? ''}
+                  itemName={node.itemName}
+                  iconSrc={getItemIconSrc(node.canonicalKey ?? '')}
+                />
+              </td>
+              <td>
+                {node.stages.map((stage) => (
+                  <span className="target-output-chip" key={`${node.nodeId}:${stage.kind}:${stage.label}`}>
+                    {formatStage(stage)}
+                  </span>
+                ))}
+              </td>
+              <td>{node.provenance.join(' ')}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 function TargetPlannerSummary({
@@ -309,6 +494,10 @@ export function TargetOutputPlannerPage() {
       supplyPool,
     });
   }, [plannerState.targets, resourceState.resources, supplyPool]);
+
+  const planningGraph = useMemo(() => {
+    return plannerResult ? buildTargetOutputPlanningGraph(plannerResult) : null;
+  }, [plannerResult]);
 
   function persistPlannerState(nextState: TargetOutputPlannerState): void {
     const savedState = saveTargetOutputPlannerState(nextState);
@@ -531,6 +720,16 @@ export function TargetOutputPlannerPage() {
           <section className="page-card" aria-labelledby="target-output-results-heading">
             <h2 id="target-output-results-heading">Combined Requirements</h2>
             <TargetRowsTable rows={plannerResult?.rows ?? []} />
+          </section>
+
+          <section className="page-card" aria-labelledby="target-output-tree-heading">
+            <h2 id="target-output-tree-heading">Planning Tree</h2>
+            <TargetPlanningTree graph={planningGraph} />
+          </section>
+
+          <section className="page-card" aria-labelledby="target-output-provenance-heading">
+            <h2 id="target-output-provenance-heading">Why These Materials</h2>
+            <TargetPlanningProvenance graph={planningGraph} />
           </section>
         </>
       ) : null}

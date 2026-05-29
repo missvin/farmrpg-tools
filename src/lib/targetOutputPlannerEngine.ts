@@ -44,10 +44,22 @@ export type TargetOutputPlannerTargetSummary = {
   row: TargetOutputPlannerItemRow | null;
 };
 
+export type TargetOutputPlannerExpansionEdge = {
+  fromCanonicalKey: string;
+  fromItemName: string;
+  toCanonicalKey: string;
+  toItemName: string;
+  quantity: number;
+  craftOperations: number;
+  recipeType: RecipeType;
+  contributions: TargetOutputPlannerContribution[];
+};
+
 export type TargetOutputPlannerResult = {
   problem: TargetOutputPlanningProblem;
   rows: TargetOutputPlannerItemRow[];
   rowsByCanonicalKey: Record<string, TargetOutputPlannerItemRow>;
+  expansionEdges: TargetOutputPlannerExpansionEdge[];
   targetSummaries: TargetOutputPlannerTargetSummary[];
   warnings: string[];
 };
@@ -256,6 +268,7 @@ export function buildTargetOutputPlannerResult(
   );
   const demands = new Map<string, DemandEntry>();
   const rows = new Map<string, MutableRow>();
+  const expansionEdges: TargetOutputPlannerExpansionEdge[] = [];
   const queue: string[] = [];
   const queuedKeys = new Set<string>();
   const processedKeys = new Set<string>();
@@ -364,6 +377,24 @@ export function buildTargetOutputPlannerResult(
           : 0,
       }));
 
+      expansionEdges.push({
+        fromCanonicalKey: canonicalKey,
+        fromItemName: demand.itemName,
+        toCanonicalKey: recipeInput.canonicalKey,
+        toItemName: recipeInput.itemName,
+        quantity: roundPlannerQuantity(inputQuantity),
+        craftOperations: calculation.result.requiredCraftCount,
+        recipeType: recipe.recipeType,
+        contributions: childContributions
+          .map((contribution) => ({
+            ...contribution,
+            quantity: roundPlannerQuantity(contribution.quantity),
+          }))
+          .sort((left, right) => {
+            return right.quantity - left.quantity || left.targetLabel.localeCompare(right.targetLabel);
+          }),
+      });
+
       addDemand(demands, queue, queuedKeys, processedKeys, {
         canonicalKey: recipeInput.canonicalKey,
         itemName: recipeInput.itemName,
@@ -387,6 +418,7 @@ export function buildTargetOutputPlannerResult(
     problem,
     rows: publicRows,
     rowsByCanonicalKey,
+    expansionEdges,
     targetSummaries: problem.goals.map((goal) => ({
       goal,
       row: rowsByCanonicalKey[goal.canonicalKey] ?? null,

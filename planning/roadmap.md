@@ -68,13 +68,13 @@ You can start asking not just "what do I need to craft?" but "what are my practi
 User-facing story:
 You can choose one or more target outputs and see what is still required after pooled available supply is consumed across the whole planning problem.
 
-## v2.1
+## v2.1 (Complete)
 
 - Richer recursive planning workflow
-  - current inventory import as an available-supply source
-  - graph-ready recursive planning tree derivation
-  - recursive planning graph/tree visualization
-  - target-output planning explainability
+  - current inventory import as an available-supply source (shipped)
+  - graph-ready recursive planning tree derivation (shipped)
+  - recursive planning graph/tree visualization (shipped)
+  - target-output planning explainability (shipped)
 
 User-facing story:
 The target-output planner becomes easier to feed with real inventory data and easier to understand when plans become large or overlapping.
