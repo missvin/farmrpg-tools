@@ -179,7 +179,7 @@ describe('MemoryHelperPage', () => {
 
     render(<MemoryHelperPage />);
 
-    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await screen.findByRole('heading', { name: "Borgen's Lost and Found" });
     await waitFor(() => expect(loadLocalItemReferenceLookupMock).toHaveBeenCalled());
 
     await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
@@ -211,18 +211,18 @@ describe('MemoryHelperPage', () => {
 
     render(<MemoryHelperPage />);
 
-    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await screen.findByRole('heading', { name: "Borgen's Lost and Found" });
     await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
     await user.type(screen.getByLabelText('Item'), 'beer');
 
     const option = screen.getByRole('option', { name: /Mug of Beer/ });
     expect(option).toBeInTheDocument();
-    expect(within(option).getByText('Memory game')).toBeInTheDocument();
+    expect(within(option).getByText("Borgen's Lost and Found")).toBeInTheDocument();
 
     await user.click(within(option).getByRole('button', { name: /Mug of Beer/ }));
 
     expect(screen.getByRole('button', { name: 'Slot row 1 column 1 Mug of Beer' })).toBeInTheDocument();
-    expect(screen.getByText('Recognized from museum completion canon only; do not infer mastery eligibility.')).toBeInTheDocument();
+    expect(screen.queryByText('Recognized from museum completion canon only; do not infer mastery eligibility.')).not.toBeInTheDocument();
     expect(window.localStorage.getItem(MEMORY_HELPER_STORAGE_KEY)).toContain('"canonicalKey":"mug of beer"');
   });
 
@@ -232,10 +232,13 @@ describe('MemoryHelperPage', () => {
 
     render(<MemoryHelperPage />);
 
-    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await screen.findByRole('heading', { name: "Borgen's Lost and Found" });
     await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
 
+    const itemInput = screen.getByLabelText('Item');
+    const observedHeading = screen.getByRole('heading', { name: 'Observed Items' });
     const observedSection = screen.getByRole('heading', { name: 'Observed Items' }).closest('section');
+    expect(itemInput.compareDocumentPosition(observedHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(observedSection).not.toBeNull();
     expect(within(observedSection as HTMLElement).getByRole('button', { name: 'Use observed Mug of Beer' })).toBeInTheDocument();
 
@@ -250,14 +253,17 @@ describe('MemoryHelperPage', () => {
 
     render(<MemoryHelperPage />);
 
-    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await screen.findByRole('heading', { name: "Borgen's Lost and Found" });
     await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
     await user.click(screen.getByRole('button', { name: 'Use observed Board' }));
     await user.click(screen.getByRole('button', { name: 'Slot row 1 column 2 empty' }));
 
     const seenOnceSection = screen.getByRole('heading', { name: 'Seen Once' }).closest('section');
     const observedSection = screen.getByRole('heading', { name: 'Observed Items' }).closest('section');
+    const itemInput = screen.getByLabelText('Item');
+    const seenOnceHeading = screen.getByRole('heading', { name: 'Seen Once' });
 
+    expect(itemInput.compareDocumentPosition(seenOnceHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(seenOnceSection).not.toBeNull();
     expect(observedSection).not.toBeNull();
     expect(within(seenOnceSection as HTMLElement).getByRole('button', { name: 'Use Board from R1 C1' })).toBeInTheDocument();
@@ -271,7 +277,7 @@ describe('MemoryHelperPage', () => {
 
     render(<MemoryHelperPage />);
 
-    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await screen.findByRole('heading', { name: "Borgen's Lost and Found" });
     await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
 
     expect(screen.getByLabelText('Item')).toHaveFocus();
@@ -283,7 +289,7 @@ describe('MemoryHelperPage', () => {
 
     render(<MemoryHelperPage />);
 
-    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await screen.findByRole('heading', { name: "Borgen's Lost and Found" });
     await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
     await user.type(screen.getByLabelText('Item'), 'Gold Cucumber');
     await user.click(screen.getByRole('button', { name: 'Save Slot' }));
@@ -303,7 +309,7 @@ describe('MemoryHelperPage', () => {
 
     render(<MemoryHelperPage />);
 
-    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await screen.findByRole('heading', { name: "Borgen's Lost and Found" });
     await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
     await user.type(screen.getByLabelText('Item'), 'Mystery Token');
     await user.click(screen.getByRole('button', { name: 'Save Slot' }));

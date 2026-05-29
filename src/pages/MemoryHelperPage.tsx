@@ -45,6 +45,15 @@ type SeenOnceItemOption = ItemOption & {
   slotSummary: string;
 };
 
+const BORGENS_LOST_AND_FOUND_LABEL = "Borgen's Lost and Found";
+const SUPPRESSED_MEMORY_HELPER_ENTRY_WARNINGS = new Set([
+  'Recognized from museum completion canon only; do not infer mastery eligibility.',
+]);
+
+function getMemoryHelperEntryWarnings(warnings: string[]): string[] {
+  return warnings.filter((warning) => !SUPPRESSED_MEMORY_HELPER_ENTRY_WARNINGS.has(warning));
+}
+
 function formatSlotPosition(row: number, column: number): string {
   return `R${row} C${column}`;
 }
@@ -124,16 +133,16 @@ function buildMemoryGameItemOptions(memoryGameItems: MemoryGameAllowedItemsData)
     .map((entry) => ({
       canonicalKey: entry.canonicalKey,
       itemName: entry.itemName,
-      sourceLabel: 'Memory game',
+      sourceLabel: BORGENS_LOST_AND_FOUND_LABEL,
     }));
 }
 
 function getMemoryGameItemMeta(entry: MemoryGameAllowedItemEntry | undefined): string {
   if (!entry) {
-    return 'Memory game';
+    return BORGENS_LOST_AND_FOUND_LABEL;
   }
 
-  return entry.observedSources.length > 1 ? `${entry.observedSources.length} observations` : 'Memory game';
+  return entry.observedSources.length > 1 ? `${entry.observedSources.length} observations` : BORGENS_LOST_AND_FOUND_LABEL;
 }
 
 function getItemIconSrc(canonicalKey: string): string | null {
@@ -411,7 +420,7 @@ export function MemoryHelperPage() {
     );
     setActiveSlotId(null);
     setItemQuery('');
-    setEntryWarnings(result.warnings);
+    setEntryWarnings(getMemoryHelperEntryWarnings(result.warnings));
   }
 
   function handleSubmitSlot(event: FormEvent<HTMLFormElement>): void {
@@ -510,9 +519,9 @@ export function MemoryHelperPage() {
   return (
     <div className="page-stack">
       <PageIntro
-        title="Memory Helper"
+        title={BORGENS_LOST_AND_FOUND_LABEL}
         storageKey="memory-helper"
-        description="Mirror the FarmRPG memory board locally as you reveal cards."
+        description="Mirror Borgen's Lost and Found board locally as you reveal cards."
       />
 
       <section className="page-card page-stack" aria-labelledby="memory-helper-summary-title">
@@ -570,9 +579,9 @@ export function MemoryHelperPage() {
         ) : null}
       </section>
 
-      <section className="memory-helper-layout" aria-label="Memory helper workspace">
+      <section className="memory-helper-layout" aria-label="Borgen's Lost and Found workspace">
         <div className="page-card page-stack">
-          <h2>Memory Board</h2>
+          <h2>Lost and Found Board</h2>
           <div className="memory-helper-board" aria-label="6 by 4 memory helper board">
             {derivation.slots.map((slot) => {
               const iconSrc = slot.item ? getItemIconSrc(slot.item.canonicalKey) : null;
@@ -616,6 +625,90 @@ export function MemoryHelperPage() {
                   {formatSlotPosition(activeSlot.row, activeSlot.column)}
                   {activeSlot.item ? ` currently shows ${activeSlot.item.itemName}.` : ' is empty.'}
                 </p>
+                <div className="page-stack page-stack--tight memory-helper-picker">
+                  <label className="field-label" htmlFor="memory-helper-item">
+                    Item
+                  </label>
+                  <input
+                    id="memory-helper-item"
+                    ref={itemInputRef}
+                    className="text-input"
+                    type="text"
+                    value={itemQuery}
+                    onChange={(event) => handleItemQueryChange(event.target.value)}
+                    onKeyDown={handleItemInputKeyDown}
+                    placeholder="Search item name"
+                    autoComplete="off"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-controls={shouldShowItemSuggestions ? itemSuggestionListId : undefined}
+                    aria-expanded={shouldShowItemSuggestions}
+                    aria-activedescendant={activeSuggestionId}
+                    disabled={resourceState.isLoading}
+                  />
+                  {shouldShowItemSuggestions ? (
+                    filteredItemOptions.length > 0 ? (
+                      <ul
+                        id={itemSuggestionListId}
+                        className="memory-helper-suggestion-list"
+                        role="listbox"
+                        aria-label="Matching items"
+                      >
+                        {filteredItemOptions.map((option, optionIndex) => {
+                          const iconSrc = getItemIconSrc(option.canonicalKey);
+                          const isActiveSuggestion = optionIndex === activeSuggestionIndex;
+
+                          return (
+                            <li
+                              key={option.canonicalKey}
+                              id={`${itemSuggestionListId}-option-${optionIndex}`}
+                              role="option"
+                              aria-selected={isActiveSuggestion}
+                            >
+                              <button
+                                className={`memory-helper-suggestion${
+                                  isActiveSuggestion ? ' memory-helper-suggestion--active' : ''
+                                }`}
+                                type="button"
+                                onClick={() => handleSelectItemOption(option)}
+                              >
+                                <span className="memory-helper-suggestion__item">
+                                  {iconSrc ? (
+                                    <img
+                                      className="memory-helper-suggestion__icon"
+                                      src={iconSrc}
+                                      alt=""
+                                      aria-hidden="true"
+                                      loading="lazy"
+                                    />
+                                  ) : null}
+                                  <span className="memory-helper-suggestion__name">{option.itemName}</span>
+                                </span>
+                                <span className="memory-helper-suggestion__meta">
+                                  {option.sourceLabel.startsWith('Seen ')
+                                    ? option.sourceLabel
+                                    : memoryGameOptionKeys.has(option.canonicalKey)
+                                      ? BORGENS_LOST_AND_FOUND_LABEL
+                                      : option.sourceLabel}
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <p className="empty-state">No local item matches. Saving will keep the typed name.</p>
+                    )
+                  ) : null}
+                </div>
+                <div className="inline-control-row">
+                  <button className="button" type="submit" disabled={resourceState.isLoading}>
+                    Save Slot
+                  </button>
+                  <button className="button button--secondary" type="button" onClick={handleClearActiveSlot}>
+                    Clear Slot
+                  </button>
+                </div>
                 {seenOnceItemOptions.length > 0 ? (
                   <section className="memory-helper-seen-once page-stack page-stack--tight" aria-labelledby="memory-helper-seen-once-title">
                     <h3 id="memory-helper-seen-once-title" className="section-title">
@@ -696,90 +789,6 @@ export function MemoryHelperPage() {
                     </ul>
                   </section>
                 ) : null}
-                <div className="page-stack page-stack--tight memory-helper-picker">
-                  <label className="field-label" htmlFor="memory-helper-item">
-                    Item
-                  </label>
-                  <input
-                    id="memory-helper-item"
-                    ref={itemInputRef}
-                    className="text-input"
-                    type="text"
-                    value={itemQuery}
-                    onChange={(event) => handleItemQueryChange(event.target.value)}
-                    onKeyDown={handleItemInputKeyDown}
-                    placeholder="Search item name"
-                    autoComplete="off"
-                    role="combobox"
-                    aria-autocomplete="list"
-                    aria-controls={shouldShowItemSuggestions ? itemSuggestionListId : undefined}
-                    aria-expanded={shouldShowItemSuggestions}
-                    aria-activedescendant={activeSuggestionId}
-                    disabled={resourceState.isLoading}
-                  />
-                  {shouldShowItemSuggestions ? (
-                    filteredItemOptions.length > 0 ? (
-                      <ul
-                        id={itemSuggestionListId}
-                        className="memory-helper-suggestion-list"
-                        role="listbox"
-                        aria-label="Matching items"
-                      >
-                        {filteredItemOptions.map((option, optionIndex) => {
-                          const iconSrc = getItemIconSrc(option.canonicalKey);
-                          const isActiveSuggestion = optionIndex === activeSuggestionIndex;
-
-                          return (
-                            <li
-                              key={option.canonicalKey}
-                              id={`${itemSuggestionListId}-option-${optionIndex}`}
-                              role="option"
-                              aria-selected={isActiveSuggestion}
-                            >
-                              <button
-                                className={`memory-helper-suggestion${
-                                  isActiveSuggestion ? ' memory-helper-suggestion--active' : ''
-                                }`}
-                                type="button"
-                                onClick={() => handleSelectItemOption(option)}
-                              >
-                                <span className="memory-helper-suggestion__item">
-                                  {iconSrc ? (
-                                    <img
-                                      className="memory-helper-suggestion__icon"
-                                      src={iconSrc}
-                                      alt=""
-                                      aria-hidden="true"
-                                      loading="lazy"
-                                    />
-                                  ) : null}
-                                  <span className="memory-helper-suggestion__name">{option.itemName}</span>
-                                </span>
-                                <span className="memory-helper-suggestion__meta">
-                                  {option.sourceLabel.startsWith('Seen ')
-                                    ? option.sourceLabel
-                                    : memoryGameOptionKeys.has(option.canonicalKey)
-                                      ? 'Memory game'
-                                      : option.sourceLabel}
-                                </span>
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    ) : (
-                      <p className="empty-state">No local item matches. Saving will keep the typed name.</p>
-                    )
-                  ) : null}
-                </div>
-                <div className="inline-control-row">
-                  <button className="button" type="submit" disabled={resourceState.isLoading}>
-                    Save Slot
-                  </button>
-                  <button className="button button--secondary" type="button" onClick={handleClearActiveSlot}>
-                    Clear Slot
-                  </button>
-                </div>
               </form>
             ) : (
               <p className="empty-state">Tap a board slot to record a revealed item.</p>

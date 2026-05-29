@@ -6,7 +6,7 @@ describe('memory game allowed items loader', () => {
   it('parses observed allowed items without applying tier behavior', () => {
     const data = parseMemoryGameAllowedItemsCsv(
       `item_name,canonical_key,observed_tiers,observed_sources,notes
-Mug of Beer,mug of beer,4,Queen Shay tier 4; Hoff86 tier 4,Tier metadata is informational only.
+Mug of Beer,mug of beer,4,Queen Shay tier 4; Hoff86 tier 4,Observed tiers are evidence only, not availability limits.
 Borgen Buck,borgen buck,3,Purple Monkey tier 3,Observed as a memory-game reward.`,
     );
 

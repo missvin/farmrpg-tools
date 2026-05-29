@@ -115,7 +115,7 @@ export const appRoutes: AppRoute[] = [
   },
   {
     path: '/memory-helper',
-    label: 'Memory Helper',
+    label: "Borgen's Lost and Found",
     element: <MemoryHelperPage />,
   },
   {
@@ -183,7 +183,7 @@ export const navigationSections: NavigationSection[] = [
       { to: '/ingredient-demand', label: 'Ingredient Lookup' },
       { to: '/ingredient-demand-list', label: 'Material Planner' },
       { to: '/mastery-goals', label: 'Mastery Goals' },
-      { to: '/memory-helper', label: 'Memory Helper' },
+      { to: '/memory-helper', label: "Borgen's Lost and Found" },
       { to: '/quest-planner', label: 'Quest Planner' },
       { to: '/target-planner', label: 'Target Planner' },
       { to: '/acquisition-breakdown', label: 'Acquisition Breakdown' },
