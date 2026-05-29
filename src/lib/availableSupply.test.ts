@@ -32,6 +32,15 @@ function createSupplyState(): AcquisitionPlannerInputState {
         },
       ],
     },
+    inventory: {
+      entries: [
+        {
+          canonicalItemKey: 'wood',
+          itemName: 'Wood',
+          inventoryCount: 7,
+        },
+      ],
+    },
     pets: {
       storedInventoryEntries: [
         {
@@ -61,7 +70,7 @@ function createSupplyState(): AcquisitionPlannerInputState {
 }
 
 describe('deriveAvailableSupplyPool', () => {
-  it('aggregates enabled stockpile, container, stored pet, and future pet supply by canonical item', () => {
+  it('aggregates enabled stockpile, container, current inventory, stored pet, and future pet supply by canonical item', () => {
     const pool = deriveAvailableSupplyPool({
       acquisitionState: createSupplyState(),
       petSourceReference: null,
@@ -69,13 +78,14 @@ describe('deriveAvailableSupplyPool', () => {
 
     expect(pool.byCanonicalKey.wood).toMatchObject({
       itemName: 'Wood',
-      derivedQuantity: 30,
-      effectiveQuantity: 30,
+      derivedQuantity: 37,
+      effectiveQuantity: 37,
       overrideQuantity: null,
     });
     expect(pool.byCanonicalKey.wood.breakdowns.map((entry) => entry.sourceKey)).toEqual([
       'owned_stockpiles',
       'owned_containers',
+      'current_inventory',
       'stored_pet_inventory',
       'future_pet_production',
     ]);
@@ -95,7 +105,7 @@ describe('deriveAvailableSupplyPool', () => {
     });
 
     expect(pool.byCanonicalKey.wood).toMatchObject({
-      derivedQuantity: 30,
+      derivedQuantity: 37,
       effectiveQuantity: 12,
       overrideQuantity: 12,
     });

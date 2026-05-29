@@ -17,13 +17,13 @@ const {
   mockReadAppBackupFile,
   mockRestoreAppBackupPayload,
   mockReloadAfterRestore,
-  mockLoadMasteryDifficulty,
+  mockLoadLocalItemReferenceLookup,
 } = vi.hoisted(() => ({
   mockExportCurrentAppBackupFile: vi.fn(),
   mockReadAppBackupFile: vi.fn(),
   mockRestoreAppBackupPayload: vi.fn(),
   mockReloadAfterRestore: vi.fn(),
-  mockLoadMasteryDifficulty: vi.fn(),
+  mockLoadLocalItemReferenceLookup: vi.fn(),
 }));
 
 vi.mock('../lib/appBackupExport', () => ({
@@ -36,8 +36,38 @@ vi.mock('../lib/appBackupRestore', () => ({
   reloadAfterRestore: mockReloadAfterRestore,
 }));
 
-vi.mock('../lib/loadMasteryDifficulty', () => ({
-  loadMasteryDifficulty: mockLoadMasteryDifficulty,
+vi.mock('../lib/localItemReferenceLookup', () => ({
+  loadLocalItemReferenceLookup: mockLoadLocalItemReferenceLookup,
+  resolveLocalItemReference: (itemName: string, lookup: {
+    itemCatalog: { byCanonicalKey: Record<string, { itemName: string }> };
+    museumCoverage: { byCanonicalKey: Record<string, { itemName: string }> };
+    museumCanon?: { entries: { canonicalKey: string; itemName: string }[] };
+  }) => {
+    const canonicalKey = itemName.trim().toLowerCase().replace(/\s+/gu, ' ');
+    const catalogEntry = lookup.itemCatalog.byCanonicalKey[canonicalKey] ?? null;
+    const museumEntry = lookup.museumCoverage.byCanonicalKey[canonicalKey] ?? null;
+    const museumCanonEntry = lookup.museumCanon?.entries.find((entry) => {
+      return entry.canonicalKey === canonicalKey;
+    }) ?? null;
+    const displayName = catalogEntry?.itemName ?? museumEntry?.itemName ?? museumCanonEntry?.itemName ?? itemName.trim();
+    const recognized = Boolean(catalogEntry || museumEntry || museumCanonEntry);
+
+    return {
+      inputName: itemName.trim(),
+      inputKey: canonicalKey,
+      canonicalKey,
+      displayName,
+      recognized,
+      recognitionStatus: recognized ? 'catalog' : 'unrecognized',
+      matchedAlias: null,
+      catalogEntry,
+      museumEntry,
+      museumCanonEntry,
+      masteryPossible: 'unknown',
+      sourceDatasets: recognized ? ['test'] : [],
+      warnings: recognized ? [] : ['No local item reference coverage found; keep this visible as a review candidate.'],
+    };
+  },
 }));
 
 import { SettingsPage } from './SettingsPage';
@@ -106,12 +136,28 @@ describe('SettingsPage', () => {
     mockReadAppBackupFile.mockReset();
     mockRestoreAppBackupPayload.mockReset();
     mockReloadAfterRestore.mockReset();
-    mockLoadMasteryDifficulty.mockReset();
-    mockLoadMasteryDifficulty.mockResolvedValue({
-      entries: [],
-      byCanonicalKey: {
-        honey: { canonicalKey: 'honey' },
-        apple: { canonicalKey: 'apple' },
+    mockLoadLocalItemReferenceLookup.mockReset();
+    mockLoadLocalItemReferenceLookup.mockResolvedValue({
+      itemCatalog: {
+        entries: [],
+        byCanonicalKey: {
+          apple: { itemName: 'Apple' },
+          'frost snapper shell': { itemName: 'Frost Snapper Shell' },
+          honey: { itemName: 'Honey' },
+          'large net': { itemName: 'Large Net' },
+          'strange ring': { itemName: 'Strange Ring' },
+        },
+      },
+      aliases: {
+        entries: [],
+        byAliasKey: {},
+      },
+      museumCoverage: {
+        entries: [],
+        byCanonicalKey: {},
+      },
+      museumCanon: {
+        entries: [],
       },
     });
     window.localStorage.removeItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY);
@@ -249,6 +295,70 @@ describe('SettingsPage', () => {
         farming: 'harvest_alls',
       },
     });
+  });
+
+  it('saves and imports current inventory as its own available-supply source', async () => {
+    const user = userEvent.setup();
+
+    render(<SettingsPage />);
+
+    await user.type(screen.getByLabelText('Inventory item name'), 'Frost Snapper Shell');
+    await user.clear(screen.getByLabelText('Inventory quantity'));
+    await user.type(screen.getByLabelText('Inventory quantity'), '5614');
+    await user.click(screen.getByRole('button', { name: 'Save Inventory Item' }));
+
+    expect(await screen.findByText('Frost Snapper Shell')).toBeInTheDocument();
+    expect(loadAcquisitionPlannerInputState().inventory.entries).toEqual([
+      {
+        canonicalItemKey: 'frost snapper shell',
+        itemName: 'Frost Snapper Shell',
+        inventoryCount: 5614,
+      },
+    ]);
+    expect(loadAcquisitionPlannerInputState().ownedNow.entries).toEqual([]);
+    expect(loadAcquisitionPlannerInputState().pets.storedInventoryEntries).toEqual([]);
+
+    await user.clear(screen.getByLabelText('Paste current inventory'));
+    await user.type(
+      screen.getByLabelText('Paste current inventory'),
+      '1,000{enter}Strange Ring{enter}5,614{enter}Frost Snapper Shell{enter}3{enter}Mystery Relic',
+    );
+    await user.click(screen.getByRole('button', { name: 'Import Current Inventory' }));
+
+    expect(await screen.findByText('Imported 3 current inventory entries.')).toBeInTheDocument();
+    expect(screen.getByText('Line 5 item "Mystery Relic" was not found in local reference data and was kept as entered.')).toBeInTheDocument();
+    expect(loadAcquisitionPlannerInputState().inventory.entries).toEqual([
+      {
+        canonicalItemKey: 'frost snapper shell',
+        itemName: 'Frost Snapper Shell',
+        inventoryCount: 5614,
+      },
+      {
+        canonicalItemKey: 'mystery relic',
+        itemName: 'Mystery Relic',
+        inventoryCount: 3,
+      },
+      {
+        canonicalItemKey: 'strange ring',
+        itemName: 'Strange Ring',
+        inventoryCount: 1000,
+      },
+    ]);
+
+    await user.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
+
+    expect(loadAcquisitionPlannerInputState().inventory.entries).toEqual([
+      {
+        canonicalItemKey: 'mystery relic',
+        itemName: 'Mystery Relic',
+        inventoryCount: 3,
+      },
+      {
+        canonicalItemKey: 'strange ring',
+        itemName: 'Strange Ring',
+        inventoryCount: 1000,
+      },
+    ]);
   });
 
   it('saves and imports stored pet inventory separately from owned-now stockpiles', async () => {

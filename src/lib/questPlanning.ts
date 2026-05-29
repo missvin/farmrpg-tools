@@ -126,6 +126,10 @@ export function buildQuestAvailableSupply(
     );
   }
 
+  for (const entry of acquisitionState.inventory.entries) {
+    addSupply(entry.canonicalItemKey, entry.itemName, entry.inventoryCount, 'Current inventory');
+  }
+
   for (const entry of acquisitionState.pets.storedInventoryEntries) {
     addSupply(entry.canonicalItemKey, entry.itemName, entry.storedCount, 'Stored pet inventory');
   }

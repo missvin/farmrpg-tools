@@ -20,6 +20,7 @@ describe('ACQUISITION_SOURCE_CATALOG', () => {
         'orange_juice',
         'owned_containers',
         'owned_stockpiles',
+        'current_inventory',
         'stored_pet_inventory',
         'future_pet_production',
         'one_time_rewards',
@@ -48,6 +49,12 @@ describe('ACQUISITION_SOURCE_CATALOG', () => {
     expect(getAcquisitionSourceDefinition('future_pet_production')).toMatchObject({
       defaultPolicy: 'optional',
       availability: 'future',
+      modelingStatus: 'planned_engine',
+    });
+
+    expect(getAcquisitionSourceDefinition('current_inventory')).toMatchObject({
+      defaultPolicy: 'included_by_default',
+      availability: 'immediate',
       modelingStatus: 'planned_engine',
     });
 
@@ -83,6 +90,7 @@ describe('ACQUISITION_SOURCE_CATALOG', () => {
         'arnold_palmer',
         'owned_containers',
         'owned_stockpiles',
+        'current_inventory',
         'stored_pet_inventory',
       ]),
     );

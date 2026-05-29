@@ -51,6 +51,7 @@ type ItemOption = {
 type KnownCoverage = {
   stockpileQuantity: number;
   containerQuantity: number;
+  currentInventoryQuantity: number;
   storedPetQuantity: number;
   futurePetQuantity: number;
 };
@@ -139,6 +140,11 @@ function getKnownCoverage(
     containerQuantity: inclusionMap.owned_containers
       ? sumOwnedNowEntries(acquisitionState, selectedCanonicalKey, 'container')
       : 0,
+    currentInventoryQuantity: inclusionMap.current_inventory
+      ? acquisitionState.inventory.entries
+        .filter((entry) => entry.canonicalItemKey === selectedCanonicalKey)
+        .reduce((total, entry) => total + entry.inventoryCount, 0)
+      : 0,
     storedPetQuantity: inclusionMap.stored_pet_inventory
       ? acquisitionState.pets.storedInventoryEntries
         .filter((entry) => entry.canonicalItemKey === selectedCanonicalKey)
@@ -154,6 +160,7 @@ function getCoverageTotal(coverage: KnownCoverage): number {
   return (
     coverage.stockpileQuantity +
     coverage.containerQuantity +
+    coverage.currentInventoryQuantity +
     coverage.storedPetQuantity +
     coverage.futurePetQuantity
   );
@@ -492,11 +499,15 @@ export function AcquisitionBreakdownPage() {
     : {
       stockpileQuantity: 0,
       containerQuantity: 0,
+      currentInventoryQuantity: 0,
       storedPetQuantity: 0,
       futurePetQuantity: 0,
     };
   const immediateKnownCoverage =
-    knownCoverage.stockpileQuantity + knownCoverage.containerQuantity + knownCoverage.storedPetQuantity;
+    knownCoverage.stockpileQuantity +
+    knownCoverage.containerQuantity +
+    knownCoverage.currentInventoryQuantity +
+    knownCoverage.storedPetQuantity;
   const remainingAfterImmediate = Math.max(0, selectedRequiredQuantity - immediateKnownCoverage);
   const remainingAfterKnownCoverage = Math.max(0, selectedRequiredQuantity - getCoverageTotal(knownCoverage));
   const manualEstimate = selectedBurden
@@ -525,7 +536,7 @@ export function AcquisitionBreakdownPage() {
   );
   const recommendationRows = [
     immediateKnownCoverage > 0
-      ? `Use known stockpiles, containers, and stored pet inventory first: ${formatAmount(immediateKnownCoverage)} item(s).`
+      ? `Use known stockpiles, current inventory, containers, and stored pet inventory first: ${formatAmount(immediateKnownCoverage)} item(s).`
       : null,
     knownCoverage.futurePetQuantity > 0
       ? `Future pet production can cover about ${formatAmount(knownCoverage.futurePetQuantity)} more item(s).`
@@ -696,6 +707,11 @@ export function AcquisitionBreakdownPage() {
                       <td>Now</td>
                     </tr>
                     <tr>
+                      <td>Current inventory</td>
+                      <td>{formatAmount(knownCoverage.currentInventoryQuantity)}</td>
+                      <td>Now</td>
+                    </tr>
+                    <tr>
                       <td>Stored pet inventory</td>
                       <td>{formatAmount(knownCoverage.storedPetQuantity)}</td>
                       <td>Now</td>
@@ -729,7 +745,7 @@ export function AcquisitionBreakdownPage() {
                       The item need comes from the same recipe estimate used by Material Planner.
                     </li>
                     <li>
-                      Saved supplies, containers, stored pets, and future pets come from Settings.
+                      Saved supplies, current inventory, containers, stored pets, and future pets come from Settings.
                     </li>
                     <li>
                       Manual Explore uses the drop rate you enter here when no saved source rate is selected.

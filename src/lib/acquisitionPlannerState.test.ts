@@ -5,18 +5,22 @@ import {
   ACQUISITION_PLANNER_STATE_STORAGE_KEY,
   clearAcquisitionPlannerInputState,
   createDefaultAcquisitionPlannerInputState,
+  getCurrentInventoryItemInputs,
   getResolvedAcquisitionSharedAssumptions,
   getFuturePetProductionEntries,
   getOwnedNowItemInputs,
   getStoredPetInventoryItemInputs,
   loadAcquisitionPlannerInputState,
   normalizeAcquisitionPlannerInputState,
+  replaceCurrentInventoryEntries,
   replaceStoredPetInventoryEntries,
+  removeCurrentInventoryItemInput,
   removeFuturePetProductionEntryInput,
   removeStoredPetInventoryItemInput,
   resolveAcquisitionSourceInclusion,
   resolveAcquisitionSourceInclusionMap,
   saveAcquisitionPlannerInputState,
+  upsertCurrentInventoryItemInput,
   upsertFuturePetProductionEntryInput,
   upsertOwnedNowItemInput,
   upsertStoredPetInventoryItemInput,
@@ -72,6 +76,9 @@ describe('acquisitionPlannerState', () => {
       ownedNow: {
         entries: [],
       },
+      inventory: {
+        entries: [],
+      },
       pets: {
         storedInventoryEntries: [],
         futureProduction: {
@@ -118,16 +125,28 @@ describe('acquisitionPlannerState', () => {
             lemonCreamPieActive: true,
           },
         },
-        ownedNow: {
-          stockpileItemCountsByCanonicalKey: {
-            twine: '10',
-            rope: -2,
-            '': 99,
-          },
+      ownedNow: {
+        stockpileItemCountsByCanonicalKey: {
+          twine: '10',
+          rope: -2,
+          '': 99,
         },
-        pets: {
-          futureProduction: {
-            enabled: true,
+      },
+      inventory: {
+        entries: [
+          {
+            itemName: 'Strange Ring',
+            inventoryCount: '1000',
+          },
+          {
+            itemName: '',
+            inventoryCount: 10,
+          },
+        ],
+      },
+      pets: {
+        futureProduction: {
+          enabled: true,
             horizonDays: '14',
             respectSeasonality: false,
             offlineHoursCap: '72',
@@ -172,6 +191,15 @@ describe('acquisitionPlannerState', () => {
             itemName: 'twine',
             ownedCount: 10,
             sourceCategory: 'stockpile',
+          },
+        ],
+      },
+      inventory: {
+        entries: [
+          {
+            canonicalItemKey: 'strange ring',
+            itemName: 'Strange Ring',
+            inventoryCount: 1000,
           },
         ],
       },
@@ -361,6 +389,84 @@ describe('acquisitionPlannerState', () => {
     );
 
     expect(loadAcquisitionPlannerInputState(storage).ownedNow.entries).toEqual([]);
+  });
+
+  it('adds, replaces, removes, and safely normalizes current inventory entries', () => {
+    const initialState = createDefaultAcquisitionPlannerInputState();
+    const withShells = upsertCurrentInventoryItemInput(initialState, {
+      itemName: 'Frost Snapper Shell',
+      inventoryCount: 5614,
+    });
+
+    expect(getCurrentInventoryItemInputs(withShells)).toEqual([
+      {
+        canonicalItemKey: 'frost snapper shell',
+        itemName: 'Frost Snapper Shell',
+        inventoryCount: 5614,
+      },
+    ]);
+
+    const replaced = replaceCurrentInventoryEntries(withShells, [
+      {
+        canonicalItemKey: 'strange ring',
+        itemName: 'Strange Ring',
+        inventoryCount: 1000,
+      },
+      {
+        canonicalItemKey: 'frost snapper shell',
+        itemName: 'Frost Snapper Shell',
+        inventoryCount: 6000,
+      },
+    ]);
+
+    expect(getCurrentInventoryItemInputs(replaced)).toEqual([
+      {
+        canonicalItemKey: 'frost snapper shell',
+        itemName: 'Frost Snapper Shell',
+        inventoryCount: 6000,
+      },
+      {
+        canonicalItemKey: 'strange ring',
+        itemName: 'Strange Ring',
+        inventoryCount: 1000,
+      },
+    ]);
+
+    const removed = removeCurrentInventoryItemInput(replaced, 'Frost Snapper Shell');
+    expect(getCurrentInventoryItemInputs(removed)).toEqual([
+      {
+        canonicalItemKey: 'strange ring',
+        itemName: 'Strange Ring',
+        inventoryCount: 1000,
+      },
+    ]);
+
+    expect(
+      normalizeAcquisitionPlannerInputState({
+        inventory: {
+          entries: [
+            {
+              itemName: '  ',
+              inventoryCount: 5,
+            },
+            {
+              canonicalItemKey: 'large net',
+              inventoryCount: '3',
+            },
+          ],
+        },
+      }),
+    ).toMatchObject({
+      inventory: {
+        entries: [
+          {
+            canonicalItemKey: 'large net',
+            itemName: 'large net',
+            inventoryCount: 3,
+          },
+        ],
+      },
+    });
   });
 
   it('adds, replaces, removes, and safely normalizes stored pet inventory entries', () => {

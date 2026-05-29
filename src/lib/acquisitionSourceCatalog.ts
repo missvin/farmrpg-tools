@@ -7,6 +7,7 @@ export type AcquisitionSourceKey =
   | 'orange_juice'
   | 'owned_containers'
   | 'owned_stockpiles'
+  | 'current_inventory'
   | 'stored_pet_inventory'
   | 'future_pet_production'
   | 'one_time_rewards'
@@ -55,6 +56,7 @@ export type AcquisitionAssumptionFamilyKey =
   | 'crafting_output_modifiers'
   | 'mastery_bonus_modifiers'
   | 'owned_stockpile_counts'
+  | 'current_inventory_counts'
   | 'stored_pet_inventory_counts'
   | 'future_pet_levels_and_seasonality'
   | 'pet_quantity_modifiers'
@@ -149,6 +151,11 @@ export const ACQUISITION_SOURCE_CATALOG: AcquisitionSourceCatalog = {
       key: 'owned_stockpile_counts',
       label: 'Owned stockpile counts',
       notes: ['Covers user-supplied owned-now inventory quantities for containers, consumables, and similar immediate sources.'],
+    },
+    {
+      key: 'current_inventory_counts',
+      label: 'Current inventory counts',
+      notes: ['Covers pasted current inventory quantities that can satisfy planning demand immediately.'],
     },
     {
       key: 'stored_pet_inventory_counts',
@@ -325,6 +332,21 @@ export const ACQUISITION_SOURCE_CATALOG: AcquisitionSourceCatalog = {
       warningSafeMissingMetadata: 'warn_and_continue',
       notes: [
         'Keeps owned-now inventory distinct from future craftable or future farmable acquisition.',
+      ],
+    },
+    {
+      key: 'current_inventory',
+      label: 'Current Inventory',
+      category: 'owned_source',
+      defaultPolicy: 'included_by_default',
+      availability: 'immediate',
+      userInputDependence: 'required',
+      modelingStatus: 'planned_engine',
+      burdenSupport: 'direct',
+      relevantAssumptionFamilies: ['source_policy', 'current_inventory_counts', 'mastery_bonus_modifiers'],
+      warningSafeMissingMetadata: 'warn_and_continue',
+      notes: [
+        'Represents pasted current inventory counts and should stay distinct from manual stockpile/container entries.',
       ],
     },
     {

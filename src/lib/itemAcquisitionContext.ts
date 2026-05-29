@@ -35,6 +35,15 @@ function sumOwnedNowEntries(
     .reduce((total, entry) => total + entry.ownedCount, 0);
 }
 
+function sumCurrentInventoryEntries(
+  acquisitionState: AcquisitionPlannerInputState,
+  canonicalKey: string,
+): number {
+  return acquisitionState.inventory.entries
+    .filter((entry) => entry.canonicalItemKey === canonicalKey)
+    .reduce((total, entry) => total + entry.inventoryCount, 0);
+}
+
 export function deriveItemAcquisitionContext({
   canonicalKey,
   acquisitionState,
@@ -52,6 +61,9 @@ export function deriveItemAcquisitionContext({
   const containerQuantity = inclusionMap.owned_containers
     ? sumOwnedNowEntries(acquisitionState, canonicalKey, 'container')
     : 0;
+  const currentInventoryQuantity = inclusionMap.current_inventory
+    ? sumCurrentInventoryEntries(acquisitionState, canonicalKey)
+    : 0;
   const storedPetQuantity = inclusionMap.stored_pet_inventory
     ? acquisitionState.pets.storedInventoryEntries
       .filter((entry) => entry.canonicalItemKey === canonicalKey)
@@ -61,7 +73,7 @@ export function deriveItemAcquisitionContext({
     inclusionMap.future_pet_production && futurePetForecast.enabled
       ? futurePetEntry?.forecastQuantity ?? 0
       : 0;
-  const immediateSavedQuantity = stockpileQuantity + containerQuantity + storedPetQuantity;
+  const immediateSavedQuantity = stockpileQuantity + containerQuantity + currentInventoryQuantity + storedPetQuantity;
 
   return {
     canonicalKey,

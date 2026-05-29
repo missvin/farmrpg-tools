@@ -67,6 +67,16 @@ export type AcquisitionOwnedNowPlannerState = {
   entries: AcquisitionOwnedNowItemInput[];
 };
 
+export type AcquisitionCurrentInventoryItemInput = {
+  canonicalItemKey: string;
+  itemName: string;
+  inventoryCount: number;
+};
+
+export type AcquisitionCurrentInventoryPlannerState = {
+  entries: AcquisitionCurrentInventoryItemInput[];
+};
+
 export type AcquisitionStoredPetInventoryItemInput = {
   canonicalItemKey: string;
   itemName: string;
@@ -99,6 +109,7 @@ export type AcquisitionPlannerInputState = {
   explore: AcquisitionExplorePlannerState;
   consumables: AcquisitionConsumablePlannerState;
   ownedNow: AcquisitionOwnedNowPlannerState;
+  inventory: AcquisitionCurrentInventoryPlannerState;
   pets: AcquisitionPetPlannerState;
 };
 
@@ -111,6 +122,7 @@ type PartialAcquisitionSourcePolicyState = Partial<AcquisitionSourcePolicyState>
 type PartialAcquisitionExplorePlannerState = Partial<AcquisitionExplorePlannerState>;
 type PartialAcquisitionConsumablePlannerState = Partial<AcquisitionConsumablePlannerState>;
 type PartialAcquisitionOwnedNowPlannerState = Partial<AcquisitionOwnedNowPlannerState>;
+type PartialAcquisitionCurrentInventoryPlannerState = Partial<AcquisitionCurrentInventoryPlannerState>;
 type PartialAcquisitionPetPlannerState = Partial<AcquisitionPetPlannerState>;
 type PartialFuturePetProductionState = Partial<AcquisitionPetPlannerState['futureProduction']>;
 type LegacyOwnedNowCountsState = {
@@ -177,6 +189,9 @@ const DEFAULT_ACQUISITION_PLANNER_INPUT_STATE: AcquisitionPlannerInputState = {
     },
   },
   ownedNow: {
+    entries: [],
+  },
+  inventory: {
     entries: [],
   },
   pets: {
@@ -333,6 +348,53 @@ function normalizeStoredPetInventoryEntry(value: unknown): AcquisitionStoredPetI
     itemName: itemName.length > 0 ? itemName : canonicalItemKey,
     storedCount,
   };
+}
+
+function normalizeCurrentInventoryEntry(value: unknown): AcquisitionCurrentInventoryItemInput | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  const itemName = typeof record.itemName === 'string' ? record.itemName.trim() : '';
+  const canonicalItemKeyInput =
+    typeof record.canonicalItemKey === 'string' ? record.canonicalItemKey.trim() : '';
+  const canonicalItemKey = canonicalItemKeyInput.length > 0
+    ? toCanonicalItemKey(canonicalItemKeyInput)
+    : toCanonicalItemKey(itemName);
+  const inventoryCount = clampNonNegativeNumber(record.inventoryCount, -1);
+
+  if (canonicalItemKey.length === 0 || inventoryCount < 0) {
+    return null;
+  }
+
+  return {
+    canonicalItemKey,
+    itemName: itemName.length > 0 ? itemName : canonicalItemKey,
+    inventoryCount,
+  };
+}
+
+function normalizeCurrentInventoryEntries(value: unknown): AcquisitionCurrentInventoryItemInput[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const dedupedEntries = new Map<string, AcquisitionCurrentInventoryItemInput>();
+
+  for (const entry of value) {
+    const normalizedEntry = normalizeCurrentInventoryEntry(entry);
+
+    if (!normalizedEntry) {
+      continue;
+    }
+
+    dedupedEntries.set(normalizedEntry.canonicalItemKey, normalizedEntry);
+  }
+
+  return Array.from(dedupedEntries.values()).sort((left, right) => {
+    return left.itemName.localeCompare(right.itemName) || left.canonicalItemKey.localeCompare(right.canonicalItemKey);
+  });
 }
 
 function normalizeStoredPetInventoryEntries(value: unknown): AcquisitionStoredPetInventoryItemInput[] {
@@ -497,6 +559,8 @@ export function normalizeAcquisitionPlannerInputState(value: unknown): Acquisiti
     record.consumables && typeof record.consumables === 'object' ? record.consumables : {};
   const ownedNow: PartialAcquisitionOwnedNowPlannerState =
     record.ownedNow && typeof record.ownedNow === 'object' ? record.ownedNow : {};
+  const inventory: PartialAcquisitionCurrentInventoryPlannerState =
+    record.inventory && typeof record.inventory === 'object' ? record.inventory : {};
   const pets: PartialAcquisitionPetPlannerState =
     record.pets && typeof record.pets === 'object' ? record.pets : {};
   const futureProduction: PartialFuturePetProductionState =
@@ -544,6 +608,9 @@ export function normalizeAcquisitionPlannerInputState(value: unknown): Acquisiti
           containerItemCountsByCanonicalKey: (ownedNow as LegacyOwnedNowCountsState).containerItemCountsByCanonicalKey,
         },
       ),
+    },
+    inventory: {
+      entries: normalizeCurrentInventoryEntries(inventory.entries),
     },
     pets: {
       storedInventoryEntries: normalizeStoredPetInventoryEntries(
@@ -677,6 +744,75 @@ export function getOwnedNowItemInputs(
   return state.ownedNow.entries.filter((entry) => {
     return sourceCategory ? entry.sourceCategory === sourceCategory : true;
   });
+}
+
+export type UpdateCurrentInventoryItemInput = {
+  itemName: string;
+  inventoryCount: number;
+};
+
+export function upsertCurrentInventoryItemInput(
+  state: AcquisitionPlannerInputState,
+  input: UpdateCurrentInventoryItemInput,
+): AcquisitionPlannerInputState {
+  const trimmedItemName = input.itemName.trim();
+  const canonicalItemKey = toCanonicalItemKey(trimmedItemName);
+  const inventoryCount = clampNonNegativeNumber(input.inventoryCount, -1);
+
+  if (canonicalItemKey.length === 0 || inventoryCount < 0) {
+    return state;
+  }
+
+  const nextEntries = state.inventory.entries.filter((entry) => {
+    return entry.canonicalItemKey !== canonicalItemKey;
+  });
+
+  if (inventoryCount > 0) {
+    nextEntries.push({
+      canonicalItemKey,
+      itemName: trimmedItemName.length > 0 ? trimmedItemName : canonicalItemKey,
+      inventoryCount,
+    });
+  }
+
+  return normalizeAcquisitionPlannerInputState({
+    ...state,
+    inventory: {
+      entries: nextEntries,
+    },
+  });
+}
+
+export function replaceCurrentInventoryEntries(
+  state: AcquisitionPlannerInputState,
+  entries: AcquisitionCurrentInventoryItemInput[],
+): AcquisitionPlannerInputState {
+  return normalizeAcquisitionPlannerInputState({
+    ...state,
+    inventory: {
+      entries,
+    },
+  });
+}
+
+export function removeCurrentInventoryItemInput(
+  state: AcquisitionPlannerInputState,
+  canonicalItemKey: string,
+): AcquisitionPlannerInputState {
+  return normalizeAcquisitionPlannerInputState({
+    ...state,
+    inventory: {
+      entries: state.inventory.entries.filter((entry) => {
+        return entry.canonicalItemKey !== toCanonicalItemKey(canonicalItemKey);
+      }),
+    },
+  });
+}
+
+export function getCurrentInventoryItemInputs(
+  state: AcquisitionPlannerInputState,
+): AcquisitionCurrentInventoryItemInput[] {
+  return state.inventory.entries;
 }
 
 export type UpdateStoredPetInventoryItemInput = {

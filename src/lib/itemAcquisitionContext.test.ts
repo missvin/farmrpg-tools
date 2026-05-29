@@ -107,6 +107,15 @@ describe('deriveItemAcquisitionContext', () => {
           },
         ],
       },
+      inventory: {
+        entries: [
+          {
+            canonicalItemKey: 'glass orb',
+            itemName: 'Glass Orb',
+            inventoryCount: 3,
+          },
+        ],
+      },
       pets: {
         storedInventoryEntries: [
           {
@@ -144,9 +153,9 @@ describe('deriveItemAcquisitionContext', () => {
     ).toMatchObject({
       requiredQuantity: 43,
       hasBreakdownTarget: true,
-      immediateSavedQuantity: 12,
+      immediateSavedQuantity: 15,
       futurePetQuantity: 12,
-      totalSavedQuantity: 24,
+      totalSavedQuantity: 27,
       dropRateSourceCount: 1,
     });
   });

@@ -2,15 +2,19 @@ import { useEffect, useState, type ChangeEvent } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
 import {
+  getCurrentInventoryItemInputs,
   getFuturePetProductionEntries,
   getOwnedNowItemInputs,
   getStoredPetInventoryItemInputs,
   loadAcquisitionPlannerInputState,
+  removeCurrentInventoryItemInput,
   removeFuturePetProductionEntryInput,
   removeStoredPetInventoryItemInput,
+  replaceCurrentInventoryEntries,
   replaceStoredPetInventoryEntries,
   removeOwnedNowItemInput,
   saveAcquisitionPlannerInputState,
+  upsertCurrentInventoryItemInput,
   upsertFuturePetProductionEntryInput,
   upsertOwnedNowItemInput,
   upsertStoredPetInventoryItemInput,
@@ -31,11 +35,16 @@ import {
   type DropRateFarmingUnit,
   type DropRateFishingUnit,
 } from '../lib/dropRateAcquisitionSettings';
-import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import {
   loadPetSourceReference,
   type PetSourceReferenceData,
 } from '../lib/loadPetSourceReference';
+import {
+  loadLocalItemReferenceLookup,
+  resolveLocalItemReference,
+  type LocalItemReferenceLookup,
+} from '../lib/localItemReferenceLookup';
+import { parseCurrentInventoryPaste } from '../lib/parseCurrentInventoryPaste';
 import { parseStoredPetInventoryPaste } from '../lib/parseStoredPetInventoryPaste';
 
 function formatForecastQuantity(value: number): string {
@@ -58,6 +67,12 @@ export function SettingsPage() {
     useState<AcquisitionOwnedNowSourceCategory>('stockpile');
   const [ownedItemsMessage, setOwnedItemsMessage] = useState<string | null>(null);
   const [ownedItemsError, setOwnedItemsError] = useState<string | null>(null);
+  const [currentInventoryItemName, setCurrentInventoryItemName] = useState('');
+  const [currentInventoryItemCount, setCurrentInventoryItemCount] = useState('1');
+  const [currentInventoryImportText, setCurrentInventoryImportText] = useState('');
+  const [currentInventoryMessage, setCurrentInventoryMessage] = useState<string | null>(null);
+  const [currentInventoryError, setCurrentInventoryError] = useState<string | null>(null);
+  const [currentInventoryWarnings, setCurrentInventoryWarnings] = useState<string[]>([]);
   const [storedPetItemName, setStoredPetItemName] = useState('');
   const [storedPetItemCount, setStoredPetItemCount] = useState('1');
   const [storedPetImportText, setStoredPetImportText] = useState('');
@@ -86,6 +101,7 @@ export function SettingsPage() {
   const [futurePetMessage, setFuturePetMessage] = useState<string | null>(null);
   const [futurePetError, setFuturePetError] = useState<string | null>(null);
   const [futurePetWarnings, setFuturePetWarnings] = useState<string[]>([]);
+  const [localItemLookup, setLocalItemLookup] = useState<LocalItemReferenceLookup | null>(null);
   const [knownItemKeys, setKnownItemKeys] = useState<Set<string> | null>(null);
   const [petSourceReference, setPetSourceReference] = useState<PetSourceReferenceData | null>(null);
   const [petSourceReferenceError, setPetSourceReferenceError] = useState<string | null>(null);
@@ -101,6 +117,7 @@ export function SettingsPage() {
   const [isRestoring, setIsRestoring] = useState(false);
 
   const ownedNowEntries = getOwnedNowItemInputs(acquisitionPlannerState);
+  const currentInventoryEntries = getCurrentInventoryItemInputs(acquisitionPlannerState);
   const storedPetEntries = getStoredPetInventoryItemInputs(acquisitionPlannerState);
   const futurePetEntries = getFuturePetProductionEntries(acquisitionPlannerState);
   const futurePetForecast = deriveFuturePetProductionForecast(acquisitionPlannerState, {
@@ -110,14 +127,22 @@ export function SettingsPage() {
   useEffect(() => {
     let cancelled = false;
 
-    void loadMasteryDifficulty()
+    void loadLocalItemReferenceLookup()
       .then((data) => {
         if (!cancelled) {
-          setKnownItemKeys(new Set(Object.keys(data.byCanonicalKey)));
+          setLocalItemLookup(data);
+          setKnownItemKeys(
+            new Set([
+              ...Object.keys(data.itemCatalog.byCanonicalKey),
+              ...Object.keys(data.museumCoverage.byCanonicalKey),
+              ...(data.museumCanon?.entries.map((entry) => entry.canonicalKey) ?? []),
+            ]),
+          );
         }
       })
       .catch(() => {
         if (!cancelled) {
+          setLocalItemLookup(null);
           setKnownItemKeys(null);
         }
       });
@@ -203,6 +228,110 @@ export function SettingsPage() {
       setOwnedItemsMessage(null);
       setOwnedItemsError(
         error instanceof Error ? error.message : 'Unable to remove the supply entry.',
+      );
+    }
+  }
+
+  function handleSaveCurrentInventoryItem(): void {
+    const normalizedCount = Number(currentInventoryItemCount);
+
+    if (currentInventoryItemName.trim().length === 0) {
+      setCurrentInventoryMessage(null);
+      setCurrentInventoryWarnings([]);
+      setCurrentInventoryError('Enter an item name to save a current inventory entry.');
+      return;
+    }
+
+    if (!Number.isFinite(normalizedCount) || normalizedCount < 0) {
+      setCurrentInventoryMessage(null);
+      setCurrentInventoryWarnings([]);
+      setCurrentInventoryError('Enter a non-negative quantity for the current inventory entry.');
+      return;
+    }
+
+    try {
+      const nextState = upsertCurrentInventoryItemInput(acquisitionPlannerState, {
+        itemName: currentInventoryItemName,
+        inventoryCount: normalizedCount,
+      });
+      const savedState = saveAcquisitionPlannerInputState(nextState);
+
+      setAcquisitionPlannerState(savedState);
+      setCurrentInventoryError(null);
+      setCurrentInventoryWarnings([]);
+      setCurrentInventoryMessage(
+        normalizedCount > 0
+          ? `Saved ${currentInventoryItemName.trim()} as current inventory.`
+          : `Removed ${currentInventoryItemName.trim()} from current inventory.`,
+      );
+      setCurrentInventoryItemName('');
+      setCurrentInventoryItemCount('1');
+    } catch (error) {
+      setCurrentInventoryMessage(null);
+      setCurrentInventoryWarnings([]);
+      setCurrentInventoryError(
+        error instanceof Error ? error.message : 'Unable to save the current inventory entry.',
+      );
+    }
+  }
+
+  function handleImportCurrentInventory(): void {
+    const parsedResult = parseCurrentInventoryPaste(currentInventoryImportText, {
+      resolveItem: localItemLookup
+        ? (itemName) => {
+            const result = resolveLocalItemReference(itemName, localItemLookup);
+
+            return {
+              canonicalItemKey: result.canonicalKey,
+              itemName: result.displayName,
+              recognized: result.recognized,
+              warnings: result.recognized ? [] : result.warnings,
+            };
+          }
+        : undefined,
+    });
+
+    if (parsedResult.entries.length === 0) {
+      setCurrentInventoryMessage(null);
+      setCurrentInventoryWarnings(parsedResult.warnings);
+      setCurrentInventoryError('No current inventory entries were imported from the pasted text.');
+      return;
+    }
+
+    try {
+      const nextState = replaceCurrentInventoryEntries(acquisitionPlannerState, parsedResult.entries);
+      const savedState = saveAcquisitionPlannerInputState(nextState);
+
+      setAcquisitionPlannerState(savedState);
+      setCurrentInventoryError(null);
+      setCurrentInventoryWarnings(parsedResult.warnings);
+      setCurrentInventoryMessage(
+        `Imported ${parsedResult.entries.length.toLocaleString()} current inventory entr${parsedResult.entries.length === 1 ? 'y' : 'ies'}.`,
+      );
+      setCurrentInventoryImportText('');
+    } catch (error) {
+      setCurrentInventoryMessage(null);
+      setCurrentInventoryWarnings(parsedResult.warnings);
+      setCurrentInventoryError(
+        error instanceof Error ? error.message : 'Unable to import the current inventory text.',
+      );
+    }
+  }
+
+  function handleRemoveCurrentInventoryItem(canonicalItemKey: string): void {
+    try {
+      const nextState = removeCurrentInventoryItemInput(acquisitionPlannerState, canonicalItemKey);
+      const savedState = saveAcquisitionPlannerInputState(nextState);
+
+      setAcquisitionPlannerState(savedState);
+      setCurrentInventoryError(null);
+      setCurrentInventoryWarnings([]);
+      setCurrentInventoryMessage(`Removed ${canonicalItemKey} from current inventory.`);
+    } catch (error) {
+      setCurrentInventoryMessage(null);
+      setCurrentInventoryWarnings([]);
+      setCurrentInventoryError(
+        error instanceof Error ? error.message : 'Unable to remove the current inventory entry.',
       );
     }
   }
@@ -907,6 +1036,133 @@ export function SettingsPage() {
 
         {ownedItemsMessage ? <p className="status-message status-message--success">{ownedItemsMessage}</p> : null}
         {ownedItemsError ? <p className="status-message status-message--error">{ownedItemsError}</p> : null}
+      </section>
+
+      <section className="page-card page-stack" aria-labelledby="settings-current-inventory-title">
+        <div>
+          <h2 id="settings-current-inventory-title">Current Inventory</h2>
+          <p className="supporting-text">
+            Import or enter items currently in your inventory so target planning can spend this supply before
+            expanding remaining requirements.
+          </p>
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="current-inventory-item-name">
+            Inventory item name
+          </label>
+          <input
+            id="current-inventory-item-name"
+            className="text-input"
+            type="text"
+            value={currentInventoryItemName}
+            onChange={(event) => {
+              setCurrentInventoryItemName(event.target.value);
+            }}
+            placeholder="Large Net"
+          />
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="current-inventory-item-count">
+            Inventory quantity
+          </label>
+          <input
+            id="current-inventory-item-count"
+            className="text-input"
+            type="number"
+            min="0"
+            step="1"
+            value={currentInventoryItemCount}
+            onChange={(event) => {
+              setCurrentInventoryItemCount(event.target.value);
+            }}
+          />
+        </div>
+
+        <div className="button-row">
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={handleSaveCurrentInventoryItem}
+          >
+            Save Inventory Item
+          </button>
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="current-inventory-import-text">
+            Paste current inventory
+          </label>
+          <textarea
+            id="current-inventory-import-text"
+            className="text-input"
+            rows={6}
+            value={currentInventoryImportText}
+            onChange={(event) => {
+              setCurrentInventoryImportText(event.target.value);
+            }}
+            placeholder={`566\nCabbage Stew\n1,021\nLemon Cream Pie`}
+          />
+        </div>
+
+        <div className="button-row">
+          <button
+            type="button"
+            className="button"
+            onClick={handleImportCurrentInventory}
+          >
+            Import Current Inventory
+          </button>
+        </div>
+
+        <p className="supporting-text">
+          Supported paste formats: alternating count/item lines from FarmRPG pages, or simple one-line
+          <code> Item Name, Count</code> pairs. Import replaces the saved current inventory list.
+        </p>
+
+        {currentInventoryEntries.length > 0 ? (
+          <table className="summary-table">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Inventory count</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentInventoryEntries.map((entry) => (
+                <tr key={entry.canonicalItemKey}>
+                  <td>{entry.itemName}</td>
+                  <td>{entry.inventoryCount.toLocaleString()}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="button"
+                      onClick={() => {
+                        handleRemoveCurrentInventoryItem(entry.canonicalItemKey);
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="supporting-text">No current inventory saved yet.</p>
+        )}
+
+        {currentInventoryMessage ? <p className="status-message status-message--success">{currentInventoryMessage}</p> : null}
+        {currentInventoryError ? <p className="status-message status-message--error">{currentInventoryError}</p> : null}
+        {currentInventoryWarnings.length > 0 ? (
+          <ul className="supporting-text">
+            {currentInventoryWarnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        ) : null}
       </section>
 
       <section className="page-card page-stack" aria-labelledby="settings-stored-pet-title">

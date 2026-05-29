@@ -159,6 +159,20 @@ function isValidStoredPetInventoryEntry(value: unknown): boolean {
   );
 }
 
+function isValidCurrentInventoryEntry(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.canonicalItemKey === 'string' &&
+    value.canonicalItemKey.length > 0 &&
+    typeof value.itemName === 'string' &&
+    value.itemName.length > 0 &&
+    isFiniteNonNegativeNumber(value.inventoryCount)
+  );
+}
+
 function isValidFuturePetProductionEntry(value: unknown): boolean {
   if (!isRecord(value)) {
     return false;
@@ -212,6 +226,15 @@ function isValidAcquisitionPlannerState(value: unknown): value is AcquisitionPla
   }
 
   if (!Array.isArray(value.ownedNow.entries) || !value.ownedNow.entries.every((entry) => isValidOwnedNowEntry(entry))) {
+    return false;
+  }
+
+  if (
+    value.inventory !== undefined &&
+    (!isRecord(value.inventory) ||
+      !Array.isArray(value.inventory.entries) ||
+      !value.inventory.entries.every((entry) => isValidCurrentInventoryEntry(entry)))
+  ) {
     return false;
   }
 

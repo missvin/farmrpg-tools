@@ -177,6 +177,13 @@ describe('AcquisitionBreakdownPage', () => {
         ownedCount: 5,
       },
     ];
+    acquisitionState.inventory.entries = [
+      {
+        canonicalItemKey: 'twine',
+        itemName: 'Twine',
+        inventoryCount: 4,
+      },
+    ];
     acquisitionState.pets.storedInventoryEntries = [
       {
         canonicalItemKey: 'twine',
@@ -237,19 +244,19 @@ describe('AcquisitionBreakdownPage', () => {
 
     expect(screen.getByText('Total needed')).toBeInTheDocument();
     expect(screen.getByText('Covered by saved sources')).toBeInTheDocument();
-    expect(screen.getAllByText('30').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('34').length).toBeGreaterThan(0);
 
     await user.type(screen.getByLabelText('Drop rate %'), '25');
 
     await waitFor(() => {
-      expect(screen.getByText('Estimated stamina: 224')).toBeInTheDocument();
+      expect(screen.getByText('Estimated stamina: 212')).toBeInTheDocument();
     });
 
     await user.click(screen.getByLabelText('Lemonade'));
 
     expect(screen.getByText('Still unplanned')).toBeInTheDocument();
-    expect(screen.getByText('Use known stockpiles, containers, and stored pet inventory first: 30 item(s).')).toBeInTheDocument();
-    expect(screen.getByText('Manual Explore needs about 224 stamina for the current remainder.')).toBeInTheDocument();
+    expect(screen.getByText('Use known stockpiles, current inventory, containers, and stored pet inventory first: 34 item(s).')).toBeInTheDocument();
+    expect(screen.getByText('Manual Explore needs about 212 stamina for the current remainder.')).toBeInTheDocument();
     expect(screen.getByText('Selected consumables can cover up to 20 item(s) if this item is eligible for those drops.')).toBeInTheDocument();
   });
 

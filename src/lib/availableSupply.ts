@@ -9,6 +9,7 @@ import { toCanonicalItemKey } from './normalizeItemKey';
 
 export type AvailableSupplySourceKey =
   | 'owned_stockpiles'
+  | 'current_inventory'
   | 'owned_containers'
   | 'stored_pet_inventory'
   | 'future_pet_production'
@@ -181,6 +182,18 @@ export function deriveAvailableSupplyPool(input: DeriveAvailableSupplyPoolInput)
         sourceKey: 'owned_containers',
         timing: 'immediate',
         quantity: entry.ownedCount,
+      });
+    }
+  }
+
+  if (inclusionMap.current_inventory) {
+    for (const entry of input.acquisitionState.inventory.entries) {
+      addBreakdown(itemsByCanonicalKey, {
+        canonicalKey: entry.canonicalItemKey,
+        itemName: entry.itemName,
+        sourceKey: 'current_inventory',
+        timing: 'immediate',
+        quantity: entry.inventoryCount,
       });
     }
   }

@@ -198,6 +198,7 @@ function createAcquisitionPlannerStateFixture() {
         orange_juice: 'default',
         owned_containers: 'default',
         owned_stockpiles: 'default',
+        current_inventory: 'default',
         stored_pet_inventory: 'default',
         future_pet_production: 'default',
         one_time_rewards: 'default',
@@ -240,6 +241,15 @@ function createAcquisitionPlannerStateFixture() {
           itemName: 'Large Chest',
           ownedCount: 2,
           sourceCategory: 'container',
+        },
+      ],
+    },
+    inventory: {
+      entries: [
+        {
+          canonicalItemKey: 'strange ring',
+          itemName: 'Strange Ring',
+          inventoryCount: 1000,
         },
       ],
     },
