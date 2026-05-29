@@ -1,18 +1,29 @@
 import { loadItemAliases, resolveItemAlias, type ItemAliasData, type ItemAliasEntry } from './itemAliases';
 import { loadItemCatalog, type ItemCatalogData, type ItemCatalogEntry } from './loadItemCatalog';
 import {
+  loadMuseumCompletionCanon,
+  type MuseumCompletionCanonData,
+  type MuseumCompletionCanonEntry,
+} from './loadMuseumCompletionCanon';
+import {
   loadMuseumLookupCoverage,
   type MuseumLookupCoverageData,
   type MuseumLookupCoverageEntry,
 } from './loadMuseumLookupCoverage';
 import { toCanonicalItemKey } from './normalizeItemKey';
 
-export type LocalItemReferenceRecognitionStatus = 'catalog' | 'alias' | 'museum_only' | 'unrecognized';
+export type LocalItemReferenceRecognitionStatus =
+  | 'catalog'
+  | 'alias'
+  | 'museum_only'
+  | 'museum_canon'
+  | 'unrecognized';
 
 export type LocalItemReferenceLookup = {
   itemCatalog: ItemCatalogData;
   aliases: ItemAliasData;
   museumCoverage: MuseumLookupCoverageData;
+  museumCanon?: MuseumCompletionCanonData;
 };
 
 export type LocalItemReferenceResult = {
@@ -25,6 +36,7 @@ export type LocalItemReferenceResult = {
   matchedAlias: ItemAliasEntry | null;
   catalogEntry: ItemCatalogEntry | null;
   museumEntry: MuseumLookupCoverageEntry | null;
+  museumCanonEntry: MuseumCompletionCanonEntry | null;
   masteryPossible: ItemCatalogEntry['masteryPossible'] | 'unknown';
   sourceDatasets: string[];
   warnings: string[];
@@ -34,6 +46,7 @@ export function createLocalItemReferenceLookup(input: {
   itemCatalog: ItemCatalogData;
   aliases: ItemAliasData;
   museumCoverage: MuseumLookupCoverageData;
+  museumCanon?: MuseumCompletionCanonData;
 }): LocalItemReferenceLookup {
   return input;
 }
@@ -41,6 +54,7 @@ export function createLocalItemReferenceLookup(input: {
 function getSourceDatasets(
   catalogEntry: ItemCatalogEntry | null,
   museumEntry: MuseumLookupCoverageEntry | null,
+  museumCanonEntry: MuseumCompletionCanonEntry | null,
   matchedAlias: ItemAliasEntry | null,
 ): string[] {
   const sourceDatasets = new Set<string>();
@@ -53,11 +67,22 @@ function getSourceDatasets(
     sourceDatasets.add('museum_lookup_coverage');
   }
 
+  if (museumCanonEntry) {
+    sourceDatasets.add('museum_completion_canon');
+  }
+
   if (matchedAlias) {
     sourceDatasets.add('item_aliases');
   }
 
   return [...sourceDatasets].sort((left, right) => left.localeCompare(right));
+}
+
+function findMuseumCanonEntry(
+  museumCanon: MuseumCompletionCanonData | undefined,
+  canonicalKey: string,
+): MuseumCompletionCanonEntry | null {
+  return museumCanon?.entries.find((entry) => entry.canonicalKey === canonicalKey) ?? null;
 }
 
 export function resolveLocalItemReference(
@@ -71,8 +96,9 @@ export function resolveLocalItemReference(
   const matchedAlias = aliasResolution.matchedAlias;
   const catalogEntry = lookup.itemCatalog.byCanonicalKey[canonicalKey] ?? null;
   const museumEntry = lookup.museumCoverage.byCanonicalKey[canonicalKey] ?? null;
+  const museumCanonEntry = findMuseumCanonEntry(lookup.museumCanon, canonicalKey);
   const unapprovedAlias = !matchedAlias ? lookup.aliases.byAliasKey[inputKey] ?? null : null;
-  const recognized = Boolean(catalogEntry || museumEntry);
+  const recognized = Boolean(catalogEntry || museumEntry || museumCanonEntry);
   const warnings: string[] = [];
 
   if (unapprovedAlias) {
@@ -91,6 +117,10 @@ export function resolveLocalItemReference(
     warnings.push('Recognized from museum lookup coverage only; do not infer mastery eligibility.');
   }
 
+  if (!catalogEntry && !museumEntry && museumCanonEntry) {
+    warnings.push('Recognized from museum completion canon only; do not infer mastery eligibility.');
+  }
+
   if (!recognized) {
     warnings.push('No local item reference coverage found; keep this visible as a review candidate.');
   }
@@ -101,20 +131,28 @@ export function resolveLocalItemReference(
       ? 'catalog'
       : museumEntry
         ? 'museum_only'
-        : 'unrecognized';
+        : museumCanonEntry
+          ? 'museum_canon'
+          : 'unrecognized';
 
   return {
     inputName: trimmedInputName,
     inputKey,
     canonicalKey,
-    displayName: catalogEntry?.itemName ?? museumEntry?.itemName ?? matchedAlias?.canonicalItemName ?? trimmedInputName,
+    displayName:
+      catalogEntry?.itemName ??
+      museumEntry?.itemName ??
+      museumCanonEntry?.itemName ??
+      matchedAlias?.canonicalItemName ??
+      trimmedInputName,
     recognized,
     recognitionStatus,
     matchedAlias,
     catalogEntry,
     museumEntry,
+    museumCanonEntry,
     masteryPossible: catalogEntry?.masteryPossible ?? 'unknown',
-    sourceDatasets: getSourceDatasets(catalogEntry, museumEntry, matchedAlias),
+    sourceDatasets: getSourceDatasets(catalogEntry, museumEntry, museumCanonEntry, matchedAlias),
     warnings,
   };
 }
@@ -154,15 +192,17 @@ export function toLocalItemReferenceReviewCsv(results: LocalItemReferenceResult[
 }
 
 export async function loadLocalItemReferenceLookup(): Promise<LocalItemReferenceLookup> {
-  const [itemCatalog, aliases, museumCoverage] = await Promise.all([
+  const [itemCatalog, aliases, museumCoverage, museumCanon] = await Promise.all([
     loadItemCatalog(),
     loadItemAliases(),
     loadMuseumLookupCoverage(),
+    loadMuseumCompletionCanon(),
   ]);
 
   return createLocalItemReferenceLookup({
     itemCatalog,
     aliases,
     museumCoverage,
+    museumCanon,
   });
 }

@@ -7,6 +7,7 @@ import { MemoryHelperPage } from './MemoryHelperPage';
 
 const getItemIconMock = vi.fn();
 const loadLocalItemReferenceLookupMock = vi.fn();
+const loadMemoryGameAllowedItemsMock = vi.fn();
 
 vi.mock('../lib/itemIconManifest', () => ({
   getItemIcon: (...args: unknown[]) => getItemIconMock(...args),
@@ -20,6 +21,17 @@ vi.mock('../lib/localItemReferenceLookup', async () => {
   return {
     ...actual,
     loadLocalItemReferenceLookup: (...args: unknown[]) => loadLocalItemReferenceLookupMock(...args),
+  };
+});
+
+vi.mock('../lib/loadMemoryGameAllowedItems', async () => {
+  const actual = await vi.importActual<typeof import('../lib/loadMemoryGameAllowedItems')>(
+    '../lib/loadMemoryGameAllowedItems',
+  );
+
+  return {
+    ...actual,
+    loadMemoryGameAllowedItems: (...args: unknown[]) => loadMemoryGameAllowedItemsMock(...args),
   };
 });
 
@@ -76,6 +88,70 @@ function mockLookup(): void {
       entries: [],
       byCanonicalKey: {},
     },
+    museumCanon: {
+      entries: [
+        {
+          museumCategory: 'Items',
+          categoryKey: 'items',
+          slotIndex: 543,
+          itemName: 'Mug of Beer',
+          canonicalKey: 'mug of beer',
+          obtainable: true,
+          reviewStatus: 'source_parsed',
+          source: 'test',
+          notes: null,
+        },
+      ],
+      byCategoryKey: {
+        items: [
+          {
+            museumCategory: 'Items',
+            categoryKey: 'items',
+            slotIndex: 543,
+            itemName: 'Mug of Beer',
+            canonicalKey: 'mug of beer',
+            obtainable: true,
+            reviewStatus: 'source_parsed',
+            source: 'test',
+            notes: null,
+          },
+        ],
+      },
+    },
+  });
+  loadMemoryGameAllowedItemsMock.mockResolvedValue({
+    entries: [
+      {
+        itemName: 'Board',
+        canonicalKey: 'board',
+        observedTiers: ['4'],
+        observedSources: ['Rebecca tier 4 board'],
+        notes: null,
+      },
+      {
+        itemName: 'Mug of Beer',
+        canonicalKey: 'mug of beer',
+        observedTiers: ['4'],
+        observedSources: ['Queen Shay tier 4', 'Hoff86 tier 4'],
+        notes: null,
+      },
+    ],
+    byCanonicalKey: {
+      board: {
+        itemName: 'Board',
+        canonicalKey: 'board',
+        observedTiers: ['4'],
+        observedSources: ['Rebecca tier 4 board'],
+        notes: null,
+      },
+      'mug of beer': {
+        itemName: 'Mug of Beer',
+        canonicalKey: 'mug of beer',
+        observedTiers: ['4'],
+        observedSources: ['Queen Shay tier 4', 'Hoff86 tier 4'],
+        notes: null,
+      },
+    },
   });
 
   getItemIconMock.mockImplementation((canonicalKey: string) =>
@@ -94,6 +170,7 @@ describe('MemoryHelperPage', () => {
     window.localStorage.clear();
     getItemIconMock.mockReset();
     loadLocalItemReferenceLookupMock.mockReset();
+    loadMemoryGameAllowedItemsMock.mockReset();
   });
 
   it('records revealed items, detects a pair, marks it matched, and persists the board', async () => {
@@ -110,8 +187,7 @@ describe('MemoryHelperPage', () => {
     await user.click(screen.getByRole('button', { name: 'Save Slot' }));
 
     await user.click(screen.getByRole('button', { name: 'Slot row 1 column 2 empty' }));
-    await user.type(screen.getByLabelText('Item'), 'Board');
-    await user.click(screen.getByRole('button', { name: 'Save Slot' }));
+    await user.click(screen.getByRole('button', { name: 'Use Board from R1 C1' }));
 
     const pairsSection = screen.getByRole('heading', { name: 'Pairs' }).closest('section');
     expect(pairsSection).not.toBeNull();
@@ -127,6 +203,78 @@ describe('MemoryHelperPage', () => {
       'memory-helper-cell--matched',
     );
     expect(window.localStorage.getItem(MEMORY_HELPER_STORAGE_KEY)).toContain('"canonicalKey":"board"');
+  });
+
+  it('suggests substring item matches and saves the selected suggestion', async () => {
+    const user = userEvent.setup();
+    mockLookup();
+
+    render(<MemoryHelperPage />);
+
+    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
+    await user.type(screen.getByLabelText('Item'), 'beer');
+
+    const option = screen.getByRole('option', { name: /Mug of Beer/ });
+    expect(option).toBeInTheDocument();
+    expect(within(option).getByText('Memory game')).toBeInTheDocument();
+
+    await user.click(within(option).getByRole('button', { name: /Mug of Beer/ }));
+
+    expect(screen.getByRole('button', { name: 'Slot row 1 column 1 Mug of Beer' })).toBeInTheDocument();
+    expect(screen.getByText('Recognized from museum completion canon only; do not infer mastery eligibility.')).toBeInTheDocument();
+    expect(window.localStorage.getItem(MEMORY_HELPER_STORAGE_KEY)).toContain('"canonicalKey":"mug of beer"');
+  });
+
+  it('offers observed memory game items as quick picks', async () => {
+    const user = userEvent.setup();
+    mockLookup();
+
+    render(<MemoryHelperPage />);
+
+    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
+
+    const observedSection = screen.getByRole('heading', { name: 'Observed Items' }).closest('section');
+    expect(observedSection).not.toBeNull();
+    expect(within(observedSection as HTMLElement).getByRole('button', { name: 'Use observed Mug of Beer' })).toBeInTheDocument();
+
+    await user.click(within(observedSection as HTMLElement).getByRole('button', { name: 'Use observed Mug of Beer' }));
+
+    expect(screen.getByRole('button', { name: 'Slot row 1 column 1 Mug of Beer' })).toBeInTheDocument();
+  });
+
+  it('keeps seen-once items out of observed quick picks', async () => {
+    const user = userEvent.setup();
+    mockLookup();
+
+    render(<MemoryHelperPage />);
+
+    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
+    await user.click(screen.getByRole('button', { name: 'Use observed Board' }));
+    await user.click(screen.getByRole('button', { name: 'Slot row 1 column 2 empty' }));
+
+    const seenOnceSection = screen.getByRole('heading', { name: 'Seen Once' }).closest('section');
+    const observedSection = screen.getByRole('heading', { name: 'Observed Items' }).closest('section');
+
+    expect(seenOnceSection).not.toBeNull();
+    expect(observedSection).not.toBeNull();
+    expect(within(seenOnceSection as HTMLElement).getByRole('button', { name: 'Use Board from R1 C1' })).toBeInTheDocument();
+    expect(within(observedSection as HTMLElement).queryByRole('button', { name: 'Use observed Board' })).not.toBeInTheDocument();
+    expect(within(observedSection as HTMLElement).getByRole('button', { name: 'Use observed Mug of Beer' })).toBeInTheDocument();
+  });
+
+  it('focuses the item search input when a slot is selected', async () => {
+    const user = userEvent.setup();
+    mockLookup();
+
+    render(<MemoryHelperPage />);
+
+    await screen.findByRole('heading', { name: 'Memory Helper' });
+    await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
+
+    expect(screen.getByLabelText('Item')).toHaveFocus();
   });
 
   it('supports reset and one-step undo from the page controls', async () => {

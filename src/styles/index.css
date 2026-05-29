@@ -1033,6 +1033,108 @@ a {
   color: var(--color-text-muted);
 }
 
+.memory-helper-seen-once-list,
+.memory-helper-observed-item-list {
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+}
+
+.memory-helper-seen-once-button,
+.memory-helper-observed-item-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.5rem;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.memory-helper-seen-once-button:hover,
+.memory-helper-seen-once-button:focus-visible,
+.memory-helper-observed-item-button:hover,
+.memory-helper-observed-item-button:focus-visible {
+  border-color: var(--color-button-hover-border);
+  background: var(--color-button-active-bg);
+  outline: none;
+}
+
+.memory-helper-picker {
+  position: relative;
+}
+
+.memory-helper-suggestion-list {
+  list-style: none;
+  display: grid;
+  gap: 0.25rem;
+  max-height: 18rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.35rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+}
+
+.memory-helper-suggestion {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.memory-helper-suggestion:hover,
+.memory-helper-suggestion:focus-visible,
+.memory-helper-suggestion--active {
+  border-color: var(--color-button-hover-border);
+  background: var(--color-surface-muted);
+  outline: none;
+}
+
+.memory-helper-suggestion__item {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.memory-helper-suggestion__icon {
+  flex: 0 0 auto;
+  width: 1.75rem;
+  height: 1.75rem;
+  object-fit: contain;
+}
+
+.memory-helper-suggestion__name {
+  overflow-wrap: anywhere;
+  color: var(--color-text-strong);
+  font-weight: 600;
+}
+
+.memory-helper-suggestion__meta {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
 .memory-helper-pair-list {
   display: grid;
   gap: 0.65rem;

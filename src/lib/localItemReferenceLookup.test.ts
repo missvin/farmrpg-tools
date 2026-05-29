@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { parseItemAliasesCsv } from './itemAliases';
 import { parseItemCatalogCsv } from './loadItemCatalog';
+import { parseMuseumCompletionCanonCsv } from './loadMuseumCompletionCanon';
 import { parseMuseumLookupCoverageCsv } from './loadMuseumLookupCoverage';
 import {
   createLocalItemReferenceLookup,
@@ -24,6 +25,10 @@ Farmers Hat,farmers hat,Farmer's Hat,farmer's hat,needs_review,museum_workflow,`
     museumCoverage: parseMuseumLookupCoverageCsv(
       `item_name,canonical_key,museum_category,category,obtainable,generated_buddy_slug,alternate_buddy_slug,planning_reference_status,icon_ready_coverage_status,candidate_review_status,unresolved_case_type,source_workflow,notes
 Mystery Goo,mystery goo,Items,Other,Y,mystery-goo,,museum_only_icon_ready,derived_ready,not_needed,,museum_refresh,`,
+    ),
+    museumCanon: parseMuseumCompletionCanonCsv(
+      `museum_category,category_key,slot_index,item_name,canonical_key,obtainable,review_status,source,notes
+Items,items,543,Mug of Beer,mug of beer,Y,source_parsed,raw sample,`,
     ),
   });
 }
@@ -82,17 +87,44 @@ describe('local item reference lookup', () => {
     expect(result.warnings).toEqual(['Recognized from museum lookup coverage only; do not infer mastery eligibility.']);
   });
 
+  it('recognizes museum canon items without treating them as mastery eligible', () => {
+    const result = resolveLocalItemReference('beer', createLookup());
+
+    expect(result).toMatchObject({
+      canonicalKey: 'beer',
+      displayName: 'beer',
+      recognized: false,
+      recognitionStatus: 'unrecognized',
+    });
+
+    const canonResult = resolveLocalItemReference('Mug of Beer', createLookup());
+
+    expect(canonResult).toMatchObject({
+      canonicalKey: 'mug of beer',
+      displayName: 'Mug of Beer',
+      recognized: true,
+      recognitionStatus: 'museum_canon',
+      masteryPossible: 'unknown',
+      sourceDatasets: ['museum_completion_canon'],
+    });
+    expect(canonResult.warnings).toEqual([
+      'Recognized from museum completion canon only; do not infer mastery eligibility.',
+    ]);
+  });
+
   it('exports only warning and unresolved rows for review', () => {
     const lookup = createLookup();
     const csv = toLocalItemReferenceReviewCsv([
       resolveLocalItemReference('Acorn', lookup),
       resolveLocalItemReference('Mystery Goo', lookup),
+      resolveLocalItemReference('Mug of Beer', lookup),
       resolveLocalItemReference('Farmers Hat', lookup),
     ]);
 
     expect(csv).toContain('observed_item_name');
     expect(csv).not.toContain('Acorn,acorn');
     expect(csv).toContain('Mystery Goo,mystery goo');
+    expect(csv).toContain('Mug of Beer,mug of beer');
     expect(csv).toContain('Farmers Hat,farmers hat');
     expect(csv).toContain('do not infer mastery eligibility');
   });

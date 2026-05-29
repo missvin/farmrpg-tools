@@ -1,13 +1,19 @@
-import { useEffect, useId, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import { getItemIcon } from '../lib/itemIconManifest';
 import {
+  loadMemoryGameAllowedItems,
+  type MemoryGameAllowedItemEntry,
+  type MemoryGameAllowedItemsData,
+} from '../lib/loadMemoryGameAllowedItems';
+import {
   loadLocalItemReferenceLookup,
   resolveLocalItemReference,
   type LocalItemReferenceLookup,
 } from '../lib/localItemReferenceLookup';
+import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 import {
   clearMemoryHelperSlot,
   deriveMemoryHelperBoard,
@@ -26,12 +32,17 @@ type ResourceState = {
   isLoading: boolean;
   error: string | null;
   lookup: LocalItemReferenceLookup | null;
+  memoryGameItems: MemoryGameAllowedItemsData | null;
 };
 
 type ItemOption = {
   canonicalKey: string;
   itemName: string;
   sourceLabel: string;
+};
+
+type SeenOnceItemOption = ItemOption & {
+  slotSummary: string;
 };
 
 function formatSlotPosition(row: number, column: number): string {
@@ -85,13 +96,129 @@ function buildItemOptions(lookup: LocalItemReferenceLookup): ItemOption[] {
     });
   }
 
+  for (const entry of lookup.museumCanon?.entries ?? []) {
+    if (optionsByCanonicalKey.has(entry.canonicalKey)) {
+      continue;
+    }
+
+    optionsByCanonicalKey.set(entry.canonicalKey, {
+      canonicalKey: entry.canonicalKey,
+      itemName: entry.itemName,
+      sourceLabel: 'Museum canon',
+    });
+  }
+
   return [...optionsByCanonicalKey.values()].sort((left, right) => {
     return left.itemName.localeCompare(right.itemName) || left.canonicalKey.localeCompare(right.canonicalKey);
   });
 }
 
+function buildMemoryGameItemOptions(memoryGameItems: MemoryGameAllowedItemsData): ItemOption[] {
+  return [...memoryGameItems.entries]
+    .sort(
+      (left, right) =>
+        right.observedSources.length - left.observedSources.length ||
+        left.itemName.localeCompare(right.itemName) ||
+        left.canonicalKey.localeCompare(right.canonicalKey),
+    )
+    .map((entry) => ({
+      canonicalKey: entry.canonicalKey,
+      itemName: entry.itemName,
+      sourceLabel: 'Memory game',
+    }));
+}
+
+function getMemoryGameItemMeta(entry: MemoryGameAllowedItemEntry | undefined): string {
+  if (!entry) {
+    return 'Memory game';
+  }
+
+  return entry.observedSources.length > 1 ? `${entry.observedSources.length} observations` : 'Memory game';
+}
+
 function getItemIconSrc(canonicalKey: string): string | null {
   return getItemIcon(canonicalKey)?.src ?? null;
+}
+
+function getItemOptionSearchRank(option: ItemOption, rawQuery: string): number | null {
+  const normalizedQuery = rawQuery.trim().toLowerCase();
+  const canonicalQuery = toCanonicalItemKey(rawQuery);
+  const canSearchName = normalizedQuery.length >= 2;
+  const canSearchCanonicalKey = canonicalQuery.length >= 2;
+
+  if (!canSearchName && !canSearchCanonicalKey) {
+    return null;
+  }
+
+  const itemName = option.itemName.toLowerCase();
+
+  if (
+    (canSearchName && itemName === normalizedQuery) ||
+    (canSearchCanonicalKey && option.canonicalKey === canonicalQuery)
+  ) {
+    return 0;
+  }
+
+  if (canSearchName && itemName.startsWith(normalizedQuery)) {
+    return 1;
+  }
+
+  if (canSearchCanonicalKey && option.canonicalKey.startsWith(canonicalQuery)) {
+    return 2;
+  }
+
+  if (canSearchName && itemName.includes(normalizedQuery)) {
+    return 3;
+  }
+
+  if (canSearchCanonicalKey && option.canonicalKey.includes(canonicalQuery)) {
+    return 4;
+  }
+
+  return null;
+}
+
+function rankMatchingItemOptions(itemOptions: ItemOption[], rawQuery: string): ItemOption[] {
+  return itemOptions
+    .map((option) => ({
+      option,
+      rank: getItemOptionSearchRank(option, rawQuery),
+    }))
+    .filter((entry): entry is { option: ItemOption; rank: number } => entry.rank !== null)
+    .sort(
+      (left, right) =>
+        left.rank - right.rank ||
+        left.option.itemName.localeCompare(right.option.itemName) ||
+        left.option.canonicalKey.localeCompare(right.option.canonicalKey),
+    )
+    .slice(0, 8)
+    .map((entry) => entry.option);
+}
+
+function filterItemOptions(
+  itemOptions: ItemOption[],
+  rawQuery: string,
+  priorityItemOptions: ItemOption[],
+): ItemOption[] {
+  const filteredOptionsByCanonicalKey = new Map<string, ItemOption>();
+
+  for (const option of rankMatchingItemOptions(priorityItemOptions, rawQuery)) {
+    if (filteredOptionsByCanonicalKey.has(option.canonicalKey)) {
+      continue;
+    }
+
+    filteredOptionsByCanonicalKey.set(option.canonicalKey, option);
+  }
+
+  for (const option of rankMatchingItemOptions(itemOptions, rawQuery)) {
+    if (filteredOptionsByCanonicalKey.has(option.canonicalKey)) {
+      continue;
+    }
+
+    filteredOptionsByCanonicalKey.set(option.canonicalKey, option);
+  }
+
+  return [...filteredOptionsByCanonicalKey.values()].slice(0, 8);
 }
 
 function MemoryHelperPairRow({
@@ -117,22 +244,25 @@ function MemoryHelperPairRow({
 }
 
 export function MemoryHelperPage() {
-  const itemListId = useId();
+  const itemSuggestionListId = useId();
+  const itemInputRef = useRef<HTMLInputElement | null>(null);
   const [memoryState, setMemoryState] = useState<MemoryHelperState>(() => loadMemoryHelperState());
   const [activeSlotId, setActiveSlotId] = useState<string | null>(null);
   const [itemQuery, setItemQuery] = useState('');
   const [entryWarnings, setEntryWarnings] = useState<string[]>([]);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [resourceState, setResourceState] = useState<ResourceState>({
     isLoading: true,
     error: null,
     lookup: null,
+    memoryGameItems: null,
   });
 
   useEffect(() => {
     let isMounted = true;
 
-    loadLocalItemReferenceLookup()
-      .then((lookup) => {
+    Promise.all([loadLocalItemReferenceLookup(), loadMemoryGameAllowedItems()])
+      .then(([lookup, memoryGameItems]) => {
         if (!isMounted) {
           return;
         }
@@ -141,6 +271,7 @@ export function MemoryHelperPage() {
           isLoading: false,
           error: null,
           lookup,
+          memoryGameItems,
         });
       })
       .catch((error: unknown) => {
@@ -152,6 +283,7 @@ export function MemoryHelperPage() {
           isLoading: false,
           error: error instanceof Error ? error.message : 'Unable to load local item reference data.',
           lookup: null,
+          memoryGameItems: null,
         });
       });
 
@@ -170,12 +302,116 @@ export function MemoryHelperPage() {
     () => (resourceState.lookup ? buildItemOptions(resourceState.lookup) : []),
     [resourceState.lookup],
   );
+  const memoryGameItemOptions = useMemo(
+    () => (resourceState.memoryGameItems ? buildMemoryGameItemOptions(resourceState.memoryGameItems) : []),
+    [resourceState.memoryGameItems],
+  );
+  const memoryGameEntriesByCanonicalKey = resourceState.memoryGameItems?.byCanonicalKey ?? {};
+  const seenOnceItemOptions = useMemo<SeenOnceItemOption[]>(() => {
+    const optionsByCanonicalKey = new Map<string, { itemName: string; canonicalKey: string; slotIds: string[] }>();
+
+    for (const slot of derivation.slots) {
+      if (!slot.item || slot.status !== 'single' || slot.slotId === activeSlotId) {
+        continue;
+      }
+
+      const existingOption = optionsByCanonicalKey.get(slot.item.canonicalKey);
+
+      if (existingOption) {
+        existingOption.slotIds.push(slot.slotId);
+        continue;
+      }
+
+      optionsByCanonicalKey.set(slot.item.canonicalKey, {
+        itemName: slot.item.itemName,
+        canonicalKey: slot.item.canonicalKey,
+        slotIds: [slot.slotId],
+      });
+    }
+
+    return [...optionsByCanonicalKey.values()]
+      .map((option) => {
+        const slotSummary = formatSlotSummary(option.slotIds);
+
+        return {
+          canonicalKey: option.canonicalKey,
+          itemName: option.itemName,
+          sourceLabel: `Seen ${slotSummary}`,
+          slotSummary,
+        };
+      })
+      .sort((left, right) => left.itemName.localeCompare(right.itemName));
+  }, [activeSlotId, derivation.slots]);
+  const seenOnceOptionKeys = useMemo(
+    () => new Set(seenOnceItemOptions.map((option) => option.canonicalKey)),
+    [seenOnceItemOptions],
+  );
+  const filteredItemOptions = useMemo(
+    () => filterItemOptions(itemOptions, itemQuery, [...seenOnceItemOptions, ...memoryGameItemOptions]),
+    [itemOptions, itemQuery, memoryGameItemOptions, seenOnceItemOptions],
+  );
+  const memoryGameQuickPickOptions = useMemo(() => {
+    const activeCanonicalKey = activeSlot?.item?.canonicalKey ?? null;
+    const candidates =
+      itemQuery.trim().length >= 2
+        ? rankMatchingItemOptions(memoryGameItemOptions, itemQuery)
+        : memoryGameItemOptions;
+
+    return candidates
+      .filter((option) => option.canonicalKey !== activeCanonicalKey && !seenOnceOptionKeys.has(option.canonicalKey))
+      .slice(0, 12);
+  }, [activeSlot?.item?.canonicalKey, itemQuery, memoryGameItemOptions, seenOnceOptionKeys]);
+  const memoryGameOptionKeys = useMemo(
+    () => new Set(memoryGameItemOptions.map((option) => option.canonicalKey)),
+    [memoryGameItemOptions],
+  );
+  const shouldShowItemSuggestions = Boolean(activeSlot) && itemQuery.trim().length >= 2 && !resourceState.isLoading;
+  const activeSuggestionId =
+    shouldShowItemSuggestions && activeSuggestionIndex >= 0 && filteredItemOptions[activeSuggestionIndex]
+      ? `${itemSuggestionListId}-option-${activeSuggestionIndex}`
+      : undefined;
+
+  useEffect(() => {
+    setActiveSuggestionIndex(filteredItemOptions.length > 0 ? 0 : -1);
+  }, [filteredItemOptions.length, itemQuery]);
+
+  useEffect(() => {
+    if (!activeSlotId || !itemInputRef.current) {
+      return;
+    }
+
+    itemInputRef.current.focus();
+    itemInputRef.current.select();
+  }, [activeSlotId]);
 
   function handleActivateSlot(slotId: string): void {
     const slot = memoryState.slots.find((entry) => entry.slotId === slotId);
     setActiveSlotId(slotId);
     setItemQuery(slot?.item?.itemName ?? '');
     setEntryWarnings([]);
+  }
+
+  function saveItemToActiveSlot(inputName: string): void {
+    if (!activeSlotId) {
+      return;
+    }
+
+    if (!resourceState.lookup) {
+      setEntryWarnings(['Local item reference data is not loaded yet.']);
+      return;
+    }
+
+    const result = resolveLocalItemReference(inputName, resourceState.lookup);
+    setMemoryState((currentState) =>
+      setMemoryHelperSlotItem(currentState, {
+        slotId: activeSlotId,
+        itemName: result.displayName,
+        canonicalKey: result.canonicalKey,
+      }),
+    );
+    setActiveSlotId(null);
+    setItemQuery('');
+    setEntryWarnings(result.warnings);
   }
 
   function handleSubmitSlot(event: FormEvent<HTMLFormElement>): void {
@@ -194,22 +430,50 @@ export function MemoryHelperPage() {
       return;
     }
 
-    if (!resourceState.lookup) {
-      setEntryWarnings(['Local item reference data is not loaded yet.']);
+    saveItemToActiveSlot(trimmedQuery);
+  }
+
+  function handleItemQueryChange(value: string): void {
+    setItemQuery(value);
+    setEntryWarnings([]);
+  }
+
+  function handleSelectItemOption(option: ItemOption): void {
+    saveItemToActiveSlot(option.itemName);
+  }
+
+  function handleItemInputKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
+    if (event.key === 'Escape') {
+      setActiveSuggestionIndex(-1);
       return;
     }
 
-    const result = resolveLocalItemReference(trimmedQuery, resourceState.lookup);
-    setMemoryState((currentState) =>
-      setMemoryHelperSlotItem(currentState, {
-        slotId: activeSlotId,
-        itemName: result.displayName,
-        canonicalKey: result.canonicalKey,
-      }),
-    );
-    setActiveSlotId(null);
-    setItemQuery('');
-    setEntryWarnings(result.warnings);
+    if (!shouldShowItemSuggestions || filteredItemOptions.length === 0) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setActiveSuggestionIndex((currentIndex) =>
+        currentIndex < 0 ? 0 : (currentIndex + 1) % filteredItemOptions.length,
+      );
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActiveSuggestionIndex((currentIndex) =>
+        currentIndex < 0
+          ? filteredItemOptions.length - 1
+          : (currentIndex - 1 + filteredItemOptions.length) % filteredItemOptions.length,
+      );
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSelectItemOption(filteredItemOptions[activeSuggestionIndex] ?? filteredItemOptions[0]);
+    }
   }
 
   function handleClearActiveSlot(): void {
@@ -232,6 +496,7 @@ export function MemoryHelperPage() {
     setActiveSlotId(null);
     setItemQuery('');
     setEntryWarnings([]);
+    setActiveSuggestionIndex(-1);
   }
 
   function handleReset(): void {
@@ -239,6 +504,7 @@ export function MemoryHelperPage() {
     setActiveSlotId(null);
     setItemQuery('');
     setEntryWarnings([]);
+    setActiveSuggestionIndex(-1);
   }
 
   return (
@@ -350,27 +616,162 @@ export function MemoryHelperPage() {
                   {formatSlotPosition(activeSlot.row, activeSlot.column)}
                   {activeSlot.item ? ` currently shows ${activeSlot.item.itemName}.` : ' is empty.'}
                 </p>
-                <label className="page-stack page-stack--tight" htmlFor="memory-helper-item">
-                  Item
+                {seenOnceItemOptions.length > 0 ? (
+                  <section className="memory-helper-seen-once page-stack page-stack--tight" aria-labelledby="memory-helper-seen-once-title">
+                    <h3 id="memory-helper-seen-once-title" className="section-title">
+                      Seen Once
+                    </h3>
+                    <ul className="memory-helper-seen-once-list">
+                      {seenOnceItemOptions.map((option) => {
+                        const iconSrc = getItemIconSrc(option.canonicalKey);
+
+                        return (
+                          <li key={option.canonicalKey}>
+                            <button
+                              className="memory-helper-seen-once-button"
+                              type="button"
+                              aria-label={`Use ${option.itemName} from ${option.slotSummary}`}
+                              onClick={() => handleSelectItemOption(option)}
+                            >
+                              <span className="memory-helper-suggestion__item">
+                                {iconSrc ? (
+                                  <img
+                                    className="memory-helper-suggestion__icon"
+                                    src={iconSrc}
+                                    alt=""
+                                    aria-hidden="true"
+                                    loading="lazy"
+                                  />
+                                ) : null}
+                                <span className="memory-helper-suggestion__name">{option.itemName}</span>
+                              </span>
+                              <span className="memory-helper-suggestion__meta">{option.slotSummary}</span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </section>
+                ) : null}
+                {memoryGameQuickPickOptions.length > 0 ? (
+                  <section
+                    className="memory-helper-observed-items page-stack page-stack--tight"
+                    aria-labelledby="memory-helper-observed-items-title"
+                  >
+                    <h3 id="memory-helper-observed-items-title" className="section-title">
+                      Observed Items
+                    </h3>
+                    <ul className="memory-helper-observed-item-list">
+                      {memoryGameQuickPickOptions.map((option) => {
+                        const iconSrc = getItemIconSrc(option.canonicalKey);
+                        const memoryGameEntry = memoryGameEntriesByCanonicalKey[option.canonicalKey];
+
+                        return (
+                          <li key={option.canonicalKey}>
+                            <button
+                              className="memory-helper-observed-item-button"
+                              type="button"
+                              aria-label={`Use observed ${option.itemName}`}
+                              onClick={() => handleSelectItemOption(option)}
+                            >
+                              <span className="memory-helper-suggestion__item">
+                                {iconSrc ? (
+                                  <img
+                                    className="memory-helper-suggestion__icon"
+                                    src={iconSrc}
+                                    alt=""
+                                    aria-hidden="true"
+                                    loading="lazy"
+                                  />
+                                ) : null}
+                                <span className="memory-helper-suggestion__name">{option.itemName}</span>
+                              </span>
+                              <span className="memory-helper-suggestion__meta">
+                                {getMemoryGameItemMeta(memoryGameEntry)}
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </section>
+                ) : null}
+                <div className="page-stack page-stack--tight memory-helper-picker">
+                  <label className="field-label" htmlFor="memory-helper-item">
+                    Item
+                  </label>
                   <input
                     id="memory-helper-item"
+                    ref={itemInputRef}
                     className="text-input"
                     type="text"
-                    list={itemListId}
                     value={itemQuery}
-                    onChange={(event) => setItemQuery(event.target.value)}
+                    onChange={(event) => handleItemQueryChange(event.target.value)}
+                    onKeyDown={handleItemInputKeyDown}
                     placeholder="Search item name"
                     autoComplete="off"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-controls={shouldShowItemSuggestions ? itemSuggestionListId : undefined}
+                    aria-expanded={shouldShowItemSuggestions}
+                    aria-activedescendant={activeSuggestionId}
                     disabled={resourceState.isLoading}
                   />
-                </label>
-                <datalist id={itemListId}>
-                  {itemOptions.map((option) => (
-                    <option key={option.canonicalKey} value={option.itemName}>
-                      {option.sourceLabel}
-                    </option>
-                  ))}
-                </datalist>
+                  {shouldShowItemSuggestions ? (
+                    filteredItemOptions.length > 0 ? (
+                      <ul
+                        id={itemSuggestionListId}
+                        className="memory-helper-suggestion-list"
+                        role="listbox"
+                        aria-label="Matching items"
+                      >
+                        {filteredItemOptions.map((option, optionIndex) => {
+                          const iconSrc = getItemIconSrc(option.canonicalKey);
+                          const isActiveSuggestion = optionIndex === activeSuggestionIndex;
+
+                          return (
+                            <li
+                              key={option.canonicalKey}
+                              id={`${itemSuggestionListId}-option-${optionIndex}`}
+                              role="option"
+                              aria-selected={isActiveSuggestion}
+                            >
+                              <button
+                                className={`memory-helper-suggestion${
+                                  isActiveSuggestion ? ' memory-helper-suggestion--active' : ''
+                                }`}
+                                type="button"
+                                onClick={() => handleSelectItemOption(option)}
+                              >
+                                <span className="memory-helper-suggestion__item">
+                                  {iconSrc ? (
+                                    <img
+                                      className="memory-helper-suggestion__icon"
+                                      src={iconSrc}
+                                      alt=""
+                                      aria-hidden="true"
+                                      loading="lazy"
+                                    />
+                                  ) : null}
+                                  <span className="memory-helper-suggestion__name">{option.itemName}</span>
+                                </span>
+                                <span className="memory-helper-suggestion__meta">
+                                  {option.sourceLabel.startsWith('Seen ')
+                                    ? option.sourceLabel
+                                    : memoryGameOptionKeys.has(option.canonicalKey)
+                                      ? 'Memory game'
+                                      : option.sourceLabel}
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <p className="empty-state">No local item matches. Saving will keep the typed name.</p>
+                    )
+                  ) : null}
+                </div>
                 <div className="inline-control-row">
                   <button className="button" type="submit" disabled={resourceState.isLoading}>
                     Save Slot
