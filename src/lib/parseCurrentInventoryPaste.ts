@@ -23,8 +23,14 @@ export type ParseCurrentInventoryPasteResult = {
 };
 
 function parseCount(value: string): number | null {
-  const parsedValue = Number(value.trim().replace(/,/g, ''));
-  return Number.isFinite(parsedValue) && parsedValue >= 0 ? parsedValue : null;
+  const trimmedValue = value.trim();
+
+  if (!/^(?:\d+|\d{1,3}(?:,\d{3})+)$/u.test(trimmedValue)) {
+    return null;
+  }
+
+  const parsedValue = Number(trimmedValue.replace(/,/g, ''));
+  return Number.isInteger(parsedValue) && parsedValue >= 0 ? parsedValue : null;
 }
 
 function isCountLine(value: string): boolean {
@@ -104,6 +110,14 @@ function parseCompactLine(line: string): { itemName: string; inventoryCount: num
   return null;
 }
 
+function isInventoryCategoryLine(line: string): boolean {
+  return /^(?:Meals|Items|Seeds|Loot & Treasure|Runestones|Books|Cards|Super Rares)\s+chevron_down$/iu.test(line);
+}
+
+function isInventoryStopLine(line: string): boolean {
+  return /^(?:Inventory Stats|Consume a meal|Close Panel)$/iu.test(line);
+}
+
 function addEntry(
   entriesByCanonicalKey: Map<string, CurrentInventoryEntry>,
   warnings: string[],
@@ -149,6 +163,67 @@ export function parseCurrentInventoryPaste(
   const lines = rawText.split(/\r?\n/);
   const warnings: string[] = [];
   const entriesByCanonicalKey = new Map<string, CurrentInventoryEntry>();
+
+  if (lines.some((line) => isInventoryCategoryLine(line.trim()))) {
+    let insideInventory = false;
+    let pendingItem: { itemName: string; lineNumber: number } | null = null;
+
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+
+      if (!trimmedLine) {
+        return;
+      }
+
+      if (isInventoryCategoryLine(trimmedLine)) {
+        insideInventory = true;
+        pendingItem = null;
+        return;
+      }
+
+      if (!insideInventory) {
+        return;
+      }
+
+      if (isInventoryStopLine(trimmedLine)) {
+        insideInventory = false;
+        pendingItem = null;
+        return;
+      }
+
+      const inventoryCount = parseCount(trimmedLine);
+
+      if (inventoryCount !== null) {
+        if (pendingItem) {
+          addEntry(
+            entriesByCanonicalKey,
+            warnings,
+            { itemName: pendingItem.itemName, inventoryCount },
+            pendingItem.lineNumber,
+            options,
+          );
+          pendingItem = null;
+        }
+
+        return;
+      }
+
+      if (!pendingItem) {
+        pendingItem = {
+          itemName: trimmedLine,
+          lineNumber: index + 1,
+        };
+      }
+    });
+
+    return {
+      entries: Array.from(entriesByCanonicalKey.values()).sort((left, right) => {
+        return left.itemName.localeCompare(right.itemName) || left.canonicalItemKey.localeCompare(right.canonicalItemKey);
+      }),
+      warnings,
+    };
+  }
+
   const consumedLineIndexes = new Set<number>();
   let alternatingPairCount = 0;
 

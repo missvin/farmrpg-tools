@@ -4,8 +4,11 @@ import { parseCurrentInventoryPaste, type CurrentInventoryResolvedItem } from '.
 
 function resolveKnownItem(itemName: string): CurrentInventoryResolvedItem {
   const knownItems: Record<string, string> = {
+    'board': 'Board',
+    'bone broth': 'Bone Broth',
     'frost snapper shell': 'Frost Snapper Shell',
     'large net': 'Large Net',
+    'mushroom stew': 'Mushroom Stew',
     'strange ring': 'Strange Ring',
   };
   const canonicalItemKey = itemName.trim().toLowerCase();
@@ -101,5 +104,75 @@ describe('parseCurrentInventoryPaste', () => {
         'Line 1: No local item reference coverage found; keep this visible as a review candidate.',
       ],
     });
+  });
+
+  it('parses the FarmRPG inventory page section without importing page chrome or the meal panel', () => {
+    const result = parseCurrentInventoryPaste(
+      [
+        'Farm RPG',
+        'Back',
+        'My Inventory',
+        'Favorite Library Pages',
+        'Farming',
+        'Level 99',
+        'Currently, you cannot have more than 25,840 of any single thing.',
+        'Sort Options:',
+        'Item Name, Quantity (ASC), Quantity (DESC)',
+        'Meals chevron_down',
+        'Bone Broth',
+        'Reduces exploring effectiveness timer by 5 minutes',
+        '1,775',
+        'Mushroom Stew',
+        'Increases exploring item find rate',
+        'Mastered',
+        '1,075',
+        'Items chevron_down',
+        'Board',
+        'Used for crafting',
+        'MAX ON HAND',
+        '25,840',
+        "Thomas's Red Velvet Cake",
+        'A new event reward that is not in local reference data yet.',
+        '1',
+        'Inventory Stats',
+        'Your inventory contains 1,218 unique items and 8,525,763 items in total.',
+        'Consume a meal',
+        '566',
+        'Cabbage Stew',
+        '1,075',
+        'Mushroom Stew',
+        'Close Panel',
+      ].join('\n'),
+      {
+        resolveItem: resolveKnownItem,
+      },
+    );
+
+    expect(result.entries).toEqual([
+      {
+        canonicalItemKey: 'board',
+        itemName: 'Board',
+        inventoryCount: 25840,
+      },
+      {
+        canonicalItemKey: 'bone broth',
+        itemName: 'Bone Broth',
+        inventoryCount: 1775,
+      },
+      {
+        canonicalItemKey: 'mushroom stew',
+        itemName: 'Mushroom Stew',
+        inventoryCount: 1075,
+      },
+      {
+        canonicalItemKey: "thomas's red velvet cake",
+        itemName: "Thomas's Red Velvet Cake",
+        inventoryCount: 1,
+      },
+    ]);
+    expect(result.warnings).toEqual([
+      'Line 23 item "Thomas\'s Red Velvet Cake" was not found in local reference data and was kept as entered.',
+      'Line 23: No local item reference coverage found; keep this visible as a review candidate.',
+    ]);
   });
 });
