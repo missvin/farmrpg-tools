@@ -31,6 +31,14 @@ const DEFAULT_EXCLUDED_RECIPE_RULES: PlanningRecipePolicyRule[] = [
     notes:
       'Keep the canonical recipe in reference data, but exclude Magna Core from default planning expansion so recursive burden treats it as a leaf demand unless the planner explicitly opts back in.',
   },
+  {
+    outputCanonicalKey: 'sand',
+    policyKey: 'dominated_recipe',
+    defaultBehavior: 'exclude',
+    reason: 'Sand is technically craftable in canonical data, but practical planning should treat Judland Desert searching as the normal source.',
+    notes:
+      'Keep the canonical recipe in reference data, but exclude Sand from default planning expansion so target and quest plans do not recommend crafting it as a normal acquisition path.',
+  },
 ];
 
 export function getCraftingPlanningPolicy(

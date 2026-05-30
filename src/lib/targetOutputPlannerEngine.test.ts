@@ -9,6 +9,7 @@ const RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_bo
 Board,board,craft,,,,,https://buddy.farm/i/board/
 Fancy Pipe,fancy pipe,craft,,,,,https://buddy.farm/i/fancy-pipe/
 Wooden Shield,wooden shield,craft,,,,,https://buddy.farm/i/wooden-shield/
+Sand,sand,craft,,,,,https://buddy.farm/i/sand/
 Quandary Chowder,quandary chowder,cooking,Jill's Quandary Chowder,jill's quandary chowder,25,4h,https://buddy.farm/i/quandary-chowder/`;
 
 const RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
@@ -16,6 +17,7 @@ board,Board,1,Wood,wood,5
 fancy pipe,Fancy Pipe,1,Board,board,2
 fancy pipe,Fancy Pipe,2,Iron,iron,1
 wooden shield,Wooden Shield,1,Board,board,3
+sand,Sand,1,Glass Bottle,glass bottle,1
 quandary chowder,Quandary Chowder,1,Coal,coal,240`;
 
 function createRecipeGraph() {
@@ -136,5 +138,29 @@ describe('buildTargetOutputPlannerResult', () => {
       unresolvedReason: 'cooking_recipe_not_expanded',
     });
     expect(result.rowsByCanonicalKey.coal).toBeUndefined();
+  });
+
+  it('keeps excluded craft recipes like Sand as leaf demand by default', () => {
+    const result = buildTargetOutputPlannerResult({
+      goals: [
+        {
+          itemName: 'Sand',
+          canonicalKey: 'sand',
+          desiredQuantity: 10,
+        },
+      ],
+      recipeGraph: createRecipeGraph(),
+      modifierState: createDefaultCraftingModifierState(),
+      supplyPool: createSupplyPool({}),
+    });
+
+    expect(result.rowsByCanonicalKey.sand).toMatchObject({
+      grossRequiredQuantity: 10,
+      remainingQuantity: 10,
+      recipeType: 'craft',
+      requiredCraftOperations: 0,
+      unresolvedReason: 'excluded_recipe',
+    });
+    expect(result.rowsByCanonicalKey['glass bottle']).toBeUndefined();
   });
 });
