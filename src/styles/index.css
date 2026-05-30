@@ -1083,6 +1083,7 @@ a {
 }
 
 .memory-helper-cell {
+  position: relative;
   min-width: 0;
   aspect-ratio: 1 / 1;
   display: grid;
@@ -1110,6 +1111,7 @@ a {
 .memory-helper-cell--detected {
   border-color: #0f766e;
   background: color-mix(in srgb, var(--color-surface) 82%, #5eead4);
+  box-shadow: inset 0 0 0 1px #0f766e;
 }
 
 .memory-helper-cell--matched {
@@ -1166,6 +1168,10 @@ a {
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+.memory-helper-observed-item-button {
+  min-height: 3.25rem;
 }
 
 .memory-helper-seen-once-button:hover,
@@ -1996,15 +2002,84 @@ a {
 
   .memory-helper-board {
     grid-template-columns: repeat(6, minmax(2.85rem, 1fr));
-    gap: 0.35rem;
+    gap: 0.3rem;
   }
 
   .memory-helper-cell {
-    padding: 0.3rem;
+    grid-template-rows: 1fr;
+    min-height: 2.85rem;
+    padding: 0.2rem;
   }
 
-  .memory-helper-cell__item {
-    font-size: 0.72rem;
+  .memory-helper-cell__position {
+    font-size: 0.65rem;
+  }
+
+  .memory-helper-cell--has-item .memory-helper-cell__position,
+  .memory-helper-cell__item,
+  .memory-helper-cell__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .memory-helper-cell__icon {
+    width: min(8.5vw, 2.85rem);
+    height: min(8.5vw, 2.85rem);
+  }
+
+  .memory-helper-cell--detected {
+    box-shadow:
+      inset 0 0 0 2px #0f766e,
+      0 0 0 1px color-mix(in srgb, #0f766e 65%, transparent);
+  }
+
+  .memory-helper-cell--active {
+    box-shadow: inset 0 0 0 2px var(--color-button-active-border);
+  }
+
+  .memory-helper-cell--matched {
+    opacity: 0.78;
+  }
+
+  .memory-helper-observed-item-list {
+    grid-template-columns: repeat(auto-fill, minmax(3.4rem, 1fr));
+    gap: 0.4rem;
+  }
+
+  .memory-helper-observed-item-button {
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    justify-content: center;
+    padding: 0.35rem;
+  }
+
+  .memory-helper-observed-item-button .memory-helper-suggestion__item {
+    justify-content: center;
+  }
+
+  .memory-helper-observed-item-button .memory-helper-suggestion__icon {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  .memory-helper-observed-item-button .memory-helper-suggestion__name,
+  .memory-helper-observed-item-button .memory-helper-suggestion__meta {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .memory-helper-pair {

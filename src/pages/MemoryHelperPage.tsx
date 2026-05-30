@@ -593,6 +593,7 @@ export function MemoryHelperPage() {
                   className={[
                     'memory-helper-cell',
                     `memory-helper-cell--${slot.status}`,
+                    slot.item ? 'memory-helper-cell--has-item' : 'memory-helper-cell--empty',
                     isActive ? 'memory-helper-cell--active' : '',
                   ]
                     .filter(Boolean)
@@ -765,6 +766,7 @@ export function MemoryHelperPage() {
                               className="memory-helper-observed-item-button"
                               type="button"
                               aria-label={`Use observed ${option.itemName}`}
+                              title={option.itemName}
                               onClick={() => handleSelectItemOption(option)}
                             >
                               <span className="memory-helper-suggestion__item">
