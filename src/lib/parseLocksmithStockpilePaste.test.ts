@@ -8,7 +8,11 @@ import {
 const options: ParseLocksmithStockpilePasteOptions = {
   resolveItem: (itemName) => {
     const knownItems: Record<string, string> = {
+      'birthday surprise box 05': 'Birthday Surprise Box 05',
+      'grab bag 01': 'Grab Bag 01',
       'large chest': 'Large Chest',
+      'large chest 01': 'Large Chest 01',
+      'pot of gold (large)': 'Pot of Gold (Large)',
       'small chest': 'Small Chest',
     };
     const canonicalItemKey = itemName.trim().toLowerCase();
@@ -44,6 +48,58 @@ describe('parseLocksmithStockpilePaste', () => {
         },
       ],
       warnings: ['Line 3 could not be parsed. Use "Item Name, Count" or paste alternating count/item lines.'],
+    });
+  });
+
+  it('parses full Locksmith page rows without importing page chrome', () => {
+    expect(
+      parseLocksmithStockpilePaste(
+        [
+          'Town',
+          'Locksmith',
+          '228,742',
+          'Community Center',
+          'Favorite Items',
+          'heart_fill Grab Bag 01 (5,196)',
+          'Random selection of early resources',
+          'heart_fill Large Chest 01 (1,115)',
+          'Requires:',
+          '25,840 / 1 Treasure Key',
+          'Items you can open',
+          'heart_fill Birthday Surprise Box 05 (1)',
+          'heart_fill Birthday Surprise Box 05 (1)',
+          'Open to receive a random Starter Pack from the past',
+          'heart_fill Pot of Gold (Large) (3)',
+          'Consume a meal',
+          '565',
+          'Cabbage Stew',
+        ].join('\n'),
+        options,
+      ),
+    ).toEqual({
+      entries: [
+        {
+          canonicalItemKey: 'birthday surprise box 05',
+          itemName: 'Birthday Surprise Box 05',
+          ownedCount: 1,
+        },
+        {
+          canonicalItemKey: 'grab bag 01',
+          itemName: 'Grab Bag 01',
+          ownedCount: 5196,
+        },
+        {
+          canonicalItemKey: 'large chest 01',
+          itemName: 'Large Chest 01',
+          ownedCount: 1115,
+        },
+        {
+          canonicalItemKey: 'pot of gold (large)',
+          itemName: 'Pot of Gold (Large)',
+          ownedCount: 3,
+        },
+      ],
+      warnings: [],
     });
   });
 
