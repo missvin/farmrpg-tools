@@ -2,6 +2,9 @@ import { lazy, type ReactElement } from 'react';
 
 import { DashboardPage } from '../pages/DashboardPage';
 import { ImportPage } from '../pages/ImportPage';
+import { ImportInventoryPage } from '../pages/ImportInventoryPage';
+import { ImportPetItemsPage } from '../pages/ImportPetItemsPage';
+import { LocksmithImportPage } from '../pages/LocksmithImportPage';
 
 const ImportHelpPage = lazy(() =>
   import('../pages/ImportHelpPage').then((module) => ({ default: module.ImportHelpPage })),
@@ -75,8 +78,23 @@ export const appRoutes: AppRoute[] = [
   },
   {
     path: '/import',
-    label: 'Import',
+    label: 'Import Mastery',
     element: <ImportPage />,
+  },
+  {
+    path: '/import-inventory',
+    label: 'Import Inventory',
+    element: <ImportInventoryPage />,
+  },
+  {
+    path: '/import-pet-items',
+    label: 'Import Pet Items',
+    element: <ImportPetItemsPage />,
+  },
+  {
+    path: '/import-locksmith',
+    label: 'Locksmith Import',
+    element: <LocksmithImportPage />,
   },
   {
     path: '/import-help',
@@ -150,7 +168,7 @@ export const appRoutes: AppRoute[] = [
   },
   {
     path: '/tower-progress',
-    label: 'Tower Progress',
+    label: 'Tower Items by Difficulty',
     element: <TowerProgressPage />,
   },
   {
@@ -183,25 +201,38 @@ export const navigationSections: NavigationSection[] = [
       { to: '/ingredient-demand', label: 'Ingredient Lookup' },
       { to: '/ingredient-demand-list', label: 'Material Planner' },
       { to: '/mastery-goals', label: 'Mastery Goals' },
-      { to: '/memory-helper', label: "Borgen's Lost and Found" },
       { to: '/quest-planner', label: 'Quest Planner' },
       { to: '/target-planner', label: 'Target Planner' },
       { to: '/acquisition-breakdown', label: 'Acquisition Breakdown' },
     ],
   },
   {
+    title: 'Import',
+    items: [
+      { to: '/import', label: 'Import Mastery' },
+      { to: '/import-inventory', label: 'Import Inventory' },
+      { to: '/import-pet-items', label: 'Import Pet Items' },
+      { to: '/import-locksmith', label: 'Locksmith Import' },
+    ],
+  },
+  {
     title: 'Progress',
     items: [
-      { to: '/tower-progress', label: 'Tower Progress' },
-      { to: '/museum-completion', label: 'Museum Completion' },
+      { to: '/tower-progress', label: 'Tower Items by Difficulty' },
       { to: '/sorted', label: 'Sorted' },
       { to: '/tower', label: 'Tower' },
     ],
   },
   {
+    title: 'Other',
+    items: [
+      { to: '/memory-helper', label: "Borgen's Lost and Found" },
+      { to: '/museum-completion', label: 'Museum Completion' },
+    ],
+  },
+  {
     title: 'Data',
     items: [
-      { to: '/import', label: 'Import' },
       { to: '/history', label: 'History' },
       { to: '/compare', label: 'Compare' },
       { to: '/settings', label: 'Settings' },

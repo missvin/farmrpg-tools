@@ -247,7 +247,7 @@ export function TowerProgressPage() {
   return (
     <div className="page-stack">
       <PageIntro
-        title="Tower Progress"
+        title="Tower Items by Difficulty"
         description="See the unique Tower items still left to GM or MM from your latest saved snapshot, using each item's highest required target."
         storageKey="tower-progress"
       />

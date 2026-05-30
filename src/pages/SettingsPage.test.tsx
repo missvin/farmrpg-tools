@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   ACQUISITION_PLANNER_STATE_STORAGE_KEY,
@@ -302,10 +302,14 @@ describe('SettingsPage', () => {
 
     render(<SettingsPage />);
 
-    await user.type(screen.getByLabelText('Inventory item name'), 'Frost Snapper Shell');
-    await user.clear(screen.getByLabelText('Inventory quantity'));
-    await user.type(screen.getByLabelText('Inventory quantity'), '5614');
-    await user.click(screen.getByRole('button', { name: 'Save Inventory Item' }));
+    await user.click(screen.getByText('Current Inventory'));
+    const currentInventoryPanel = screen.getByText('Current Inventory').closest('details');
+    expect(currentInventoryPanel).not.toBeNull();
+
+    await user.type(within(currentInventoryPanel as HTMLElement).getByLabelText('Inventory item name'), 'Frost Snapper Shell');
+    await user.clear(within(currentInventoryPanel as HTMLElement).getByLabelText('Inventory quantity'));
+    await user.type(within(currentInventoryPanel as HTMLElement).getByLabelText('Inventory quantity'), '5614');
+    await user.click(within(currentInventoryPanel as HTMLElement).getByRole('button', { name: 'Save Inventory Item' }));
 
     expect(await screen.findByText('Frost Snapper Shell')).toBeInTheDocument();
     expect(loadAcquisitionPlannerInputState().inventory.entries).toEqual([
@@ -318,12 +322,12 @@ describe('SettingsPage', () => {
     expect(loadAcquisitionPlannerInputState().ownedNow.entries).toEqual([]);
     expect(loadAcquisitionPlannerInputState().pets.storedInventoryEntries).toEqual([]);
 
-    await user.clear(screen.getByLabelText('Paste current inventory'));
+    await user.clear(within(currentInventoryPanel as HTMLElement).getByLabelText('Paste current inventory'));
     await user.type(
-      screen.getByLabelText('Paste current inventory'),
+      within(currentInventoryPanel as HTMLElement).getByLabelText('Paste current inventory'),
       '1,000{enter}Strange Ring{enter}5,614{enter}Frost Snapper Shell{enter}3{enter}Mystery Relic',
     );
-    await user.click(screen.getByRole('button', { name: 'Import Current Inventory' }));
+    await user.click(within(currentInventoryPanel as HTMLElement).getByRole('button', { name: 'Import Current Inventory' }));
 
     expect(await screen.findByText('Imported 3 current inventory entries.')).toBeInTheDocument();
     expect(screen.getByText('Line 5 item "Mystery Relic" was not found in local reference data and was kept as entered.')).toBeInTheDocument();
@@ -366,10 +370,14 @@ describe('SettingsPage', () => {
 
     render(<SettingsPage />);
 
-    await user.type(screen.getByLabelText('Pet item name'), 'Honey');
-    await user.clear(screen.getByLabelText('Stored quantity'));
-    await user.type(screen.getByLabelText('Stored quantity'), '12');
-    await user.click(screen.getByRole('button', { name: 'Save Stored Pet Item' }));
+    await user.click(screen.getByText('Stored Pet Items'));
+    const storedPetPanel = screen.getByText('Stored Pet Items').closest('details');
+    expect(storedPetPanel).not.toBeNull();
+
+    await user.type(within(storedPetPanel as HTMLElement).getByLabelText('Pet item name'), 'Honey');
+    await user.clear(within(storedPetPanel as HTMLElement).getByLabelText('Stored quantity'));
+    await user.type(within(storedPetPanel as HTMLElement).getByLabelText('Stored quantity'), '12');
+    await user.click(within(storedPetPanel as HTMLElement).getByRole('button', { name: 'Save Stored Pet Item' }));
 
     expect(await screen.findByText('Honey')).toBeInTheDocument();
     expect(loadAcquisitionPlannerInputState().pets.storedInventoryEntries).toEqual([
@@ -381,12 +389,12 @@ describe('SettingsPage', () => {
     ]);
     expect(loadAcquisitionPlannerInputState().ownedNow.entries).toEqual([]);
 
-    await user.clear(screen.getByLabelText('Paste pet inventory'));
+    await user.clear(within(storedPetPanel as HTMLElement).getByLabelText('Paste pet inventory'));
     await user.type(
-      screen.getByLabelText('Paste pet inventory'),
+      within(storedPetPanel as HTMLElement).getByLabelText('Paste pet inventory'),
       'Honey{enter}From Bear{enter}22,528 currently in Inventory{enter}Found 601{enter}Honey{enter}From Owl{enter}22,528 currently in Inventory{enter}Found 4,706{enter}Mystery Relic{enter}From Test Pet{enter}0 currently in Inventory{enter}Found 7',
     );
-    await user.click(screen.getByRole('button', { name: 'Import Stored Pet Inventory' }));
+    await user.click(within(storedPetPanel as HTMLElement).getByRole('button', { name: 'Import Stored Pet Inventory' }));
 
     expect(await screen.findByText('Imported 2 stored pet inventory entries.')).toBeInTheDocument();
     expect(screen.getByText('Line 9 item "Mystery Relic" was not found in local reference data and was kept as entered.')).toBeInTheDocument();

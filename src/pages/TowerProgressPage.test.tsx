@@ -186,7 +186,7 @@ describe('TowerProgressPage', () => {
     renderTowerProgressPage();
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'Tower Progress' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Tower Items by Difficulty' })).toBeInTheDocument();
     });
 
     expect(screen.getByText('Items left to GM')).toBeInTheDocument();
@@ -314,7 +314,7 @@ describe('TowerProgressPage', () => {
     renderTowerProgressPage();
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'Tower Progress' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Tower Items by Difficulty' })).toBeInTheDocument();
     });
 
     const summarySection = screen.getByRole('heading', { name: 'Progress Summary' }).closest('section');

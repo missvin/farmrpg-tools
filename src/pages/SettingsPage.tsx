@@ -1,23 +1,19 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
 
+import {
+  CurrentInventoryImportPanel,
+  StoredPetInventoryImportPanel,
+} from '../components/InventoryImportPanels';
 import { PageIntro } from '../components/PageIntro';
 import {
-  getCurrentInventoryItemInputs,
   getFuturePetProductionEntries,
   getOwnedNowItemInputs,
-  getStoredPetInventoryItemInputs,
   loadAcquisitionPlannerInputState,
-  removeCurrentInventoryItemInput,
   removeFuturePetProductionEntryInput,
-  removeStoredPetInventoryItemInput,
-  replaceCurrentInventoryEntries,
-  replaceStoredPetInventoryEntries,
   removeOwnedNowItemInput,
   saveAcquisitionPlannerInputState,
-  upsertCurrentInventoryItemInput,
   upsertFuturePetProductionEntryInput,
   upsertOwnedNowItemInput,
-  upsertStoredPetInventoryItemInput,
   type AcquisitionOwnedNowSourceCategory,
 } from '../lib/acquisitionPlannerState';
 import { exportCurrentAppBackupFile } from '../lib/appBackupExport';
@@ -39,13 +35,7 @@ import {
   loadPetSourceReference,
   type PetSourceReferenceData,
 } from '../lib/loadPetSourceReference';
-import {
-  loadLocalItemReferenceLookup,
-  resolveLocalItemReference,
-  type LocalItemReferenceLookup,
-} from '../lib/localItemReferenceLookup';
-import { parseCurrentInventoryPaste } from '../lib/parseCurrentInventoryPaste';
-import { parseStoredPetInventoryPaste } from '../lib/parseStoredPetInventoryPaste';
+import { useImportReferenceLookup } from '../lib/useImportReferenceLookup';
 
 function formatForecastQuantity(value: number): string {
   return Number.isInteger(value)
@@ -67,18 +57,6 @@ export function SettingsPage() {
     useState<AcquisitionOwnedNowSourceCategory>('stockpile');
   const [ownedItemsMessage, setOwnedItemsMessage] = useState<string | null>(null);
   const [ownedItemsError, setOwnedItemsError] = useState<string | null>(null);
-  const [currentInventoryItemName, setCurrentInventoryItemName] = useState('');
-  const [currentInventoryItemCount, setCurrentInventoryItemCount] = useState('1');
-  const [currentInventoryImportText, setCurrentInventoryImportText] = useState('');
-  const [currentInventoryMessage, setCurrentInventoryMessage] = useState<string | null>(null);
-  const [currentInventoryError, setCurrentInventoryError] = useState<string | null>(null);
-  const [currentInventoryWarnings, setCurrentInventoryWarnings] = useState<string[]>([]);
-  const [storedPetItemName, setStoredPetItemName] = useState('');
-  const [storedPetItemCount, setStoredPetItemCount] = useState('1');
-  const [storedPetImportText, setStoredPetImportText] = useState('');
-  const [storedPetMessage, setStoredPetMessage] = useState<string | null>(null);
-  const [storedPetError, setStoredPetError] = useState<string | null>(null);
-  const [storedPetWarnings, setStoredPetWarnings] = useState<string[]>([]);
   const [futurePetForecastEnabled, setFuturePetForecastEnabled] = useState(
     acquisitionPlannerState.pets.futureProduction.enabled,
   );
@@ -101,8 +79,7 @@ export function SettingsPage() {
   const [futurePetMessage, setFuturePetMessage] = useState<string | null>(null);
   const [futurePetError, setFuturePetError] = useState<string | null>(null);
   const [futurePetWarnings, setFuturePetWarnings] = useState<string[]>([]);
-  const [localItemLookup, setLocalItemLookup] = useState<LocalItemReferenceLookup | null>(null);
-  const [knownItemKeys, setKnownItemKeys] = useState<Set<string> | null>(null);
+  const { localItemLookup, knownItemKeys } = useImportReferenceLookup();
   const [petSourceReference, setPetSourceReference] = useState<PetSourceReferenceData | null>(null);
   const [petSourceReferenceError, setPetSourceReferenceError] = useState<string | null>(null);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
@@ -117,40 +94,10 @@ export function SettingsPage() {
   const [isRestoring, setIsRestoring] = useState(false);
 
   const ownedNowEntries = getOwnedNowItemInputs(acquisitionPlannerState);
-  const currentInventoryEntries = getCurrentInventoryItemInputs(acquisitionPlannerState);
-  const storedPetEntries = getStoredPetInventoryItemInputs(acquisitionPlannerState);
   const futurePetEntries = getFuturePetProductionEntries(acquisitionPlannerState);
   const futurePetForecast = deriveFuturePetProductionForecast(acquisitionPlannerState, {
     petSourceReference,
   });
-
-  useEffect(() => {
-    let cancelled = false;
-
-    void loadLocalItemReferenceLookup()
-      .then((data) => {
-        if (!cancelled) {
-          setLocalItemLookup(data);
-          setKnownItemKeys(
-            new Set([
-              ...Object.keys(data.itemCatalog.byCanonicalKey),
-              ...Object.keys(data.museumCoverage.byCanonicalKey),
-              ...(data.museumCanon?.entries.map((entry) => entry.canonicalKey) ?? []),
-            ]),
-          );
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setLocalItemLookup(null);
-          setKnownItemKeys(null);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -228,203 +175,6 @@ export function SettingsPage() {
       setOwnedItemsMessage(null);
       setOwnedItemsError(
         error instanceof Error ? error.message : 'Unable to remove the supply entry.',
-      );
-    }
-  }
-
-  function handleSaveCurrentInventoryItem(): void {
-    const normalizedCount = Number(currentInventoryItemCount);
-
-    if (currentInventoryItemName.trim().length === 0) {
-      setCurrentInventoryMessage(null);
-      setCurrentInventoryWarnings([]);
-      setCurrentInventoryError('Enter an item name to save a current inventory entry.');
-      return;
-    }
-
-    if (!Number.isFinite(normalizedCount) || normalizedCount < 0) {
-      setCurrentInventoryMessage(null);
-      setCurrentInventoryWarnings([]);
-      setCurrentInventoryError('Enter a non-negative quantity for the current inventory entry.');
-      return;
-    }
-
-    try {
-      const nextState = upsertCurrentInventoryItemInput(acquisitionPlannerState, {
-        itemName: currentInventoryItemName,
-        inventoryCount: normalizedCount,
-      });
-      const savedState = saveAcquisitionPlannerInputState(nextState);
-
-      setAcquisitionPlannerState(savedState);
-      setCurrentInventoryError(null);
-      setCurrentInventoryWarnings([]);
-      setCurrentInventoryMessage(
-        normalizedCount > 0
-          ? `Saved ${currentInventoryItemName.trim()} as current inventory.`
-          : `Removed ${currentInventoryItemName.trim()} from current inventory.`,
-      );
-      setCurrentInventoryItemName('');
-      setCurrentInventoryItemCount('1');
-    } catch (error) {
-      setCurrentInventoryMessage(null);
-      setCurrentInventoryWarnings([]);
-      setCurrentInventoryError(
-        error instanceof Error ? error.message : 'Unable to save the current inventory entry.',
-      );
-    }
-  }
-
-  function handleImportCurrentInventory(): void {
-    const parsedResult = parseCurrentInventoryPaste(currentInventoryImportText, {
-      resolveItem: localItemLookup
-        ? (itemName) => {
-            const result = resolveLocalItemReference(itemName, localItemLookup);
-
-            return {
-              canonicalItemKey: result.canonicalKey,
-              itemName: result.displayName,
-              recognized: result.recognized,
-              warnings: result.recognized ? [] : result.warnings,
-            };
-          }
-        : undefined,
-    });
-
-    if (parsedResult.entries.length === 0) {
-      setCurrentInventoryMessage(null);
-      setCurrentInventoryWarnings(parsedResult.warnings);
-      setCurrentInventoryError('No current inventory entries were imported from the pasted text.');
-      return;
-    }
-
-    try {
-      const nextState = replaceCurrentInventoryEntries(acquisitionPlannerState, parsedResult.entries);
-      const savedState = saveAcquisitionPlannerInputState(nextState);
-
-      setAcquisitionPlannerState(savedState);
-      setCurrentInventoryError(null);
-      setCurrentInventoryWarnings(parsedResult.warnings);
-      setCurrentInventoryMessage(
-        `Imported ${parsedResult.entries.length.toLocaleString()} current inventory entr${parsedResult.entries.length === 1 ? 'y' : 'ies'}.`,
-      );
-      setCurrentInventoryImportText('');
-    } catch (error) {
-      setCurrentInventoryMessage(null);
-      setCurrentInventoryWarnings(parsedResult.warnings);
-      setCurrentInventoryError(
-        error instanceof Error ? error.message : 'Unable to import the current inventory text.',
-      );
-    }
-  }
-
-  function handleRemoveCurrentInventoryItem(canonicalItemKey: string): void {
-    try {
-      const nextState = removeCurrentInventoryItemInput(acquisitionPlannerState, canonicalItemKey);
-      const savedState = saveAcquisitionPlannerInputState(nextState);
-
-      setAcquisitionPlannerState(savedState);
-      setCurrentInventoryError(null);
-      setCurrentInventoryWarnings([]);
-      setCurrentInventoryMessage(`Removed ${canonicalItemKey} from current inventory.`);
-    } catch (error) {
-      setCurrentInventoryMessage(null);
-      setCurrentInventoryWarnings([]);
-      setCurrentInventoryError(
-        error instanceof Error ? error.message : 'Unable to remove the current inventory entry.',
-      );
-    }
-  }
-
-  function handleSaveStoredPetItem(): void {
-    const normalizedCount = Number(storedPetItemCount);
-
-    if (storedPetItemName.trim().length === 0) {
-      setStoredPetMessage(null);
-      setStoredPetWarnings([]);
-      setStoredPetError('Enter an item name to save a stored pet inventory entry.');
-      return;
-    }
-
-    if (!Number.isFinite(normalizedCount) || normalizedCount < 0) {
-      setStoredPetMessage(null);
-      setStoredPetWarnings([]);
-      setStoredPetError('Enter a non-negative quantity for the stored pet inventory entry.');
-      return;
-    }
-
-    try {
-      const nextState = upsertStoredPetInventoryItemInput(acquisitionPlannerState, {
-        itemName: storedPetItemName,
-        storedCount: normalizedCount,
-      });
-      const savedState = saveAcquisitionPlannerInputState(nextState);
-
-      setAcquisitionPlannerState(savedState);
-      setStoredPetError(null);
-      setStoredPetWarnings([]);
-      setStoredPetMessage(
-        normalizedCount > 0
-          ? `Saved ${storedPetItemName.trim()} as stored pet inventory.`
-          : `Removed ${storedPetItemName.trim()} from stored pet inventory.`,
-      );
-      setStoredPetItemName('');
-      setStoredPetItemCount('1');
-    } catch (error) {
-      setStoredPetMessage(null);
-      setStoredPetWarnings([]);
-      setStoredPetError(
-        error instanceof Error ? error.message : 'Unable to save the stored pet inventory entry.',
-      );
-    }
-  }
-
-  function handleImportStoredPetInventory(): void {
-    const parsedResult = parseStoredPetInventoryPaste(storedPetImportText, {
-      knownCanonicalKeys: knownItemKeys ?? undefined,
-    });
-
-    if (parsedResult.entries.length === 0) {
-      setStoredPetMessage(null);
-      setStoredPetWarnings(parsedResult.warnings);
-      setStoredPetError('No stored pet inventory entries were imported from the pasted text.');
-      return;
-    }
-
-    try {
-      const nextState = replaceStoredPetInventoryEntries(acquisitionPlannerState, parsedResult.entries);
-      const savedState = saveAcquisitionPlannerInputState(nextState);
-
-      setAcquisitionPlannerState(savedState);
-      setStoredPetError(null);
-      setStoredPetWarnings(parsedResult.warnings);
-      setStoredPetMessage(
-        `Imported ${parsedResult.entries.length.toLocaleString()} stored pet inventory entr${parsedResult.entries.length === 1 ? 'y' : 'ies'}.`,
-      );
-      setStoredPetImportText('');
-    } catch (error) {
-      setStoredPetMessage(null);
-      setStoredPetWarnings(parsedResult.warnings);
-      setStoredPetError(
-        error instanceof Error ? error.message : 'Unable to import the stored pet inventory text.',
-      );
-    }
-  }
-
-  function handleRemoveStoredPetItem(canonicalItemKey: string): void {
-    try {
-      const nextState = removeStoredPetInventoryItemInput(acquisitionPlannerState, canonicalItemKey);
-      const savedState = saveAcquisitionPlannerInputState(nextState);
-
-      setAcquisitionPlannerState(savedState);
-      setStoredPetError(null);
-      setStoredPetWarnings([]);
-      setStoredPetMessage(`Removed ${canonicalItemKey} from stored pet inventory.`);
-    } catch (error) {
-      setStoredPetMessage(null);
-      setStoredPetWarnings([]);
-      setStoredPetError(
-        error instanceof Error ? error.message : 'Unable to remove the stored pet inventory entry.',
       );
     }
   }
@@ -1038,260 +788,23 @@ export function SettingsPage() {
         {ownedItemsError ? <p className="status-message status-message--error">{ownedItemsError}</p> : null}
       </section>
 
-      <section className="page-card page-stack" aria-labelledby="settings-current-inventory-title">
-        <div>
-          <h2 id="settings-current-inventory-title">Current Inventory</h2>
-          <p className="supporting-text">
-            Import or enter items currently in your inventory so target planning can spend this supply before
-            expanding remaining requirements.
-          </p>
-        </div>
+      <CurrentInventoryImportPanel
+        acquisitionPlannerState={acquisitionPlannerState}
+        collapsible
+        defaultOpen={false}
+        headingId="settings-current-inventory-title"
+        localItemLookup={localItemLookup}
+        onAcquisitionPlannerStateChange={setAcquisitionPlannerState}
+      />
 
-        <div className="page-stack page-stack--tight">
-          <label className="field-label" htmlFor="current-inventory-item-name">
-            Inventory item name
-          </label>
-          <input
-            id="current-inventory-item-name"
-            className="text-input"
-            type="text"
-            value={currentInventoryItemName}
-            onChange={(event) => {
-              setCurrentInventoryItemName(event.target.value);
-            }}
-            placeholder="Large Net"
-          />
-        </div>
-
-        <div className="page-stack page-stack--tight">
-          <label className="field-label" htmlFor="current-inventory-item-count">
-            Inventory quantity
-          </label>
-          <input
-            id="current-inventory-item-count"
-            className="text-input"
-            type="number"
-            min="0"
-            step="1"
-            value={currentInventoryItemCount}
-            onChange={(event) => {
-              setCurrentInventoryItemCount(event.target.value);
-            }}
-          />
-        </div>
-
-        <div className="button-row">
-          <button
-            type="button"
-            className="button button--primary"
-            onClick={handleSaveCurrentInventoryItem}
-          >
-            Save Inventory Item
-          </button>
-        </div>
-
-        <div className="page-stack page-stack--tight">
-          <label className="field-label" htmlFor="current-inventory-import-text">
-            Paste current inventory
-          </label>
-          <textarea
-            id="current-inventory-import-text"
-            className="text-input"
-            rows={6}
-            value={currentInventoryImportText}
-            onChange={(event) => {
-              setCurrentInventoryImportText(event.target.value);
-            }}
-            placeholder={`566\nCabbage Stew\n1,021\nLemon Cream Pie`}
-          />
-        </div>
-
-        <div className="button-row">
-          <button
-            type="button"
-            className="button"
-            onClick={handleImportCurrentInventory}
-          >
-            Import Current Inventory
-          </button>
-        </div>
-
-        <p className="supporting-text">
-          Supported paste formats: alternating count/item lines from FarmRPG pages, or simple one-line
-          <code> Item Name, Count</code> pairs. Import replaces the saved current inventory list.
-        </p>
-
-        {currentInventoryEntries.length > 0 ? (
-          <table className="summary-table">
-            <thead>
-              <tr>
-                <th scope="col">Item</th>
-                <th scope="col">Inventory count</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentInventoryEntries.map((entry) => (
-                <tr key={entry.canonicalItemKey}>
-                  <td>{entry.itemName}</td>
-                  <td>{entry.inventoryCount.toLocaleString()}</td>
-                  <td>
-                    <button
-                      type="button"
-                      className="button"
-                      onClick={() => {
-                        handleRemoveCurrentInventoryItem(entry.canonicalItemKey);
-                      }}
-                    >
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="supporting-text">No current inventory saved yet.</p>
-        )}
-
-        {currentInventoryMessage ? <p className="status-message status-message--success">{currentInventoryMessage}</p> : null}
-        {currentInventoryError ? <p className="status-message status-message--error">{currentInventoryError}</p> : null}
-        {currentInventoryWarnings.length > 0 ? (
-          <ul className="supporting-text">
-            {currentInventoryWarnings.map((warning) => (
-              <li key={warning}>{warning}</li>
-            ))}
-          </ul>
-        ) : null}
-      </section>
-
-      <section className="page-card page-stack" aria-labelledby="settings-stored-pet-title">
-        <div>
-          <h2 id="settings-stored-pet-title">Stored Pet Inventory</h2>
-          <p className="supporting-text">
-            Track already-produced pet items you have on hand right now. This stays separate from owned stockpiles and
-            future pet production estimates.
-          </p>
-        </div>
-
-        <div className="page-stack page-stack--tight">
-          <label className="field-label" htmlFor="stored-pet-item-name">
-            Pet item name
-          </label>
-          <input
-            id="stored-pet-item-name"
-            className="text-input"
-            type="text"
-            value={storedPetItemName}
-            onChange={(event) => {
-              setStoredPetItemName(event.target.value);
-            }}
-            placeholder="Honey"
-          />
-        </div>
-
-        <div className="page-stack page-stack--tight">
-          <label className="field-label" htmlFor="stored-pet-item-count">
-            Stored quantity
-          </label>
-          <input
-            id="stored-pet-item-count"
-            className="text-input"
-            type="number"
-            min="0"
-            step="1"
-            value={storedPetItemCount}
-            onChange={(event) => {
-              setStoredPetItemCount(event.target.value);
-            }}
-          />
-        </div>
-
-        <div className="button-row">
-          <button
-            type="button"
-            className="button button--primary"
-            onClick={handleSaveStoredPetItem}
-          >
-            Save Stored Pet Item
-          </button>
-        </div>
-
-        <div className="page-stack page-stack--tight">
-          <label className="field-label" htmlFor="stored-pet-import-text">
-            Paste pet inventory
-          </label>
-          <textarea
-            id="stored-pet-import-text"
-            className="text-input"
-            rows={6}
-            value={storedPetImportText}
-            onChange={(event) => {
-              setStoredPetImportText(event.target.value);
-            }}
-            placeholder={`Honey\nFrom Owl\n22,528 currently in Inventory\nFound 4,706`}
-          />
-        </div>
-
-        <div className="button-row">
-          <button
-            type="button"
-            className="button"
-            onClick={handleImportStoredPetInventory}
-          >
-            Import Stored Pet Inventory
-          </button>
-        </div>
-
-        <p className="supporting-text">
-          Supported paste format: the Pets collected-items export structure with repeating item blocks such as
-          <code> Item Name / From Pet / currently in Inventory / Found N</code>. Simple one-line
-          <code> Item Name, Count</code> pairs still work as a fallback.
-        </p>
-
-        {storedPetEntries.length > 0 ? (
-          <table className="summary-table">
-            <thead>
-              <tr>
-                <th scope="col">Item</th>
-                <th scope="col">Stored count</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {storedPetEntries.map((entry) => (
-                <tr key={entry.canonicalItemKey}>
-                  <td>{entry.itemName}</td>
-                  <td>{entry.storedCount.toLocaleString()}</td>
-                  <td>
-                    <button
-                      type="button"
-                      className="button"
-                      onClick={() => {
-                        handleRemoveStoredPetItem(entry.canonicalItemKey);
-                      }}
-                    >
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="supporting-text">No stored pet inventory saved yet.</p>
-        )}
-
-        {storedPetMessage ? <p className="status-message status-message--success">{storedPetMessage}</p> : null}
-        {storedPetError ? <p className="status-message status-message--error">{storedPetError}</p> : null}
-        {storedPetWarnings.length > 0 ? (
-          <ul className="supporting-text">
-            {storedPetWarnings.map((warning) => (
-              <li key={warning}>{warning}</li>
-            ))}
-          </ul>
-        ) : null}
-      </section>
+      <StoredPetInventoryImportPanel
+        acquisitionPlannerState={acquisitionPlannerState}
+        collapsible
+        defaultOpen={false}
+        headingId="settings-stored-pet-title"
+        knownItemKeys={knownItemKeys}
+        onAcquisitionPlannerStateChange={setAcquisitionPlannerState}
+      />
 
       <section className="page-card page-stack" aria-labelledby="settings-future-pet-title">
         <div>
