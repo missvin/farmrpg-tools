@@ -1,4 +1,10 @@
 import type { AcquisitionPlannerInputState } from './acquisitionPlannerState';
+import {
+  deriveAvailableSupplyPool,
+  type AvailableSupplyOverrideInput,
+  type AvailableSupplyPool,
+} from './availableSupply';
+import type { UserCraftingModifierState } from './craftingModifierState';
 import type {
   QuestCatalogEntry,
   QuestItemSourceHintEntry,
@@ -6,11 +12,18 @@ import type {
   QuestRequirementEntry,
   QuestRewardEntry,
 } from './loadQuestReference';
+import type { PetSourceReferenceData } from './loadPetSourceReference';
 import type { RecipeGraph, RecipeNode } from './loadRecipeGraph';
 import type { TowerRequirementEntry, TowerRequirementsData } from './loadTowerRequirements';
 import { toCanonicalItemKey } from './normalizeItemKey';
 import { getQuestState, type QuestPlannerState, type QuestPlannerStatus } from './questPlannerState';
 import type { MasterySnapshot } from './storage/masterySnapshots';
+import {
+  buildTargetOutputPlannerResult,
+  type TargetOutputPlannerItemRow,
+  type TargetOutputPlannerResult,
+} from './targetOutputPlannerEngine';
+import type { TargetOutputPlanningGoalInput } from './targetOutputPlanningModel';
 
 export type QuestAvailableSupplyEntry = {
   canonicalKey: string;
@@ -77,6 +90,30 @@ export type QuestSynergyHint = {
   sourceUrl: string;
 };
 
+export type QuestResourcePlanningGoal = {
+  targetId: string;
+  questKey: string;
+  questName: string;
+  status: QuestPlannerStatus;
+  canonicalKey: string;
+  itemName: string;
+  quantity: number;
+};
+
+export type QuestResourcePlanningRow = TargetOutputPlannerItemRow & {
+  questNames: string[];
+  sourceHints: QuestItemSourceHintEntry[];
+};
+
+export type QuestResourcePlanningResult = {
+  goals: QuestResourcePlanningGoal[];
+  supplyPool: AvailableSupplyPool;
+  plannerResult: TargetOutputPlannerResult | null;
+  rows: QuestResourcePlanningRow[];
+  missingRows: QuestResourcePlanningRow[];
+  warnings: string[];
+};
+
 export type QuestPlanningViewModel = {
   activeQuestProgress: QuestProgress[];
   watchedQuestProgress: QuestProgress[];
@@ -86,6 +123,7 @@ export type QuestPlanningViewModel = {
   sourcePressure: QuestSourcePressure[];
   synergyHints: QuestSynergyHint[];
   availableSupply: QuestAvailableSupplyEntry[];
+  resourcePlan: QuestResourcePlanningResult | null;
   warnings: string[];
 };
 
@@ -430,11 +468,110 @@ function deriveSynergyHints(input: {
   });
 }
 
+function toQuestResourcePlanningGoals(progressRows: QuestProgress[]): QuestResourcePlanningGoal[] {
+  return progressRows.flatMap((progress) => {
+    return progress.requirements.map((requirement, requirementIndex) => ({
+      targetId: `quest:${progress.quest.questKey}:${requirement.canonicalKey}:${requirementIndex + 1}`,
+      questKey: progress.quest.questKey,
+      questName: progress.quest.questName,
+      status: progress.status,
+      canonicalKey: requirement.canonicalKey,
+      itemName: requirement.itemName,
+      quantity: requirement.quantity,
+    }));
+  });
+}
+
+function toTargetOutputGoals(goals: QuestResourcePlanningGoal[]): TargetOutputPlanningGoalInput[] {
+  return goals.map((goal) => ({
+    targetId: goal.targetId,
+    targetLabel: goal.questName,
+    itemName: goal.itemName,
+    canonicalKey: goal.canonicalKey,
+    desiredQuantity: goal.quantity,
+  }));
+}
+
+function toQuestResourcePlanningRow(
+  row: TargetOutputPlannerItemRow,
+  referenceData: QuestReferenceData,
+): QuestResourcePlanningRow {
+  return {
+    ...row,
+    questNames: Array.from(new Set(row.contributions.map((contribution) => contribution.targetLabel))).sort(),
+    sourceHints: referenceData.sourceHintsByCanonicalKey[row.canonicalKey] ?? [],
+  };
+}
+
+function buildQuestResourcePlanningResult(input: {
+  demandProgressRows: QuestProgress[];
+  referenceData: QuestReferenceData;
+  acquisitionState: AcquisitionPlannerInputState;
+  recipeGraph: RecipeGraph | null | undefined;
+  modifierState: UserCraftingModifierState | null | undefined;
+  petSourceReference?: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
+  supplyOverrides?: AvailableSupplyOverrideInput[];
+}): QuestResourcePlanningResult | null {
+  if (input.demandProgressRows.length === 0) {
+    return null;
+  }
+
+  const supplyPool = deriveAvailableSupplyPool({
+    acquisitionState: input.acquisitionState,
+    petSourceReference: input.petSourceReference,
+    overrides: input.supplyOverrides ?? [],
+  });
+  const warnings = [...supplyPool.warnings];
+  const goals = toQuestResourcePlanningGoals(input.demandProgressRows);
+
+  if (goals.length === 0) {
+    return {
+      goals,
+      supplyPool,
+      plannerResult: null,
+      rows: [],
+      missingRows: [],
+      warnings: [...warnings, 'Selected quests do not have local item requirements available for shared resource planning.'],
+    };
+  }
+
+  if (!input.recipeGraph || !input.modifierState) {
+    return {
+      goals,
+      supplyPool,
+      plannerResult: null,
+      rows: [],
+      missingRows: [],
+      warnings: [...warnings, 'Shared resource planning could not run because recipe or modifier data is unavailable.'],
+    };
+  }
+
+  const plannerResult = buildTargetOutputPlannerResult({
+    goals: toTargetOutputGoals(goals),
+    recipeGraph: input.recipeGraph,
+    modifierState: input.modifierState,
+    supplyPool,
+  });
+  const rows = plannerResult.rows.map((row) => toQuestResourcePlanningRow(row, input.referenceData));
+
+  return {
+    goals,
+    supplyPool,
+    plannerResult,
+    rows,
+    missingRows: rows.filter((row) => row.remainingQuantity > 0),
+    warnings: [...warnings, ...plannerResult.warnings],
+  };
+}
+
 export function buildQuestPlanningViewModel(input: {
   referenceData: QuestReferenceData;
   questPlannerState: QuestPlannerState;
   acquisitionState: AcquisitionPlannerInputState;
   recipeGraph?: RecipeGraph | null;
+  modifierState?: UserCraftingModifierState | null;
+  petSourceReference?: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
+  supplyOverrides?: AvailableSupplyOverrideInput[];
   towerRequirementsData?: TowerRequirementsData | null;
   snapshot?: MasterySnapshot | null;
   includeHidden?: boolean;
@@ -451,10 +588,19 @@ export function buildQuestPlanningViewModel(input: {
   const watchedQuestProgress = visibleProgressRows.filter((progress) => progress.status === 'watched');
   const completedQuestProgress = visibleProgressRows.filter((progress) => progress.status === 'completed');
   const demandProgressRows = [...activeQuestProgress, ...watchedQuestProgress];
+  const resourcePlan = buildQuestResourcePlanningResult({
+    demandProgressRows,
+    referenceData: input.referenceData,
+    acquisitionState: input.acquisitionState,
+    recipeGraph: input.recipeGraph,
+    modifierState: input.modifierState,
+    petSourceReference: input.petSourceReference,
+    supplyOverrides: input.supplyOverrides,
+  });
   const warnings: string[] = [];
 
   if (input.acquisitionState.pets.futureProduction.enabled) {
-    warnings.push('Future pet production is not counted here until the corrected pet item-pool model lands.');
+    warnings.push('Direct quest rows show immediate owned/current supply; shared resource planning also follows your shared supply source settings.');
   }
 
   return {
@@ -472,7 +618,8 @@ export function buildQuestPlanningViewModel(input: {
       snapshot: input.snapshot,
     }),
     availableSupply,
-    warnings,
+    resourcePlan,
+    warnings: [...warnings, ...(resourcePlan?.warnings ?? [])],
   };
 }
 

@@ -256,7 +256,7 @@ export function buildTargetOutputPlanningGraph(
       targetContributions: [
         {
           targetId: summary.goal.targetId,
-          targetLabel: summary.goal.itemName,
+          targetLabel: summary.goal.targetLabel,
           quantity: summary.goal.desiredQuantity,
         },
       ],
@@ -314,7 +314,7 @@ export function buildTargetOutputPlanningGraph(
     edgesByFromNodeId: groupEdgesByFromNodeId(edges),
     treeRoots: result.targetSummaries.map((summary: TargetOutputPlannerTargetSummary) => ({
       targetId: summary.goal.targetId,
-      targetLabel: summary.goal.itemName,
+      targetLabel: summary.goal.targetLabel,
       targetNodeId: toTargetNodeId(summary.goal.targetId),
       itemNodeId: toItemNodeId(summary.goal.canonicalKey),
       desiredQuantity: summary.goal.desiredQuantity,

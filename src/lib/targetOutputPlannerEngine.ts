@@ -281,7 +281,7 @@ export function buildTargetOutputPlannerResult(
       contributions: [
         {
           targetId: goal.targetId,
-          targetLabel: goal.itemName,
+          targetLabel: goal.targetLabel,
           quantity: goal.desiredQuantity,
         },
       ],

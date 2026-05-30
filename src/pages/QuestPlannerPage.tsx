@@ -7,12 +7,19 @@ import {
   loadAcquisitionPlannerInputState,
   type AcquisitionPlannerInputState,
 } from '../lib/acquisitionPlannerState';
+import type { AvailableSupplyOverrideInput } from '../lib/availableSupply';
+import {
+  createDefaultCraftingModifierState,
+  loadCraftingModifierState,
+  type UserCraftingModifierState,
+} from '../lib/craftingModifierState';
 import { getItemIcon } from '../lib/itemIconManifest';
 import {
   loadQuestReference,
   type QuestCatalogEntry,
   type QuestReferenceData,
 } from '../lib/loadQuestReference';
+import { loadPetSourceReference, type PetSourceReferenceData } from '../lib/loadPetSourceReference';
 import { loadRecipeGraph, type RecipeGraph } from '../lib/loadRecipeGraph';
 import { loadTowerRequirements, type TowerRequirementsData } from '../lib/loadTowerRequirements';
 import { parseHelpNeededPaste, type HelpNeededActiveRequest } from '../lib/parseHelpNeededPaste';
@@ -21,6 +28,8 @@ import {
   questMatchesSearch,
   type QuestPlanningViewModel,
   type QuestProgress,
+  type QuestResourcePlanningResult,
+  type QuestResourcePlanningRow,
   type QuestRequirementProgress,
 } from '../lib/questPlanning';
 import {
@@ -32,13 +41,18 @@ import {
   type QuestPlannerStatus,
 } from '../lib/questPlannerState';
 import { getLatestSnapshot, type MasterySnapshot } from '../lib/storage/masterySnapshots';
+import { loadTargetOutputPlannerState } from '../lib/targetOutputPlannerState';
 
 type QuestPlannerResources = {
   referenceData: QuestReferenceData;
   acquisitionState: AcquisitionPlannerInputState;
   recipeGraph: RecipeGraph | null;
+  modifierState: UserCraftingModifierState;
+  petSourceReference: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
+  supplyOverrides: AvailableSupplyOverrideInput[];
   towerRequirementsData: TowerRequirementsData | null;
   snapshot: MasterySnapshot | null;
+  warnings: string[];
 };
 
 type ResourceState = {
@@ -74,6 +88,23 @@ function formatStatus(status: QuestPlannerStatus): string {
       return 'Completed';
     case 'unknown':
       return 'Unknown';
+  }
+}
+
+function formatResourceStatus(row: QuestResourcePlanningRow): string {
+  switch (row.unresolvedReason) {
+    case 'leaf_item':
+      return 'Needs source';
+    case 'cooking_recipe_not_expanded':
+      return 'Cooking recipe';
+    case 'excluded_recipe':
+      return 'Recipe excluded';
+    case 'auto_supplied':
+      return 'Auto supplied';
+    case 'no_remaining_quantity':
+      return 'Covered';
+    case null:
+      return row.requiredCraftOperations > 0 ? 'Craft inputs expanded' : 'Ready';
   }
 }
 
@@ -270,6 +301,10 @@ function QuestProgressCard({ progress }: { progress: QuestProgress }) {
 }
 
 function QuestPlanningSummary({ viewModel }: { viewModel: QuestPlanningViewModel }) {
+  const sharedRemainingQuantity = viewModel.resourcePlan?.missingRows.reduce((sum, row) => {
+    return sum + row.remainingQuantity;
+  }, 0) ?? 0;
+
   return (
     <dl className="summary-grid">
       <div className="summary-grid__item">
@@ -288,7 +323,96 @@ function QuestPlanningSummary({ viewModel }: { viewModel: QuestPlanningViewModel
         <dt>Immediate supply rows</dt>
         <dd>{viewModel.availableSupply.length.toLocaleString()}</dd>
       </div>
+      <div className="summary-grid__item">
+        <dt>Shared missing</dt>
+        <dd>{formatQuantity(sharedRemainingQuantity)}</dd>
+      </div>
     </dl>
+  );
+}
+
+function QuestResourcePlanSummary({ resourcePlan }: { resourcePlan: QuestResourcePlanningResult }) {
+  const supplyUsedQuantity = resourcePlan.rows.reduce((sum, row) => sum + row.availableUsedQuantity, 0);
+  const craftOperations = resourcePlan.rows.reduce((sum, row) => sum + row.requiredCraftOperations, 0);
+  const remainingQuantity = resourcePlan.missingRows.reduce((sum, row) => sum + row.remainingQuantity, 0);
+
+  return (
+    <dl className="compact-stat-grid quest-resource-stats">
+      <div>
+        <dt>Quest targets</dt>
+        <dd>{resourcePlan.goals.length.toLocaleString()}</dd>
+      </div>
+      <div>
+        <dt>Shared supply used</dt>
+        <dd>{formatQuantity(supplyUsedQuantity)}</dd>
+      </div>
+      <div>
+        <dt>Still needed</dt>
+        <dd>{formatQuantity(remainingQuantity)}</dd>
+      </div>
+      <div>
+        <dt>Crafts planned</dt>
+        <dd>{formatQuantity(craftOperations)}</dd>
+      </div>
+    </dl>
+  );
+}
+
+function QuestResourcePlanTable({ resourcePlan }: { resourcePlan: QuestResourcePlanningResult | null }) {
+  if (!resourcePlan) {
+    return <p className="empty-state">Select active or watched quests to see shared resource planning.</p>;
+  }
+
+  if (resourcePlan.rows.length === 0) {
+    return <p className="empty-state">The selected quests do not have local requirements to plan yet.</p>;
+  }
+
+  return (
+    <div className="table-scroll">
+      <table className="summary-table quest-resource-table">
+        <thead>
+          <tr>
+            <th scope="col">Item</th>
+            <th scope="col">Shared demand</th>
+            <th scope="col">Supply used</th>
+            <th scope="col">Still needed</th>
+            <th scope="col">Crafts</th>
+            <th scope="col">Quests</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {resourcePlan.rows.map((row) => (
+            <tr key={row.canonicalKey}>
+              <td>
+                <ItemProfileLink
+                  canonicalKey={row.canonicalKey}
+                  itemName={row.itemName}
+                  iconSrc={getItemIconSrc(row.canonicalKey)}
+                />
+              </td>
+              <td>{formatQuantity(row.grossRequiredQuantity)}</td>
+              <td>
+                {formatQuantity(row.availableUsedQuantity)}
+                {row.supply && row.supply.breakdowns.length > 0 ? (
+                  <span className="subtle-text"> / {formatQuantity(row.availableQuantity)}</span>
+                ) : null}
+              </td>
+              <td>{formatQuantity(row.remainingQuantity)}</td>
+              <td>{row.requiredCraftOperations > 0 ? formatQuantity(row.requiredCraftOperations) : '-'}</td>
+              <td>
+                {row.questNames.map((questName) => (
+                  <span className="target-output-chip" key={`${row.canonicalKey}:${questName}`}>
+                    {questName}
+                  </span>
+                ))}
+              </td>
+              <td>{formatResourceStatus(row)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -317,12 +441,34 @@ export function QuestPlannerPage() {
           loadTowerRequirements(),
           getLatestSnapshot(),
         ]);
+        const warnings: string[] = [];
+        let petSourceReference: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null = null;
         let acquisitionState: AcquisitionPlannerInputState;
+        let modifierState: UserCraftingModifierState;
+        let supplyOverrides: AvailableSupplyOverrideInput[] = [];
 
         try {
           acquisitionState = loadAcquisitionPlannerInputState();
         } catch {
           acquisitionState = createDefaultAcquisitionPlannerInputState();
+        }
+
+        try {
+          modifierState = loadCraftingModifierState();
+        } catch {
+          modifierState = createDefaultCraftingModifierState();
+        }
+
+        try {
+          supplyOverrides = loadTargetOutputPlannerState().supplyOverrides;
+        } catch {
+          supplyOverrides = [];
+        }
+
+        try {
+          petSourceReference = await loadPetSourceReference();
+        } catch {
+          warnings.push('Pet source reference could not be loaded, so future pet supply may be approximate.');
         }
 
         if (!isMounted) {
@@ -336,8 +482,12 @@ export function QuestPlannerPage() {
             referenceData,
             acquisitionState,
             recipeGraph,
+            modifierState,
+            petSourceReference,
+            supplyOverrides,
             towerRequirementsData,
             snapshot,
+            warnings,
           },
         });
       } catch (error) {
@@ -370,6 +520,9 @@ export function QuestPlannerPage() {
       questPlannerState,
       acquisitionState: resourcesState.resources.acquisitionState,
       recipeGraph: resourcesState.resources.recipeGraph,
+      modifierState: resourcesState.resources.modifierState,
+      petSourceReference: resourcesState.resources.petSourceReference,
+      supplyOverrides: resourcesState.resources.supplyOverrides,
       towerRequirementsData: resourcesState.resources.towerRequirementsData,
       snapshot: resourcesState.resources.snapshot,
       includeHidden: showHidden,
@@ -388,6 +541,10 @@ export function QuestPlannerPage() {
       .filter((quest) => showHidden || !getQuestState(questPlannerState, quest.questKey).hidden)
       .sort(compareQuestPickerRows);
   }, [questPlannerState, resourcesState.resources, searchText, showHidden]);
+  const viewWarnings = Array.from(new Set([
+    ...(resourcesState.resources?.warnings ?? []),
+    ...(viewModel?.warnings ?? []),
+  ]));
 
   function persistQuestPlannerState(nextState: QuestPlannerState): void {
     const savedState = saveQuestPlannerState(nextState);
@@ -489,9 +646,9 @@ export function QuestPlannerPage() {
         <>
           <section className="page-card">
             <QuestPlanningSummary viewModel={viewModel} />
-            {viewModel.warnings.length > 0 ? (
+            {viewWarnings.length > 0 ? (
               <ul className="quest-warning-list">
-                {viewModel.warnings.map((warning) => (
+                {viewWarnings.map((warning) => (
                   <li key={warning}>{warning}</li>
                 ))}
               </ul>
@@ -633,6 +790,22 @@ export function QuestPlannerPage() {
               </div>
             </section>
           ) : null}
+
+          <section className="page-card" aria-labelledby="quest-resource-plan-heading">
+            <h2 id="quest-resource-plan-heading">Shared Resource Plan</h2>
+            <p>
+              Active and watched quest requirements are planned together so shared inventory, current inventory,
+              stored pet items, future pet supply, and manual overrides are spent once.
+            </p>
+            {viewModel.resourcePlan ? (
+              <>
+                <QuestResourcePlanSummary resourcePlan={viewModel.resourcePlan} />
+                <QuestResourcePlanTable resourcePlan={viewModel.resourcePlan} />
+              </>
+            ) : (
+              <QuestResourcePlanTable resourcePlan={null} />
+            )}
+          </section>
 
           <section className="page-card" aria-labelledby="active-quests-heading">
             <h2 id="active-quests-heading">Active Quests</h2>

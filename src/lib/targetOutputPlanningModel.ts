@@ -10,6 +10,7 @@ export type TargetOutputKind = 'craft_recipe_output' | 'cooking_recipe_output' |
 
 export type TargetOutputPlanningGoalInput = {
   targetId?: string;
+  targetLabel?: string;
   itemName: string;
   canonicalKey: string;
   desiredQuantity: number;
@@ -17,6 +18,7 @@ export type TargetOutputPlanningGoalInput = {
 
 export type TargetOutputPlanningGoal = {
   targetId: string;
+  targetLabel: string;
   itemName: string;
   canonicalKey: string;
   desiredQuantity: number;
@@ -72,6 +74,7 @@ function buildGoal(
   assertFiniteNonNegativeQuantity(goal.desiredQuantity, `desiredQuantity for "${goal.itemName}"`);
 
   const targetId = createTargetId(goal, index);
+  const targetLabel = goal.targetLabel?.trim() || goal.itemName;
   const recipe = input.recipeGraph.byOutputCanonicalKey[goal.canonicalKey] ?? null;
   const recipeType = recipe?.recipeType ?? null;
   const targetKind = getTargetKind(recipeType);
@@ -79,6 +82,7 @@ function buildGoal(
   if (recipeType !== 'craft') {
     return {
       targetId,
+      targetLabel,
       itemName: goal.itemName,
       canonicalKey: goal.canonicalKey,
       desiredQuantity: goal.desiredQuantity,
@@ -104,6 +108,7 @@ function buildGoal(
 
   return {
     targetId,
+    targetLabel,
     itemName: goal.itemName,
     canonicalKey: goal.canonicalKey,
     desiredQuantity: goal.desiredQuantity,
