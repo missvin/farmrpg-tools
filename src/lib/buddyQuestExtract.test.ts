@@ -98,6 +98,82 @@ Distant Illusions XII,https://buddy.farm/q/distant-illusions-xii/,Distant Illusi
     ]);
   });
 
+  it('extracts current Buddy requiredItems and rewardItems page-data fields', () => {
+    const result = extractBuddyQuestPage(
+      {
+        questName: 'Distant Illusions XIV',
+        buddyUrl: 'https://buddy.farm/q/distant-illusions-xiv/',
+        questlineName: 'Distant Illusions',
+        questlineAliases: ['DI'],
+        notes: [],
+      },
+      {
+        result: {
+          data: {
+            farmrpg: {
+              quests: [
+                {
+                  name: 'Distant Illusions XIV',
+                  npc: 'Buddy',
+                  pred: { name: 'Distant Illusions XIII' },
+                  dependentQuests: [{ name: 'Distant Illusions XV' }],
+                  requiredFarmingLevel: 99,
+                  requiredFishingLevel: 99,
+                  requiredCraftingLevel: 99,
+                  requiredExploringLevel: 99,
+                  requiredTowerLevel: 235,
+                  requiredItems: [
+                    {
+                      item: { name: 'Acorn Butter' },
+                      quantity: 5000,
+                    },
+                  ],
+                  rewardItems: [
+                    {
+                      item: { name: 'Cranberry Juice' },
+                      quantity: 2,
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
+    );
+
+    expect(result.extractionStatus).toBe('extracted');
+    expect(result.catalogRow).toEqual(
+      expect.objectContaining({
+        questKey: 'distant illusions xiv',
+        stageLabel: 'XIV',
+        npc: 'Buddy',
+        farmingLevel: 99,
+        fishingLevel: 99,
+        craftingLevel: 99,
+        exploringLevel: 99,
+        towerLevel: 235,
+        previousQuestKey: 'distant illusions xiii',
+        nextQuestKeys: ['distant illusions xv'],
+        coverageStatus: 'reviewed',
+      }),
+    );
+    expect(result.requirementRows).toEqual([
+      expect.objectContaining({
+        itemName: 'Acorn Butter',
+        canonicalKey: 'acorn butter',
+        quantity: 5000,
+      }),
+    ]);
+    expect(result.rewardRows).toEqual([
+      expect.objectContaining({
+        itemName: 'Cranberry Juice',
+        canonicalKey: 'cranberry juice',
+        quantity: 2,
+      }),
+    ]);
+  });
+
   it('marks ambiguous pages for review instead of promoting bad rows', () => {
     const result = extractBuddyQuestPage(
       {

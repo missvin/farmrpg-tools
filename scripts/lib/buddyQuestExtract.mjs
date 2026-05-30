@@ -151,6 +151,11 @@ function normalizeNamedReferenceList(value) {
   return singleValue ? [singleValue] : [];
 }
 
+function inferStageLabel(questName) {
+  const match = String(questName ?? '').trim().match(/\b([IVXLCDM]+)$/u);
+  return match ? match[1] : null;
+}
+
 function normalizeItemQuantityRow(row, fallbackSourceUrl, notes) {
   const item = row?.item ?? row?.reward ?? row?.requirement ?? null;
   const itemName = asNullableString(
@@ -268,21 +273,25 @@ export function extractBuddyQuestPage(target, pageData, pageDataUrl = getBuddyQu
   }
 
   const previousQuestName = normalizeNamedReference(
-    firstPresent(quest.previousQuest, quest.previous, quest.prevQuest),
+    firstPresent(quest.previousQuest, quest.previous, quest.prevQuest, quest.pred),
   );
   const nextQuestNames = normalizeNamedReferenceList(
-    firstPresent(quest.nextQuests, quest.nextQuest, quest.next),
+    firstPresent(quest.nextQuests, quest.nextQuest, quest.next, quest.dependentQuests),
   );
   const requirementInputs = Array.isArray(quest.requirements)
     ? quest.requirements
     : Array.isArray(quest.itemsRequired)
       ? quest.itemsRequired
-      : [];
+      : Array.isArray(quest.requiredItems)
+        ? quest.requiredItems
+        : [];
   const rewardInputs = Array.isArray(quest.rewards)
     ? quest.rewards
     : Array.isArray(quest.itemRewards)
       ? quest.itemRewards
-      : [];
+      : Array.isArray(quest.rewardItems)
+        ? quest.rewardItems
+        : [];
   const requirementRows = [];
   const rewardRows = [];
 
@@ -332,13 +341,13 @@ export function extractBuddyQuestPage(target, pageData, pageDataUrl = getBuddyQu
     questlineKey: normalizeKey(questlineName),
     questlineName,
     questlineAliases: target.questlineAliases,
-    stageLabel: asNullableString(firstPresent(quest.stageLabel, quest.stage, quest.sequenceLabel)),
+    stageLabel: asNullableString(firstPresent(quest.stageLabel, quest.stage, quest.sequenceLabel)) ?? inferStageLabel(questName),
     npc: normalizeNamedReference(firstPresent(quest.npc, quest.requester, quest.character)),
-    farmingLevel: asNullableNumber(firstPresent(quest.farmingLevel, quest.farming_level)),
-    fishingLevel: asNullableNumber(firstPresent(quest.fishingLevel, quest.fishing_level)),
-    craftingLevel: asNullableNumber(firstPresent(quest.craftingLevel, quest.crafting_level)),
-    exploringLevel: asNullableNumber(firstPresent(quest.exploringLevel, quest.exploring_level)),
-    towerLevel: asNullableNumber(firstPresent(quest.towerLevel, quest.tower_level)),
+    farmingLevel: asNullableNumber(firstPresent(quest.farmingLevel, quest.farming_level, quest.requiredFarmingLevel)),
+    fishingLevel: asNullableNumber(firstPresent(quest.fishingLevel, quest.fishing_level, quest.requiredFishingLevel)),
+    craftingLevel: asNullableNumber(firstPresent(quest.craftingLevel, quest.crafting_level, quest.requiredCraftingLevel)),
+    exploringLevel: asNullableNumber(firstPresent(quest.exploringLevel, quest.exploring_level, quest.requiredExploringLevel)),
+    towerLevel: asNullableNumber(firstPresent(quest.towerLevel, quest.tower_level, quest.requiredTowerLevel)),
     previousQuestKey: previousQuestName ? normalizeKey(previousQuestName) : null,
     nextQuestKeys: nextQuestNames.map(normalizeKey),
     sourceUrl: target.buddyUrl,
