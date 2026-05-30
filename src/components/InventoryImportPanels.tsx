@@ -18,6 +18,12 @@ import {
 } from '../lib/localItemReferenceLookup';
 import { parseCurrentInventoryPaste } from '../lib/parseCurrentInventoryPaste';
 import { parseStoredPetInventoryPaste } from '../lib/parseStoredPetInventoryPaste';
+import { toCanonicalItemKey } from '../lib/normalizeItemKey';
+import {
+  createUnknownItemEvidenceFromWarnings,
+  createUnknownItemEvidenceRecord,
+  recordUnknownItemEvidence,
+} from '../lib/unknownItemEvidence';
 
 type ImportPanelProps = {
   acquisitionPlannerState: AcquisitionPlannerInputState;
@@ -84,6 +90,12 @@ export function CurrentInventoryImportPanel({
     const savedState = replaceCurrentInventoryEntries(acquisitionPlannerState, parsed.entries);
     saveAcquisitionPlannerInputState(savedState);
     onAcquisitionPlannerStateChange(savedState);
+    recordUnknownItemEvidence(
+      createUnknownItemEvidenceFromWarnings(parsed.warnings, {
+        sourceType: 'current_inventory_import',
+        sourceLabel: 'Current inventory import',
+      }),
+    );
     setCurrentInventoryPaste('');
     setCurrentInventoryMessage(`Imported ${parsed.entries.length.toLocaleString()} current inventory entries.`);
     setCurrentInventoryWarnings(parsed.warnings);
@@ -99,6 +111,19 @@ export function CurrentInventoryImportPanel({
     }
 
     const resolved = localItemLookup ? resolveLocalItemReference(currentInventoryName, localItemLookup) : null;
+
+    if (resolved && !resolved.recognized) {
+      const evidenceRecord = createUnknownItemEvidenceRecord({
+        sourceType: 'current_inventory_import',
+        sourceLabel: 'Manual current inventory entry',
+        observedName: currentInventoryName,
+        sampleContext: `Manual current inventory quantity ${quantity}`,
+        warningText: resolved.warnings.join('; '),
+      });
+
+      recordUnknownItemEvidence(evidenceRecord ? [evidenceRecord] : []);
+    }
+
     const savedState = upsertCurrentInventoryItemInput(acquisitionPlannerState, {
       itemName: resolved?.displayName ?? currentInventoryName.trim(),
       inventoryCount: quantity,
@@ -109,7 +134,7 @@ export function CurrentInventoryImportPanel({
     setCurrentInventoryName('');
     setCurrentInventoryQuantity('');
     setCurrentInventoryMessage(`Saved ${resolved?.displayName ?? currentInventoryName.trim()} current inventory.`);
-    setCurrentInventoryWarnings([]);
+    setCurrentInventoryWarnings(resolved && !resolved.recognized ? resolved.warnings : []);
   };
 
   return (
@@ -251,6 +276,12 @@ export function StoredPetInventoryImportPanel({
     const savedState = replaceStoredPetInventoryEntries(acquisitionPlannerState, parsed.entries);
     saveAcquisitionPlannerInputState(savedState);
     onAcquisitionPlannerStateChange(savedState);
+    recordUnknownItemEvidence(
+      createUnknownItemEvidenceFromWarnings(parsed.warnings, {
+        sourceType: 'stored_pet_inventory_import',
+        sourceLabel: 'Stored pet inventory import',
+      }),
+    );
     setStoredPetInventoryPaste('');
     setStoredPetInventoryMessage(`Imported ${parsed.entries.length.toLocaleString()} stored pet inventory entries.`);
     setStoredPetInventoryWarnings(parsed.warnings);
@@ -265,6 +296,24 @@ export function StoredPetInventoryImportPanel({
       return;
     }
 
+    const storedPetCanonicalKey = toCanonicalItemKey(storedPetInventoryName);
+    const storedPetWarnings =
+      knownItemKeys && !knownItemKeys.has(storedPetCanonicalKey)
+        ? [`Manual pet item "${storedPetInventoryName.trim()}" was not found in local reference data and was kept as entered.`]
+        : [];
+
+    if (storedPetWarnings.length > 0) {
+      const evidenceRecord = createUnknownItemEvidenceRecord({
+        sourceType: 'stored_pet_inventory_import',
+        sourceLabel: 'Manual stored pet inventory entry',
+        observedName: storedPetInventoryName,
+        sampleContext: `Manual stored pet inventory quantity ${quantity}`,
+        warningText: storedPetWarnings.join('; '),
+      });
+
+      recordUnknownItemEvidence(evidenceRecord ? [evidenceRecord] : []);
+    }
+
     const savedState = upsertStoredPetInventoryItemInput(acquisitionPlannerState, {
       itemName: storedPetInventoryName.trim(),
       storedCount: quantity,
@@ -275,7 +324,7 @@ export function StoredPetInventoryImportPanel({
     setStoredPetInventoryName('');
     setStoredPetInventoryQuantity('');
     setStoredPetInventoryMessage(`Saved ${storedPetInventoryName.trim()} stored pet inventory.`);
-    setStoredPetInventoryWarnings([]);
+    setStoredPetInventoryWarnings(storedPetWarnings);
   };
 
   return (

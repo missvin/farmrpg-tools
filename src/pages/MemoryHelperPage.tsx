@@ -27,6 +27,10 @@ import {
   type MemoryHelperSlotStatus,
   type MemoryHelperState,
 } from '../lib/memoryHelperState';
+import {
+  createUnknownItemEvidenceRecord,
+  recordUnknownItemEvidence,
+} from '../lib/unknownItemEvidence';
 
 type ResourceState = {
   isLoading: boolean;
@@ -411,6 +415,19 @@ export function MemoryHelperPage() {
     }
 
     const result = resolveLocalItemReference(inputName, resourceState.lookup);
+
+    if (!result.recognized) {
+      const evidenceRecord = createUnknownItemEvidenceRecord({
+        sourceType: 'lost_and_found',
+        sourceLabel: BORGENS_LOST_AND_FOUND_LABEL,
+        observedName: inputName,
+        sampleContext: `${formatSlotPosition(activeSlot?.row ?? 0, activeSlot?.column ?? 0)} entry`,
+        warningText: result.warnings.join('; '),
+      });
+
+      recordUnknownItemEvidence(evidenceRecord ? [evidenceRecord] : []);
+    }
+
     setMemoryState((currentState) =>
       setMemoryHelperSlotItem(currentState, {
         slotId: activeSlotId,

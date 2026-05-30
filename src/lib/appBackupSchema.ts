@@ -8,6 +8,10 @@ import type { PumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
 import type { AppTheme } from './themePreference';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 import type { TargetOutputPlannerState } from './targetOutputPlannerState';
+import {
+  isValidUnknownItemEvidenceState,
+  type UnknownItemEvidenceState,
+} from './unknownItemEvidence';
 
 export const APP_BACKUP_PAYLOAD_KIND = 'farmrpg-tools-backup';
 export const APP_BACKUP_SCHEMA_VERSION = 1;
@@ -28,6 +32,7 @@ export type AppBackupStateV1 = {
     masteryRaceCountsState?: MasteryRaceCountsState | null;
     museumCompletionState?: MuseumCompletionState | null;
     targetOutputPlannerState?: TargetOutputPlannerState | null;
+    unknownItemEvidenceState?: UnknownItemEvidenceState | null;
     themePreference: AppTheme | null;
   };
 };
@@ -54,6 +59,7 @@ export type CreateAppBackupPayloadInput = {
   masteryRaceCountsState?: MasteryRaceCountsState | null;
   museumCompletionState?: MuseumCompletionState | null;
   targetOutputPlannerState?: TargetOutputPlannerState | null;
+  unknownItemEvidenceState?: UnknownItemEvidenceState | null;
   themePreference: AppTheme | null;
 };
 
@@ -83,7 +89,8 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_personal_mastery_goals_state'
   | 'invalid_mastery_race_counts_state'
   | 'invalid_museum_completion_state'
-  | 'invalid_target_output_planner_state';
+  | 'invalid_target_output_planner_state'
+  | 'invalid_unknown_item_evidence_state';
 
 export type AppBackupPayloadValidationResult =
   | { ok: true; payload: AppBackupPayloadV1 }
@@ -596,6 +603,7 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
           masteryRaceCountsState: input.masteryRaceCountsState ?? null,
           museumCompletionState: input.museumCompletionState ?? null,
           targetOutputPlannerState: input.targetOutputPlannerState ?? null,
+          unknownItemEvidenceState: input.unknownItemEvidenceState ?? null,
           themePreference: input.themePreference,
         },
       },
@@ -820,6 +828,19 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       ok: false,
       code: 'invalid_target_output_planner_state',
       message: 'The backup file contains malformed target-output planner state.',
+    };
+  }
+
+  const unknownItemEvidenceState = value.state.preferences.unknownItemEvidenceState;
+  if (
+    unknownItemEvidenceState !== undefined &&
+    unknownItemEvidenceState !== null &&
+    !isValidUnknownItemEvidenceState(unknownItemEvidenceState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_unknown_item_evidence_state',
+      message: 'The backup file contains malformed unknown-item review state.',
     };
   }
 

@@ -41,6 +41,11 @@ import {
   saveTargetOutputPlannerState,
 } from './targetOutputPlannerState';
 import { clearStoredAppTheme, persistAppTheme, readStoredAppTheme } from './themePreference';
+import {
+  clearUnknownItemEvidenceState,
+  loadUnknownItemEvidenceState,
+  saveUnknownItemEvidenceState,
+} from './unknownItemEvidence';
 
 export async function readAppBackupFile(file: File): Promise<AppBackupPayloadV1> {
   let rawText: string;
@@ -78,6 +83,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   const currentMasteryRaceCountsState = loadMasteryRaceCountsState();
   const currentMuseumCompletionState = loadMuseumCompletionState();
   const currentTargetOutputPlannerState = loadTargetOutputPlannerState();
+  const currentUnknownItemEvidenceState = loadUnknownItemEvidenceState();
   const currentThemePreference = readStoredAppTheme();
 
   try {
@@ -131,6 +137,12 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       clearTargetOutputPlannerState();
     }
 
+    if (payload.state.preferences.unknownItemEvidenceState) {
+      saveUnknownItemEvidenceState(payload.state.preferences.unknownItemEvidenceState);
+    } else {
+      clearUnknownItemEvidenceState();
+    }
+
     if (payload.state.preferences.themePreference) {
       persistAppTheme(payload.state.preferences.themePreference);
     } else {
@@ -146,6 +158,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     saveMasteryRaceCountsState(currentMasteryRaceCountsState);
     saveMuseumCompletionState(currentMuseumCompletionState);
     saveTargetOutputPlannerState(currentTargetOutputPlannerState);
+    saveUnknownItemEvidenceState(currentUnknownItemEvidenceState);
 
     if (currentThemePreference) {
       persistAppTheme(currentThemePreference);

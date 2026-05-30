@@ -55,6 +55,9 @@ const TowerReferenceMaintenancePage = lazy(() =>
     default: module.TowerReferenceMaintenancePage,
   })),
 );
+const UnknownItemReviewPage = lazy(() =>
+  import('../pages/UnknownItemReviewPage').then((module) => ({ default: module.UnknownItemReviewPage })),
+);
 
 type AppRoute = {
   path: string;
@@ -177,6 +180,11 @@ export const appRoutes: AppRoute[] = [
     element: <TowerReferenceMaintenancePage />,
   },
   {
+    path: '/unknown-items',
+    label: 'Unknown Item Review',
+    element: <UnknownItemReviewPage />,
+  },
+  {
     path: '/history',
     label: 'History',
     element: <HistoryPage />,
@@ -243,6 +251,7 @@ export const navigationSections: NavigationSection[] = [
     items: [
       { to: '/museum-tools', label: 'Museum Tools' },
       { to: '/tower-reference-maintenance', label: 'Tower Reference Maintenance' },
+      { to: '/unknown-items', label: 'Unknown Item Review' },
       { to: '/backlog-graph', label: 'Backlog Graph' },
     ],
   },

@@ -172,6 +172,7 @@ describe('appBackupSchema', () => {
           masteryRaceCountsState,
           museumCompletionState,
           targetOutputPlannerState,
+          unknownItemEvidenceState: null,
           themePreference: 'dark',
         },
       },

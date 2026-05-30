@@ -11,6 +11,11 @@ import {
 } from '../lib/acquisitionPlannerState';
 import { resolveLocalItemReference } from '../lib/localItemReferenceLookup';
 import { parseLocksmithStockpilePaste } from '../lib/parseLocksmithStockpilePaste';
+import {
+  createUnknownItemEvidenceFromWarnings,
+  createUnknownItemEvidenceRecord,
+  recordUnknownItemEvidence,
+} from '../lib/unknownItemEvidence';
 import { useImportReferenceLookup } from '../lib/useImportReferenceLookup';
 
 export function LocksmithImportPage() {
@@ -65,6 +70,12 @@ export function LocksmithImportPage() {
         sourceCategory: 'container',
       })),
     );
+    recordUnknownItemEvidence(
+      createUnknownItemEvidenceFromWarnings(parsed.warnings, {
+        sourceType: 'locksmith_import',
+        sourceLabel: 'Locksmith import',
+      }),
+    );
     setPasteText('');
     setMessage(`Imported ${parsed.entries.length.toLocaleString()} Locksmith stockpile entries.`);
     setWarnings(parsed.warnings);
@@ -80,6 +91,19 @@ export function LocksmithImportPage() {
     }
 
     const resolved = localItemLookup ? resolveLocalItemReference(manualItemName, localItemLookup) : null;
+
+    if (resolved && !resolved.recognized) {
+      const evidenceRecord = createUnknownItemEvidenceRecord({
+        sourceType: 'locksmith_import',
+        sourceLabel: 'Manual Locksmith entry',
+        observedName: manualItemName,
+        sampleContext: `Manual openable stockpile quantity ${quantity}`,
+        warningText: resolved.warnings.join('; '),
+      });
+
+      recordUnknownItemEvidence(evidenceRecord ? [evidenceRecord] : []);
+    }
+
     const savedState = upsertOwnedNowItemInput(acquisitionPlannerState, {
       itemName: resolved?.displayName ?? manualItemName.trim(),
       ownedCount: quantity,
