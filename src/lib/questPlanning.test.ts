@@ -5,6 +5,7 @@ import { createDefaultCraftingModifierState } from './craftingModifierState';
 import { createDefaultDropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import type { DropRateReferenceData, DropRateReferenceEntry } from './loadDropRateReference';
 import { buildRecipeGraph, parseRecipeInputsCsv, parseRecipesCsv } from './loadRecipeGraph';
+import type { TowerRequirementsData } from './loadTowerRequirements';
 import type { QuestReferenceData } from './loadQuestReference';
 import { buildQuestAvailableSupply, buildQuestPlanningViewModel } from './questPlanning';
 import { DEFAULT_QUEST_PLANNER_STATE } from './questPlannerState';
@@ -12,13 +13,15 @@ import { DEFAULT_QUEST_PLANNER_STATE } from './questPlannerState';
 const RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url
 Board,board,craft,,,,,https://buddy.farm/i/board/
 Fancy Pipe,fancy pipe,craft,,,,,https://buddy.farm/i/fancy-pipe/
-Wooden Shield,wooden shield,craft,,,,,https://buddy.farm/i/wooden-shield/`;
+Wooden Shield,wooden shield,craft,,,,,https://buddy.farm/i/wooden-shield/
+Salt,salt,craft,,,,,https://buddy.farm/i/salt/`;
 
 const RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
 board,Board,1,Wood,wood,5
 fancy pipe,Fancy Pipe,1,Board,board,2
 fancy pipe,Fancy Pipe,2,Iron,iron,1
-wooden shield,Wooden Shield,1,Board,board,3`;
+wooden shield,Wooden Shield,1,Board,board,3
+salt,Salt,1,Salt Rock,salt rock,50`;
 
 function createRecipeGraph() {
   return buildRecipeGraph(
@@ -145,6 +148,83 @@ function createQuestReferenceData(): QuestReferenceData {
         },
       ],
     },
+  };
+}
+
+const SALT_TOWER_REQUIREMENTS: TowerRequirementsData = {
+  entries: [
+    {
+      towerLevel: 294,
+      towerLevelRange: '291-300',
+      slotIndex: 2,
+      itemName: 'Salt',
+      canonicalKey: 'salt',
+      masteryLevelNeeded: 'MM',
+      farmrpgItemId: null,
+      buddySlug: null,
+      notes: null,
+      sourceSheet: null,
+      sourceRow: null,
+    },
+  ],
+  byCanonicalKey: {
+    salt: [
+      {
+        towerLevel: 294,
+        towerLevelRange: '291-300',
+        slotIndex: 2,
+        itemName: 'Salt',
+        canonicalKey: 'salt',
+        masteryLevelNeeded: 'MM',
+        farmrpgItemId: null,
+        buddySlug: null,
+        notes: null,
+        sourceSheet: null,
+        sourceRow: null,
+      },
+    ],
+  },
+};
+
+function createScaryQuestReferenceData(): QuestReferenceData {
+  const quest = {
+    questKey: 'pirates start arriving xvi',
+    questName: 'Pirates Start Arriving XVI',
+    questlineKey: 'pirates start arriving',
+    questlineName: 'Pirates Start Arriving',
+    questlineAliases: ['PSA'],
+    stageLabel: 'XVI',
+    npc: 'Vincent',
+    farmingLevel: null,
+    fishingLevel: null,
+    craftingLevel: null,
+    exploringLevel: null,
+    towerLevel: null,
+    previousQuestKey: null,
+    nextQuestKeys: [],
+    sourceUrl: 'https://buddy.farm/q/pirates-start-arriving-xvi/',
+    coverageStatus: 'reviewed' as const,
+    notes: [],
+  };
+
+  return {
+    quests: [quest],
+    questsByKey: { [quest.questKey]: quest },
+    requirementsByQuestKey: {
+      [quest.questKey]: [
+        {
+          questKey: quest.questKey,
+          requirementType: 'item',
+          itemName: 'Orange Gecko',
+          canonicalKey: 'orange gecko',
+          quantity: 8000,
+          sourceUrl: quest.sourceUrl,
+          notes: [],
+        },
+      ],
+    },
+    rewardsByQuestKey: {},
+    sourceHintsByCanonicalKey: {},
   };
 }
 
@@ -318,14 +398,14 @@ describe('buildQuestAvailableSupply', () => {
           targetCanonicalKey: 'board',
           sourceName: 'Forest',
           sourceCanonicalKey: 'forest',
-          rawRate: 0.5,
+          rawRate: 500,
         }),
         createDropRateRow({
           targetItemName: 'Wood',
           targetCanonicalKey: 'wood',
           sourceName: 'Forest',
           sourceCanonicalKey: 'forest',
-          rawRate: 1,
+          rawRate: 100,
         }),
       ]),
       dropRateSettings: createDefaultDropRateAcquisitionSettings(),
@@ -341,6 +421,60 @@ describe('buildQuestAvailableSupply', () => {
     });
     expect(viewModel.sourcePressure[0].itemNames).toEqual(expect.arrayContaining(['Board', 'Wood']));
     expect(viewModel.sourcePressure[0].questNames).toEqual(expect.arrayContaining(['Pipe Quest', 'Shield Quest']));
-    expect(viewModel.sourcePressure[0].estimatedUnitQuantity).toBeCloseTo(0.1);
+    expect(viewModel.sourcePressure[0].estimatedUnitQuantity).toBeCloseTo(14);
+  });
+
+  it('surfaces scary future blockers and same-source tower synergies from drop-rate rows', () => {
+    const viewModel = buildQuestPlanningViewModel({
+      referenceData: createScaryQuestReferenceData(),
+      questPlannerState: {
+        ...DEFAULT_QUEST_PLANNER_STATE,
+        questStates: [
+          {
+            questKey: 'pirates start arriving xvi',
+            status: 'watched',
+            hidden: false,
+            observedNpc: null,
+            observedCompletionPercent: null,
+            lastObservedAt: null,
+          },
+        ],
+      },
+      acquisitionState: createDefaultAcquisitionPlannerInputState(),
+      recipeGraph: createRecipeGraph(),
+      modifierState: createDefaultCraftingModifierState(),
+      dropRateReference: createDropRateReferenceData([
+        createDropRateRow({
+          targetItemName: 'Orange Gecko',
+          targetCanonicalKey: 'orange gecko',
+          sourceName: 'Black Rock Canyon',
+          sourceCanonicalKey: 'black rock canyon',
+          rawRate: 7500,
+        }),
+        createDropRateRow({
+          targetItemName: 'Salt Rock',
+          targetCanonicalKey: 'salt rock',
+          sourceName: 'Black Rock Canyon',
+          sourceCanonicalKey: 'black rock canyon',
+          rawRate: 20,
+        }),
+      ]),
+      dropRateSettings: createDefaultDropRateAcquisitionSettings(),
+      towerRequirementsData: SALT_TOWER_REQUIREMENTS,
+    });
+
+    expect(viewModel.scaryWatchItems[0]).toMatchObject({
+      itemName: 'Orange Gecko',
+      missingQuantity: 8000,
+    });
+    expect(viewModel.scaryWatchItems[0].sourcePressure[0].sourceName).toBe('Black Rock Canyon');
+    expect(viewModel.synergyHints).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        questItemName: 'Orange Gecko',
+        relatedItemName: 'Salt Rock',
+        targetItemName: 'Salt',
+        targetLabel: 'Tower 294',
+      }),
+    ]));
   });
 });

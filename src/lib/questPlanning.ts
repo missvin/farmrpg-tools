@@ -79,6 +79,19 @@ export type QuestBottleneck = {
   sourceHints: QuestItemSourceHintEntry[];
 };
 
+export type QuestScaryWatchItem = {
+  canonicalKey: string;
+  itemName: string;
+  grossRequiredQuantity: number;
+  availableQuantity: number;
+  missingQuantity: number;
+  requiredCraftOperations: number;
+  questNames: string[];
+  sourceHints: QuestItemSourceHintEntry[];
+  sourcePressure: QuestSourcePressure[];
+  reasons: string[];
+};
+
 export type QuestSourcePressure = {
   sourceKey: string;
   sourceName: string;
@@ -129,11 +142,13 @@ export type QuestResourcePlanningResult = {
 };
 
 export type QuestPlanningViewModel = {
+  questProgress: QuestProgress[];
   activeQuestProgress: QuestProgress[];
   watchedQuestProgress: QuestProgress[];
   completedQuestProgress: QuestProgress[];
   nextSuggestions: QuestNextSuggestion[];
   bottlenecks: QuestBottleneck[];
+  scaryWatchItems: QuestScaryWatchItem[];
   sourcePressure: QuestSourcePressure[];
   synergyHints: QuestSynergyHint[];
   availableSupply: QuestAvailableSupplyEntry[];
@@ -419,7 +434,7 @@ function estimatePreferredUnitQuantity(input: {
     sourceType: input.row.sourceType,
     fromUnit: baseUnit,
     toUnit: input.preferredUnit,
-    direction: 'items_per_unit',
+    direction: 'units_per_item',
     settings: input.settings,
     baseDropRate: input.row.baseDropRate,
   });
@@ -428,7 +443,7 @@ function estimatePreferredUnitQuantity(input: {
     return null;
   }
 
-  return input.missingQuantity / conversion.rate;
+  return input.missingQuantity * conversion.rate;
 }
 
 function addSourcePressure(
@@ -537,6 +552,119 @@ function deriveSourcePressure(input: {
   });
 }
 
+function isFutureScaryQuest(progress: QuestProgress): boolean {
+  if (progress.status === 'completed' || progress.status === 'active') {
+    return false;
+  }
+
+  if (progress.hidden && progress.status !== 'watched') {
+    return false;
+  }
+
+  return progress.quest.coverageStatus === 'reviewed' && progress.requirements.length > 0;
+}
+
+function getScaryWatchReasons(row: QuestResourcePlanningRow, sourcePressure: QuestSourcePressure[]): string[] {
+  const reasons: string[] = [];
+
+  if (row.grossRequiredQuantity >= 10_000) {
+    reasons.push('large future demand');
+  } else if (row.grossRequiredQuantity >= 1_000) {
+    reasons.push('worth hoarding early');
+  }
+
+  if (row.requiredCraftOperations > 0) {
+    reasons.push('crafted dependency');
+  }
+
+  if (row.sourceHints.some((sourceHint) => normalizeDropRateSourceType(sourceHint.sourceType) === 'fishing')) {
+    reasons.push('competes for fishing resources');
+  }
+
+  if (row.sourceHints.some((sourceHint) => sourceHint.preferredUnit.toLowerCase().includes('large net'))) {
+    reasons.push('large-net pressure');
+  }
+
+  if (sourcePressure.some((pressure) => pressure.estimatedUnitQuantity !== null && pressure.estimatedUnitQuantity >= 100)) {
+    reasons.push('source estimate is high');
+  }
+
+  if (row.canonicalKey === 'frost snapper shell') {
+    reasons.push('needed directly and through Frost Shield chains');
+  }
+
+  if (row.canonicalKey === 'salt rock') {
+    reasons.push('feeds Salt planning');
+  }
+
+  return Array.from(new Set(reasons));
+}
+
+function deriveScaryWatchItems(input: {
+  futureResourcePlan: QuestResourcePlanningResult | null;
+  futureSourcePressure: QuestSourcePressure[];
+}): QuestScaryWatchItem[] {
+  if (!input.futureResourcePlan) {
+    return [];
+  }
+
+  const pressureByItemName = input.futureSourcePressure.reduce<Record<string, QuestSourcePressure[]>>((lookup, pressure) => {
+    for (const itemName of pressure.itemNames) {
+      lookup[itemName] = [...(lookup[itemName] ?? []), pressure];
+    }
+
+    return lookup;
+  }, {});
+
+  return input.futureResourcePlan.missingRows
+    .map((row) => {
+      const sourcePressure = pressureByItemName[row.itemName] ?? [];
+      const reasons = getScaryWatchReasons(row, sourcePressure);
+
+      return {
+        canonicalKey: row.canonicalKey,
+        itemName: row.itemName,
+        grossRequiredQuantity: row.grossRequiredQuantity,
+        availableQuantity: row.availableQuantity,
+        missingQuantity: row.remainingQuantity,
+        requiredCraftOperations: row.requiredCraftOperations,
+        questNames: row.questNames,
+        sourceHints: row.sourceHints,
+        sourcePressure,
+        reasons,
+      };
+    })
+    .filter((item) => {
+      return (
+        item.missingQuantity > 0 &&
+        (item.missingQuantity >= 1_000 ||
+          item.grossRequiredQuantity >= 1_000 ||
+          item.requiredCraftOperations > 0 ||
+          item.sourceHints.length > 0 ||
+          item.sourcePressure.length > 0)
+      );
+    })
+    .sort((left, right) => {
+      const leftEstimatedPressure = left.sourcePressure.reduce((sum, pressure) => {
+        return sum + (pressure.estimatedUnitQuantity ?? 0);
+      }, 0);
+      const rightEstimatedPressure = right.sourcePressure.reduce((sum, pressure) => {
+        return sum + (pressure.estimatedUnitQuantity ?? 0);
+      }, 0);
+
+      if (rightEstimatedPressure !== leftEstimatedPressure) {
+        return rightEstimatedPressure - leftEstimatedPressure;
+      }
+
+      if (right.missingQuantity !== left.missingQuantity) {
+        return right.missingQuantity - left.missingQuantity;
+      }
+
+      return left.itemName.localeCompare(right.itemName);
+    })
+    .slice(0, 12);
+}
+
 function getIncompleteTowerEntries(
   canonicalKey: string,
   towerRequirementsData: TowerRequirementsData | null | undefined,
@@ -597,6 +725,45 @@ function findTowerRecipeSynergies(input: {
   return synergyHints;
 }
 
+function findTowerRecipeSynergiesForRelatedItem(input: {
+  questRequirement: QuestRequirementProgress;
+  sourceName: string;
+  sourceType: string;
+  sourceUrl: string;
+  relatedItemName: string;
+  relatedCanonicalKey: string;
+  recipeGraph: RecipeGraph | null | undefined;
+  towerRequirementsData: TowerRequirementsData | null | undefined;
+  snapshot: MasterySnapshot | null | undefined;
+}): QuestSynergyHint[] {
+  const usedInRecipes = input.recipeGraph?.byInputCanonicalKey[input.relatedCanonicalKey] ?? [];
+  const synergyHints: QuestSynergyHint[] = [];
+
+  for (const recipe of usedInRecipes) {
+    const towerEntries = getIncompleteTowerEntries(
+      recipe.outputCanonicalKey,
+      input.towerRequirementsData,
+      input.snapshot,
+    );
+
+    if (towerEntries.length === 0) {
+      continue;
+    }
+
+    synergyHints.push({
+      sourceName: input.sourceName,
+      sourceType: input.sourceType,
+      questItemName: input.questRequirement.itemName,
+      relatedItemName: input.relatedItemName,
+      targetItemName: recipe.outputItemName,
+      targetLabel: `Tower ${towerEntries.map((entry) => entry.towerLevel).join(', ')}`,
+      sourceUrl: input.sourceUrl,
+    });
+  }
+
+  return synergyHints;
+}
+
 function uniqueSynergyKey(synergyHint: QuestSynergyHint): string {
   return [
     synergyHint.sourceName,
@@ -613,6 +780,8 @@ function deriveSynergyHints(input: {
   recipeGraph: RecipeGraph | null | undefined;
   towerRequirementsData: TowerRequirementsData | null | undefined;
   snapshot: MasterySnapshot | null | undefined;
+  dropRateReference?: DropRateReferenceData | null;
+  dropRateSettings?: DropRateAcquisitionSettings | null;
 }): QuestSynergyHint[] {
   const synergyHintsByKey = new Map<string, QuestSynergyHint>();
 
@@ -634,6 +803,37 @@ function deriveSynergyHints(input: {
 
         for (const synergyHint of synergyHints) {
           synergyHintsByKey.set(uniqueSynergyKey(synergyHint), synergyHint);
+        }
+      }
+
+      const matchingDropRateRows = input.dropRateReference?.byTargetCanonicalKey[requirement.canonicalKey]
+        ?.filter((row) => (input.dropRateSettings ? dropRateRowMatchesSettings(row, input.dropRateSettings) : true)) ?? [];
+
+      for (const dropRateRow of matchingDropRateRows) {
+        const relatedRows = input.dropRateReference?.entries.filter((relatedRow) => {
+          return (
+            relatedRow.sourceCanonicalKey === dropRateRow.sourceCanonicalKey &&
+            relatedRow.targetCanonicalKey !== requirement.canonicalKey &&
+            (input.dropRateSettings ? dropRateRowMatchesSettings(relatedRow, input.dropRateSettings) : true)
+          );
+        }) ?? [];
+
+        for (const relatedRow of relatedRows) {
+          const synergyHints = findTowerRecipeSynergiesForRelatedItem({
+            questRequirement: requirement,
+            sourceName: dropRateRow.sourceName,
+            sourceType: dropRateRow.sourceType,
+            sourceUrl: dropRateRow.sourcePageUrl,
+            relatedItemName: relatedRow.targetItemName,
+            relatedCanonicalKey: relatedRow.targetCanonicalKey,
+            recipeGraph: input.recipeGraph,
+            towerRequirementsData: input.towerRequirementsData,
+            snapshot: input.snapshot,
+          });
+
+          for (const synergyHint of synergyHints) {
+            synergyHintsByKey.set(uniqueSynergyKey(synergyHint), synergyHint);
+          }
         }
       }
     }
@@ -770,6 +970,7 @@ export function buildQuestPlanningViewModel(input: {
   const watchedQuestProgress = visibleProgressRows.filter((progress) => progress.status === 'watched');
   const completedQuestProgress = visibleProgressRows.filter((progress) => progress.status === 'completed');
   const demandProgressRows = [...activeQuestProgress, ...watchedQuestProgress];
+  const futureScaryProgressRows = visibleProgressRows.filter(isFutureScaryQuest);
   const resourcePlan = buildQuestResourcePlanningResult({
     demandProgressRows,
     referenceData: input.referenceData,
@@ -779,6 +980,21 @@ export function buildQuestPlanningViewModel(input: {
     petSourceReference: input.petSourceReference,
     supplyOverrides: input.supplyOverrides,
   });
+  const futureResourcePlan = buildQuestResourcePlanningResult({
+    demandProgressRows: futureScaryProgressRows,
+    referenceData: input.referenceData,
+    acquisitionState: input.acquisitionState,
+    recipeGraph: input.recipeGraph,
+    modifierState: input.modifierState,
+    petSourceReference: input.petSourceReference,
+    supplyOverrides: input.supplyOverrides,
+  });
+  const futureSourcePressure = deriveSourcePressure({
+    progressRows: futureScaryProgressRows,
+    resourcePlan: futureResourcePlan,
+    dropRateReference: input.dropRateReference,
+    dropRateSettings: input.dropRateSettings,
+  });
   const warnings: string[] = [];
 
   if (input.acquisitionState.pets.futureProduction.enabled) {
@@ -786,11 +1002,13 @@ export function buildQuestPlanningViewModel(input: {
   }
 
   return {
+    questProgress: visibleProgressRows,
     activeQuestProgress,
     watchedQuestProgress,
     completedQuestProgress,
     nextSuggestions: deriveNextSuggestions(input.referenceData, input.questPlannerState, input.includeHidden ?? false),
     bottlenecks: deriveBottlenecks(demandProgressRows),
+    scaryWatchItems: deriveScaryWatchItems({ futureResourcePlan, futureSourcePressure }),
     sourcePressure: deriveSourcePressure({
       progressRows: demandProgressRows,
       resourcePlan,
@@ -803,6 +1021,8 @@ export function buildQuestPlanningViewModel(input: {
       recipeGraph: input.recipeGraph,
       towerRequirementsData: input.towerRequirementsData,
       snapshot: input.snapshot,
+      dropRateReference: input.dropRateReference,
+      dropRateSettings: input.dropRateSettings,
     }),
     availableSupply,
     resourcePlan,

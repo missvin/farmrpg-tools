@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
@@ -37,6 +37,7 @@ import {
   type QuestResourcePlanningResult,
   type QuestResourcePlanningRow,
   type QuestRequirementProgress,
+  type QuestScaryWatchItem,
 } from '../lib/questPlanning';
 import {
   getQuestState,
@@ -148,6 +149,73 @@ function compareQuestPickerRows(left: QuestCatalogEntry, right: QuestCatalogEntr
     (left.stageLabel ?? '').localeCompare(right.stageLabel ?? '') ||
     left.questName.localeCompare(right.questName)
   );
+}
+
+type QuestPickerMode = 'chain' | 'closest' | 'scary' | 'reward';
+
+function questRewardsMatch(referenceData: QuestReferenceData, quest: QuestCatalogEntry, searchText: string): boolean {
+  const normalizedSearch = searchText.trim().toLowerCase();
+
+  if (!normalizedSearch) {
+    return true;
+  }
+
+  return (referenceData.rewardsByQuestKey[quest.questKey] ?? []).some((reward) => {
+    return (
+      reward.itemName.toLowerCase().includes(normalizedSearch) ||
+      reward.canonicalKey.toLowerCase().includes(normalizedSearch)
+    );
+  });
+}
+
+function getQuestProgressByKey(viewModel: QuestPlanningViewModel): Record<string, QuestProgress> {
+  return viewModel.questProgress.reduce<Record<string, QuestProgress>>((lookup, progress) => {
+    lookup[progress.quest.questKey] = progress;
+    return lookup;
+  }, {});
+}
+
+function getScaryQuestScore(quest: QuestCatalogEntry, scaryWatchItems: QuestScaryWatchItem[]): number {
+  return scaryWatchItems.reduce((score, item) => {
+    return item.questNames.includes(quest.questName) ? Math.max(score, item.missingQuantity) : score;
+  }, 0);
+}
+
+function compareQuestPickerRowsByMode(
+  left: QuestCatalogEntry,
+  right: QuestCatalogEntry,
+  mode: QuestPickerMode,
+  progressByQuestKey: Record<string, QuestProgress>,
+  scaryWatchItems: QuestScaryWatchItem[],
+): number {
+  if (mode === 'closest') {
+    const leftProgress = progressByQuestKey[left.questKey];
+    const rightProgress = progressByQuestKey[right.questKey];
+    const leftPercent = leftProgress?.completionPercent ?? 0;
+    const rightPercent = rightProgress?.completionPercent ?? 0;
+
+    if (rightPercent !== leftPercent) {
+      return rightPercent - leftPercent;
+    }
+
+    const leftMissing = leftProgress?.missingQuantity ?? Number.POSITIVE_INFINITY;
+    const rightMissing = rightProgress?.missingQuantity ?? Number.POSITIVE_INFINITY;
+
+    if (leftMissing !== rightMissing) {
+      return leftMissing - rightMissing;
+    }
+  }
+
+  if (mode === 'scary') {
+    const leftScore = getScaryQuestScore(left, scaryWatchItems);
+    const rightScore = getScaryQuestScore(right, scaryWatchItems);
+
+    if (rightScore !== leftScore) {
+      return rightScore - leftScore;
+    }
+  }
+
+  return compareQuestPickerRows(left, right);
 }
 
 function RequirementItemLink({ requirement }: { requirement: QuestRequirementProgress }) {
@@ -338,6 +406,10 @@ function QuestPlanningSummary({ viewModel }: { viewModel: QuestPlanningViewModel
         <dd>{viewModel.bottlenecks.length.toLocaleString()}</dd>
       </div>
       <div className="summary-grid__item">
+        <dt>Scary watch</dt>
+        <dd>{viewModel.scaryWatchItems.length.toLocaleString()}</dd>
+      </div>
+      <div className="summary-grid__item">
         <dt>Immediate supply rows</dt>
         <dd>{viewModel.availableSupply.length.toLocaleString()}</dd>
       </div>
@@ -442,6 +514,8 @@ export function QuestPlannerPage() {
   });
   const [questPlannerState, setQuestPlannerState] = useState(() => loadQuestPlannerState());
   const [searchText, setSearchText] = useState('');
+  const [pickerMode, setPickerMode] = useState<QuestPickerMode>('chain');
+  const [rewardSearchText, setRewardSearchText] = useState('');
   const [showHidden, setShowHidden] = useState(false);
   const [helpNeededPasteText, setHelpNeededPasteText] = useState('');
   const [pasteMessage, setPasteMessage] = useState<string | null>(null);
@@ -568,15 +642,24 @@ export function QuestPlannerPage() {
   const questPickerRows = useMemo(() => {
     const referenceData = resourcesState.resources?.referenceData;
 
-    if (!referenceData) {
+    if (!referenceData || !viewModel) {
       return [];
     }
 
+    const progressByQuestKey = getQuestProgressByKey(viewModel);
+
     return referenceData.quests
       .filter((quest) => questMatchesSearch(quest, searchText))
+      .filter((quest) => pickerMode !== 'reward' || questRewardsMatch(referenceData, quest, rewardSearchText))
       .filter((quest) => showHidden || !getQuestState(questPlannerState, quest.questKey).hidden)
-      .sort(compareQuestPickerRows);
-  }, [questPlannerState, resourcesState.resources, searchText, showHidden]);
+      .sort((left, right) => compareQuestPickerRowsByMode(
+        left,
+        right,
+        pickerMode,
+        progressByQuestKey,
+        viewModel.scaryWatchItems,
+      ));
+  }, [pickerMode, questPlannerState, resourcesState.resources?.referenceData, rewardSearchText, searchText, showHidden, viewModel]);
   const viewWarnings = Array.from(new Set([
     ...(resourcesState.resources?.warnings ?? []),
     ...(viewModel?.warnings ?? []),
@@ -721,6 +804,38 @@ export function QuestPlannerPage() {
               placeholder="DI XIII, PSA, Orange Gecko..."
               onChange={(event) => setSearchText(event.target.value)}
             />
+            <div className="segmented-control" role="group" aria-label="Quest picker mode">
+              {([
+                ['chain', 'Chain'],
+                ['closest', 'Closest'],
+                ['scary', 'Scary'],
+                ['reward', 'Reward'],
+              ] as const).map(([mode, label]) => (
+                <button
+                  key={mode}
+                  type="button"
+                  className={`segmented-control__button${pickerMode === mode ? ' segmented-control__button--active' : ''}`}
+                  onClick={() => setPickerMode(mode)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {pickerMode === 'reward' ? (
+              <>
+                <label className="field-label" htmlFor="quest-reward-search">
+                  Reward item
+                </label>
+                <input
+                  id="quest-reward-search"
+                  className="text-input"
+                  type="search"
+                  value={rewardSearchText}
+                  placeholder="Ancient Coin, Gold, item reward..."
+                  onChange={(event) => setRewardSearchText(event.target.value)}
+                />
+              </>
+            ) : null}
             <div className="quest-picker-list" aria-live="polite">
               {questPickerRows.length > 0 ? (
                 questPickerRows.map((quest) => {
@@ -866,6 +981,74 @@ export function QuestPlannerPage() {
               </div>
             ) : (
               <p className="empty-state">No watched quests selected yet.</p>
+            )}
+          </section>
+
+          <section className="page-card" aria-labelledby="scary-watch-heading">
+            <h2 id="scary-watch-heading">Scary Future Watch</h2>
+            {viewModel.scaryWatchItems.length > 0 ? (
+              <div className="table-scroll">
+                <table className="summary-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Item</th>
+                      <th scope="col">Future demand</th>
+                      <th scope="col">Still needed</th>
+                      <th scope="col">Quests</th>
+                      <th scope="col">Why scary</th>
+                      <th scope="col">Known source pressure</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {viewModel.scaryWatchItems.map((item) => (
+                      <tr key={item.canonicalKey}>
+                        <td>
+                          <ItemProfileLink
+                            canonicalKey={item.canonicalKey}
+                            itemName={item.itemName}
+                            iconSrc={getItemIconSrc(item.canonicalKey)}
+                          />
+                        </td>
+                        <td>{formatQuantity(item.grossRequiredQuantity)}</td>
+                        <td>
+                          {formatQuantity(item.missingQuantity)}
+                          {item.availableQuantity > 0 ? (
+                            <span className="subtle-text"> / {formatQuantity(item.availableQuantity)} owned</span>
+                          ) : null}
+                        </td>
+                        <td>{item.questNames.join(', ')}</td>
+                        <td>{item.reasons.length > 0 ? item.reasons.join(', ') : 'watch demand'}</td>
+                        <td>
+                          {item.sourcePressure.length > 0
+                            ? item.sourcePressure.map((pressure) => {
+                              const pressureText = pressure.estimatedUnitQuantity === null
+                                ? `${pressure.sourceName}: ${formatQuantity(pressure.missingQuantity)} missing`
+                                : `${pressure.sourceName}: about ${formatPreciseQuantity(pressure.estimatedUnitQuantity)} ${
+                                  pressure.unitLabel ?? pressure.preferredUnit
+                                }${pressure.estimatedUnitQuantity === 1 ? '' : 's'}`;
+
+                              return pressure.sourceUrl ? (
+                                <a
+                                  href={pressure.sourceUrl}
+                                  key={`${item.canonicalKey}:${pressure.sourceKey}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  {pressureText}
+                                </a>
+                              ) : pressureText;
+                            }).reduce<ReactNode[]>((nodes, node, index) => {
+                              return index === 0 ? [node] : [...nodes, ', ', node];
+                            }, [])
+                            : item.sourceHints.map((sourceHint) => sourceHint.sourceName).join(', ') || 'No local source hint'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="empty-state">No scary future blockers from reviewed local quests yet.</p>
             )}
           </section>
 

@@ -97,7 +97,18 @@ Pumpkin,pumpkin,Unknown Seeds,unknown seeds,farming,seed,seed_output,1,1,item,Un
       readFileSync(join(process.cwd(), 'data', 'drop_rate_reference.csv'), 'utf8'),
     );
 
-    expect(result.entries).toEqual([]);
-    expect(result.byTargetCanonicalKey).toEqual({});
+    expect(result.entries.length).toBeGreaterThan(0);
+    expect(result.byTargetCanonicalKey['frost snapper shell']).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        sourceName: 'Glacier Lake',
+        sourceType: 'fishing',
+      }),
+    ]));
+    expect(result.byTargetCanonicalKey['orange gecko']).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        sourceName: 'Black Rock Canyon',
+        sourceType: 'explore',
+      }),
+    ]));
   });
 });

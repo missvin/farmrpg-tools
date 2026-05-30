@@ -609,6 +609,42 @@ a {
   font-weight: 600;
 }
 
+.segmented-control {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  width: max-content;
+  max-width: 100%;
+  padding: 0.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface-subtle);
+}
+
+.segmented-control__button {
+  min-height: 2.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  color: var(--color-text);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.segmented-control__button:hover,
+.segmented-control__button:focus-visible {
+  border-color: var(--color-button-hover-border);
+  outline: none;
+}
+
+.segmented-control__button--active {
+  border-color: var(--color-button-active-border);
+  background: var(--color-button-active-bg);
+  color: var(--color-text-strong);
+  font-weight: 600;
+}
+
 .status-message {
   color: var(--color-status);
 }
