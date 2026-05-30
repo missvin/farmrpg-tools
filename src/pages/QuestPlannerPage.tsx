@@ -13,7 +13,13 @@ import {
   loadCraftingModifierState,
   type UserCraftingModifierState,
 } from '../lib/craftingModifierState';
+import {
+  createDefaultDropRateAcquisitionSettings,
+  loadDropRateAcquisitionSettings,
+  type DropRateAcquisitionSettings,
+} from '../lib/dropRateAcquisitionSettings';
 import { getItemIcon } from '../lib/itemIconManifest';
+import { loadDropRateReference, type DropRateReferenceData } from '../lib/loadDropRateReference';
 import {
   loadQuestReference,
   type QuestCatalogEntry,
@@ -50,6 +56,8 @@ type QuestPlannerResources = {
   modifierState: UserCraftingModifierState;
   petSourceReference: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
   supplyOverrides: AvailableSupplyOverrideInput[];
+  dropRateReference: DropRateReferenceData | null;
+  dropRateSettings: DropRateAcquisitionSettings;
   towerRequirementsData: TowerRequirementsData | null;
   snapshot: MasterySnapshot | null;
   warnings: string[];
@@ -68,6 +76,16 @@ type HiddenPasteReview = {
 
 function formatQuantity(value: number): string {
   return Math.round(value).toLocaleString();
+}
+
+function formatPreciseQuantity(value: number): string {
+  if (value >= 10) {
+    return formatQuantity(value);
+  }
+
+  return value.toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  });
 }
 
 function formatPercent(value: number): string {
@@ -443,8 +461,10 @@ export function QuestPlannerPage() {
         ]);
         const warnings: string[] = [];
         let petSourceReference: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null = null;
+        let dropRateReference: DropRateReferenceData | null = null;
         let acquisitionState: AcquisitionPlannerInputState;
         let modifierState: UserCraftingModifierState;
+        let dropRateSettings: DropRateAcquisitionSettings;
         let supplyOverrides: AvailableSupplyOverrideInput[] = [];
 
         try {
@@ -460,6 +480,12 @@ export function QuestPlannerPage() {
         }
 
         try {
+          dropRateSettings = loadDropRateAcquisitionSettings();
+        } catch {
+          dropRateSettings = createDefaultDropRateAcquisitionSettings();
+        }
+
+        try {
           supplyOverrides = loadTargetOutputPlannerState().supplyOverrides;
         } catch {
           supplyOverrides = [];
@@ -469,6 +495,12 @@ export function QuestPlannerPage() {
           petSourceReference = await loadPetSourceReference();
         } catch {
           warnings.push('Pet source reference could not be loaded, so future pet supply may be approximate.');
+        }
+
+        try {
+          dropRateReference = await loadDropRateReference();
+        } catch {
+          warnings.push('Drop-rate reference could not be loaded, so source pressure falls back to quest source hints.');
         }
 
         if (!isMounted) {
@@ -485,6 +517,8 @@ export function QuestPlannerPage() {
             modifierState,
             petSourceReference,
             supplyOverrides,
+            dropRateReference,
+            dropRateSettings,
             towerRequirementsData,
             snapshot,
             warnings,
@@ -523,6 +557,8 @@ export function QuestPlannerPage() {
       modifierState: resourcesState.resources.modifierState,
       petSourceReference: resourcesState.resources.petSourceReference,
       supplyOverrides: resourcesState.resources.supplyOverrides,
+      dropRateReference: resourcesState.resources.dropRateReference,
+      dropRateSettings: resourcesState.resources.dropRateSettings,
       towerRequirementsData: resourcesState.resources.towerRequirementsData,
       snapshot: resourcesState.resources.snapshot,
       includeHidden: showHidden,
@@ -880,7 +916,8 @@ export function QuestPlannerPage() {
                 <table className="summary-table">
                   <thead>
                     <tr>
-                      <th scope="col">Source family</th>
+                      <th scope="col">Source</th>
+                      <th scope="col">Pressure</th>
                       <th scope="col">Items</th>
                       <th scope="col">Quests</th>
                     </tr>
@@ -888,7 +925,26 @@ export function QuestPlannerPage() {
                   <tbody>
                     {viewModel.sourcePressure.map((pressure) => (
                       <tr key={pressure.sourceKey}>
-                        <td>{pressure.label}</td>
+                        <td>
+                          {pressure.sourceUrl ? (
+                            <a href={pressure.sourceUrl} target="_blank" rel="noreferrer">
+                              {pressure.sourceName}
+                            </a>
+                          ) : (
+                            pressure.sourceName
+                          )}
+                          <span className="subtle-text"> / {pressure.sourceType}</span>
+                        </td>
+                        <td>
+                          {pressure.estimatedUnitQuantity === null
+                            ? `${formatQuantity(pressure.missingQuantity)} item(s) missing`
+                            : `About ${formatPreciseQuantity(pressure.estimatedUnitQuantity)} ${
+                              pressure.unitLabel ?? pressure.preferredUnit
+                            }${pressure.estimatedUnitQuantity === 1 ? '' : 's'}`}
+                          {pressure.coverage === 'source_hint' ? (
+                            <span className="subtle-text"> / source hint only</span>
+                          ) : null}
+                        </td>
                         <td>{pressure.itemNames.join(', ')}</td>
                         <td>{pressure.questNames.join(', ')}</td>
                       </tr>

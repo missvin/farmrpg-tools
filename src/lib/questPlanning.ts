@@ -5,6 +5,15 @@ import {
   type AvailableSupplyPool,
 } from './availableSupply';
 import type { UserCraftingModifierState } from './craftingModifierState';
+import type { DropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
+import {
+  convertDropRateUnit,
+  getDropRateUnitBasis,
+  getPreferredDropRateUnit,
+  normalizeDropRateSourceType,
+  type DropRateDisplayUnit,
+} from './dropRateUnitConversions';
+import type { DropRateReferenceData, DropRateReferenceEntry } from './loadDropRateReference';
 import type {
   QuestCatalogEntry,
   QuestItemSourceHintEntry,
@@ -72,12 +81,17 @@ export type QuestBottleneck = {
 
 export type QuestSourcePressure = {
   sourceKey: string;
+  sourceName: string;
   sourceType: string;
   preferredUnit: string;
+  unitLabel: string | null;
   label: string;
   missingQuantity: number;
+  estimatedUnitQuantity: number | null;
   itemNames: string[];
   questNames: string[];
+  sourceUrl: string | null;
+  coverage: 'drop_rate' | 'source_hint';
 };
 
 export type QuestSynergyHint = {
@@ -316,44 +330,210 @@ function deriveBottlenecks(progressRows: QuestProgress[]): QuestBottleneck[] {
   });
 }
 
-function deriveSourcePressure(progressRows: QuestProgress[]): QuestSourcePressure[] {
+type QuestSourcePressureDemand = {
+  canonicalKey: string;
+  itemName: string;
+  missingQuantity: number;
+  questNames: string[];
+  sourceHints: QuestItemSourceHintEntry[];
+};
+
+function getSourcePressureDemandRows(
+  progressRows: QuestProgress[],
+  resourcePlan: QuestResourcePlanningResult | null,
+): QuestSourcePressureDemand[] {
+  if (resourcePlan) {
+    return resourcePlan.missingRows
+      .filter((row) => row.remainingQuantity > 0)
+      .map((row) => ({
+        canonicalKey: row.canonicalKey,
+        itemName: row.itemName,
+        missingQuantity: row.remainingQuantity,
+        questNames: row.questNames,
+        sourceHints: row.sourceHints,
+      }));
+  }
+
+  return progressRows
+    .filter(isDemandQuest)
+    .flatMap((progress) => {
+      return progress.requirements
+        .filter((requirement) => requirement.missingQuantity > 0)
+        .map((requirement) => ({
+          canonicalKey: requirement.canonicalKey,
+          itemName: requirement.itemName,
+          missingQuantity: requirement.missingQuantity,
+          questNames: [progress.quest.questName],
+          sourceHints: requirement.sourceHints,
+        }));
+    });
+}
+
+function dropRateRowMatchesSettings(
+  row: DropRateReferenceEntry,
+  settings: DropRateAcquisitionSettings,
+): boolean {
+  if (row.ironDepot !== null && row.ironDepot !== settings.perks.ironDepotActive) {
+    return false;
+  }
+
+  if (row.runecube !== null && row.runecube !== settings.perks.eagleEyeRunecubeActive) {
+    return false;
+  }
+
+  return true;
+}
+
+function getBaseDropRateUnit(sourceType: string): DropRateDisplayUnit | null {
+  const normalizedSourceType = normalizeDropRateSourceType(sourceType);
+
+  if (normalizedSourceType === 'explore') {
+    return 'explores';
+  }
+
+  if (normalizedSourceType === 'fishing') {
+    return 'fish';
+  }
+
+  if (normalizedSourceType === 'farming') {
+    return 'crops';
+  }
+
+  return null;
+}
+
+function estimatePreferredUnitQuantity(input: {
+  missingQuantity: number;
+  row: DropRateReferenceEntry;
+  preferredUnit: DropRateDisplayUnit;
+  settings: DropRateAcquisitionSettings;
+}): number | null {
+  const baseUnit = getBaseDropRateUnit(input.row.sourceType);
+
+  if (!baseUnit || input.row.rawRate <= 0) {
+    return null;
+  }
+
+  const conversion = convertDropRateUnit({
+    rate: input.row.rawRate,
+    sourceType: input.row.sourceType,
+    fromUnit: baseUnit,
+    toUnit: input.preferredUnit,
+    direction: 'items_per_unit',
+    settings: input.settings,
+    baseDropRate: input.row.baseDropRate,
+  });
+
+  if (!conversion.calculable || conversion.rate <= 0) {
+    return null;
+  }
+
+  return input.missingQuantity / conversion.rate;
+}
+
+function addSourcePressure(
+  sourcePressureByKey: Map<string, QuestSourcePressure>,
+  pressure: QuestSourcePressure,
+): void {
+  const existingPressure = sourcePressureByKey.get(pressure.sourceKey);
+
+  if (existingPressure) {
+    existingPressure.missingQuantity += pressure.missingQuantity;
+    existingPressure.estimatedUnitQuantity =
+      existingPressure.estimatedUnitQuantity === null || pressure.estimatedUnitQuantity === null
+        ? null
+        : existingPressure.estimatedUnitQuantity + pressure.estimatedUnitQuantity;
+    existingPressure.itemNames = [...new Set([...existingPressure.itemNames, ...pressure.itemNames])];
+    existingPressure.questNames = [...new Set([...existingPressure.questNames, ...pressure.questNames])];
+    return;
+  }
+
+  sourcePressureByKey.set(pressure.sourceKey, pressure);
+}
+
+function deriveSourcePressure(input: {
+  progressRows: QuestProgress[];
+  resourcePlan: QuestResourcePlanningResult | null;
+  dropRateReference?: DropRateReferenceData | null;
+  dropRateSettings?: DropRateAcquisitionSettings | null;
+}): QuestSourcePressure[] {
   const sourcePressureByKey = new Map<string, QuestSourcePressure>();
+  const demandRows = getSourcePressureDemandRows(input.progressRows, input.resourcePlan);
 
-  for (const progress of progressRows.filter(isDemandQuest)) {
-    for (const requirement of progress.requirements) {
-      if (requirement.missingQuantity <= 0) {
-        continue;
+  for (const demandRow of demandRows) {
+    const matchingDropRateRows = input.dropRateReference?.byTargetCanonicalKey[demandRow.canonicalKey]
+      ?.filter((row) => (input.dropRateSettings ? dropRateRowMatchesSettings(row, input.dropRateSettings) : true)) ?? [];
+
+    if (input.dropRateSettings && matchingDropRateRows.length > 0) {
+      for (const row of matchingDropRateRows) {
+        const preferredUnit = getPreferredDropRateUnit(row.sourceType, input.dropRateSettings);
+        const unitBasis = preferredUnit
+          ? getDropRateUnitBasis(row.sourceType, preferredUnit, input.dropRateSettings, row.baseDropRate)
+          : null;
+        const estimatedUnitQuantity = preferredUnit
+          ? estimatePreferredUnitQuantity({
+            missingQuantity: demandRow.missingQuantity,
+            row,
+            preferredUnit,
+            settings: input.dropRateSettings,
+          })
+          : null;
+        const preferredUnitLabel = unitBasis?.label ?? preferredUnit ?? 'source unit';
+
+        addSourcePressure(sourcePressureByKey, {
+          sourceKey: `drop-rate:${row.sourceCanonicalKey}:${preferredUnit ?? row.sourceType}`,
+          sourceName: row.sourceName,
+          sourceType: row.sourceType,
+          preferredUnit: preferredUnit ?? row.sourceType,
+          unitLabel: unitBasis?.label ?? null,
+          label: `${row.sourceName} / ${preferredUnitLabel}`,
+          missingQuantity: demandRow.missingQuantity,
+          estimatedUnitQuantity,
+          itemNames: [demandRow.itemName],
+          questNames: demandRow.questNames,
+          sourceUrl: row.sourcePageUrl,
+          coverage: 'drop_rate',
+        });
       }
 
-      for (const sourceHint of requirement.sourceHints) {
-        const sourceKey = `${sourceHint.sourceType}:${sourceHint.preferredUnit}`;
-        const existingPressure = sourcePressureByKey.get(sourceKey);
+      continue;
+    }
 
-        if (existingPressure) {
-          existingPressure.missingQuantity += requirement.missingQuantity;
-          existingPressure.itemNames = [...new Set([...existingPressure.itemNames, requirement.itemName])];
-          existingPressure.questNames = [...new Set([...existingPressure.questNames, progress.quest.questName])];
-        } else {
-          sourcePressureByKey.set(sourceKey, {
-            sourceKey,
-            sourceType: sourceHint.sourceType,
-            preferredUnit: sourceHint.preferredUnit,
-            label: `${sourceHint.sourceType} / ${sourceHint.preferredUnit}`,
-            missingQuantity: requirement.missingQuantity,
-            itemNames: [requirement.itemName],
-            questNames: [progress.quest.questName],
-          });
-        }
-      }
+    for (const sourceHint of demandRow.sourceHints) {
+      addSourcePressure(sourcePressureByKey, {
+        sourceKey: `source-hint:${sourceHint.sourceCanonicalKey}:${sourceHint.preferredUnit}`,
+        sourceName: sourceHint.sourceName,
+        sourceType: sourceHint.sourceType,
+        preferredUnit: sourceHint.preferredUnit,
+        unitLabel: null,
+        label: `${sourceHint.sourceName} / ${sourceHint.preferredUnit}`,
+        missingQuantity: demandRow.missingQuantity,
+        estimatedUnitQuantity: null,
+        itemNames: [demandRow.itemName],
+        questNames: demandRow.questNames,
+        sourceUrl: sourceHint.sourceUrl,
+        coverage: 'source_hint',
+      });
     }
   }
 
   return Array.from(sourcePressureByKey.values()).sort((left, right) => {
+    const leftEstimatedQuantity = left.estimatedUnitQuantity ?? 0;
+    const rightEstimatedQuantity = right.estimatedUnitQuantity ?? 0;
+
+    if (rightEstimatedQuantity !== leftEstimatedQuantity) {
+      return rightEstimatedQuantity - leftEstimatedQuantity;
+    }
+
     if (right.itemNames.length !== left.itemNames.length) {
       return right.itemNames.length - left.itemNames.length;
     }
 
-    return right.missingQuantity - left.missingQuantity;
+    if (right.missingQuantity !== left.missingQuantity) {
+      return right.missingQuantity - left.missingQuantity;
+    }
+
+    return left.label.localeCompare(right.label);
   });
 }
 
@@ -572,6 +752,8 @@ export function buildQuestPlanningViewModel(input: {
   modifierState?: UserCraftingModifierState | null;
   petSourceReference?: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
   supplyOverrides?: AvailableSupplyOverrideInput[];
+  dropRateReference?: DropRateReferenceData | null;
+  dropRateSettings?: DropRateAcquisitionSettings | null;
   towerRequirementsData?: TowerRequirementsData | null;
   snapshot?: MasterySnapshot | null;
   includeHidden?: boolean;
@@ -609,7 +791,12 @@ export function buildQuestPlanningViewModel(input: {
     completedQuestProgress,
     nextSuggestions: deriveNextSuggestions(input.referenceData, input.questPlannerState, input.includeHidden ?? false),
     bottlenecks: deriveBottlenecks(demandProgressRows),
-    sourcePressure: deriveSourcePressure(demandProgressRows),
+    sourcePressure: deriveSourcePressure({
+      progressRows: demandProgressRows,
+      resourcePlan,
+      dropRateReference: input.dropRateReference,
+      dropRateSettings: input.dropRateSettings,
+    }),
     synergyHints: deriveSynergyHints({
       progressRows: demandProgressRows,
       referenceData: input.referenceData,
