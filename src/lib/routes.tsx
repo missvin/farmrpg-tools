@@ -26,6 +26,9 @@ const IngredientDemandPage = lazy(() =>
 const ItemProfilePage = lazy(() =>
   import('../pages/ItemProfilePage').then((module) => ({ default: module.ItemProfilePage })),
 );
+const LargeNetPlannerPage = lazy(() =>
+  import('../pages/LargeNetPlannerPage').then((module) => ({ default: module.LargeNetPlannerPage })),
+);
 const MasteryGoalsPage = lazy(() =>
   import('../pages/MasteryGoalsPage').then((module) => ({ default: module.MasteryGoalsPage })),
 );
@@ -150,6 +153,11 @@ export const appRoutes: AppRoute[] = [
     element: <TargetOutputPlannerPage />,
   },
   {
+    path: '/large-net-planner',
+    label: 'Large Net Planner',
+    element: <LargeNetPlannerPage />,
+  },
+  {
     path: '/museum-completion',
     label: 'Museum Completion',
     element: <MuseumCompletionPage />,
@@ -211,6 +219,7 @@ export const navigationSections: NavigationSection[] = [
       { to: '/mastery-goals', label: 'Mastery Goals' },
       { to: '/quest-planner', label: 'Quest Planner' },
       { to: '/target-planner', label: 'Target Planner' },
+      { to: '/large-net-planner', label: 'Large Net Planner' },
       { to: '/acquisition-breakdown', label: 'Acquisition Breakdown' },
     ],
   },
