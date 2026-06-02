@@ -130,6 +130,102 @@ describe('buildLargeNetPlanner', () => {
     expect(result.targets[0]?.soloDays).toBeCloseTo(71.2, 1);
   });
 
+  it('applies Crunchy Omelette to stored pet inventory when no separate collection multiplier is entered', () => {
+    const acquisitionState: AcquisitionPlannerInputState = {
+      ...createDefaultAcquisitionPlannerInputState(),
+      pets: {
+        ...createDefaultAcquisitionPlannerInputState().pets,
+        storedInventoryEntries: [
+          {
+            canonicalItemKey: 'frost snapper shell',
+            itemName: 'Frost Snapper Shell',
+            storedCount: 100,
+          },
+        ],
+      },
+    };
+
+    const result = buildLargeNetPlanner({
+      acquisitionState,
+      dropRateReference: null,
+      dropRateSettings: createDefaultDropRateAcquisitionSettings(),
+      targets: [
+        {
+          itemName: 'Frost Snapper Shell',
+          targetQuantity: 200,
+          manualLargeNetsPerDrop: 39.46,
+        },
+      ],
+      dailyAntlers: 0,
+      directLargeNetsPerDay: 100,
+      crunchyOmeletteActive: true,
+    });
+
+    expect(result.petCollectionMultiplier).toBe(1.5);
+    expect(result.targets[0]?.effectiveStoredPetInventoryQuantity).toBe(150);
+    expect(result.targets[0]?.remainingAfterImmediateQuantity).toBe(50);
+  });
+
+  it('uses target-row inventory and pet-level overrides without changing imported state assumptions', () => {
+    const acquisitionState: AcquisitionPlannerInputState = {
+      ...createDefaultAcquisitionPlannerInputState(),
+      inventory: {
+        entries: [
+          {
+            canonicalItemKey: 'frost snapper shell',
+            itemName: 'Frost Snapper Shell',
+            inventoryCount: 1,
+          },
+        ],
+      },
+      pets: {
+        ...createDefaultAcquisitionPlannerInputState().pets,
+        storedInventoryEntries: [
+          {
+            canonicalItemKey: 'frost snapper shell',
+            itemName: 'Frost Snapper Shell',
+            storedCount: 1,
+          },
+        ],
+      },
+    };
+
+    const result = buildLargeNetPlanner({
+      acquisitionState,
+      dropRateReference: null,
+      dropRateSettings: createDefaultDropRateAcquisitionSettings(),
+      petSourceReference: null,
+      targets: [
+        {
+          itemName: 'Frost Snapper Shell',
+          targetQuantity: 1000,
+          regularInventoryOverride: 100,
+          storedPetInventoryOverride: 200,
+          petForecastOverride: {
+            petName: 'Seal',
+            petLevel: 9,
+          },
+          manualLargeNetsPerDrop: 39.46,
+        },
+      ],
+      dailyAntlers: 0,
+      directLargeNetsPerDay: 100,
+      crunchyOmeletteActive: true,
+    });
+
+    expect(result.targets[0]).toMatchObject({
+      regularInventoryQuantity: 100,
+      regularInventoryQuantitySource: 'override',
+      storedPetInventoryQuantity: 200,
+      storedPetInventoryQuantitySource: 'override',
+      effectiveStoredPetInventoryQuantity: 300,
+      immediateQuantity: 400,
+      dailyPetQuantity: 27,
+      dailyPetQuantitySource: 'override',
+      remainingAfterImmediateQuantity: 600,
+    });
+  });
+
   it('separates competing target time from incidental drop time', () => {
     const acquisitionState = createDefaultAcquisitionPlannerInputState();
     const result = buildLargeNetPlanner({
@@ -178,6 +274,7 @@ describe('buildLargeNetPlanner', () => {
 
     expect(result.targets[0]?.largeNetsPerDrop).toBeCloseTo(39.46, 4);
     expect(result.targets[0]?.largeNetsPerDropSource).toBe('drop_rate_reference');
+    expect(result.targets[0]?.largeNetsPerDropSourceUrl).toBe('https://buddy.farm/fishing/');
   });
 
   it('does not compute a competing estimate for a remaining target with no source rate or pet production', () => {

@@ -16,21 +16,19 @@ import {
 import { getItemIcon } from '../lib/itemIconManifest';
 import {
   buildLargeNetPlanner,
-  DEFAULT_LARGE_NET_CATCH_MULTIPLIER,
-  DEFAULT_LARGE_NET_CRAFT_OUTPUT_MULTIPLIER,
   FISHING_NETS_PER_LARGE_NET,
   type LargeNetPlannerResult,
 } from '../lib/largeNetPlanner';
+import {
+  createDefaultLargeNetPlannerState,
+  loadLargeNetPlannerState,
+  saveLargeNetPlannerState,
+  type LargeNetPlannerTargetState,
+} from '../lib/largeNetPlannerState';
 import { loadDropRateReference, type DropRateReferenceData } from '../lib/loadDropRateReference';
 import { loadItemCatalog, type ItemCatalogData } from '../lib/loadItemCatalog';
 import { loadPetSourceReference, type PetSourceReferenceData } from '../lib/loadPetSourceReference';
-
-type TargetEditorRow = {
-  id: string;
-  itemName: string;
-  targetQuantity: string;
-  manualLargeNetsPerDrop: string;
-};
+import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 
 type ResourceState = {
   isLoading: boolean;
@@ -42,24 +40,18 @@ type ResourceState = {
   petSourceError: string | null;
 };
 
-const DEFAULT_TARGET_ROWS: TargetEditorRow[] = [
-  {
-    id: 'frost-snapper-shell',
-    itemName: 'Frost Snapper Shell',
-    targetQuantity: '15000',
-    manualLargeNetsPerDrop: '',
-  },
-  {
-    id: 'spiked-shell',
-    itemName: 'Spiked Shell',
-    targetQuantity: '10000',
-    manualLargeNetsPerDrop: '6.1',
-  },
-];
-
 function parsePositiveInput(value: string): number {
   const parsedValue = Number(value);
   return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : 0;
+}
+
+function parseOptionalNonNegativeInput(value: string): number | undefined {
+  if (!value.trim()) {
+    return undefined;
+  }
+
+  const parsedValue = Number(value);
+  return Number.isFinite(parsedValue) && parsedValue >= 0 ? parsedValue : undefined;
 }
 
 function formatCount(value: number): string {
@@ -105,13 +97,58 @@ function findCatalogEntry(itemCatalog: ItemCatalogData | null, itemName: string)
   )) ?? null;
 }
 
-function createNewTargetRow(): TargetEditorRow {
+function createNewTargetRow(): LargeNetPlannerTargetState {
   return {
     id: crypto.randomUUID(),
     itemName: '',
     targetQuantity: '',
+    regularInventoryOverride: '',
+    storedPetInventoryOverride: '',
+    petNameOverride: '',
+    petLevelOverride: '',
     manualLargeNetsPerDrop: '',
   };
+}
+
+function findSavedPetEntry(acquisitionState: AcquisitionPlannerInputState, canonicalKey: string) {
+  return acquisitionState.pets.futureProduction.entries.find((entry) => {
+    return entry.canonicalItemKey === canonicalKey;
+  }) ?? null;
+}
+
+function resolvePetNameForTarget(input: {
+  acquisitionState: AcquisitionPlannerInputState;
+  petSourceReference: PetSourceReferenceData | null;
+  target: LargeNetPlannerTargetState;
+  canonicalKey: string;
+}): string {
+  const manualPetName = input.target.petNameOverride.trim();
+
+  if (manualPetName) {
+    return manualPetName;
+  }
+
+  const savedPetEntry = findSavedPetEntry(input.acquisitionState, input.canonicalKey);
+
+  if (savedPetEntry) {
+    return savedPetEntry.petName;
+  }
+
+  const sourcePets = input.petSourceReference?.byItemCanonicalKey[input.canonicalKey] ?? [];
+  return sourcePets.length === 1 ? sourcePets[0].petName : '';
+}
+
+function loadInitialPlannerState(acquisitionState: AcquisitionPlannerInputState) {
+  try {
+    return loadLargeNetPlannerState() ??
+      createDefaultLargeNetPlannerState({
+        crunchyOmeletteActive: acquisitionState.pets.futureProduction.crunchyOmeletteActive,
+      });
+  } catch {
+    return createDefaultLargeNetPlannerState({
+      crunchyOmeletteActive: acquisitionState.pets.futureProduction.crunchyOmeletteActive,
+    });
+  }
 }
 
 export function LargeNetPlannerPage() {
@@ -138,19 +175,13 @@ export function LargeNetPlannerPage() {
     dropRateError: null,
     petSourceError: null,
   });
-  const [dailyAntlers, setDailyAntlers] = useState('');
-  const [directLargeNetsPerDay, setDirectLargeNetsPerDay] = useState('2000');
-  const [craftOutputMultiplier, setCraftOutputMultiplier] = useState(
-    DEFAULT_LARGE_NET_CRAFT_OUTPUT_MULTIPLIER.toString(),
-  );
-  const [catchMultiplier, setCatchMultiplier] = useState(DEFAULT_LARGE_NET_CATCH_MULTIPLIER.toString());
-  const [petCollectionMultiplier, setPetCollectionMultiplier] = useState(
-    acquisitionState.pets.futureProduction.crunchyOmeletteActive ? '1.5' : '1',
-  );
-  const [crunchyOmeletteActive, setCrunchyOmeletteActive] = useState(
-    acquisitionState.pets.futureProduction.crunchyOmeletteActive,
-  );
-  const [targets, setTargets] = useState<TargetEditorRow[]>(DEFAULT_TARGET_ROWS);
+  const [initialPlannerState] = useState(() => loadInitialPlannerState(acquisitionState));
+  const [dailyAntlers, setDailyAntlers] = useState(initialPlannerState.dailyAntlers);
+  const [directLargeNetsPerDay, setDirectLargeNetsPerDay] = useState(initialPlannerState.directLargeNetsPerDay);
+  const [craftOutputMultiplier, setCraftOutputMultiplier] = useState(initialPlannerState.craftOutputMultiplier);
+  const [catchMultiplier, setCatchMultiplier] = useState(initialPlannerState.catchMultiplier);
+  const [crunchyOmeletteActive, setCrunchyOmeletteActive] = useState(initialPlannerState.crunchyOmeletteActive);
+  const [targets, setTargets] = useState<LargeNetPlannerTargetState[]>(initialPlannerState.targets);
 
   useEffect(() => {
     let isMounted = true;
@@ -198,6 +229,29 @@ export function LargeNetPlannerPage() {
     };
   }, []);
 
+  useEffect(() => {
+    try {
+      saveLargeNetPlannerState({
+        schemaVersion: 1,
+        dailyAntlers,
+        directLargeNetsPerDay,
+        craftOutputMultiplier,
+        catchMultiplier,
+        crunchyOmeletteActive,
+        targets,
+      });
+    } catch {
+      // Planner persistence is convenience-only; calculation should still work when storage is unavailable.
+    }
+  }, [
+    catchMultiplier,
+    craftOutputMultiplier,
+    crunchyOmeletteActive,
+    dailyAntlers,
+    directLargeNetsPerDay,
+    targets,
+  ]);
+
   const plannerResult: LargeNetPlannerResult = useMemo(() => (
     buildLargeNetPlanner({
       acquisitionState,
@@ -211,6 +265,19 @@ export function LargeNetPlannerPage() {
           itemName: catalogEntry?.itemName ?? target.itemName,
           canonicalKey: catalogEntry?.canonicalKey,
           targetQuantity: parsePositiveInput(target.targetQuantity),
+          regularInventoryOverride: parseOptionalNonNegativeInput(target.regularInventoryOverride),
+          storedPetInventoryOverride: parseOptionalNonNegativeInput(target.storedPetInventoryOverride),
+          petForecastOverride: parsePositiveInput(target.petLevelOverride) > 0
+            ? {
+              petName: resolvePetNameForTarget({
+                acquisitionState,
+                petSourceReference: resourceState.petSourceReference,
+                target,
+                canonicalKey: catalogEntry?.canonicalKey ?? toCanonicalItemKey(target.itemName),
+              }),
+              petLevel: parsePositiveInput(target.petLevelOverride),
+            }
+            : undefined,
           manualLargeNetsPerDrop: parsePositiveInput(target.manualLargeNetsPerDrop),
         };
       }),
@@ -218,7 +285,6 @@ export function LargeNetPlannerPage() {
       directLargeNetsPerDay: parsePositiveInput(directLargeNetsPerDay),
       craftOutputMultiplier: parsePositiveInput(craftOutputMultiplier),
       catchMultiplier: parsePositiveInput(catchMultiplier),
-      petCollectionMultiplier: parsePositiveInput(petCollectionMultiplier),
       crunchyOmeletteActive,
     })
   ), [
@@ -229,7 +295,6 @@ export function LargeNetPlannerPage() {
     dailyAntlers,
     directLargeNetsPerDay,
     dropRateSettings,
-    petCollectionMultiplier,
     resourceState.dropRateReference,
     resourceState.itemCatalog,
     resourceState.petSourceReference,
@@ -255,7 +320,7 @@ export function LargeNetPlannerPage() {
     0,
   );
 
-  function updateTargetRow(id: string, updates: Partial<TargetEditorRow>): void {
+  function updateTargetRow(id: string, updates: Partial<LargeNetPlannerTargetState>): void {
     setTargets((currentTargets) => currentTargets.map((target) => (
       target.id === id ? { ...target, ...updates } : target
     )));
@@ -382,19 +447,6 @@ export function LargeNetPlannerPage() {
             />
           </label>
 
-          <label className="field-label" htmlFor="large-net-pet-collection-multiplier">
-            Stored pet collection multiplier
-            <input
-              id="large-net-pet-collection-multiplier"
-              className="text-input"
-              type="number"
-              min="0"
-              step="0.01"
-              value={petCollectionMultiplier}
-              onChange={(event) => setPetCollectionMultiplier(event.target.value)}
-            />
-          </label>
-
           <label className="checkbox-field" htmlFor="large-net-crunchy">
             <input
               id="large-net-crunchy"
@@ -402,7 +454,7 @@ export function LargeNetPlannerPage() {
               checked={crunchyOmeletteActive}
               onChange={(event) => setCrunchyOmeletteActive(event.target.checked)}
             />
-            <span>Crunchy Omelette for future pet output</span>
+            <span>Collect pet inventory with Crunchy Omelette (1.5x)</span>
           </label>
         </div>
 
@@ -412,14 +464,19 @@ export function LargeNetPlannerPage() {
           Antlers/day x craft multiplier / {FISHING_NETS_PER_LARGE_NET.toLocaleString()} x craft multiplier.
           Current estimate from Antlers is {formatDecimal(plannerResult.dailyLargeNetsFromAntlers)} Large Nets/day.
         </p>
+        <p className="subtle-text">
+          Crunchy Omelette is applied at collection time. When checked, stored pet inventory and future pet/day are both
+          credited as if collected while Crunchy is active.
+        </p>
       </details>
 
       <section className="page-card page-stack" aria-labelledby="large-net-targets-title">
         <div>
           <h2 id="large-net-targets-title">Targets</h2>
           <p className="supporting-text">
-            Current inventory comes from <Link to="/import-inventory">Import Inventory</Link>. Stored pet inventory and
-            future pet rows come from <Link to="/settings">Settings</Link>.
+            Regular inventory comes from <Link to="/import-inventory">Import Inventory</Link>. Stored pet inventory
+            comes from <Link to="/import-pet-items">Import Pet Items</Link> or Settings. Pet/day comes from Settings
+            future pet production.
           </p>
         </div>
 
@@ -429,6 +486,10 @@ export function LargeNetPlannerPage() {
               <tr>
                 <th scope="col">Item</th>
                 <th scope="col">Target</th>
+                <th scope="col">Regular inv.</th>
+                <th scope="col">Stored pet</th>
+                <th scope="col">Pet</th>
+                <th scope="col">Pet level</th>
                 <th scope="col">Large Nets/drop</th>
                 <th scope="col">Action</th>
               </tr>
@@ -465,6 +526,69 @@ export function LargeNetPlannerPage() {
                     />
                   </td>
                   <td>
+                    <label className="sr-only" htmlFor={`large-net-target-regular-${target.id}`}>
+                      Regular inventory override for {target.itemName || `target ${index + 1}`}
+                    </label>
+                    <input
+                      id={`large-net-target-regular-${target.id}`}
+                      className="text-input"
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={target.regularInventoryOverride}
+                      onChange={(event) => updateTargetRow(target.id, {
+                        regularInventoryOverride: event.target.value,
+                      })}
+                      placeholder="Use import"
+                    />
+                  </td>
+                  <td>
+                    <label className="sr-only" htmlFor={`large-net-target-stored-pet-${target.id}`}>
+                      Stored pet inventory override for {target.itemName || `target ${index + 1}`}
+                    </label>
+                    <input
+                      id={`large-net-target-stored-pet-${target.id}`}
+                      className="text-input"
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={target.storedPetInventoryOverride}
+                      onChange={(event) => updateTargetRow(target.id, {
+                        storedPetInventoryOverride: event.target.value,
+                      })}
+                      placeholder="Use pet import"
+                    />
+                  </td>
+                  <td>
+                    <label className="sr-only" htmlFor={`large-net-target-pet-${target.id}`}>
+                      Pet name override for {target.itemName || `target ${index + 1}`}
+                    </label>
+                    <input
+                      id={`large-net-target-pet-${target.id}`}
+                      className="text-input"
+                      type="text"
+                      list="large-net-pet-options"
+                      value={target.petNameOverride}
+                      onChange={(event) => updateTargetRow(target.id, { petNameOverride: event.target.value })}
+                      placeholder="Saved pet"
+                    />
+                  </td>
+                  <td>
+                    <label className="sr-only" htmlFor={`large-net-target-pet-level-${target.id}`}>
+                      Pet level override for {target.itemName || `target ${index + 1}`}
+                    </label>
+                    <input
+                      id={`large-net-target-pet-level-${target.id}`}
+                      className="text-input"
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={target.petLevelOverride}
+                      onChange={(event) => updateTargetRow(target.id, { petLevelOverride: event.target.value })}
+                      placeholder="Use settings"
+                    />
+                  </td>
+                  <td>
                     <label className="sr-only" htmlFor={`large-net-target-rate-${target.id}`}>
                       Manual Large Nets per drop for {target.itemName || `target ${index + 1}`}
                     </label>
@@ -476,7 +600,7 @@ export function LargeNetPlannerPage() {
                       step="0.01"
                       value={target.manualLargeNetsPerDrop}
                       onChange={(event) => updateTargetRow(target.id, { manualLargeNetsPerDrop: event.target.value })}
-                      placeholder="Auto if known"
+                      placeholder="Use local drop-rate if blank"
                     />
                   </td>
                   <td>
@@ -495,6 +619,15 @@ export function LargeNetPlannerPage() {
           </table>
         </div>
 
+        <p className="subtle-text">
+          Manual Large Nets/drop values are saved locally on this page. Leave the field blank to use a reviewed local
+          fishing drop-rate row when one exists.
+        </p>
+        <p className="subtle-text">
+          Quick inventory and pet fields override only this page's calculation. Leave them blank to use imported
+          inventory, imported pet inventory, and Settings future pet production.
+        </p>
+
         <button
           type="button"
           className="button button--secondary"
@@ -506,6 +639,12 @@ export function LargeNetPlannerPage() {
         <datalist id="large-net-item-options">
           {resourceState.itemCatalog?.entries.map((item) => (
             <option key={item.canonicalKey} value={item.itemName} />
+          ))}
+        </datalist>
+
+        <datalist id="large-net-pet-options">
+          {resourceState.petSourceReference?.entries.map((entry) => (
+            <option key={`${entry.petCanonicalKey}:${entry.itemCanonicalKey}`} value={entry.petName} />
           ))}
         </datalist>
       </section>
@@ -524,7 +663,7 @@ export function LargeNetPlannerPage() {
                 <tr>
                   <th scope="col">Item</th>
                   <th scope="col">Target</th>
-                  <th scope="col">Current</th>
+                  <th scope="col">Regular inventory</th>
                   <th scope="col">Stored pet</th>
                   <th scope="col">Pet/day</th>
                   <th scope="col">Remaining</th>
@@ -544,22 +683,43 @@ export function LargeNetPlannerPage() {
                       />
                     </td>
                     <td>{formatCount(target.targetQuantity)}</td>
-                    <td>{formatCount(target.regularInventoryQuantity)}</td>
+                    <td>
+                      {formatCount(target.regularInventoryQuantity)}
+                      <br />
+                      <span className="subtle-text">
+                        {target.regularInventoryQuantitySource === 'override' ? 'Quick override' : 'Import Inventory'}
+                      </span>
+                    </td>
                     <td>
                       {formatCount(target.effectiveStoredPetInventoryQuantity)}
                       <br />
                       <span className="subtle-text">
-                        {formatCount(target.storedPetInventoryQuantity)} raw
+                        {formatCount(target.storedPetInventoryQuantity)} raw -{' '}
+                        {target.storedPetInventoryQuantitySource === 'override'
+                          ? 'Quick override'
+                          : 'Import Pet Items'}
                       </span>
                     </td>
-                    <td>{formatDecimal(target.dailyPetQuantity, 1)}</td>
+                    <td>
+                      {formatDecimal(target.dailyPetQuantity, 1)}
+                      <br />
+                      <span className="subtle-text">
+                        {target.dailyPetQuantitySource === 'override' ? 'Quick pet level' : 'Settings'}
+                      </span>
+                    </td>
                     <td>{formatCount(target.remainingAfterImmediateQuantity)}</td>
                     <td>
                       {target.largeNetsPerDrop > 0 ? formatDecimal(target.largeNetsPerDrop, 2) : 'Missing'}
                       <br />
                       <span className="subtle-text">
                         {target.largeNetsPerDropSource === 'drop_rate_reference'
-                          ? target.largeNetsPerDropSourceLabel ?? 'Drop-rate reference'
+                          ? target.largeNetsPerDropSourceUrl
+                            ? (
+                              <a href={target.largeNetsPerDropSourceUrl} target="_blank" rel="noreferrer">
+                                {target.largeNetsPerDropSourceLabel ?? 'Drop-rate reference'}
+                              </a>
+                            )
+                            : target.largeNetsPerDropSourceLabel ?? 'Drop-rate reference'
                           : target.largeNetsPerDropSource === 'manual'
                             ? 'Manual'
                             : 'Needs input'}

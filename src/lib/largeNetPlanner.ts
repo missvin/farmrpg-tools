@@ -17,6 +17,13 @@ export type LargeNetPlannerTargetInput = {
   itemName: string;
   canonicalKey?: string;
   targetQuantity: number;
+  regularInventoryOverride?: number;
+  storedPetInventoryOverride?: number;
+  petForecastOverride?: {
+    petName: string;
+    petLevel: number;
+    seasonalActive?: boolean;
+  };
   manualLargeNetsPerDrop?: number;
 };
 
@@ -25,14 +32,18 @@ export type LargeNetPlannerTargetResult = {
   canonicalKey: string;
   targetQuantity: number;
   regularInventoryQuantity: number;
+  regularInventoryQuantitySource: 'imported' | 'override';
   storedPetInventoryQuantity: number;
+  storedPetInventoryQuantitySource: 'imported' | 'override';
   effectiveStoredPetInventoryQuantity: number;
   immediateQuantity: number;
   dailyPetQuantity: number;
+  dailyPetQuantitySource: 'saved_forecast' | 'override';
   remainingAfterImmediateQuantity: number;
   largeNetsPerDrop: number;
   largeNetsPerDropSource: 'manual' | 'drop_rate_reference' | 'missing';
   largeNetsPerDropSourceLabel: string | null;
+  largeNetsPerDropSourceUrl: string | null;
   fishingItemsPerDay: number;
   totalItemsPerDay: number;
   soloDays: number | null;
@@ -110,12 +121,14 @@ function getLargeNetsPerDropFromReference(input: {
 }): {
   largeNetsPerDrop: number;
   sourceLabel: string | null;
+  sourceUrl: string | null;
 } {
   const matchingRows = input.dropRateReference?.byTargetCanonicalKey[input.canonicalKey]
     ?.filter((row) => row.sourceType === 'fishing' && dropRateRowMatchesSettings(row, input.dropRateSettings)) ?? [];
   let bestMatch: {
     largeNetsPerDrop: number;
     sourceLabel: string | null;
+    sourceUrl: string | null;
   } | null = null;
 
   for (const row of matchingRows) {
@@ -134,6 +147,7 @@ function getLargeNetsPerDropFromReference(input: {
         bestMatch = {
           largeNetsPerDrop: conversion.rate,
           sourceLabel: row.sourceName,
+          sourceUrl: row.sourcePageUrl,
         };
       }
     }
@@ -142,6 +156,7 @@ function getLargeNetsPerDropFromReference(input: {
   return bestMatch ?? {
     largeNetsPerDrop: 0,
     sourceLabel: null,
+    sourceUrl: null,
   };
 }
 
@@ -186,6 +201,59 @@ function getDailyPetQuantityByCanonicalKey(input: {
     dailyQuantityByCanonicalKey: Object.fromEntries(
       forecast.entries.map((entry) => [entry.canonicalItemKey, entry.forecastQuantity]),
     ),
+    warnings: forecast.warnings,
+  };
+}
+
+function getDailyPetQuantityFromOverride(input: {
+  acquisitionState: AcquisitionPlannerInputState;
+  itemName: string;
+  canonicalKey: string;
+  crunchyOmeletteActive: boolean;
+  petSourceReference?: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
+  petForecastOverride: NonNullable<LargeNetPlannerTargetInput['petForecastOverride']>;
+}): {
+  dailyQuantity: number;
+  warnings: string[];
+} {
+  const petName = input.petForecastOverride.petName.trim();
+
+  if (!petName) {
+    return {
+      dailyQuantity: 0,
+      warnings: ['Enter a pet name to use a quick pet-level override.'],
+    };
+  }
+
+  const forecastState: AcquisitionPlannerInputState = {
+    ...input.acquisitionState,
+    pets: {
+      ...input.acquisitionState.pets,
+      futureProduction: {
+        ...input.acquisitionState.pets.futureProduction,
+        enabled: true,
+        horizonDays: 1,
+        entries: [
+          {
+            canonicalItemKey: input.canonicalKey,
+            itemName: input.itemName,
+            petName,
+            petLevel: input.petForecastOverride.petLevel,
+            seasonalActive: input.petForecastOverride.seasonalActive ?? true,
+          },
+        ],
+        respectSeasonality: false,
+        offlineHoursCap: 24,
+        crunchyOmeletteActive: input.crunchyOmeletteActive,
+      },
+    },
+  };
+  const forecast = deriveFuturePetProductionForecast(forecastState, {
+    petSourceReference: input.petSourceReference,
+  });
+
+  return {
+    dailyQuantity: forecast.entries.find((entry) => entry.canonicalItemKey === input.canonicalKey)?.forecastQuantity ?? 0,
     warnings: forecast.warnings,
   };
 }
@@ -335,12 +403,39 @@ export function buildLargeNetPlanner(input: BuildLargeNetPlannerInput): LargeNet
         targetWarnings.push('Enter Large Nets per drop or add reviewed fishing drop-rate coverage.');
       }
 
-      const regularInventoryQuantity = sumCurrentInventory(input.acquisitionState, canonicalKey);
-      const storedPetInventoryQuantity = sumStoredPetInventory(input.acquisitionState, canonicalKey);
+      const regularInventoryOverride = clampNonNegative(target.regularInventoryOverride);
+      const storedPetInventoryOverride = clampNonNegative(target.storedPetInventoryOverride);
+      const hasRegularInventoryOverride = Number.isFinite(target.regularInventoryOverride) &&
+        Number(target.regularInventoryOverride) >= 0;
+      const hasStoredPetInventoryOverride = Number.isFinite(target.storedPetInventoryOverride) &&
+        Number(target.storedPetInventoryOverride) >= 0;
+      const regularInventoryQuantity = hasRegularInventoryOverride
+        ? regularInventoryOverride
+        : sumCurrentInventory(input.acquisitionState, canonicalKey);
+      const storedPetInventoryQuantity = hasStoredPetInventoryOverride
+        ? storedPetInventoryOverride
+        : sumStoredPetInventory(input.acquisitionState, canonicalKey);
       const effectiveStoredPetInventoryQuantity = storedPetInventoryQuantity * petCollectionMultiplier;
       const immediateQuantity = regularInventoryQuantity + effectiveStoredPetInventoryQuantity;
       const remainingAfterImmediateQuantity = Math.max(0, targetQuantity - immediateQuantity);
-      const dailyPetQuantity = dailyPetForecast.dailyQuantityByCanonicalKey[canonicalKey] ?? 0;
+      const petOverrideForecast = target.petForecastOverride && target.petForecastOverride.petLevel > 0
+        ? getDailyPetQuantityFromOverride({
+          acquisitionState: input.acquisitionState,
+          itemName,
+          canonicalKey,
+          crunchyOmeletteActive,
+          petSourceReference: input.petSourceReference,
+          petForecastOverride: target.petForecastOverride,
+        })
+        : null;
+      const dailyPetQuantity = petOverrideForecast?.dailyQuantity ??
+        dailyPetForecast.dailyQuantityByCanonicalKey[canonicalKey] ??
+        0;
+
+      if (petOverrideForecast) {
+        targetWarnings.push(...petOverrideForecast.warnings);
+      }
+
       const fishingItemsPerDay = largeNetsPerDrop > 0
         ? (dailyLargeNets * catchMultiplier) / largeNetsPerDrop
         : 0;
@@ -351,14 +446,18 @@ export function buildLargeNetPlanner(input: BuildLargeNetPlannerInput): LargeNet
         canonicalKey,
         targetQuantity,
         regularInventoryQuantity,
+        regularInventoryQuantitySource: hasRegularInventoryOverride ? 'override' : 'imported',
         storedPetInventoryQuantity,
+        storedPetInventoryQuantitySource: hasStoredPetInventoryOverride ? 'override' : 'imported',
         effectiveStoredPetInventoryQuantity,
         immediateQuantity,
         dailyPetQuantity,
+        dailyPetQuantitySource: petOverrideForecast ? 'override' : 'saved_forecast',
         remainingAfterImmediateQuantity,
         largeNetsPerDrop,
         largeNetsPerDropSource,
         largeNetsPerDropSourceLabel: referencedLargeNetsPerDrop.sourceLabel,
+        largeNetsPerDropSourceUrl: referencedLargeNetsPerDrop.sourceUrl,
         fishingItemsPerDay,
         totalItemsPerDay,
         soloDays: calculateSoloDays(remainingAfterImmediateQuantity, totalItemsPerDay),
