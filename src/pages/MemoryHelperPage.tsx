@@ -828,6 +828,8 @@ export function MemoryHelperPage() {
           </section>
         </div>
       </section>
+
+      <div className="memory-helper-scroll-align-spacer" aria-hidden="true" />
     </div>
   );
 }
