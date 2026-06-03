@@ -8,6 +8,7 @@ import { loadMasteryRaceCountsState } from './masteryRaceCounts';
 import { loadMuseumCompletionState } from './museumCompletionState';
 import { loadPersonalMasteryGoalsState } from './personalMasteryGoals';
 import { loadPumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
+import { loadSnapshotVelocityPreferences } from './snapshotVelocityPreferences';
 import { listSnapshots } from './storage/masterySnapshots';
 import { loadTargetOutputPlannerState } from './targetOutputPlannerState';
 import { readStoredAppTheme } from './themePreference';
@@ -54,6 +55,7 @@ export async function buildCurrentAppBackupPayload(
     museumCompletionState: loadMuseumCompletionState(),
     targetOutputPlannerState: loadTargetOutputPlannerState(),
     unknownItemEvidenceState: loadUnknownItemEvidenceState(),
+    snapshotVelocityPreferences: loadSnapshotVelocityPreferences(),
     themePreference: readStoredAppTheme(),
   });
 }

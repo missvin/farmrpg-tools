@@ -12,6 +12,7 @@ const {
   mockLoadMasteryRaceCountsState,
   mockLoadMuseumCompletionState,
   mockLoadTargetOutputPlannerState,
+  mockLoadSnapshotVelocityPreferences,
   mockReadStoredAppTheme,
 } = vi.hoisted(() => ({
   mockListSnapshots: vi.fn<() => Promise<MasterySnapshot[]>>(),
@@ -23,6 +24,7 @@ const {
   mockLoadMasteryRaceCountsState: vi.fn(),
   mockLoadMuseumCompletionState: vi.fn(),
   mockLoadTargetOutputPlannerState: vi.fn(),
+  mockLoadSnapshotVelocityPreferences: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
 }));
 
@@ -60,6 +62,10 @@ vi.mock('./museumCompletionState', () => ({
 
 vi.mock('./targetOutputPlannerState', () => ({
   loadTargetOutputPlannerState: mockLoadTargetOutputPlannerState,
+}));
+
+vi.mock('./snapshotVelocityPreferences', () => ({
+  loadSnapshotVelocityPreferences: mockLoadSnapshotVelocityPreferences,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -308,6 +314,15 @@ function createTargetOutputPlannerStateFixture() {
   };
 }
 
+function createSnapshotVelocityPreferencesFixture() {
+  return {
+    selectedCanonicalKeys: ['board'],
+    hiddenDefaultCanonicalKeys: ['twine'],
+    chartMode: 'gain' as const,
+    rangeMode: 'recent' as const,
+  };
+}
+
 describe('appBackupExport', () => {
   beforeEach(() => {
     mockListSnapshots.mockReset();
@@ -319,6 +334,7 @@ describe('appBackupExport', () => {
     mockLoadMasteryRaceCountsState.mockReset();
     mockLoadMuseumCompletionState.mockReset();
     mockLoadTargetOutputPlannerState.mockReset();
+    mockLoadSnapshotVelocityPreferences.mockReset();
     mockReadStoredAppTheme.mockReset();
   });
 
@@ -343,6 +359,7 @@ describe('appBackupExport', () => {
     const masteryRaceCountsState = createMasteryRaceCountsStateFixture();
     const museumCompletionState = createMuseumCompletionStateFixture();
     const targetOutputPlannerState = createTargetOutputPlannerStateFixture();
+    const snapshotVelocityPreferences = createSnapshotVelocityPreferencesFixture();
 
     mockListSnapshots.mockResolvedValue(snapshots);
     mockLoadCraftingModifierState.mockReturnValue(craftingModifierState);
@@ -353,6 +370,7 @@ describe('appBackupExport', () => {
     mockLoadMasteryRaceCountsState.mockReturnValue(masteryRaceCountsState);
     mockLoadMuseumCompletionState.mockReturnValue(museumCompletionState);
     mockLoadTargetOutputPlannerState.mockReturnValue(targetOutputPlannerState);
+    mockLoadSnapshotVelocityPreferences.mockReturnValue(snapshotVelocityPreferences);
     mockReadStoredAppTheme.mockReturnValue('dark');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -373,6 +391,7 @@ describe('appBackupExport', () => {
     expect(payload.state.preferences.masteryRaceCountsState).toEqual(masteryRaceCountsState);
     expect(payload.state.preferences.museumCompletionState).toEqual(museumCompletionState);
     expect(payload.state.preferences.targetOutputPlannerState).toEqual(targetOutputPlannerState);
+    expect(payload.state.preferences.snapshotVelocityPreferences).toEqual(snapshotVelocityPreferences);
     expect(payload.state.preferences.themePreference).toBe('dark');
   });
 
@@ -386,6 +405,7 @@ describe('appBackupExport', () => {
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
     mockLoadMuseumCompletionState.mockReturnValue(createMuseumCompletionStateFixture());
     mockLoadTargetOutputPlannerState.mockReturnValue(createTargetOutputPlannerStateFixture());
+    mockLoadSnapshotVelocityPreferences.mockReturnValue(createSnapshotVelocityPreferencesFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -417,6 +437,7 @@ describe('appBackupExport', () => {
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
     mockLoadMuseumCompletionState.mockReturnValue(createMuseumCompletionStateFixture());
     mockLoadTargetOutputPlannerState.mockReturnValue(createTargetOutputPlannerStateFixture());
+    mockLoadSnapshotVelocityPreferences.mockReturnValue(createSnapshotVelocityPreferencesFixture());
     mockReadStoredAppTheme.mockReturnValue(null);
 
     Object.defineProperty(URL, 'createObjectURL', {

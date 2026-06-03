@@ -1128,6 +1128,218 @@ a {
   min-height: clamp(16rem, 38vh, 30rem);
 }
 
+.history-chart {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.history-chart__svg {
+  width: 100%;
+  min-height: 14rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: rgba(15, 32, 53, 0.62);
+}
+
+.history-chart__axis {
+  stroke: rgba(185, 212, 244, 0.34);
+  stroke-width: 2;
+}
+
+.history-chart__bar {
+  fill: rgba(117, 212, 139, 0.78);
+}
+
+.history-chart__bar--negative {
+  fill: rgba(244, 135, 182, 0.7);
+}
+
+.history-chart__line {
+  fill: none;
+  stroke: #f6b95f;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.history-chart__item-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.history-chart__tick {
+  fill: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.history-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  list-style: none;
+}
+
+.history-chart__legend span,
+.history-chart__legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.history-chart__legend--items {
+  max-height: 9rem;
+  overflow: auto;
+}
+
+.history-chart__swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+}
+
+.history-chart__swatch--bar {
+  border-radius: 3px;
+  background: rgba(117, 212, 139, 0.9);
+}
+
+.history-chart__swatch--line {
+  background: #f6b95f;
+}
+
+.history-callout-list,
+.history-selected-list,
+.history-candidate-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-callout-list {
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.history-callout-card,
+.history-selected-list__item,
+.history-candidate-card {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-panel-muted);
+}
+
+.history-callout-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem;
+}
+
+.history-callout-card__title,
+.history-candidate-card dt {
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.history-selected-list__item {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.85rem;
+}
+
+.history-suggestion-buckets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.history-suggestion-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  color: var(--color-text);
+  background: var(--color-panel-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.history-suggestion-chip:hover,
+.history-suggestion-chip:focus-visible {
+  border-color: var(--color-accent);
+}
+
+.history-suggestion-chip span {
+  color: var(--color-text-muted);
+}
+
+.history-candidate-card {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1fr) minmax(18rem, 1.6fr) auto;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.9rem;
+}
+
+.history-candidate-card__main {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.history-candidate-card__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.history-candidate-card__stats div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.history-candidate-card__stats dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.history-reason-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.history-reason-badge {
+  border: 1px solid rgba(142, 197, 255, 0.45);
+  border-radius: 999px;
+  padding: 0.18rem 0.45rem;
+  color: var(--color-text);
+  background: rgba(56, 107, 159, 0.34);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.history-reason-badge--muted {
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  background: transparent;
+}
+
 .memory-helper-board {
   display: grid;
   grid-template-columns: repeat(6, minmax(3.75rem, 1fr));
@@ -2173,5 +2385,18 @@ a {
 
   .memory-helper-pair {
     grid-template-columns: 1fr;
+  }
+
+  .history-selected-list__item,
+  .history-candidate-card {
+    grid-template-columns: 1fr;
+  }
+
+  .history-candidate-card__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .history-chart__legend--items {
+    max-height: 12rem;
   }
 }

@@ -138,6 +138,12 @@ describe('appBackupSchema', () => {
         },
       ],
     };
+    const snapshotVelocityPreferences = {
+      selectedCanonicalKeys: ['board'],
+      hiddenDefaultCanonicalKeys: ['twine'],
+      chartMode: 'gain' as const,
+      rangeMode: 'recent' as const,
+    };
 
     const payload = createAppBackupPayload({
       appVersion: '1.1.0',
@@ -151,6 +157,7 @@ describe('appBackupSchema', () => {
       masteryRaceCountsState,
       museumCompletionState,
       targetOutputPlannerState,
+      snapshotVelocityPreferences,
       themePreference: 'dark',
     });
 
@@ -173,6 +180,7 @@ describe('appBackupSchema', () => {
           museumCompletionState,
           targetOutputPlannerState,
           unknownItemEvidenceState: null,
+          snapshotVelocityPreferences,
           themePreference: 'dark',
         },
       },
@@ -529,6 +537,35 @@ describe('appBackupSchema', () => {
       ok: false,
       code: 'invalid_target_output_planner_state',
       message: 'The backup file contains malformed target-output planner state.',
+    });
+
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: APP_BACKUP_SCHEMA_VERSION,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [],
+          preferences: {
+            craftingModifierState: null,
+            acquisitionPlannerState: null,
+            snapshotVelocityPreferences: {
+              selectedCanonicalKeys: ['board'],
+              hiddenDefaultCanonicalKeys: ['twine'],
+              chartMode: 'sparkles',
+              rangeMode: 'recent',
+            },
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'invalid_snapshot_velocity_preferences',
+      message: 'The backup file contains malformed snapshot velocity chart preferences.',
     });
   });
 });

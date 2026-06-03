@@ -1124,6 +1124,10 @@ export function SettingsPage() {
                 <dt>Race counts</dt>
                 <dd>{restorePreview.payload.state.preferences.masteryRaceCountsState ? 'Included' : 'Not included'}</dd>
               </div>
+              <div className="summary-grid__item">
+                <dt>History chart preferences</dt>
+                <dd>{restorePreview.payload.state.preferences.snapshotVelocityPreferences ? 'Included' : 'Not included'}</dd>
+              </div>
             </dl>
 
             <div className="button-row">

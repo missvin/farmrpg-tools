@@ -34,6 +34,11 @@ import {
   loadPumpkinJuicePlannerState,
   savePumpkinJuicePlannerState,
 } from './pumpkinJuicePlannerState';
+import {
+  clearSnapshotVelocityPreferences,
+  loadSnapshotVelocityPreferences,
+  saveSnapshotVelocityPreferences,
+} from './snapshotVelocityPreferences';
 import { listSnapshots, replaceSnapshots } from './storage/masterySnapshots';
 import {
   clearTargetOutputPlannerState,
@@ -84,6 +89,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   const currentMuseumCompletionState = loadMuseumCompletionState();
   const currentTargetOutputPlannerState = loadTargetOutputPlannerState();
   const currentUnknownItemEvidenceState = loadUnknownItemEvidenceState();
+  const currentSnapshotVelocityPreferences = loadSnapshotVelocityPreferences();
   const currentThemePreference = readStoredAppTheme();
 
   try {
@@ -143,6 +149,12 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       clearUnknownItemEvidenceState();
     }
 
+    if (payload.state.preferences.snapshotVelocityPreferences) {
+      saveSnapshotVelocityPreferences(payload.state.preferences.snapshotVelocityPreferences);
+    } else {
+      clearSnapshotVelocityPreferences();
+    }
+
     if (payload.state.preferences.themePreference) {
       persistAppTheme(payload.state.preferences.themePreference);
     } else {
@@ -159,6 +171,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     saveMuseumCompletionState(currentMuseumCompletionState);
     saveTargetOutputPlannerState(currentTargetOutputPlannerState);
     saveUnknownItemEvidenceState(currentUnknownItemEvidenceState);
+    saveSnapshotVelocityPreferences(currentSnapshotVelocityPreferences);
 
     if (currentThemePreference) {
       persistAppTheme(currentThemePreference);

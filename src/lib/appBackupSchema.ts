@@ -5,6 +5,7 @@ import type { MasteryRaceCountsState } from './masteryRaceCounts';
 import type { MuseumCompletionState } from './museumCompletionState';
 import type { PersonalMasteryGoalsState } from './personalMasteryGoals';
 import type { PumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
+import type { SnapshotVelocityPreferences } from './snapshotVelocityPreferences';
 import type { AppTheme } from './themePreference';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 import type { TargetOutputPlannerState } from './targetOutputPlannerState';
@@ -33,6 +34,7 @@ export type AppBackupStateV1 = {
     museumCompletionState?: MuseumCompletionState | null;
     targetOutputPlannerState?: TargetOutputPlannerState | null;
     unknownItemEvidenceState?: UnknownItemEvidenceState | null;
+    snapshotVelocityPreferences?: SnapshotVelocityPreferences | null;
     themePreference: AppTheme | null;
   };
 };
@@ -60,6 +62,7 @@ export type CreateAppBackupPayloadInput = {
   museumCompletionState?: MuseumCompletionState | null;
   targetOutputPlannerState?: TargetOutputPlannerState | null;
   unknownItemEvidenceState?: UnknownItemEvidenceState | null;
+  snapshotVelocityPreferences?: SnapshotVelocityPreferences | null;
   themePreference: AppTheme | null;
 };
 
@@ -90,7 +93,8 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_mastery_race_counts_state'
   | 'invalid_museum_completion_state'
   | 'invalid_target_output_planner_state'
-  | 'invalid_unknown_item_evidence_state';
+  | 'invalid_unknown_item_evidence_state'
+  | 'invalid_snapshot_velocity_preferences';
 
 export type AppBackupPayloadValidationResult =
   | { ok: true; payload: AppBackupPayloadV1 }
@@ -482,6 +486,23 @@ function isValidTargetOutputPlannerState(value: unknown): value is TargetOutputP
   );
 }
 
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((entry) => typeof entry === 'string');
+}
+
+function isValidSnapshotVelocityPreferences(value: unknown): value is SnapshotVelocityPreferences {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    isStringArray(value.selectedCanonicalKeys) &&
+    isStringArray(value.hiddenDefaultCanonicalKeys) &&
+    (value.chartMode === 'mastery' || value.chartMode === 'gain' || value.chartMode === 'threshold') &&
+    (value.rangeMode === 'all' || value.rangeMode === 'recent')
+  );
+}
+
 function isValidParseSummary(value: unknown): boolean {
   if (!isRecord(value)) {
     return false;
@@ -604,6 +625,7 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
           museumCompletionState: input.museumCompletionState ?? null,
           targetOutputPlannerState: input.targetOutputPlannerState ?? null,
           unknownItemEvidenceState: input.unknownItemEvidenceState ?? null,
+          snapshotVelocityPreferences: input.snapshotVelocityPreferences ?? null,
           themePreference: input.themePreference,
         },
       },
@@ -841,6 +863,19 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       ok: false,
       code: 'invalid_unknown_item_evidence_state',
       message: 'The backup file contains malformed unknown-item review state.',
+    };
+  }
+
+  const snapshotVelocityPreferences = value.state.preferences.snapshotVelocityPreferences;
+  if (
+    snapshotVelocityPreferences !== undefined &&
+    snapshotVelocityPreferences !== null &&
+    !isValidSnapshotVelocityPreferences(snapshotVelocityPreferences)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_snapshot_velocity_preferences',
+      message: 'The backup file contains malformed snapshot velocity chart preferences.',
     };
   }
 

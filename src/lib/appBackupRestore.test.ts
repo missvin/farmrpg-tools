@@ -27,6 +27,9 @@ const {
   mockSaveTargetOutputPlannerState,
   mockLoadTargetOutputPlannerState,
   mockClearTargetOutputPlannerState,
+  mockSaveSnapshotVelocityPreferences,
+  mockLoadSnapshotVelocityPreferences,
+  mockClearSnapshotVelocityPreferences,
   mockPersistAppTheme,
   mockClearStoredAppTheme,
   mockReadStoredAppTheme,
@@ -57,6 +60,9 @@ const {
   mockSaveTargetOutputPlannerState: vi.fn(),
   mockLoadTargetOutputPlannerState: vi.fn(),
   mockClearTargetOutputPlannerState: vi.fn(),
+  mockSaveSnapshotVelocityPreferences: vi.fn(),
+  mockLoadSnapshotVelocityPreferences: vi.fn(),
+  mockClearSnapshotVelocityPreferences: vi.fn(),
   mockPersistAppTheme: vi.fn(),
   mockClearStoredAppTheme: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
@@ -113,6 +119,12 @@ vi.mock('./targetOutputPlannerState', () => ({
   loadTargetOutputPlannerState: mockLoadTargetOutputPlannerState,
   saveTargetOutputPlannerState: mockSaveTargetOutputPlannerState,
   clearTargetOutputPlannerState: mockClearTargetOutputPlannerState,
+}));
+
+vi.mock('./snapshotVelocityPreferences', () => ({
+  loadSnapshotVelocityPreferences: mockLoadSnapshotVelocityPreferences,
+  saveSnapshotVelocityPreferences: mockSaveSnapshotVelocityPreferences,
+  clearSnapshotVelocityPreferences: mockClearSnapshotVelocityPreferences,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -180,6 +192,7 @@ function createBackupPayload() {
     masteryRaceCountsState: createMasteryRaceCountsStateFixture(),
     museumCompletionState: createMuseumCompletionStateFixture(),
     targetOutputPlannerState: createTargetOutputPlannerStateFixture(),
+    snapshotVelocityPreferences: createSnapshotVelocityPreferencesFixture(),
     themePreference: 'dark',
   });
 }
@@ -375,6 +388,15 @@ function createTargetOutputPlannerStateFixture() {
   };
 }
 
+function createSnapshotVelocityPreferencesFixture() {
+  return {
+    selectedCanonicalKeys: ['board'],
+    hiddenDefaultCanonicalKeys: ['twine'],
+    chartMode: 'gain' as const,
+    rangeMode: 'recent' as const,
+  };
+}
+
 describe('appBackupRestore', () => {
   beforeEach(() => {
     mockReplaceSnapshots.mockReset();
@@ -403,6 +425,9 @@ describe('appBackupRestore', () => {
     mockSaveTargetOutputPlannerState.mockReset();
     mockLoadTargetOutputPlannerState.mockReset();
     mockClearTargetOutputPlannerState.mockReset();
+    mockSaveSnapshotVelocityPreferences.mockReset();
+    mockLoadSnapshotVelocityPreferences.mockReset();
+    mockClearSnapshotVelocityPreferences.mockReset();
     mockPersistAppTheme.mockReset();
     mockClearStoredAppTheme.mockReset();
     mockReadStoredAppTheme.mockReset();
@@ -415,6 +440,7 @@ describe('appBackupRestore', () => {
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
     mockLoadMuseumCompletionState.mockReturnValue(createMuseumCompletionStateFixture());
     mockLoadTargetOutputPlannerState.mockReturnValue(createTargetOutputPlannerStateFixture());
+    mockLoadSnapshotVelocityPreferences.mockReturnValue(createSnapshotVelocityPreferencesFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
   });
 
@@ -479,6 +505,9 @@ describe('appBackupRestore', () => {
     expect(mockSaveTargetOutputPlannerState).toHaveBeenCalledWith(
       payload.state.preferences.targetOutputPlannerState,
     );
+    expect(mockSaveSnapshotVelocityPreferences).toHaveBeenCalledWith(
+      payload.state.preferences.snapshotVelocityPreferences,
+    );
     expect(mockPersistAppTheme).toHaveBeenCalledWith('dark');
     expect(mockClearCraftingModifierState).not.toHaveBeenCalled();
     expect(mockClearAcquisitionPlannerInputState).not.toHaveBeenCalled();
@@ -488,6 +517,7 @@ describe('appBackupRestore', () => {
     expect(mockClearMasteryRaceCountsState).not.toHaveBeenCalled();
     expect(mockClearMuseumCompletionState).not.toHaveBeenCalled();
     expect(mockClearTargetOutputPlannerState).not.toHaveBeenCalled();
+    expect(mockClearSnapshotVelocityPreferences).not.toHaveBeenCalled();
     expect(mockClearStoredAppTheme).not.toHaveBeenCalled();
   });
 
@@ -504,6 +534,7 @@ describe('appBackupRestore', () => {
       masteryRaceCountsState: null,
       museumCompletionState: null,
       targetOutputPlannerState: null,
+      snapshotVelocityPreferences: null,
       themePreference: null,
     });
 
@@ -518,6 +549,7 @@ describe('appBackupRestore', () => {
     expect(mockClearMasteryRaceCountsState).toHaveBeenCalledTimes(1);
     expect(mockClearMuseumCompletionState).toHaveBeenCalledTimes(1);
     expect(mockClearTargetOutputPlannerState).toHaveBeenCalledTimes(1);
+    expect(mockClearSnapshotVelocityPreferences).toHaveBeenCalledTimes(1);
     expect(mockClearStoredAppTheme).toHaveBeenCalledTimes(1);
   });
 
@@ -612,6 +644,7 @@ describe('appBackupRestore', () => {
     const previousMasteryRaceCountsState = createMasteryRaceCountsStateFixture();
     const previousMuseumCompletionState = createMuseumCompletionStateFixture();
     const previousTargetOutputPlannerState = createTargetOutputPlannerStateFixture();
+    const previousSnapshotVelocityPreferences = createSnapshotVelocityPreferencesFixture();
 
     mockListSnapshots.mockResolvedValue(previousSnapshots);
     mockLoadCraftingModifierState.mockReturnValue(previousModifierState);
@@ -622,6 +655,7 @@ describe('appBackupRestore', () => {
     mockLoadMasteryRaceCountsState.mockReturnValue(previousMasteryRaceCountsState);
     mockLoadMuseumCompletionState.mockReturnValue(previousMuseumCompletionState);
     mockLoadTargetOutputPlannerState.mockReturnValue(previousTargetOutputPlannerState);
+    mockLoadSnapshotVelocityPreferences.mockReturnValue(previousSnapshotVelocityPreferences);
     mockReadStoredAppTheme.mockReturnValue('dark');
     mockSaveCraftingModifierState
       .mockImplementationOnce(() => {
@@ -643,6 +677,7 @@ describe('appBackupRestore', () => {
     expect(mockSaveMasteryRaceCountsState).toHaveBeenLastCalledWith(previousMasteryRaceCountsState);
     expect(mockSaveMuseumCompletionState).toHaveBeenLastCalledWith(previousMuseumCompletionState);
     expect(mockSaveTargetOutputPlannerState).toHaveBeenLastCalledWith(previousTargetOutputPlannerState);
+    expect(mockSaveSnapshotVelocityPreferences).toHaveBeenLastCalledWith(previousSnapshotVelocityPreferences);
     expect(mockPersistAppTheme).toHaveBeenLastCalledWith('dark');
   });
 

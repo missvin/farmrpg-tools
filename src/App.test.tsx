@@ -7,6 +7,7 @@ import { APP_THEME_STORAGE_KEY } from './lib/themePreference';
 
 vi.mock('./lib/storage/masterySnapshots', () => ({
   getLatestSnapshot: vi.fn().mockResolvedValue(null),
+  listSnapshots: vi.fn().mockResolvedValue([]),
 }));
 
 vi.mock('./lib/loadMasteryDifficulty', () => ({
