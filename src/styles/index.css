@@ -1748,6 +1748,36 @@ a {
   font-weight: 700;
 }
 
+.item-goal-controls {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.item-goal-controls label:not(.checkbox-field) {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--color-text-strong);
+  font-weight: 800;
+}
+
+.item-goal-source-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.item-goal-source-card {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.item-goal-source-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
 .compact-stat-grid {
   display: grid;
   gap: 0.5rem;

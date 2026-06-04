@@ -82,13 +82,13 @@ The target-output planner becomes easier to feed with real inventory data and ea
 ## v2.2 (Planned)
 
 - Item-level goal and source planning
-  - item profile goal calculator workstream (`BL-235`)
-  - reviewed openable contents as optional sources (`BL-236`)
-  - recursive passive-source modeling for pets, Crunchy Omelette collection, and Tower-artifact recurring inputs (`BL-237`)
-  - Wishing Well expected-value source modeling (`BL-238`)
-  - item-page mastery and quantity goal calculator foundation (`BL-239`)
-  - wait-days and remaining source-budget mode (`BL-240`)
-  - item goal calculator UI and explainability (`BL-241`)
+  - item profile goal calculator workstream (`BL-235`, in progress)
+  - reviewed openable contents as optional sources (`BL-236`, shipped)
+  - recursive passive-source modeling for pets, Crunchy Omelette collection, and Tower-artifact recurring inputs (`BL-237`, shipped)
+  - Wishing Well expected-value source modeling (`BL-238`, shipped)
+  - item-page mastery and quantity goal calculator foundation (`BL-239`, shipped)
+  - wait-days and remaining source-budget mode (`BL-240`, planned)
+  - item goal calculator UI and explainability (`BL-241`, shipped)
 
 User-facing story:
 Item pages should answer practical questions like how long Salt, Large Nets, Frost Snapper Shells, or Spiked Shells will take when current inventory, stored pets, future pets, openables, Wishing Well throws, recursive recipes, and active gathering sources all matter.

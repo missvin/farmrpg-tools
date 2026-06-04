@@ -11,6 +11,8 @@ export type AvailableSupplySourceKey =
   | 'owned_stockpiles'
   | 'current_inventory'
   | 'owned_containers'
+  | 'openable_contents'
+  | 'recurring_antlers'
   | 'stored_pet_inventory'
   | 'future_pet_production'
   | 'manual_override';
@@ -29,6 +31,15 @@ export type AvailableSupplyOverrideInput = {
   canonicalKey: string;
   itemName: string;
   quantity: number;
+};
+
+export type AvailableSupplyExtraBreakdownInput = {
+  canonicalKey: string;
+  itemName: string;
+  sourceKey: AvailableSupplySourceKey;
+  timing: AvailableSupplyTiming;
+  quantity: number;
+  notes?: string[];
 };
 
 export type AvailableSupplyItem = {
@@ -51,6 +62,7 @@ export type DeriveAvailableSupplyPoolInput = {
   acquisitionState: AcquisitionPlannerInputState;
   petSourceReference?: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
   overrides?: AvailableSupplyOverrideInput[];
+  extraBreakdowns?: AvailableSupplyExtraBreakdownInput[];
 };
 
 function clampQuantity(value: number): number {
@@ -58,6 +70,14 @@ function clampQuantity(value: number): number {
 }
 
 function getSourceLabel(sourceKey: AvailableSupplySourceKey): string {
+  if (sourceKey === 'openable_contents') {
+    return 'Openable Contents';
+  }
+
+  if (sourceKey === 'recurring_antlers') {
+    return 'Tower Antlers';
+  }
+
   if (sourceKey === 'manual_override') {
     return 'Manual Override';
   }
@@ -231,6 +251,10 @@ export function deriveAvailableSupplyPool(input: DeriveAvailableSupplyPoolInput)
         });
       }
     }
+  }
+
+  for (const extraBreakdown of input.extraBreakdowns ?? []) {
+    addBreakdown(itemsByCanonicalKey, extraBreakdown);
   }
 
   for (const item of itemsByCanonicalKey.values()) {

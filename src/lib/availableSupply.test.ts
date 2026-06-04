@@ -114,4 +114,28 @@ describe('deriveAvailableSupplyPool', () => {
       quantity: 12,
     });
   });
+
+  it('accepts explicit extra source breakdowns from source adapters', () => {
+    const pool = deriveAvailableSupplyPool({
+      acquisitionState: createSupplyState(),
+      petSourceReference: null,
+      extraBreakdowns: [
+        {
+          canonicalKey: 'wood',
+          itemName: 'Wood',
+          sourceKey: 'openable_contents',
+          timing: 'immediate',
+          quantity: 20,
+          notes: ['Opened containers.'],
+        },
+      ],
+    });
+
+    expect(pool.byCanonicalKey.wood.effectiveQuantity).toBe(57);
+    expect(pool.byCanonicalKey.wood.breakdowns.at(-1)).toMatchObject({
+      sourceKey: 'openable_contents',
+      label: 'Openable Contents',
+      quantity: 20,
+    });
+  });
 });

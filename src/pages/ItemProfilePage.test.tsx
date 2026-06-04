@@ -9,6 +9,9 @@ const loadItemCatalogMock = vi.fn();
 const loadTowerRequirementsMock = vi.fn();
 const loadRecipeGraphMock = vi.fn();
 const loadDropRateReferenceMock = vi.fn();
+const loadPetSourceReferenceMock = vi.fn();
+const loadOpenableContentsReferenceMock = vi.fn();
+const loadWishingWellReferenceMock = vi.fn();
 const getItemIconMock = vi.fn();
 
 vi.mock('../lib/storage/masterySnapshots', () => ({
@@ -31,6 +34,18 @@ vi.mock('../lib/loadDropRateReference', () => ({
   loadDropRateReference: (...args: unknown[]) => loadDropRateReferenceMock(...args),
 }));
 
+vi.mock('../lib/loadPetSourceReference', () => ({
+  loadPetSourceReference: (...args: unknown[]) => loadPetSourceReferenceMock(...args),
+}));
+
+vi.mock('../lib/loadOpenableContentsReference', () => ({
+  loadOpenableContentsReference: (...args: unknown[]) => loadOpenableContentsReferenceMock(...args),
+}));
+
+vi.mock('../lib/loadWishingWellReference', () => ({
+  loadWishingWellReference: (...args: unknown[]) => loadWishingWellReferenceMock(...args),
+}));
+
 vi.mock('../lib/itemIconManifest', () => ({
   getItemIcon: (...args: unknown[]) => getItemIconMock(...args),
 }));
@@ -42,6 +57,9 @@ describe('ItemProfilePage', () => {
     loadTowerRequirementsMock.mockReset();
     loadRecipeGraphMock.mockReset();
     loadDropRateReferenceMock.mockReset();
+    loadPetSourceReferenceMock.mockReset();
+    loadOpenableContentsReferenceMock.mockReset();
+    loadWishingWellReferenceMock.mockReset();
     getItemIconMock.mockReset();
     window.localStorage.clear();
   });
@@ -175,6 +193,25 @@ describe('ItemProfilePage', () => {
       },
     });
 
+    loadPetSourceReferenceMock.mockResolvedValue({
+      entries: [],
+      byItemCanonicalKey: {},
+      byPetCanonicalKey: {},
+      byPetAndItemKey: {},
+    });
+
+    loadOpenableContentsReferenceMock.mockResolvedValue({
+      entries: [],
+      byOpenableCanonicalKey: {},
+      byContentCanonicalKey: {},
+    });
+
+    loadWishingWellReferenceMock.mockResolvedValue({
+      entries: [],
+      byThrownCanonicalKey: {},
+      byRewardCanonicalKey: {},
+    });
+
     getItemIconMock.mockImplementation((canonicalKey: string) =>
       canonicalKey === 'glass orb' ? { src: '/icons/glass-orb.png' } : null,
     );
@@ -225,6 +262,11 @@ describe('ItemProfilePage', () => {
     expect(within(acquisitionSection as HTMLElement).getByText('1')).toBeInTheDocument();
     expect(within(acquisitionSection as HTMLElement).getByRole('link', { name: /Open Acquisition Breakdown/ }))
       .toHaveAttribute('href', '/acquisition-breakdown?item=red+dye');
+
+    const goalSection = screen.getByRole('heading', { name: 'Goal Calculator' }).closest('section');
+    expect(goalSection).not.toBeNull();
+    expect(within(goalSection as HTMLElement).getByText('Mastery remaining')).toBeInTheDocument();
+    expect(within(goalSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);
   });
 
   it('marks completed Tower targets clearly', async () => {

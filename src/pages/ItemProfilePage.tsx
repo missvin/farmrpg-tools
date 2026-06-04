@@ -14,6 +14,11 @@ import {
   type UserCraftingModifierState,
 } from '../lib/craftingModifierState';
 import {
+  buildItemGoalCalculatorResult,
+  type ItemGoalCalculatorResult,
+  type ItemGoalMode,
+} from '../lib/itemGoalCalculator';
+import {
   deriveItemAcquisitionContext,
   type ItemAcquisitionContext,
 } from '../lib/itemAcquisitionContext';
@@ -22,7 +27,13 @@ import { getItemIcon } from '../lib/itemIconManifest';
 import { resolveItemProfile, type ItemProfile, type ItemProfileTowerTarget } from '../lib/itemProfileResolver';
 import { loadDropRateReference, type DropRateReferenceData } from '../lib/loadDropRateReference';
 import { loadItemCatalog, type ItemCatalogData } from '../lib/loadItemCatalog';
+import {
+  loadOpenableContentsReference,
+  type OpenableContentsReferenceData,
+} from '../lib/loadOpenableContentsReference';
+import { loadPetSourceReference, type PetSourceReferenceData } from '../lib/loadPetSourceReference';
 import { loadRecipeGraph, type RecipeGraph, type RecipeInput, type RecipeNode } from '../lib/loadRecipeGraph';
+import { loadWishingWellReference, type WishingWellReferenceData } from '../lib/loadWishingWellReference';
 import {
   calculateRecursiveIngredientBurden,
   type IngredientBurdenEntry,
@@ -44,6 +55,9 @@ type ItemProfileResources = {
   towerRequirementsData: TowerRequirementsData | null;
   recipeGraph: RecipeGraph | null;
   dropRateReference: DropRateReferenceData | null;
+  petSourceReference: PetSourceReferenceData | null;
+  openableContentsReference: OpenableContentsReferenceData | null;
+  wishingWellReference: WishingWellReferenceData | null;
 };
 
 type MasteryMilestone = {
@@ -68,6 +82,20 @@ const MASTERY_MILESTONES: MasteryMilestone[] = [
 
 function formatMastery(value: number): string {
   return value.toLocaleString();
+}
+
+function formatPlannerQuantity(value: number): string {
+  if (!Number.isFinite(value)) {
+    return '0';
+  }
+
+  if (Number.isInteger(value)) {
+    return value.toLocaleString();
+  }
+
+  return value.toLocaleString(undefined, {
+    maximumFractionDigits: 1,
+  });
 }
 
 function formatPumpkinJuiceCount(value: number | null): string {
@@ -406,6 +434,389 @@ function ItemAcquisitionContextSection({
   );
 }
 
+function ItemGoalSupplyBreakdownList({ result }: { result: ItemGoalCalculatorResult }) {
+  const targetSummary = result.plannerResult.targetSummaries[0];
+  const breakdowns = targetSummary?.row?.supply?.breakdowns ?? [];
+
+  if (breakdowns.length === 0) {
+    return <p className="empty-state">No saved supply is currently counted for this target item.</p>;
+  }
+
+  return (
+    <ul className="data-list">
+      {breakdowns.map((entry, index) => (
+        <li key={`${entry.sourceKey}-${index}`}>
+          <div className="recipe-link-row">
+            <span>
+              <strong>{entry.label}</strong>
+              {entry.notes.length > 0 ? <span className="subtle-text">{entry.notes.join(' ')}</span> : null}
+            </span>
+            <strong>{formatPlannerQuantity(entry.quantity)}</strong>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ItemGoalDemandList({
+  result,
+  targetCanonicalKey,
+}: {
+  result: ItemGoalCalculatorResult;
+  targetCanonicalKey: string;
+}) {
+  const rows = result.plannerResult.rows
+    .filter((row) => row.canonicalKey !== targetCanonicalKey)
+    .filter((row) => row.grossRequiredQuantity > 0)
+    .slice(0, 8);
+
+  if (rows.length === 0) {
+    return <p className="empty-state">No recursive recipe demand was found for this item goal.</p>;
+  }
+
+  return (
+    <ul className="data-list data-list--clickable">
+      {rows.map((row) => {
+        const icon = getItemIcon(row.canonicalKey);
+
+        return (
+          <li key={row.canonicalKey}>
+            <div className="recipe-link-row">
+              <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} iconSrc={icon?.src} />
+              <span>
+                <strong>{formatPlannerQuantity(row.remainingQuantity)} left</strong>
+                <span className="subtle-text">
+                  {formatPlannerQuantity(row.grossRequiredQuantity)} needed before saved supply
+                </span>
+              </span>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
+  return (
+    <div className="item-goal-source-grid">
+      <div className="item-goal-source-card">
+        <h3>Openables</h3>
+        {result.openableSources.length > 0 ? (
+          <ul className="data-list">
+            {result.openableSources.map((source) => (
+              <li key={`${source.entry.openableCanonicalKey}-${source.entry.contentCanonicalKey}`}>
+                <div className="recipe-link-row">
+                  <span>
+                    <strong>{source.entry.openableItemName}</strong>
+                    <span className="subtle-text">
+                      {source.ownedOpenableCount.toLocaleString()} owned at {source.entry.quantityPerOpen.toLocaleString()}{' '}
+                      each
+                    </span>
+                  </span>
+                  <strong>{formatPlannerQuantity(source.projectedContentQuantity)}</strong>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="empty-state">No reviewed openable contents are available for this item from saved containers.</p>
+        )}
+      </div>
+
+      <div className="item-goal-source-card">
+        <h3>Pets</h3>
+        {result.petSources.length > 0 ? (
+          <ul className="data-list data-list--clickable">
+            {result.petSources.map((source) => {
+              const icon = getItemIcon(source.canonicalKey);
+              const petNames = source.forecast.petDetails.map((detail) => detail.petName).join(', ');
+
+              return (
+                <li key={source.canonicalKey}>
+                  <div className="recipe-link-row">
+                    <ItemProfileLink canonicalKey={source.canonicalKey} itemName={source.itemName} iconSrc={icon?.src} />
+                    <span>
+                      <strong>{formatPlannerQuantity(source.forecastQuantity)}</strong>
+                      <span className="subtle-text">
+                        {source.role === 'target' ? 'Target item' : 'Recipe ingredient'} from {petNames}
+                      </span>
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="empty-state">No future pet rows match this target item or its current recipe demand.</p>
+        )}
+      </div>
+
+      <div className="item-goal-source-card">
+        <h3>Wishing Well</h3>
+        {result.wishingWellSources.length > 0 ? (
+          <ul className="data-list data-list--clickable">
+            {result.wishingWellSources.map((source) => {
+              const icon = getItemIcon(source.entry.thrownCanonicalKey);
+
+              return (
+                <li key={`${source.entry.thrownCanonicalKey}-${source.entry.rewardCanonicalKey}`}>
+                  <div className="recipe-link-row">
+                    <ItemProfileLink
+                      canonicalKey={source.entry.thrownCanonicalKey}
+                      itemName={source.entry.thrownItemName}
+                      iconSrc={icon?.src}
+                    />
+                    <span>
+                      <strong>{formatPlannerQuantity(source.expectedDailyQuantity)} / day</strong>
+                      <span className="subtle-text">
+                        {source.entry.rewardChance * 100}% chance, x{formatPlannerQuantity(source.rewardMultiplier)} reward,
+                        {` ${formatPlannerQuantity(source.thrownItemAvailableQuantity)} available to throw`}
+                      </span>
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="empty-state">No reviewed Wishing Well path is available for this item yet.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ItemGoalCalculatorSection({
+  profile,
+  acquisitionState,
+  modifierState,
+  recipeGraph,
+  petSourceReference,
+  openableContentsReference,
+  wishingWellReference,
+}: {
+  profile: ItemProfile;
+  acquisitionState: AcquisitionPlannerInputState;
+  modifierState: UserCraftingModifierState;
+  recipeGraph: RecipeGraph;
+  petSourceReference: PetSourceReferenceData | null;
+  openableContentsReference: OpenableContentsReferenceData | null;
+  wishingWellReference: WishingWellReferenceData | null;
+}) {
+  const defaultMasteryTarget = getNextMasteryMilestone(profile.currentMastery)?.targetMastery ?? 1_000_000;
+  const [goalMode, setGoalMode] = useState<ItemGoalMode>('mastery');
+  const [targetMastery, setTargetMastery] = useState(defaultMasteryTarget);
+  const [targetQuantity, setTargetQuantity] = useState(10_000);
+  const [includeOpenables, setIncludeOpenables] = useState(true);
+  const [crunchyOmeletteActive, setCrunchyOmeletteActive] = useState(false);
+  const [towerAntlersPerDay, setTowerAntlersPerDay] = useState(0);
+  const [wishingWellThrowsPerDay, setWishingWellThrowsPerDay] = useState(30);
+  const [wishingWellRewardMultiplier, setWishingWellRewardMultiplier] = useState(1);
+
+  useEffect(() => {
+    setTargetMastery(defaultMasteryTarget);
+  }, [defaultMasteryTarget, profile.canonicalKey]);
+
+  const result = useMemo(() => {
+    return buildItemGoalCalculatorResult({
+      itemName: profile.itemName,
+      canonicalKey: profile.canonicalKey,
+      currentMastery: profile.currentMastery,
+      acquisitionState,
+      modifierState,
+      recipeGraph,
+      petSourceReference,
+      openableContentsReference,
+      wishingWellReference,
+      settings: {
+        goalMode,
+        targetMastery,
+        targetQuantity,
+        includeOpenableContents: includeOpenables,
+        crunchyOmeletteActive,
+        towerAntlersPerDay,
+        wishingWellThrowsPerDay,
+        wishingWellRewardMultiplier,
+      },
+    });
+  }, [
+    acquisitionState,
+    crunchyOmeletteActive,
+    goalMode,
+    includeOpenables,
+    modifierState,
+    openableContentsReference,
+    petSourceReference,
+    profile.canonicalKey,
+    profile.currentMastery,
+    profile.itemName,
+    recipeGraph,
+    targetMastery,
+    targetQuantity,
+    towerAntlersPerDay,
+    wishingWellReference,
+    wishingWellRewardMultiplier,
+    wishingWellThrowsPerDay,
+  ]);
+  const goalLabel = goalMode === 'mastery' ? 'Mastery remaining' : 'Quantity target';
+
+  return (
+    <section className="page-card page-stack" aria-labelledby="item-goal-calculator-title">
+      <div>
+        <h2 id="item-goal-calculator-title">Goal Calculator</h2>
+        <p className="supporting-text">
+          Plan a mastery or quantity target with saved inventory, openables, pet forecasts, recipes, and reviewed Wishing
+          Well paths.
+        </p>
+      </div>
+
+      <dl className="summary-grid">
+        <div className="summary-grid__item">
+          <dt>{goalLabel}</dt>
+          <dd>{formatPlannerQuantity(result.desiredQuantity)}</dd>
+        </div>
+        <div className="summary-grid__item">
+          <dt>Counted supply</dt>
+          <dd>{formatPlannerQuantity(result.totalAvailableQuantity)}</dd>
+          {result.openableQuantity > 0 || result.crunchyStoredPetBonusQuantity > 0 ? (
+            <p className="subtle-text">
+              {result.openableQuantity > 0 ? `${formatPlannerQuantity(result.openableQuantity)} from openables` : ''}
+              {result.openableQuantity > 0 && result.crunchyStoredPetBonusQuantity > 0 ? ', ' : ''}
+              {result.crunchyStoredPetBonusQuantity > 0
+                ? `${formatPlannerQuantity(result.crunchyStoredPetBonusQuantity)} Crunchy pet bonus`
+                : ''}
+            </p>
+          ) : null}
+        </div>
+        <div className="summary-grid__item">
+          <dt>Remaining</dt>
+          <dd>{formatPlannerQuantity(result.remainingQuantity)}</dd>
+        </div>
+        <div className="summary-grid__item">
+          <dt>Wishing Well EV</dt>
+          <dd>{formatPlannerQuantity(result.expectedWishingWellQuantityPerDay)} / day</dd>
+        </div>
+      </dl>
+
+      <details className="advanced-details">
+        <summary>Adjust assumptions</summary>
+        <div className="item-goal-controls">
+          <label>
+            Goal kind
+            <select
+              className="text-input"
+              value={goalMode}
+              onChange={(event) => setGoalMode(event.target.value as ItemGoalMode)}
+            >
+              <option value="mastery">Mastery target</option>
+              <option value="quantity">Total quantity</option>
+            </select>
+          </label>
+          {goalMode === 'mastery' ? (
+            <label>
+              Target mastery
+              <input
+                className="text-input"
+                type="number"
+                min="0"
+                step="1000"
+                value={targetMastery}
+                onChange={(event) => setTargetMastery(Number(event.target.value))}
+              />
+            </label>
+          ) : (
+            <label>
+              Target quantity
+              <input
+                className="text-input"
+                type="number"
+                min="0"
+                step="1"
+                value={targetQuantity}
+                onChange={(event) => setTargetQuantity(Number(event.target.value))}
+              />
+            </label>
+          )}
+          <label>
+            Tower Antlers / day
+            <input
+              className="text-input"
+              type="number"
+              min="0"
+              step="1"
+              value={towerAntlersPerDay}
+              onChange={(event) => setTowerAntlersPerDay(Number(event.target.value))}
+            />
+          </label>
+          <label>
+            Wishing Well throws / day
+            <input
+              className="text-input"
+              type="number"
+              min="0"
+              step="1"
+              value={wishingWellThrowsPerDay}
+              onChange={(event) => setWishingWellThrowsPerDay(Number(event.target.value))}
+            />
+          </label>
+          <label>
+            Wishing Well reward multiplier
+            <input
+              className="text-input"
+              type="number"
+              min="1"
+              step="1"
+              value={wishingWellRewardMultiplier}
+              onChange={(event) => setWishingWellRewardMultiplier(Number(event.target.value))}
+            />
+          </label>
+          <label className="checkbox-field">
+            <input
+              type="checkbox"
+              checked={includeOpenables}
+              onChange={(event) => setIncludeOpenables(event.target.checked)}
+            />
+            Count reviewed openable contents
+          </label>
+          <label className="checkbox-field">
+            <input
+              type="checkbox"
+              checked={crunchyOmeletteActive}
+              onChange={(event) => setCrunchyOmeletteActive(event.target.checked)}
+            />
+            Crunchy Omelette for pet collection
+          </label>
+        </div>
+      </details>
+
+      {result.warnings.length > 0 ? (
+        <ul className="status-message">
+          {result.warnings.map((warning) => (
+            <li key={warning}>{warning}</li>
+          ))}
+        </ul>
+      ) : null}
+
+      <details className="advanced-details">
+        <summary>Show counted supply</summary>
+        <ItemGoalSupplyBreakdownList result={result} />
+      </details>
+
+      <details className="advanced-details">
+        <summary>Show recipe demand</summary>
+        <ItemGoalDemandList result={result} targetCanonicalKey={profile.canonicalKey} />
+      </details>
+
+      <details className="advanced-details">
+        <summary>Show source paths</summary>
+        <ItemGoalSourceRows result={result} />
+      </details>
+    </section>
+  );
+}
+
 export function ItemProfilePage() {
   const { canonicalKey: canonicalKeyParam } = useParams();
   const canonicalKey = decodeItemProfileParam(canonicalKeyParam);
@@ -451,8 +862,22 @@ export function ItemProfilePage() {
       loadTowerRequirements(),
       loadRecipeGraph(),
       loadDropRateReference().catch(() => null),
+      loadPetSourceReference().catch(() => null),
+      loadOpenableContentsReference().catch(() => null),
+      loadWishingWellReference().catch(() => null),
     ])
-      .then(([snapshot, itemCatalog, towerRequirementsData, recipeGraph, dropRateReference]) => {
+      .then((
+        [
+          snapshot,
+          itemCatalog,
+          towerRequirementsData,
+          recipeGraph,
+          dropRateReference,
+          petSourceReference,
+          openableContentsReference,
+          wishingWellReference,
+        ],
+      ) => {
         if (!isMounted) {
           return;
         }
@@ -466,6 +891,9 @@ export function ItemProfilePage() {
             towerRequirementsData,
             recipeGraph,
             dropRateReference,
+            petSourceReference,
+            openableContentsReference,
+            wishingWellReference,
           },
         });
       })
@@ -683,6 +1111,18 @@ export function ItemProfilePage() {
 
           {acquisitionContext ? (
             <ItemAcquisitionContextSection context={acquisitionContext} profile={profile} />
+          ) : null}
+
+          {resourcesState.resources?.recipeGraph ? (
+            <ItemGoalCalculatorSection
+              profile={profile}
+              acquisitionState={acquisitionState}
+              modifierState={modifierState}
+              recipeGraph={resourcesState.resources.recipeGraph}
+              petSourceReference={resourcesState.resources.petSourceReference}
+              openableContentsReference={resourcesState.resources.openableContentsReference}
+              wishingWellReference={resourcesState.resources.wishingWellReference}
+            />
           ) : null}
 
           <section className="page-card page-stack" aria-labelledby="item-profile-links-title">
