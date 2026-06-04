@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:11:27.866Z",
+  "httpStatus": 200,
+  "itemName": "Mystical Chest 01",
+  "canonicalKey": "mystical chest 01",
+  "buddyUrl": "https://buddy.farm/i/mystical-chest-01/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/mystical-chest-01/page-data.json",
+  "pageTitle": "Mystical Chest 01",
+  "buddyItemName": "Mystical Chest 01",
+  "buddyItemId": "482",
+  "buddyItemImage": "/img/items/4456.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "locksmithItems",
+    "locksmithKey",
+    "rewardForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/mystical-chest-01/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 482,
+              "name": "Mystical Chest 01",
+              "image": "/img/items/4456.png",
+              "type": "item",
+              "description": "Full of obscure treasures",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 896,
+                    "name": "A Way Back XXXI",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9115713,
+                    "name": "Candy Causes IX",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1938450,
+                    "name": "Buddy's Christmas Adventure IX",
+                    "image": "/img/items/buddyelf.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 4,
+                  "quantityMin": 4,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 176,
+                    "name": "Magicite",
+                    "image": "/img/items/7963.png"
+                  }
+                },
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 195,
+                    "name": "Mystic Ring",
+                    "image": "/img/items/8038.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 240,
+                    "name": "Wizard Hat",
+                    "image": "/img/items/4798.png"
+                  }
+                },
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 335,
+                    "name": "Square Key",
+                    "image": "/img/items/7179.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 371,
+                    "name": "Egyptian Necklace",
+                    "image": "/img/items/egyptian1.png"
+                  }
+                },
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 249,
+                    "name": "Shimmer Ring",
+                    "image": "/img/items/shimmertopazring.png"
+                  }
+                },
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 459,
+                    "name": "Gold Coral",
+                    "image": "/img/items/goldcoral.png"
+                  }
+                },
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 5,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 463,
+                    "name": "Goldgill",
+                    "image": "/img/items/goldgill.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 297,
+                    "name": "Winged Amulet",
+                    "image": "/img/items/7422.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": {
+                "__typename": "FarmRPG_Item",
+                "id": 366,
+                "name": "Skeleton Key",
+                "image": "/img/items/skelkey.png"
+              },
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 309,
+                  "itemQuantity": 3090
+                },
+                {
+                  "level": 294,
+                  "itemQuantity": 2940
+                },
+                {
+                  "level": 177,
+                  "itemQuantity": 1700
+                },
+                {
+                  "level": 77,
+                  "itemQuantity": 170
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2026-03-09",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 282,
+                    "name": "Shiny Beetle",
+                    "image": "/img/items/beetle.png"
+                  },
+                  "inputQuantity": 3392300,
+                  "progress": 4408909,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2026-01-19",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 206,
+                    "name": "Seahorse",
+                    "image": "/img/items/8819.png"
+                  },
+                  "inputQuantity": 4364700,
+                  "progress": 8781417,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-07-21",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 83,
+                    "name": "Purple Diary",
+                    "image": "/img/items/purplebook.png"
+                  },
+                  "inputQuantity": 2042700,
+                  "progress": 2787229,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-05-21",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 63,
+                    "name": "Trout",
+                    "image": "/img/items/trout.png"
+                  },
+                  "inputQuantity": 5839200,
+                  "progress": 23937268,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-01-10",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 44,
+                    "name": "Apple",
+                    "image": "/img/items/8297.png"
+                  },
+                  "inputQuantity": 1615600,
+                  "progress": 2162973,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 482,
+        "name": "Mystical Chest 01"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -395,6 +395,7 @@ export function buildBuddyItemEvidenceCachePlan(targets, existingEvidenceByCache
           pageDataUrl,
           action: 'skip_fresh',
           reason: `Cached evidence is newer than ${normalizedOptions.maxAgeDays.toLocaleString()} days.`,
+          existingEvidence,
           existingFetchedAt: existingEvidence.fetchedAt,
         };
       }
@@ -464,6 +465,15 @@ export function buildBuddyItemEvidenceCachePlan(targets, existingEvidenceByCache
 }
 
 function createResultFromPlanEntry(entry, fields = {}) {
+  const existingEvidence = entry.action === 'skip_fresh' ? entry.existingEvidence : null;
+  const existingSourceStatus = existingEvidence?.sourceStatus ?? '';
+  const existingFlags =
+    existingSourceStatus === 'sources_blank'
+      ? ['sources_blank']
+      : existingSourceStatus === 'uncertain'
+        ? ['uncertain']
+        : [];
+
   return {
     itemName: entry.target.itemName,
     canonicalKey: entry.target.canonicalKey,
@@ -473,11 +483,11 @@ function createResultFromPlanEntry(entry, fields = {}) {
     cacheFileName: entry.cacheFileName,
     action: entry.action,
     status: fields.status ?? entry.action,
-    httpStatus: fields.httpStatus ?? null,
-    sourceStatus: fields.sourceStatus ?? '',
-    fetchedAt: fields.fetchedAt ?? '',
-    flags: fields.flags ?? [],
-    notes: fields.notes ?? [entry.reason].filter(Boolean),
+    httpStatus: fields.httpStatus ?? existingEvidence?.httpStatus ?? null,
+    sourceStatus: fields.sourceStatus ?? existingSourceStatus,
+    fetchedAt: fields.fetchedAt ?? existingEvidence?.fetchedAt ?? '',
+    flags: fields.flags ?? existingFlags,
+    notes: fields.notes ?? [...(existingEvidence?.reviewNotes ?? []), entry.reason].filter(Boolean),
     evidence: fields.evidence ?? null,
   };
 }
@@ -594,7 +604,7 @@ export async function cacheBuddyItemEvidenceTargets(targets, options = {}) {
       warnings: [
         ...plan.summary.warnings,
         ...(reviewResults.length > 0
-          ? [`${reviewResults.length.toLocaleString()} cached evidence results need review before parser promotion.`]
+          ? [`${reviewResults.length.toLocaleString()} evidence results need review before parser promotion.`]
           : []),
       ],
     },

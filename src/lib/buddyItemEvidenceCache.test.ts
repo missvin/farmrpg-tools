@@ -119,6 +119,34 @@ Missing Thing,missing_thing,missing-thing,https://buddy.farm/i/missing-thing/,no
     expect(plan.entries.map((entry) => entry.action)).toEqual(['skip_fresh', 'would_fetch', 'deferred_limit']);
   });
 
+  it('keeps skipped fresh review candidates visible in regenerated review manifests', async () => {
+    const blankBox = createTarget('Blank Box');
+    const movingTarget = createTarget('Moving Target');
+    const result = await cacheBuddyItemEvidenceTargets([blankBox, movingTarget], {
+      dryRun: true,
+      nowMs,
+      delayMs: DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS,
+      limit: 1,
+      existingEvidenceByCacheKey: {
+        [getBuddyItemEvidenceCacheKey(blankBox)]: {
+          fetchedAt,
+          httpStatus: 200,
+          sourceStatus: 'sources_blank',
+          reviewNotes: ['no_nonempty_known_source_sections'],
+        },
+      },
+    });
+
+    expect(result.summary.countsByStatus).toEqual({
+      skip_fresh: 1,
+      would_fetch: 1,
+    });
+    expect(result.reviewResults).toHaveLength(1);
+    expect(toBuddyItemEvidenceManifestCsv(result)).toContain('sources_blank');
+    expect(toBuddyItemEvidenceReviewCsv(result)).toContain('Blank Box');
+    expect(toBuddyItemEvidenceReviewCsv(result)).toContain('skip_fresh');
+  });
+
   it('does not fetch during dry runs', async () => {
     const fetchFn = vi.fn();
 

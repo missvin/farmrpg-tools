@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:11:27.866Z",
+  "httpStatus": 200,
+  "itemName": "Watermelon Seeds",
+  "canonicalKey": "watermelon seeds",
+  "buddyUrl": "https://buddy.farm/i/watermelon-seeds/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/watermelon-seeds/page-data.json",
+  "pageTitle": "Watermelon Seeds",
+  "buddyItemName": "Watermelon Seeds",
+  "buddyItemId": "60",
+  "buddyItemImage": "/img/items/seeds_watermelon.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRates",
+    "rewardForQuests",
+    "templeRewardItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/watermelon-seeds/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 60,
+              "name": "Watermelon Seeds",
+              "image": "/img/items/seeds_watermelon.png",
+              "type": "seeds",
+              "description": "Harvest every 2 hours",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 1400,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 120,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 6,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 157,
+                    "name": "His Mane Quest II",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 74,
+                    "name": "Watermelon Eating Contest",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-07-06T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 32,
+                    "name": "Summer Festival",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [
+                {
+                  "runecube": false,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 59,
+                        "name": "Watermelon",
+                        "image": "/img/items/8293.png"
+                      },
+                      "rate": 1.000100080015007
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 253,
+                        "name": "Piece of Heart",
+                        "image": "/img/items/poh.png"
+                      },
+                      "rate": 9993.0048965724
+                    }
+                  ]
+                },
+                {
+                  "runecube": true,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 59,
+                        "name": "Watermelon",
+                        "image": "/img/items/8293.png"
+                      },
+                      "rate": 1.0001250556369568
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 253,
+                        "name": "Piece of Heart",
+                        "image": "/img/items/poh.png"
+                      },
+                      "rate": 7997.44081893794
+                    }
+                  ]
+                }
+              ],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 59,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 750,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 61,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 1500,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 63,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 3000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 65,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 4500,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 67,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 6000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 69,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 7500,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 71,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 9000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 73,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 10500,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 75,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 12000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 77,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 13500,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 60,
+        "name": "Watermelon Seeds"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}
