@@ -86,6 +86,7 @@ The target-output planner becomes easier to feed with real inventory data and ea
   - reviewed openable contents as optional sources (`BL-236`, shipped)
   - recursive passive-source modeling for pets, Crunchy Omelette collection, and Tower-artifact recurring inputs (`BL-237`, shipped)
   - Wishing Well expected-value source modeling (`BL-238`, shipped)
+  - full reviewed pet-source coverage for normal and seasonal pets (`BL-242`, planned)
   - item-page mastery and quantity goal calculator foundation (`BL-239`, shipped)
   - wait-days and remaining source-budget mode (`BL-240`, planned)
   - item goal calculator UI and explainability (`BL-241`, shipped)
