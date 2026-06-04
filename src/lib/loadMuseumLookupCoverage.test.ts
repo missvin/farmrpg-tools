@@ -68,7 +68,18 @@ Mystery Goo,mystery goo,Items,Other,Y,mystery-goo,,museum_only_icon_ready,derive
       readFileSync(join(process.cwd(), 'data', 'museum_lookup_coverage.csv'), 'utf8'),
     );
 
-    expect(result.entries).toEqual([]);
-    expect(result.byCanonicalKey).toEqual({});
+    expect(result.entries).toEqual([
+      expect.objectContaining({
+        itemName: 'Baba Bobblehead',
+        canonicalKey: 'baba bobblehead',
+        generatedBuddySlug: 'baba-bobblehead',
+        planningReferenceStatus: 'museum_only_icon_ready',
+        iconReadyCoverageStatus: 'maintained_local',
+        candidateReviewStatus: 'reviewed',
+      }),
+    ]);
+    expect(result.byCanonicalKey['baba bobblehead']).toMatchObject({
+      itemName: 'Baba Bobblehead',
+    });
   });
 });

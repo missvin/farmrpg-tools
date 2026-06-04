@@ -107,8 +107,17 @@ Pot of Gold (Large),pot of gold (large),Pot of Gold Large,pot of gold large,appr
   it('parses the checked-in local item aliases file', () => {
     const aliases = parseItemAliasesCsv(readFileSync(join(process.cwd(), 'data', 'item_aliases.csv'), 'utf8'));
 
-    expect(aliases.entries).toEqual([]);
-    expect(aliases.byAliasKey).toEqual({});
-    expect(aliases.approvedByAliasKey).toEqual({});
+    expect(aliases.entries).toEqual([
+      expect.objectContaining({
+        aliasName: 'Baba Bobble',
+        aliasKey: 'baba bobble',
+        canonicalItemName: 'Baba Bobblehead',
+        canonicalKey: 'baba bobblehead',
+        reviewStatus: 'approved',
+      }),
+    ]);
+    expect(aliases.approvedByAliasKey['baba bobble']).toMatchObject({
+      canonicalItemName: 'Baba Bobblehead',
+    });
   });
 });

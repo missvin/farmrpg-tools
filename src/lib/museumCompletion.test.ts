@@ -410,6 +410,8 @@ Corn Oil`,
     expect(result.summary.namedMissingSlots).toBe(56);
     expect(itemsCategory?.unresolvedMissingCount).toBe(0);
     expect(result.namedMissingItems.map((item) => item.itemName)).toContain('Apple Basket');
+    expect(result.namedMissingItems.map((item) => item.itemName)).toContain('Baba Bobblehead');
+    expect(result.namedMissingItems.map((item) => item.itemName)).not.toContain('Baba Bobble');
     expect(result.namedMissingItems.map((item) => item.itemName)).toContain('Vincent Bobblehead');
   });
 });

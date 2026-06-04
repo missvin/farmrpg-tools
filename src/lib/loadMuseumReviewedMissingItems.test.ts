@@ -50,5 +50,7 @@ Items,items,Apple Basket,apple-basket,1,reviewed,manual,`),
 
     expect(result.entries).toHaveLength(45);
     expect(result.entries.reduce((total, entry) => total + entry.slotCount, 0)).toBe(56);
+    expect(result.entries.map((entry) => entry.itemName)).toContain('Baba Bobblehead');
+    expect(result.entries.map((entry) => entry.itemName)).not.toContain('Baba Bobble');
   });
 });

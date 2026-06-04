@@ -87,6 +87,36 @@ describe('local item reference lookup', () => {
     expect(result.warnings).toEqual(['Recognized from museum lookup coverage only; do not infer mastery eligibility.']);
   });
 
+  it('can resolve an approved alias to museum-only coverage without implying mastery eligibility', () => {
+    const lookup = createLocalItemReferenceLookup({
+      itemCatalog: parseItemCatalogCsv(
+        `item_name,canonical_key,mastery_possible,farmrpg_item_id,buddy_slug,source_datasets,notes
+Acorn,acorn,unknown,,,recipe_inputs.input,`,
+      ),
+      aliases: parseItemAliasesCsv(
+        `alias_name,alias_key,canonical_item_name,canonical_key,review_status,source,notes
+Baba Bobble,baba bobble,Baba Bobblehead,baba bobblehead,approved,museum_identity_review,`,
+      ),
+      museumCoverage: parseMuseumLookupCoverageCsv(
+        `item_name,canonical_key,museum_category,category,obtainable,generated_buddy_slug,alternate_buddy_slug,planning_reference_status,icon_ready_coverage_status,candidate_review_status,unresolved_case_type,source_workflow,notes
+Baba Bobblehead,baba bobblehead,Items,Items,Y,baba-bobblehead,,museum_only_icon_ready,maintained_local,reviewed,,museum_identity_review,`,
+      ),
+    });
+
+    const result = resolveLocalItemReference('Baba Bobble', lookup);
+
+    expect(result).toMatchObject({
+      inputKey: 'baba bobble',
+      canonicalKey: 'baba bobblehead',
+      displayName: 'Baba Bobblehead',
+      recognized: true,
+      recognitionStatus: 'alias',
+      masteryPossible: 'unknown',
+      sourceDatasets: ['item_aliases', 'museum_lookup_coverage'],
+    });
+    expect(result.warnings).toEqual(['Recognized from museum lookup coverage only; do not infer mastery eligibility.']);
+  });
+
   it('recognizes museum canon items without treating them as mastery eligible', () => {
     const result = resolveLocalItemReference('beer', createLookup());
 
