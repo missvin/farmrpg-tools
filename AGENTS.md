@@ -106,6 +106,8 @@ Be surgical:
 
 - prefer pure derivation helpers for business logic
 - keep normalization rules explicit
+- for planning/math features, compose existing shared planners and adapters before adding new calculation paths; do not duplicate source, supply, pet, recipe, or goal math in page-specific code
+- when a new planning view needs different presentation, add an orchestration/adapter layer over shared engines so rule changes stay centralized
 - prefer inline warnings over modal popups unless explicitly requested
 - treat storage/import/export changes as compatibility-sensitive
 - preserve user data unless destructive behavior is explicitly intended
