@@ -53,6 +53,7 @@ Backlog-first implementation gate:
 - If the row does not exist, create or update the backlog row first, validate the backlog CSV, and state the new or updated `backlog_id` before continuing.
 - If the selected row was just created during the same turn, pause after the backlog edit long enough for the user to redirect before starting product-code changes.
 - Do not start implementation from an unbacklogged plan, even when the user provides a detailed product plan.
+- If dependency validity, artifact sufficiency, claimed shipped status, or verification trust is undermined during the slice, stop forward implementation and follow `planning/failure-recovery-protocol.md`.
 
 Proceed unless the user pauses, redirects, or asked for planning-only/review-only.
 

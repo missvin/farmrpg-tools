@@ -85,6 +85,7 @@ Think before coding:
 - do not silently guess through ambiguity
 - state assumptions when they matter
 - ask for clarification when multiple interpretations would produce different outcomes
+- if a significant assumption, dependency, artifact, or source-of-truth miss is discovered, stop forward work and follow `planning/failure-recovery-protocol.md` before resuming
 
 Keep changes small:
 

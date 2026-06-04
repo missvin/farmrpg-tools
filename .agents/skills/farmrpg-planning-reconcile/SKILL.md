@@ -59,6 +59,7 @@ Default behavior:
    - duplicate or overlapping rows
    - roadmap/backlog mismatches
    - planning-doc conflicts
+   - structural source-of-truth or dependency misses that should trigger `planning/failure-recovery-protocol.md` rather than ordinary cleanup
 3. Apply the smallest evidence-based edit when the mode allows editing.
 4. Preserve useful planning history. Prefer note corrections, scoped wording, or small row splits over sweeping rewrites.
 5. Leave unresolved work visible. Do not over-clean just to make the plan look tidier.
