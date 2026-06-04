@@ -170,6 +170,8 @@ Use the repo-local safe Codex git helpers for branch, stage, commit, push, and m
 
 The helpers read temporary input from `recovery/codex-branch-name.txt`, `recovery/codex-stage-paths.txt`, and `recovery/codex-commit-message.txt`. These files are ignored and should be removed automatically after successful helper use.
 
+For explicitly approved protected-branch pushes, `git codex-push` reads `recovery/codex-protected-push-approval.txt` and requires the file to name the current branch and exact current `HEAD`. The helper prints the required file contents when approval is missing.
+
 If a helper fails, stop and report the failure. Do not silently fall back to raw `git add`, `git commit`, `git push`, or `git merge`.
 
 For normal one-off tasks, do not commit unless the user asks. For `farmrpg-tools-next-slice` runs, completed work should be committed, merged, and pushed by default unless the user explicitly asks not to land it, asks for planning-only/review-only, or the work is not safe to land.
