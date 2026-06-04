@@ -376,8 +376,9 @@ export function normalizeBuddyItemEvidenceOptions(options = {}) {
 
 export function buildBuddyItemEvidenceCachePlan(targets, existingEvidenceByCacheKey = {}, options = {}) {
   const normalizedOptions = normalizeBuddyItemEvidenceOptions(options);
-  const selectedTargets = targets.slice(0, normalizedOptions.limit);
-  const entries = selectedTargets.map((target, index) => {
+  let plannedFetchCount = 0;
+  let fetchCandidateCount = 0;
+  const entries = targets.map((target, index) => {
     const cacheKey = getBuddyItemEvidenceCacheKey(target);
     const cacheFileName = getBuddyItemEvidenceFileName(target);
     const existingEvidence = existingEvidenceByCacheKey[cacheKey] ?? null;
@@ -398,6 +399,21 @@ export function buildBuddyItemEvidenceCachePlan(targets, existingEvidenceByCache
         };
       }
 
+      fetchCandidateCount += 1;
+      if (plannedFetchCount >= normalizedOptions.limit) {
+        return {
+          index,
+          target,
+          cacheKey,
+          cacheFileName,
+          pageDataUrl,
+          action: 'deferred_limit',
+          reason: `Deferred because this run is limited to ${normalizedOptions.limit.toLocaleString()} fetches.`,
+          existingFetchedAt: existingEvidence?.fetchedAt ?? '',
+        };
+      }
+
+      plannedFetchCount += 1;
       return {
         index,
         target,
@@ -432,12 +448,14 @@ export function buildBuddyItemEvidenceCachePlan(targets, existingEvidenceByCache
     summary: {
       targetsAvailable: targets.length,
       targetsPlanned: entries.length,
-      limitApplied: targets.length > entries.length,
+      fetchesPlanned: plannedFetchCount,
+      fetchCandidatesAvailable: fetchCandidateCount,
+      limitApplied: fetchCandidateCount > plannedFetchCount,
       countsByAction,
       warnings: [
-        ...(targets.length > entries.length
+        ...(fetchCandidateCount > plannedFetchCount
           ? [
-              `Limited run to ${entries.length.toLocaleString()} of ${targets.length.toLocaleString()} targets. Re-run with a deliberate higher --limit if needed.`,
+              `Limited run to ${plannedFetchCount.toLocaleString()} fetches of ${fetchCandidateCount.toLocaleString()} fetchable targets. Re-run to continue the cache-first batch.`,
             ]
           : []),
       ],

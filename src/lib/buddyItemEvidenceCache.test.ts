@@ -4,6 +4,7 @@ import {
   buildBuddyItemEvidenceCachePlan,
   cacheBuddyItemEvidenceTargets,
   DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS,
+  getBuddyItemEvidenceCacheKey,
   getBuddyItemEvidenceFileName,
   getBuddyItemPageDataUrl,
   isFreshBuddyItemEvidence,
@@ -91,6 +92,31 @@ Missing Thing,missing_thing,missing-thing,https://buddy.farm/i/missing-thing/,no
     expect(toBuddyItemEvidencePlanCsv(plan)).toContain('would_fetch');
     expect(isFreshBuddyItemEvidence({ fetchedAt, httpStatus: 200 }, { nowMs, maxAgeDays: 30 })).toBe(true);
     expect(isFreshBuddyItemEvidence({ fetchedAt, httpStatus: 404 }, { nowMs, maxAgeDays: 30 })).toBe(false);
+  });
+
+  it('limits fetches instead of limiting target rows so cache runs can resume', () => {
+    const freshOne = createTarget('Fresh One');
+    const missingOne = createTarget('Missing One');
+    const missingTwo = createTarget('Missing Two');
+    const plan = buildBuddyItemEvidenceCachePlan(
+      [freshOne, missingOne, missingTwo],
+      {
+        [getBuddyItemEvidenceCacheKey(freshOne)]: {
+          fetchedAt,
+          httpStatus: 200,
+        },
+      },
+      { dryRun: true, nowMs, delayMs: DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS, limit: 1, maxAgeDays: 30 },
+    );
+
+    expect(plan.summary.countsByAction).toEqual({
+      skip_fresh: 1,
+      would_fetch: 1,
+      deferred_limit: 1,
+    });
+    expect(plan.summary.fetchesPlanned).toBe(1);
+    expect(plan.summary.fetchCandidatesAvailable).toBe(2);
+    expect(plan.entries.map((entry) => entry.action)).toEqual(['skip_fresh', 'would_fetch', 'deferred_limit']);
   });
 
   it('does not fetch during dry runs', async () => {
