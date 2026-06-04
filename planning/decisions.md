@@ -199,3 +199,21 @@ Implications:
 - Derived supply and override supply should remain visible as separate concepts.
 - Future inventory import and quest-resource adapters should feed the same supply boundary instead of creating parallel supply math.
 - Missing source metadata should produce warnings and continue.
+
+## External reference maintenance is cache-first and deliberately gentle
+
+Status: Accepted
+
+Decision:
+Offline reference-maintenance tooling that contacts Buddy or FarmRPG-hosted assets must be cache-first, manually initiated, bounded, sequential, delayed, and review-oriented. Avoid repeated pulls of the same source page by preserving local evidence artifacts and parsing multiple reference outputs from that evidence.
+
+Rationale:
+The project benefits from up-to-date reference data, but being a good citizen with external services is more important than speed or completeness. New FarmRPG items often appear before Buddy source data is complete, so the correct workflow is to cache sparse evidence, wait, and recheck gently later rather than aggressively probing.
+
+Implications:
+- No app-runtime Buddy or FarmRPG fetching.
+- No background crawlers, unbounded scans, parallel request bursts, or hidden automatic rechecks.
+- Network maintenance scripts should default to conservative delays, explicit small limits, resumable/cache-aware runs, and dry-run or plan output before fetching.
+- FarmRPG-hosted asset access should remain especially conservative and should normally go through the existing reviewed icon pipeline.
+- Cached evidence and parser outputs remain review artifacts until intentionally promoted into canonical `data/` files.
+- Blank or sparse new-item pages should be tracked for later manual recheck instead of repeatedly fetched in the same session.
