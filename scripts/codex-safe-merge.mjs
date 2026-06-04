@@ -1,9 +1,17 @@
+import { existsSync, readFileSync, unlinkSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
+import {
+  buildProtectedPushApprovalText,
+  protectedPushApprovalFileName,
+  validateProtectedPushApproval,
+} from './lib/codexSafePushApproval.mjs';
+
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const protectedBranches = new Set(['main', 'master']);
+const protectedApprovalFile = join(repoRoot, 'recovery', protectedPushApprovalFileName);
 
 function fail(reason) {
   console.error(reason);
@@ -59,6 +67,26 @@ function detectDefaultBranch() {
   fail('Unable to detect the default branch. Expected a local main or master branch.');
 }
 
+function requireProtectedPushApproval({ branch, head }) {
+  if (!protectedBranches.has(branch)) {
+    return;
+  }
+
+  if (!existsSync(protectedApprovalFile)) {
+    fail(
+      `Refusing to push protected branch '${branch}' without explicit approval.\n` +
+        `To approve this exact push, write the following to recovery/${protectedPushApprovalFileName}:\n` +
+        buildProtectedPushApprovalText({ branch, head }),
+    );
+  }
+
+  const approval = readFileSync(protectedApprovalFile, 'utf8');
+  const validation = validateProtectedPushApproval({ text: approval, branch, head });
+  if (!validation.ok) {
+    fail(`Refusing to push protected branch '${branch}': ${validation.reason}`);
+  }
+}
+
 const defaultBranch = detectDefaultBranch();
 
 const branchResult = runGit(['branch', '--show-current'], { capture: true });
@@ -93,12 +121,26 @@ if ((originDefaultResult.status ?? 1) === 0) {
   const originRev = (originRevResult.stdout ?? '').trim();
 
   if (localRev !== originRev) {
-    fail(
-      `Local ${defaultBranch} does not match origin/${defaultBranch}. ` +
-        `Update ${defaultBranch} explicitly before running git codex-merge.`,
-    );
+    const originAncestorResult = runGit(['merge-base', '--is-ancestor', `origin/${defaultBranch}`, defaultBranch], {
+      capture: true,
+    });
+
+    if ((originAncestorResult.status ?? 1) !== 0) {
+      fail(
+        `Local ${defaultBranch} does not match origin/${defaultBranch}. ` +
+          `Update ${defaultBranch} explicitly before running git codex-merge.`,
+      );
+    }
   }
 }
+
+const branchHeadResult = runGit(['rev-parse', branch], { capture: true });
+const branchHead = (branchHeadResult.stdout ?? '').trim();
+if ((branchHeadResult.status ?? 1) !== 0 || !branchHead) {
+  fail(`Unable to determine HEAD for branch '${branch}'.`);
+}
+
+requireProtectedPushApproval({ branch: defaultBranch, head: branchHead });
 
 let exitCode = runGit(['switch', defaultBranch]);
 if (exitCode !== 0) {
@@ -110,4 +152,9 @@ if (exitCode !== 0) {
   process.exit(exitCode);
 }
 
-process.exit(runGit(['push', 'origin', defaultBranch]));
+exitCode = runGit(['push', 'origin', defaultBranch]);
+if (exitCode === 0 && protectedBranches.has(defaultBranch) && existsSync(protectedApprovalFile)) {
+  unlinkSync(protectedApprovalFile);
+}
+
+process.exit(exitCode);
