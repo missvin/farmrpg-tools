@@ -18,3 +18,10 @@ Important:
 - The manifest and review CSVs are regenerated per resume run, and skipped rows preserve existing source-status/review information so review candidates remain visible.
 - Any rechecks should stay bounded, sequential, delayed, and cache-first.
 - Parser and promotion work may consume this artifact, but review rows must remain visible and handled before canonical promotion.
+
+Parsed multi-source artifacts:
+- `parsed-multi-source/buddy_item_multi_source_facts.json` preserves the BL-245 versioned intermediate model for 1,461 cached pages.
+- `parsed-multi-source/buddy_item_multi_source_summary.csv` summarizes parsed fact counts per item.
+- `parsed-multi-source/buddy_item_multi_source_review.csv` contains the 5 terminal pages that still need review.
+- `parsed-multi-source/fanout/` contains BL-246 review-only candidate CSVs for item catalog, icon observations, recipes, recipe inputs, used-in rows, drop rates, pet sources, openables, Wishing Well rows, and source hints.
+- Candidate CSVs are not canonical `data/` files. Direct openable and Wishing Well rows are kept separate from reverse source hints to avoid accidental double promotion.
