@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:49:44.480Z",
+  "httpStatus": 200,
+  "itemName": "Gold Sea Crest",
+  "canonicalKey": "gold sea crest",
+  "buddyUrl": "https://buddy.farm/i/gold-sea-crest/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/gold-sea-crest/page-data.json",
+  "pageTitle": "Gold Sea Crest",
+  "buddyItemName": "Gold Sea Crest",
+  "buddyItemId": "695",
+  "buddyItemImage": "/img/items/goldseacrest.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "npcRewards",
+    "petItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "templeRewardItems",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/gold-sea-crest/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 695,
+              "name": "Gold Sea Crest",
+              "image": "/img/items/goldseacrest.png",
+              "type": "fish",
+              "description": "Super glittery",
+              "manualFishingOnly": true,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": true,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 15,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2283381,
+                    "name": "Far Away XXVII",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2426004,
+                    "name": "Breaking The Ice Even Icier IV",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7365168,
+                    "name": "New Year New Moon V",
+                    "image": "/img/items/robot_05.png",
+                    "endDate": "2025-02-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2829699,
+                    "name": "Quarter Million V",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2023-03-11T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2881964,
+                    "name": "A Study of Color XV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Seal",
+                    "image": "/img/pets/pet_seal.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 39.87406176332671,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Glacier Lake",
+                      "image": "/img/items/glacier.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 39.595555161359805,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Glacier Lake",
+                      "image": "/img/items/glacier.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 40,
+                  "quantity": 5,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Borgen",
+                    "image": "/img/items/borgen.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 491,
+                    "name": "Grab Bag 07",
+                    "image": "/img/items/4497.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 194,
+                  "itemQuantity": 1900
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 26,
+                  "quantity": 10,
+                  "templeReward": {
+                    "inputQuantity": 900,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 713,
+                      "name": "Pair of Boots",
+                      "image": "/img/items/pboot2.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 695,
+        "name": "Gold Sea Crest"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

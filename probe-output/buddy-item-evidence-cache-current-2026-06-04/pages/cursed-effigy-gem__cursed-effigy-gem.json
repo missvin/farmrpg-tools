@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:38:12.359Z",
+  "httpStatus": 200,
+  "itemName": "Cursed Effigy Gem",
+  "canonicalKey": "cursed effigy gem",
+  "buddyUrl": "https://buddy.farm/i/cursed-effigy-gem/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/cursed-effigy-gem/page-data.json",
+  "pageTitle": "Cursed Effigy Gem",
+  "buddyItemName": "Cursed Effigy Gem",
+  "buddyItemId": "1017",
+  "buddyItemImage": "/img/items/Buddyidolgem.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/cursed-effigy-gem/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1017,
+              "name": "Cursed Effigy Gem",
+              "image": "/img/items/Buddyidolgem.png",
+              "type": "item",
+              "description": "What even is this?",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7520179,
+                    "name": "Look, A Secret Temple",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7520175,
+                    "name": "Archeology Requires Knowhow XVII",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1017,
+        "name": "Cursed Effigy Gem"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

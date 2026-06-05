@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:43:30.554Z",
+  "httpStatus": 200,
+  "itemName": "Thomas's Cup of PB",
+  "canonicalKey": "thomas's cup of pb",
+  "buddyUrl": "https://buddy.farm/i/thomas-s-cup-of-pb/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/thomas-s-cup-of-pb/page-data.json",
+  "pageTitle": "Thomas's Cup of PB",
+  "buddyItemName": "Thomas's Cup of PB",
+  "buddyItemId": "1126",
+  "buddyItemImage": "/img/items/pbcup.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/thomas-s-cup-of-pb/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1126,
+              "name": "Thomas's Cup of PB",
+              "image": "/img/items/pbcup.png",
+              "type": "item",
+              "description": "There's only one right way<br/>\r\nto eat a Thomas's",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7511359,
+                    "name": "Candy Cure II",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543749,
+                    "name": "Grill And Thrill III",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1124,
+                    "name": "Treat Bag 06",
+                    "image": "/img/items/bag_t_03.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1126,
+        "name": "Thomas's Cup of PB"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

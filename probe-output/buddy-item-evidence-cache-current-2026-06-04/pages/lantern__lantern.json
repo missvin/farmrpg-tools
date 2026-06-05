@@ -1,0 +1,365 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:37:16.422Z",
+  "httpStatus": 200,
+  "itemName": "Lantern",
+  "canonicalKey": "lantern",
+  "buddyUrl": "https://buddy.farm/i/lantern/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/lantern/page-data.json",
+  "pageTitle": "Lantern",
+  "buddyItemName": "Lantern",
+  "buddyItemId": "368",
+  "buddyItemImage": "/img/items/lantern.png?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "petItems",
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/lantern/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 368,
+              "name": "Lantern",
+              "image": "/img/items/lantern.png?1",
+              "type": "item",
+              "description": "Portable light source",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 70,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 724,
+                    "name": "Find A Way VI",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 384,
+                    "name": "Defenses and Consequences XIX",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 908,
+                    "name": "Giamics' Jubilee X",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 779,
+                    "name": "A Towering Investment VI",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 953,
+                    "name": "Intruders Beware VI",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 160553,
+                    "name": "Unlikely Pair XV",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1894706,
+                    "name": "The Fall of Water III",
+                    "image": "/img/items/thomasglow.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277991,
+                    "name": "Pirates Start Arriving XV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1694834,
+                    "name": "Far Away XX",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2296239,
+                    "name": "Strange Companions XXVIII",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3756310,
+                    "name": "Secretly A Society Summons You V",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1334693,
+                    "name": "Deck The Town (With Bats And Lanterns) XI",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 732,
+                    "name": "Strange Companions IV",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 875,
+                    "name": "A Way Back XXVIII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277997,
+                    "name": "Problems Start Arising V",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1335586,
+                    "name": "Deck The Town (With Bats And Lanterns) XX",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 817,
+                    "name": "A Way Back XVI",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Red Dragon",
+                    "image": "/img/pets/pet_dragon4.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 103,
+                    "name": "Coal",
+                    "image": "/img/items/coal.png"
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 163,
+                    "name": "Twine",
+                    "image": "/img/items/6172-1.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 117,
+                    "name": "Glass Bottle",
+                    "image": "/img/items/7727.PNG?1"
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 22,
+                    "name": "Iron",
+                    "image": "/img/items/5779.PNG"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 95,
+                    "name": "Iron Ring",
+                    "image": "/img/items/ironring.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 837,
+                    "name": "Linked Lantern",
+                    "image": "/img/items/mlantern.png?1",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 228,
+                  "itemQuantity": 2200
+                },
+                {
+                  "level": 128,
+                  "itemQuantity": 1200
+                },
+                {
+                  "level": 28,
+                  "itemQuantity": 120
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 368,
+        "name": "Lantern"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

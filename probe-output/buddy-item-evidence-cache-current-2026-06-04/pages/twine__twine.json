@@ -1,0 +1,1029 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:38:21.088Z",
+  "httpStatus": 200,
+  "itemName": "Twine",
+  "canonicalKey": "twine",
+  "buddyUrl": "https://buddy.farm/i/twine/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/twine/page-data.json",
+  "pageTitle": "Twine",
+  "buddyItemName": "Twine",
+  "buddyItemId": "163",
+  "buddyItemImage": "/img/items/6172-1.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "npcItems",
+    "petItems",
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "skillLevelRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/twine/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 163,
+              "name": "Twine",
+              "image": "/img/items/6172-1.png",
+              "type": "item",
+              "description": "Ties stuff together",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 5,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8227623,
+                    "name": "A Great Way To Unwind II",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 71,
+                    "name": "Big Boom IV",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 70,
+                    "name": "Archery Practice",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 56,
+                    "name": "Fly Fishing Lures",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 191,
+                    "name": "Not From Around Here III",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 33849,
+                    "name": "The Rocket’s Red Glare V",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277982,
+                    "name": "Pirates Start Arriving VI",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5243758,
+                    "name": "Sound Unstable II",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 288,
+                    "name": "Parts Unknown XVII",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1894706,
+                    "name": "The Fall of Water III",
+                    "image": "/img/items/thomasglow.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 257,
+                    "name": "Defenses and Consequences VII",
+                    "image": "/img/items/npc_figure2.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 306,
+                    "name": "Consequences and Defenses XIX",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 256,
+                    "name": "Defenses and Consequences VI",
+                    "image": "/img/items/npc_figure2.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 464601,
+                    "name": "Befriending Buddy II",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 700,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2878279,
+                    "name": "Strange Companions XXXVIII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 700,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2993340,
+                    "name": "Strange Companions XXXIX",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 301,
+                    "name": "Consequences and Defenses XIV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4718979,
+                    "name": "Bearly Hygienic Enough II",
+                    "image": "/img/items/bear_01.png",
+                    "endDate": "2024-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 784,
+                    "name": "Bons Temps III",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2026-03-14T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 222,
+                    "name": "Islands Are Hard To Catch X",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1334610,
+                    "name": "Deck The Town (With Bats And Lanterns) III",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 875,
+                    "name": "A Way Back XXVIII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1938632,
+                    "name": "The Light Continues I",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 704,
+                    "name": "There’s A Way III",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 971588,
+                    "name": "New Neighbor III",
+                    "image": "/img/items/mariya.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3141005,
+                    "name": "April Trout Brings May Flowers XIV",
+                    "image": "/img/items/l_02.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 231,
+                    "name": "A Tower Redecorated III",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7522578,
+                    "name": "Business Is Blooming IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 820,
+                    "name": "A Way Back XIX",
+                    "image": "/img/items/cthomas2.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7522713,
+                    "name": "Monster Hunter I",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7496543,
+                    "name": "Summer Lessons in Science III",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 30,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240,
+                    "name": "A Horse Of A Different Color IV",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 129367,
+                    "name": "Fellow Farmer II",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1090584,
+                    "name": "Neighs Of Our Lives I",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 696610,
+                    "name": "A Better Understanding II",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 117,
+                    "name": "Strange Stones IV",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 178,
+                    "name": "Fire Alarm",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7538773,
+                    "name": "Zap of the Sting VII",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": "2025-10-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7560590,
+                    "name": "Crates Unlocked for Buddy's Enrichment II",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Hedgehog",
+                    "image": "/img/pets/pet_hedgehog.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Charles Horsington III",
+                    "image": "/img/items/npc_horse.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 35,
+                    "name": "Wood",
+                    "image": "/img/items/6143.PNG"
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 128,
+                    "name": "Straw",
+                    "image": "/img/items/5908.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 166,
+                    "name": "Leather Bag",
+                    "image": "/img/items/6175.PNG",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 165,
+                    "name": "Horn Canteen",
+                    "image": "/img/items/5969.PNG",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 193,
+                    "name": "Rope",
+                    "image": "/img/items/5624.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 675,
+                    "name": "Spoon",
+                    "image": "/img/items/2473.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 240,
+                    "name": "Wizard Hat",
+                    "image": "/img/items/4798.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 315,
+                    "name": "Compass",
+                    "image": "/img/items/4919.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 455,
+                    "name": "Wooden Bow",
+                    "image": "/img/items/4764.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 456,
+                    "name": "Sturdy Bow",
+                    "image": "/img/items/4765.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 368,
+                    "name": "Lantern",
+                    "image": "/img/items/lantern.png?1",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 899,
+                    "name": "Blue Twine",
+                    "image": "/img/items/bluetwine.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 737,
+                    "name": "Fancy Pan Flute",
+                    "image": "/img/items/1240.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 239,
+                    "name": "Leather Waterskin",
+                    "image": "/img/items/5563.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 350,
+                    "name": "Green Cloak",
+                    "image": "/img/items/ForestIcons_54_t.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 299,
+                    "name": "Wooden Sword",
+                    "image": "/img/items/sword2.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 427,
+                    "name": "Yarn",
+                    "image": "/img/items/pt_t_07.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 976,
+                    "name": "Green Twine",
+                    "image": "/img/items/greentwine.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 742,
+                    "name": "Bouquet of Flowers",
+                    "image": "/img/items/bouquet.png?1",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 788,
+                    "name": "Red Twine",
+                    "image": "/img/items/1621.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 977,
+                    "name": "Purple Twine",
+                    "image": "/img/items/purpletwine.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 196,
+                    "name": "Pearl Necklace",
+                    "image": "/img/items/pearlnecklace.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1129,
+                    "name": "Sewing Needle",
+                    "image": "/img/items/needle.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 8,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 736,
+                    "name": "Fancy Chair",
+                    "image": "/img/items/195.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 825,
+                    "name": "Sunflower Oil",
+                    "image": "/img/items/nj_985.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1260,
+                    "name": "Magus Hat",
+                    "image": "/img/items/5404.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 894,
+                    "name": "Wooden Spear",
+                    "image": "/img/items/spear.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1437,
+                    "name": "Veggie Juice",
+                    "image": "/img/items/8879.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1392,
+                    "name": "Brown Twine",
+                    "image": "/img/items/browntwine.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1389,
+                    "name": "White Twine",
+                    "image": "/img/items/whitetwine.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1402,
+                    "name": "White Cloak",
+                    "image": "/img/items/whitecloak.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1403,
+                    "name": "Brown Cloak",
+                    "image": "/img/items/browncloak.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1390,
+                    "name": "Black Twine",
+                    "image": "/img/items/blacktwine.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1391,
+                    "name": "Yellow Twine",
+                    "image": "/img/items/yellowtwine.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1388,
+                    "name": "Orange Twine",
+                    "image": "/img/items/orangetwine.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1423,
+                    "name": "Bamboo Chair",
+                    "image": "/img/items/bamboochair.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1420,
+                    "name": "Basic Pillow",
+                    "image": "/img/items/basicpillow.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1421,
+                    "name": "Bamboo Fence",
+                    "image": "/img/items/bamboofence.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1422,
+                    "name": "Bamboo Trellis",
+                    "image": "/img/items/bambootrellis.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 25,
+                  "quantityMin": 25,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1257,
+                    "name": "Medium Chest 03",
+                    "image": "/img/items/8574.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [
+                {
+                  "skill": "crafting",
+                  "level": 70,
+                  "itemQuantity": 125
+                }
+              ],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 163,
+        "name": "Twine"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

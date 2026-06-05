@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:43:30.554Z",
+  "httpStatus": 200,
+  "itemName": "Blue Tiger Fish",
+  "canonicalKey": "blue tiger fish",
+  "buddyUrl": "https://buddy.farm/i/blue-tiger-fish/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/blue-tiger-fish/page-data.json",
+  "pageTitle": "Blue Tiger Fish",
+  "buddyItemName": "Blue Tiger Fish",
+  "buddyItemId": "200",
+  "buddyItemImage": "/img/items/5772.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "petItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/blue-tiger-fish/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 200,
+              "name": "Blue Tiger Fish",
+              "image": "/img/items/5772.png",
+              "type": "fish",
+              "description": "It might be less sad if it knew whether<br/>it was a big cat or a worm-eating swimmer",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 213,
+                    "name": "Islands Are Hard To Catch I",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 85,
+                    "name": "A Study of Color IV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3142500,
+                    "name": "April Trout Brings May Flowers XXI",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 321,
+                    "name": "Fishing Tournament VI",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3143106,
+                    "name": "April Trout Brings May Flowers XXIII",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Penguin",
+                    "image": "/img/pets/pet_penguin.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 26.174474861510852,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Emerald Beach",
+                      "image": "/img/items/beach.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 25.85097533144828,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Emerald Beach",
+                      "image": "/img/items/beach.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 23.0145253875531,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Emerald Beach",
+                      "image": "/img/items/beach.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 23.32098254097963,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Emerald Beach",
+                      "image": "/img/items/beach.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 105,
+                  "itemQuantity": 1000
+                },
+                {
+                  "level": 5,
+                  "itemQuantity": 100
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 200,
+        "name": "Blue Tiger Fish"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

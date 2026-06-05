@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:32:08.314Z",
+  "httpStatus": 200,
+  "itemName": "Snowflakes",
+  "canonicalKey": "snowflakes",
+  "buddyUrl": "https://buddy.farm/i/snowflakes/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/snowflakes/page-data.json",
+  "pageTitle": "Snowflakes",
+  "buddyItemName": "Snowflakes",
+  "buddyItemId": "935",
+  "buddyItemImage": "/img/items/snowflakes.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/snowflakes/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 935,
+              "name": "Snowflakes",
+              "image": "/img/items/snowflakes.png",
+              "type": "item",
+              "description": "Can you spot the differences?",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 6282300,
+                    "name": "Free To Fly I",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 6282301,
+                    "name": "Free To Fly II",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 100,
+                  "quantityMin": 100,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1156,
+                    "name": "Shiny Present",
+                    "image": "/img/items/shinypresent.png"
+                  }
+                },
+                {
+                  "quantityMax": 100,
+                  "quantityMin": 100,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1337,
+                    "name": "Holiday Cheer Bundle 01",
+                    "image": "/img/items/holidaycheerbundle.png"
+                  }
+                },
+                {
+                  "quantityMax": 100,
+                  "quantityMin": 100,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 936,
+                    "name": "Fancy Present",
+                    "image": "/img/items/gift_2.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 935,
+        "name": "Snowflakes"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

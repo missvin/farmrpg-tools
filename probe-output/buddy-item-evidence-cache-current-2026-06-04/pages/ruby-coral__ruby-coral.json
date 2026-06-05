@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:18:34.679Z",
+  "httpStatus": 200,
+  "itemName": "Ruby Coral",
+  "canonicalKey": "ruby coral",
+  "buddyUrl": "https://buddy.farm/i/ruby-coral/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/ruby-coral/page-data.json",
+  "pageTitle": "Ruby Coral",
+  "buddyItemName": "Ruby Coral",
+  "buddyItemId": "312",
+  "buddyItemImage": "/img/items/coral.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "petItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/ruby-coral/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 312,
+              "name": "Ruby Coral",
+              "image": "/img/items/coral.png",
+              "type": "fish",
+              "description": "Did you know coral is actually an animal?",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 948,
+                    "name": "Intruders Beware I",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3142500,
+                    "name": "April Trout Brings May Flowers XXI",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3143106,
+                    "name": "April Trout Brings May Flowers XXIII",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Shark",
+                    "image": "/img/pets/pet_shark.png"
+                  }
+                },
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Penguin",
+                    "image": "/img/pets/pet_penguin.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 12.381450704863607,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Large Island",
+                      "image": "/img/items/largeisland.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 11.81921051928647,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Large Island",
+                      "image": "/img/items/largeisland.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 12.165837889236858,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Large Island",
+                      "image": "/img/items/largeisland.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 12.022424225665711,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Large Island",
+                      "image": "/img/items/largeisland.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 225,
+                  "itemQuantity": 2200
+                },
+                {
+                  "level": 195,
+                  "itemQuantity": 1900
+                },
+                {
+                  "level": 125,
+                  "itemQuantity": 1200
+                },
+                {
+                  "level": 95,
+                  "itemQuantity": 190
+                },
+                {
+                  "level": 25,
+                  "itemQuantity": 120
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 312,
+        "name": "Ruby Coral"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:44:26.229Z",
+  "httpStatus": 200,
+  "itemName": "Safety Goggles",
+  "canonicalKey": "safety goggles",
+  "buddyUrl": "https://buddy.farm/i/safety-goggles/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/safety-goggles/page-data.json",
+  "pageTitle": "Safety Goggles",
+  "buddyItemName": "Safety Goggles",
+  "buddyItemId": "1090",
+  "buddyItemImage": "/img/items/2129.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "npcItems",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/safety-goggles/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1090,
+              "name": "Safety Goggles",
+              "image": "/img/items/2129.png",
+              "type": "item",
+              "description": "Eye protection",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9093152,
+                    "name": "Serious Snow Safety",
+                    "image": "/img/items/cid.png",
+                    "endDate": "2026-01-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Cid",
+                    "image": "/img/items/cid.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1091,
+                    "name": "Beatrix's Booming Brawl Box 01",
+                    "image": "/img/items/bfw.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1090,
+        "name": "Safety Goggles"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

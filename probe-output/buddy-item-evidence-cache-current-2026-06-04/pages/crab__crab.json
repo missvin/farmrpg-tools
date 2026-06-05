@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:34:03.273Z",
+  "httpStatus": 200,
+  "itemName": "Crab",
+  "canonicalKey": "crab",
+  "buddyUrl": "https://buddy.farm/i/crab/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/crab/page-data.json",
+  "pageTitle": "Crab",
+  "buddyItemName": "Crab",
+  "buddyItemId": "574",
+  "buddyItemImage": "/img/items/3296.PNG",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "passwordItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/crab/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 574,
+              "name": "Crab",
+              "image": "/img/items/3296.PNG",
+              "type": "fish",
+              "description": "There is only one step and it is crab",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2968686,
+                    "name": "Just A Pinch I",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3142500,
+                    "name": "April Trout Brings May Flowers XXI",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3143106,
+                    "name": "April Trout Brings May Flowers XXIII",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 4.641667665785632,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Pirate's Cove",
+                      "image": "/img/items/cove.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 4.936905118361066,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Pirate's Cove",
+                      "image": "/img/items/cove.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 5.076814487766425,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Pirate's Cove",
+                      "image": "/img/items/cove.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 4.509478540586637,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Pirate's Cove",
+                      "image": "/img/items/cove.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 255,
+                    "password": "ask in 3 days"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 645,
+                    "name": "Sea Pincher Special",
+                    "image": "/img/items/crabclawsoup.png",
+                    "cookingLevel": 30,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 574,
+        "name": "Crab"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

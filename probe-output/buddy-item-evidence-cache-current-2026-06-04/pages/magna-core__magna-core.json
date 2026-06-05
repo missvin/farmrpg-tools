@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:25:54.541Z",
+  "httpStatus": 200,
+  "itemName": "Magna Core",
+  "canonicalKey": "magna core",
+  "buddyUrl": "https://buddy.farm/i/magna-core/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/magna-core/page-data.json",
+  "pageTitle": "Magna Core",
+  "buddyItemName": "Magna Core",
+  "buddyItemId": "340",
+  "buddyItemImage": "/img/items/9376.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/magna-core/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 340,
+              "name": "Magna Core",
+              "image": "/img/items/9376.png",
+              "type": "item",
+              "description": "Rotor based magnetic core",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 60,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240346,
+                    "name": "Unexpected Visitor XIX",
+                    "image": "/img/items/robot_05.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512023,
+                    "name": "Distant Illusions IX",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 696610,
+                    "name": "A Better Understanding II",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512018,
+                    "name": "Distant Illusions IV",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512016,
+                    "name": "Distant Illusions I",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512029,
+                    "name": "Distant Illusions XIV",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 1,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 315,
+                    "name": "Compass",
+                    "image": "/img/items/4919.png"
+                  }
+                }
+              ],
+              "recipeItems": [
+                {
+                  "quantity": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 215,
+                    "name": "Cogwheel",
+                    "image": "/img/items/7211.png"
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 341,
+                    "name": "Flywheel",
+                    "image": "/img/items/9387.png"
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 338,
+                    "name": "Magna Quartz",
+                    "image": "/img/items/magnaquartz.png"
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 251,
+                    "name": "Small Spring",
+                    "image": "/img/items/5633.png"
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 339,
+                    "name": "Small Screw",
+                    "image": "/img/items/9380.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 327,
+                    "name": "Seeing Stone",
+                    "image": "/img/items/5557.png?4"
+                  }
+                },
+                {
+                  "quantity": 40,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 145,
+                    "name": "Steel",
+                    "image": "/img/items/6150.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 315,
+                    "name": "Compass",
+                    "image": "/img/items/4919.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 287,
+                  "itemQuantity": 287
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 340,
+        "name": "Magna Core"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

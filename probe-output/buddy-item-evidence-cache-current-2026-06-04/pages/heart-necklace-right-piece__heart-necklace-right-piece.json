@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:32:08.314Z",
+  "httpStatus": 200,
+  "itemName": "Heart Necklace Right Piece",
+  "canonicalKey": "heart necklace right piece",
+  "buddyUrl": "https://buddy.farm/i/heart-necklace-right-piece/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/heart-necklace-right-piece/page-data.json",
+  "pageTitle": "Heart Necklace Right Piece",
+  "buddyItemName": "Heart Necklace Right Piece",
+  "buddyItemId": "485",
+  "buddyItemImage": "/img/items/l_02_t_c.PNG",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/heart-necklace-right-piece/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 485,
+              "name": "Heart Necklace Right Piece",
+              "image": "/img/items/l_02_t_c.PNG",
+              "type": "item",
+              "description": "The right piece of a Heart Necklace",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 743,
+                    "name": "Love Is For The Horses II",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 130,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 756,
+                    "name": "TRU3 70V3 I",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 485,
+        "name": "Heart Necklace Right Piece"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

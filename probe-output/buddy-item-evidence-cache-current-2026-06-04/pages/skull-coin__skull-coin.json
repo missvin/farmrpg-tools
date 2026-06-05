@@ -1,0 +1,660 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:29:53.475Z",
+  "httpStatus": 200,
+  "itemName": "Skull Coin",
+  "canonicalKey": "skull coin",
+  "buddyUrl": "https://buddy.farm/i/skull-coin/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/skull-coin/page-data.json",
+  "pageTitle": "Skull Coin",
+  "buddyItemName": "Skull Coin",
+  "buddyItemId": "266",
+  "buddyItemImage": "/img/items/7286.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "exchangeCenterInputs",
+    "locksmithOutputItems",
+    "npcItems",
+    "petItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/skull-coin/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 266,
+              "name": "Skull Coin",
+              "image": "/img/items/7286.png",
+              "type": "item",
+              "description": "For your skeletal spending needs",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7514015,
+                    "name": "Effigy of Friendship",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 951,
+                    "name": "Intruders Beware IV",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277984,
+                    "name": "Pirates Start Arriving VIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277989,
+                    "name": "Pirates Start Arriving XIII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277990,
+                    "name": "Pirates Start Arriving XIV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1090568,
+                    "name": "Buddy Found",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 700,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3042359,
+                    "name": "Peculiar Endings I",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3768372,
+                    "name": "Secretly A Society Summons You IX",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 700,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 877,
+                    "name": "A Way Back XXX",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 954,
+                    "name": "Intruders Beware VII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7083980,
+                    "name": "The Void and You III",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 144,
+                    "name": "Pirate's Cove VII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523664,
+                    "name": "Bringing Egg-sy Back XXII",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 727085,
+                    "name": "Far Away VII",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 726843,
+                    "name": "Far Away V",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 726577,
+                    "name": "Far Away III",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 726988,
+                    "name": "Far Away VI",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 141,
+                    "name": "Pirate's Cove IV",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 148,
+                    "name": "Escape from Pirate's Cove",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 726821,
+                    "name": "Far Away IV",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 727168,
+                    "name": "Far Away IX",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 727113,
+                    "name": "Far Away VIII",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 707994,
+                    "name": "Far Away II",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9115712,
+                    "name": "Candy Causes VIII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 675,
+                    "name": "Lost Reindeer III",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8683556,
+                    "name": "Uneggspected Consequences VI",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 707972,
+                    "name": "Far Away I",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277985,
+                    "name": "Pirates Start Arriving IX",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7515439,
+                    "name": "Another Lot Of Trees IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 43966,
+                    "name": "The Rocket’s Red Glare X",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7529177,
+                    "name": "Bug Exporter Enterprise IX",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553574,
+                    "name": "The Masonry Requires Action XXI",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553576,
+                    "name": "Augment Redbrook Through Masonry XXIII",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553578,
+                    "name": "Rage Against Tattered Masonry XXIV",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553582,
+                    "name": "The Ramparts Mended Anew XXVI",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553580,
+                    "name": "The Masonry Requires Activity XXV",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 7,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 21943629,
+                    "name": "Friday the 13th IV",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-02-14T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7515440,
+                    "name": "Another Lot Of Trees V",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7552709,
+                    "name": "The Masonry Requires Attention XVIII",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Snake",
+                    "image": "/img/pets/pet_snake.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 71770.33492822967,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Spring",
+                      "image": "/img/items/spring.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 75244.54477050414,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Spring",
+                      "image": "/img/items/spring.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 59571.08816521049,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Spring",
+                      "image": "/img/items/spring.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 58616.647127784294,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Spring",
+                      "image": "/img/items/spring.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Borgen",
+                    "image": "/img/items/borgen.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 572,
+                    "name": "Mystical Chest 02",
+                    "image": "/img/items/4456.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 453,
+                    "name": "Grab Bag 06",
+                    "image": "/img/items/4497.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2026-06-04T17:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 200,
+                  "outputQuantity": 20,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 884,
+                    "name": "Void Bag 01",
+                    "image": "/img/items/voidbag.png"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 241,
+                  "itemQuantity": 2400
+                },
+                {
+                  "level": 149,
+                  "itemQuantity": 1400
+                },
+                {
+                  "level": 49,
+                  "itemQuantity": 140
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 266,
+        "name": "Skull Coin"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

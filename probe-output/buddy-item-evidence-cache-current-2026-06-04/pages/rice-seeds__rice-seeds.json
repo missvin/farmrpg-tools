@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:29:53.475Z",
+  "httpStatus": 200,
+  "itemName": "Rice Seeds",
+  "canonicalKey": "rice seeds",
+  "buddyUrl": "https://buddy.farm/i/rice-seeds/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/rice-seeds/page-data.json",
+  "pageTitle": "Rice Seeds",
+  "buddyItemName": "Rice Seeds",
+  "buddyItemId": "631",
+  "buddyItemImage": "/img/items/seeds_rice.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRates"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/rice-seeds/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 631,
+              "name": "Rice Seeds",
+              "image": "/img/items/seeds_rice.png",
+              "type": "seeds",
+              "description": "Harvest every 240 hours",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 200000,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 14400,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [
+                {
+                  "runecube": false,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 630,
+                        "name": "Rice",
+                        "image": "/img/items/rice.png"
+                      },
+                      "rate": 1
+                    }
+                  ]
+                },
+                {
+                  "runecube": true,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 630,
+                        "name": "Rice",
+                        "image": "/img/items/rice.png"
+                      },
+                      "rate": 1
+                    }
+                  ]
+                }
+              ],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 631,
+        "name": "Rice Seeds"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:29:53.475Z",
+  "httpStatus": 200,
+  "itemName": "Swamp Thistle",
+  "canonicalKey": "swamp thistle",
+  "buddyUrl": "https://buddy.farm/i/swamp-thistle/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/swamp-thistle/page-data.json",
+  "pageTitle": "Swamp Thistle",
+  "buddyItemName": "Swamp Thistle",
+  "buddyItemId": "1357",
+  "buddyItemImage": "/img/items/finp_634.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "recipeIngredientItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/swamp-thistle/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1357,
+              "name": "Swamp Thistle",
+              "image": "/img/items/finp_634.png",
+              "type": "item",
+              "description": "A hardy yellow thistle that thrives in the swamps",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1364,
+                    "name": "Yellow Dye",
+                    "image": "/img/items/yellowdye.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1357,
+        "name": "Swamp Thistle"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

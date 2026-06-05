@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:20:39.266Z",
+  "httpStatus": 200,
+  "itemName": "Gold Drum",
+  "canonicalKey": "gold drum",
+  "buddyUrl": "https://buddy.farm/i/gold-drum/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/gold-drum/page-data.json",
+  "pageTitle": "Gold Drum",
+  "buddyItemName": "Gold Drum",
+  "buddyItemId": "460",
+  "buddyItemImage": "/img/items/golddrum.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "npcItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "templeRewardItems",
+    "towerRewards",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/gold-drum/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 460,
+              "name": "Gold Drum",
+              "image": "/img/items/golddrum.png",
+              "type": "fish",
+              "description": "Cogito ergo Drum",
+              "manualFishingOnly": true,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 920,
+                    "name": "Jubilee Invitation VIII",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7083979,
+                    "name": "The Void and You II",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 150,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1893466,
+                    "name": "A Wall In The Way I",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 815217,
+                    "name": "Far Away XIV",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 150,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 793,
+                    "name": "A Towering Investment X",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7365168,
+                    "name": "New Year New Moon V",
+                    "image": "/img/items/robot_05.png",
+                    "endDate": "2025-02-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 710,
+                    "name": "Fine Fishing I",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 752,
+                    "name": "Be Mine VIII",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 709,
+                    "name": "There’s A Way VIII",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4336056,
+                    "name": "A Study of Spuds I",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 745,
+                    "name": "Be Mine I",
+                    "image": "/img/items/a_028.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 21.620597857096065,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Pond",
+                      "image": "/img/items/pond.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 18.664655861075232,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Pond",
+                      "image": "/img/items/pond.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Captain Thomas",
+                    "image": "/img/items/Captthomas.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 458,
+                    "name": "Gold Catfish",
+                    "image": "/img/items/goldcatfish.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 457,
+                    "name": "Gold Trout",
+                    "image": "/img/items/goldtrout.png?1"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 456,
+                    "name": "Sturdy Bow",
+                    "image": "/img/items/4765.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 464,
+                    "name": "Goldray",
+                    "image": "/img/items/goldray.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 491,
+                    "name": "Grab Bag 07",
+                    "image": "/img/items/4497.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 165,
+                  "itemQuantity": 1600
+                },
+                {
+                  "level": 65,
+                  "itemQuantity": 160
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 15,
+                  "quantity": 10,
+                  "templeReward": {
+                    "inputQuantity": 75,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 713,
+                      "name": "Pair of Boots",
+                      "image": "/img/items/pboot2.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 460,
+        "name": "Gold Drum"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

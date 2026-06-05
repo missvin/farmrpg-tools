@@ -1,0 +1,392 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:25:43.956Z",
+  "httpStatus": 200,
+  "itemName": "Eggplant",
+  "canonicalKey": "eggplant",
+  "buddyUrl": "https://buddy.farm/i/eggplant/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/eggplant/page-data.json",
+  "pageTitle": "Eggplant",
+  "buddyItemName": "Eggplant",
+  "buddyItemId": "13",
+  "buddyItemImage": "/img/items/eggplant.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "npcItems",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/eggplant/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 13,
+              "name": "Eggplant",
+              "image": "/img/items/eggplant.png",
+              "type": "crop",
+              "description": "Looks nothing like an egg",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 5,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 115,
+                    "name": "200 Patrons!",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2021-07-29T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 874,
+                    "name": "A Way Back XXVII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 86,
+                    "name": "A Study of Color I",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1606021,
+                    "name": "200,000",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2022-11-23T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 18,
+                    "name": "Spellbound",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 390,
+                    "name": "A Captain’s Voyage I",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2694543,
+                    "name": "King of Cakes II",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-03-14T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 177,
+                    "name": "Consequences and Defenses III",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2692779,
+                    "name": "Strange Companions XXXV",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2526785,
+                    "name": "A Study of Color VIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 856,
+                    "name": "Eggstra Lucky IV",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1626181,
+                    "name": "Remember To Be Thankful III",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 775,
+                    "name": "A Towering Investment III",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277996,
+                    "name": "Problems Start Arising IV",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7514214,
+                    "name": "Fitness Friends Fit Forever I",
+                    "image": "/img/items/bear_01.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 16415969,
+                    "name": "Red Diamond Four of a Kind II",
+                    "image": "/img/items/a_028.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553583,
+                    "name": "You Must Build A Stealth Boat IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523923,
+                    "name": "Calm, Cool, Collected II",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-04T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553584,
+                    "name": "Pirate Stealth Arrival XXVII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 1,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Spider",
+                    "image": "/img/pets/pet_spider1.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 1.0018331543057486,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Eggplant Seeds",
+                      "image": "/img/items/seeds_eggplants.png"
+                    }
+                  }
+                },
+                {
+                  "rate": 1.002162265303619,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Eggplant Seeds",
+                      "image": "/img/items/seeds_eggplants.png"
+                    }
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Mariya",
+                    "image": "/img/items/mariya.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 7,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1437,
+                    "name": "Veggie Juice",
+                    "image": "/img/items/8879.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 60,
+                  "quantityMin": 60,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 433,
+                    "name": "Christmas Present 06",
+                    "image": "/img/items/7468.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2022-03-06",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 29,
+                    "name": "Cucumber",
+                    "image": "/img/items/5805.png"
+                  },
+                  "inputQuantity": 650000,
+                  "progress": 760370,
+                  "outputQuantity": 100
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 13,
+        "name": "Eggplant"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

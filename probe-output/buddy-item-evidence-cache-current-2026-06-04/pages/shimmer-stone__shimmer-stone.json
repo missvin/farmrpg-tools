@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:51:48.889Z",
+  "httpStatus": 200,
+  "itemName": "Shimmer Stone",
+  "canonicalKey": "shimmer stone",
+  "buddyUrl": "https://buddy.farm/i/shimmer-stone/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/shimmer-stone/page-data.json",
+  "pageTitle": "Shimmer Stone",
+  "buddyItemName": "Shimmer Stone",
+  "buddyItemId": "77",
+  "buddyItemImage": "/img/items/5711.PNG",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "manualProductions",
+    "npcItems",
+    "passwordItems",
+    "petItems",
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/shimmer-stone/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 77,
+              "name": "Shimmer Stone",
+              "image": "/img/items/5711.PNG",
+              "type": "item",
+              "description": "Polished, can reflect or bend light",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 4,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 809,
+                    "name": "Green Initiative IV",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 808,
+                    "name": "Green Initiative III",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 22,
+                    "name": "Shimmering Masterpiece",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 239,
+                    "name": "A Horse Of A Different Color III",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Pet Rock",
+                    "image": "/img/pets/petrock.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Cid",
+                    "image": "/img/items/cid.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [
+                {
+                  "quantity": 6,
+                  "password": {
+                    "id": 23,
+                    "password": "glass"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 76,
+                    "name": "Unpolished Shimmer Stone",
+                    "image": "/img/items/5782.PNG"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 78,
+                    "name": "Glass Orb",
+                    "image": "/img/items/5708.PNG",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [
+                {
+                  "image": "/img/items/quarry_sm.png",
+                  "lineOne": "Quarry",
+                  "lineTwo": "Building",
+                  "value": "Rarely",
+                  "sort": 1000
+                }
+              ],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 77,
+        "name": "Shimmer Stone"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

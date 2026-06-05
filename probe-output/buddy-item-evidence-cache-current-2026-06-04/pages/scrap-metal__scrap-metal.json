@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:07:14.734Z",
+  "httpStatus": 200,
+  "itemName": "Scrap Metal",
+  "canonicalKey": "scrap metal",
+  "buddyUrl": "https://buddy.farm/i/scrap-metal/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/scrap-metal/page-data.json",
+  "pageTitle": "Scrap Metal",
+  "buddyItemName": "Scrap Metal",
+  "buddyItemId": "601",
+  "buddyItemImage": "/img/items/9383.PNG",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "npcItems",
+    "recipeIngredientItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/scrap-metal/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 601,
+              "name": "Scrap Metal",
+              "image": "/img/items/9383.PNG",
+              "type": "item",
+              "description": "Make sure your tetanus shot is up to date",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240278,
+                    "name": "Unexpected Visitor XI",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240286,
+                    "name": "Unexpected Visitor XIII",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240282,
+                    "name": "Unexpected Visitor XII",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 150,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240271,
+                    "name": "Unexpected Visitor X",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 20.728929775305588,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 20.719719056080322,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 22.86138453665704,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 22.858809242566345,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Jill",
+                    "image": "/img/items/a_024.png"
+                  }
+                },
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "ROOMBA",
+                    "image": "/img/items/robot_02.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 682,
+                    "name": "Kill Switch",
+                    "image": "/img/items/9311.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1136,
+                    "name": "Fancy Clock",
+                    "image": "/img/items/viri_4696.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 12,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 678,
+                    "name": "Metal Spool",
+                    "image": "/img/items/9325.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 978,
+                    "name": "Cannon",
+                    "image": "/img/items/1096.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 601,
+        "name": "Scrap Metal"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

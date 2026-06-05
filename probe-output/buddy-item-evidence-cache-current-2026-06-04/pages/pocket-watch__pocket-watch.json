@@ -1,0 +1,417 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:50:39.035Z",
+  "httpStatus": 200,
+  "itemName": "Pocket Watch",
+  "canonicalKey": "pocket watch",
+  "buddyUrl": "https://buddy.farm/i/pocket-watch/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/pocket-watch/page-data.json",
+  "pageTitle": "Pocket Watch",
+  "buddyItemName": "Pocket Watch",
+  "buddyItemId": "213",
+  "buddyItemImage": "/img/items/4887.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "exchangeCenterInputs",
+    "quizRewards",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/pocket-watch/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 213,
+              "name": "Pocket Watch",
+              "image": "/img/items/4887.png",
+              "type": "item",
+              "description": "Tells the time",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 5,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 7,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 256,
+                    "name": "Defenses and Consequences VI",
+                    "image": "/img/items/npc_figure2.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 108,
+                    "name": "Time is of the Essence",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 875,
+                    "name": "A Way Back XXVIII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240299,
+                    "name": "Unexpected Visitor XIV",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3756195,
+                    "name": "Secretly A Society Summons You IV",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 160585,
+                    "name": "Unlikely Pair XVIII",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 6190263,
+                    "name": "The Great Hunt III",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 6190261,
+                    "name": "The Great Hunt I",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 748,
+                    "name": "Be Mine V",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 128,
+                    "name": "You Must Build A Boat IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 228486,
+                    "name": "Unexpected Visitor VI",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 815217,
+                    "name": "Far Away XIV",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 33701,
+                    "name": "The Rocket’s Red Glare IV",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208135,
+                    "name": "Best Stored Frozen IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 1531.654931272455,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Cane Pole Ridge",
+                      "image": "/img/items/ridge.png",
+                      "type": "explore",
+                      "baseDropRate": 0.2857142857142857
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 1270.0670595407437,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Cane Pole Ridge",
+                      "image": "/img/items/ridge.png",
+                      "type": "explore",
+                      "baseDropRate": 0.2857142857142857
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 1252.738127621802,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Cane Pole Ridge",
+                      "image": "/img/items/ridge.png",
+                      "type": "explore",
+                      "baseDropRate": 0.2857142857142857
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 1036.5978266986135,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Cane Pole Ridge",
+                      "image": "/img/items/ridge.png",
+                      "type": "explore",
+                      "baseDropRate": 0.2857142857142857
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [
+                {
+                  "quantity": 2,
+                  "score": 80,
+                  "quiz": {
+                    "__typename": "FarmRPG_Quiz",
+                    "name": "Friendly Geography "
+                  }
+                }
+              ],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 215,
+                    "name": "Cogwheel",
+                    "image": "/img/items/7211.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 258,
+                    "name": "Pirate Bandana",
+                    "image": "/img/items/4903.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 214,
+                    "name": "Wooden Mask",
+                    "image": "/img/items/4880.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 215,
+                    "name": "Cogwheel",
+                    "image": "/img/items/7211.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 613,
+                    "name": "Y73841 Detector",
+                    "image": "/img/items/9304.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 684,
+                    "name": "Power Monitor",
+                    "image": "/img/items/9314.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1136,
+                    "name": "Fancy Clock",
+                    "image": "/img/items/viri_4696.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2026-06-04T05:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 100,
+                  "outputQuantity": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 380,
+                    "name": "Rubber Duckie",
+                    "image": "/img/items/ducky.png"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 213,
+        "name": "Pocket Watch"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

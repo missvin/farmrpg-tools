@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:31:02.736Z",
+  "httpStatus": 200,
+  "itemName": "Bar of Silver",
+  "canonicalKey": "bar of silver",
+  "buddyUrl": "https://buddy.farm/i/bar-of-silver/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/bar-of-silver/page-data.json",
+  "pageTitle": "Bar of Silver",
+  "buddyItemName": "Bar of Silver",
+  "buddyItemId": "1285",
+  "buddyItemImage": "/img/items/silverbar.png",
+  "sourceStatus": "sources_blank",
+  "blankSourceIndicators": [
+    "no_nonempty_known_source_sections"
+  ],
+  "detectedSections": [
+    "locksmithOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/bar-of-silver/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1285,
+              "name": "Bar of Silver",
+              "image": "/img/items/silverbar.png",
+              "type": "item",
+              "description": "Expensive paperweight",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1280,
+                    "name": "Apple Crate 02",
+                    "image": "/img/items/applecrate.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1285,
+        "name": "Bar of Silver"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

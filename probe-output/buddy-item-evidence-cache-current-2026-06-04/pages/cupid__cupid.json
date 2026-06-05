@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:13:27.717Z",
+  "httpStatus": 200,
+  "itemName": "Cupid",
+  "canonicalKey": "cupid",
+  "buddyUrl": "https://buddy.farm/i/cupid/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/cupid/page-data.json",
+  "pageTitle": "Cupid",
+  "buddyItemName": "Cupid",
+  "buddyItemId": "445",
+  "buddyItemImage": "/img/items/cupid.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "npcItems",
+    "quizRewards",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/cupid/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 445,
+              "name": "Cupid",
+              "image": "/img/items/cupid.png",
+              "type": "item",
+              "description": "One of Santa's Reindeer",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 679,
+                    "name": "Lost Reindeer VII",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7515936,
+                    "name": "Reindeer Safety Program VI",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 670,
+                    "name": "Covert Santa XVI",
+                    "image": "/img/items/a_028.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [
+                {
+                  "quantity": 1,
+                  "score": 90,
+                  "quiz": {
+                    "__typename": "FarmRPG_Quiz",
+                    "name": "December To Remember "
+                  }
+                }
+              ],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Santa",
+                    "image": "/img/items/lornsanta.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 445,
+        "name": "Cupid"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

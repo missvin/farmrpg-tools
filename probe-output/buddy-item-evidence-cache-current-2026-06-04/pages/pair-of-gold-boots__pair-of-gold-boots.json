@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:19:41.455Z",
+  "httpStatus": 200,
+  "itemName": "Pair of Gold Boots",
+  "canonicalKey": "pair of gold boots",
+  "buddyUrl": "https://buddy.farm/i/pair-of-gold-boots/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/pair-of-gold-boots/page-data.json",
+  "pageTitle": "Pair of Gold Boots",
+  "buddyItemName": "Pair of Gold Boots",
+  "buddyItemId": "775",
+  "buddyItemImage": "/img/items/gboots.png?2",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "recipeItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/pair-of-gold-boots/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 775,
+              "name": "Pair of Gold Boots",
+              "image": "/img/items/gboots.png?2",
+              "type": "item",
+              "description": "Not great for hiking or wars",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 99,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277992,
+                    "name": "Pirates Start Arriving XVI",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 467,
+                    "name": "Gold Boot",
+                    "image": "/img/items/gboot.png?1"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 775,
+        "name": "Pair of Gold Boots"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

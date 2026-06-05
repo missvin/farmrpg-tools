@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:13:27.717Z",
+  "httpStatus": 200,
+  "itemName": "Dasher",
+  "canonicalKey": "dasher",
+  "buddyUrl": "https://buddy.farm/i/dasher/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/dasher/page-data.json",
+  "pageTitle": "Dasher",
+  "buddyItemName": "Dasher",
+  "buddyItemId": "440",
+  "buddyItemImage": "/img/items/dasher.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "npcItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/dasher/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 440,
+              "name": "Dasher",
+              "image": "/img/items/dasher.png",
+              "type": "item",
+              "description": "One of Santa's Reindeer",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 673,
+                    "name": "Lost Reindeer II",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7514932,
+                    "name": "Reindeer Safety Program II",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 664,
+                    "name": "Covert Santa X",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 6632820,
+                    "name": "Crafting Is Easy IV",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2026-01-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Santa",
+                    "image": "/img/items/lornsanta.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2022-12-28",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 277,
+                    "name": "Gummy Worms",
+                    "image": "/img/items/gworm.png"
+                  },
+                  "inputQuantity": 2823200,
+                  "progress": 6203469,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2022-12-22",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 65,
+                    "name": "Corn",
+                    "image": "/img/items/8288.png"
+                  },
+                  "inputQuantity": 554900,
+                  "progress": 335271,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2022-12-15",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 163,
+                    "name": "Twine",
+                    "image": "/img/items/6172-1.png"
+                  },
+                  "inputQuantity": 3096500,
+                  "progress": 5573628,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2022-12-08",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 217,
+                    "name": "Horseshoe",
+                    "image": "/img/items/6956.png"
+                  },
+                  "inputQuantity": 3317500,
+                  "progress": 5702054,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 440,
+        "name": "Dasher"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

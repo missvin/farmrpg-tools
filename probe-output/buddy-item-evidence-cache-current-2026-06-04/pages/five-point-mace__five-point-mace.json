@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:40:16.850Z",
+  "httpStatus": 200,
+  "itemName": "Five Point Mace",
+  "canonicalKey": "five point mace",
+  "buddyUrl": "https://buddy.farm/i/five-point-mace/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/five-point-mace/page-data.json",
+  "pageTitle": "Five Point Mace",
+  "buddyItemName": "Five Point Mace",
+  "buddyItemId": "975",
+  "buddyItemImage": "/img/items/5046.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/five-point-mace/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 975,
+              "name": "Five Point Mace",
+              "image": "/img/items/5046.png",
+              "type": "item",
+              "description": "All great plans start with five points.",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7481846,
+                    "name": "What The Heart Wants VII",
+                    "image": "/img/items/npc_figure2.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1148,
+                    "name": "Friendship Bag 01",
+                    "image": "/img/items/friendshipbag.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 975,
+        "name": "Five Point Mace"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

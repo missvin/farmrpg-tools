@@ -1,0 +1,557 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:50:39.035Z",
+  "httpStatus": 200,
+  "itemName": "Cat's Meow",
+  "canonicalKey": "cat's meow",
+  "buddyUrl": "https://buddy.farm/i/cat-s-meow/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/cat-s-meow/page-data.json",
+  "pageTitle": "Cat's Meow",
+  "buddyItemName": "Cat's Meow",
+  "buddyItemId": "643",
+  "buddyItemImage": "/img/items/fishessensestew.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "cookingRecipeItem",
+    "locksmithOutputItems",
+    "npcItems",
+    "npcRewards",
+    "recipeItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/cat-s-meow/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 643,
+              "name": "Cat's Meow",
+              "image": "/img/items/fishessensestew.png",
+              "type": "meal",
+              "description": "Multiple bites (manual fishing)<br/>for 5 minutes",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": true,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 15,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 120,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 80,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277995,
+                    "name": "Problems Start Arising III",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553584,
+                    "name": "Pirate Stealth Arrival XXVII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434120,
+                    "name": "An Interesting Lunch I",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512021,
+                    "name": "Distant Illusions VI",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512026,
+                    "name": "Distant Illusions XI",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512019,
+                    "name": "Distant Illusions III",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7527577,
+                    "name": "Lorn's Awakening III",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2025-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512016,
+                    "name": "Distant Illusions I",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553583,
+                    "name": "You Must Build A Stealth Boat IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1090580,
+                    "name": "Strange Companions XX",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7701836,
+                    "name": "Emerald Walks Everyday II",
+                    "image": "/img/items/merchant.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1606073,
+                    "name": "200,000 II",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2022-11-23T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2296235,
+                    "name": "Strange Companions XXVII",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7524549,
+                    "name": "Red Diamond Pair I",
+                    "image": "/img/items/a_027.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5741019,
+                    "name": "Liberty To The Captives III",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208212,
+                    "name": "Love At First Bite II",
+                    "image": "/img/items/a_048.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9058638,
+                    "name": "Red Diamond Runathon I",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7527939,
+                    "name": "Bug Exporter Enterprise II",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7529844,
+                    "name": "Moon Shot I",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7530251,
+                    "name": "Uni-que Meals I",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539271,
+                    "name": "King of Apples IX",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539265,
+                    "name": "King of Apples VI",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539266,
+                    "name": "King of Apples VII",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539264,
+                    "name": "King of Apples V",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539272,
+                    "name": "King of Apples X",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539270,
+                    "name": "King of Apples VIII",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7547089,
+                    "name": "Top Turkey",
+                    "image": "/img/items/geist_turkey.png",
+                    "endDate": "2025-12-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7504669,
+                    "name": "Pumpkins Spiced, Apples Tart I",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7557936,
+                    "name": "Fungal Bungle II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539260,
+                    "name": "King of Apples IV",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Mariya",
+                    "image": "/img/items/mariya.png"
+                  }
+                }
+              ],
+              "npcRewards": [
+                {
+                  "level": 20,
+                  "quantity": 5,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Gary Bearson V",
+                    "image": "/img/items/bear_01.png"
+                  }
+                },
+                {
+                  "level": 40,
+                  "quantity": 1,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Thomas",
+                    "image": "/img/items/a_048.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 120,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 103,
+                    "name": "Coal",
+                    "image": "/img/items/coal.png"
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 45,
+                    "name": "Fish Bones",
+                    "image": "/img/items/7747.PNG"
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 492,
+                    "name": "Essence of Slime",
+                    "image": "/img/items/essense.png"
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 33,
+                    "name": "Onion",
+                    "image": "/img/items/8317.png"
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 85,
+                    "name": "Milk",
+                    "image": "/img/items/8382.PNG"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 305,
+                    "name": "Salt",
+                    "image": "/img/items/salt.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 637,
+                    "name": "Cooking Pot",
+                    "image": "/img/items/2364.png?1"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 641,
+                    "name": "Bone Broth",
+                    "image": "/img/items/bonebroth.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 779,
+                    "name": "Holger's Lunch Box",
+                    "image": "/img/items/lunchbox2.png?1"
+                  }
+                },
+                {
+                  "quantityMax": 7,
+                  "quantityMin": 7,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1448,
+                    "name": "Picnic Basket 01",
+                    "image": "/img/items/picnicbasket.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": {
+                "__typename": "FarmRPG_Item",
+                "id": 648,
+                "name": "Thomas's Cat's Meow",
+                "image": "/img/items/recipe.png"
+              },
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 643,
+        "name": "Cat's Meow"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

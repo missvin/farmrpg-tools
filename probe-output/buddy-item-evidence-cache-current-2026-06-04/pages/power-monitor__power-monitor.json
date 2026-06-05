@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:37:16.422Z",
+  "httpStatus": 200,
+  "itemName": "Power Monitor",
+  "canonicalKey": "power monitor",
+  "buddyUrl": "https://buddy.farm/i/power-monitor/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/power-monitor/page-data.json",
+  "pageTitle": "Power Monitor",
+  "buddyItemName": "Power Monitor",
+  "buddyItemId": "684",
+  "buddyItemImage": "/img/items/9314.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/power-monitor/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 684,
+              "name": "Power Monitor",
+              "image": "/img/items/9314.png",
+              "type": "item",
+              "description": "Monitor for a machine",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 85,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277990,
+                    "name": "Pirates Start Arriving XIV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2692786,
+                    "name": "Strange Companions XXXVI",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2175549,
+                    "name": "Far Away XXIV",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553575,
+                    "name": "Problems Still Abound XXII",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553577,
+                    "name": "You Must Build A Stealth Boat I",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 213,
+                    "name": "Pocket Watch",
+                    "image": "/img/items/4887.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 591,
+                    "name": "Copper Wire",
+                    "image": "/img/items/9327.PNG"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 593,
+                    "name": "Broken Pipe",
+                    "image": "/img/items/9389.PNG"
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 22,
+                    "name": "Iron",
+                    "image": "/img/items/5779.PNG"
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 597,
+                    "name": "Transistor",
+                    "image": "/img/items/9319.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 885,
+                    "name": "Flying Machine",
+                    "image": "/img/items/147.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 685,
+                    "name": "Engine",
+                    "image": "/img/items/engine.png?1",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 282,
+                  "itemQuantity": 2820
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 684,
+        "name": "Power Monitor"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

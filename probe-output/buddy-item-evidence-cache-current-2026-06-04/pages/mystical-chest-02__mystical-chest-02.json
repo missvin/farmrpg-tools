@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:29:53.475Z",
+  "httpStatus": 200,
+  "itemName": "Mystical Chest 02",
+  "canonicalKey": "mystical chest 02",
+  "buddyUrl": "https://buddy.farm/i/mystical-chest-02/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/mystical-chest-02/page-data.json",
+  "pageTitle": "Mystical Chest 02",
+  "buddyItemName": "Mystical Chest 02",
+  "buddyItemId": "572",
+  "buddyItemImage": "/img/items/4456.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "locksmithItems",
+    "locksmithKey",
+    "npcRewards",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/mystical-chest-02/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 572,
+              "name": "Mystical Chest 02",
+              "image": "/img/items/4456.png",
+              "type": "item",
+              "description": "Full of obscure items",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9115713,
+                    "name": "Candy Causes IX",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2296219,
+                    "name": "Strange Companions XXIII",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2881964,
+                    "name": "A Study of Color XV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553575,
+                    "name": "Problems Still Abound XXII",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 12022.120702091848,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Pirate's Cove",
+                      "image": "/img/items/cove.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 11745.360582569885,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Pirate's Cove",
+                      "image": "/img/items/cove.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 11803.588290840415,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Pirate's Cove",
+                      "image": "/img/items/cove.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 11599.582415033059,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Pirate's Cove",
+                      "image": "/img/items/cove.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 50,
+                  "quantity": 1,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "frank",
+                    "image": "/img/items/npc_bunny1.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 500,
+                    "name": "Large Net",
+                    "image": "/img/items/lnet.png?3"
+                  }
+                },
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 538,
+                    "name": "Red Shield",
+                    "image": "/img/items/redshield.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 266,
+                    "name": "Skull Coin",
+                    "image": "/img/items/7286.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 373,
+                    "name": "Sunflower",
+                    "image": "/img/items/sunflower.png"
+                  }
+                },
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 350,
+                    "name": "Green Cloak",
+                    "image": "/img/items/ForestIcons_54_t.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": {
+                "__typename": "FarmRPG_Item",
+                "id": 366,
+                "name": "Skeleton Key",
+                "image": "/img/items/skelkey.png"
+              },
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 572,
+        "name": "Mystical Chest 02"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

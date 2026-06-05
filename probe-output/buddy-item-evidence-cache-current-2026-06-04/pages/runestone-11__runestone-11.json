@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:56:52.182Z",
+  "httpStatus": 200,
+  "itemName": "Runestone 11",
+  "canonicalKey": "runestone 11",
+  "buddyUrl": "https://buddy.farm/i/runestone-11/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/runestone-11/page-data.json",
+  "pageTitle": "Runestone 11",
+  "buddyItemName": "Runestone 11",
+  "buddyItemId": "221",
+  "buddyItemImage": "/img/items/rs11.png?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "dropRatesItems",
+    "exchangeCenterInputs",
+    "locksmithOutputItems",
+    "petItems",
+    "quizRewards",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/runestone-11/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 221,
+              "name": "Runestone 11",
+              "image": "/img/items/rs11.png?1",
+              "type": "item",
+              "description": "Some say it can be found<br/>in a field of ears",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 4,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 797,
+                    "name": "A Towering Investment XV",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 309,
+                    "name": "Consequences and Defenses XXII",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 119,
+                    "name": "Strange Stones VI",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 287,
+                    "name": "Parts Unknown XVI",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7552602,
+                    "name": "Home For The Holidays VII",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 395,
+                    "name": "A Captain’s Voyage VI",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553577,
+                    "name": "You Must Build A Stealth Boat I",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553581,
+                    "name": "You Must Build A Stealth Boat III",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 470,
+                    "name": "Corn Quandary XXXI",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 303,
+                    "name": "Consequences and Defenses XVI",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 153,
+                    "name": "Lost and Found",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 395,
+                    "name": "A Captain’s Voyage VI",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Owl",
+                    "image": "/img/pets/pet_owl.png"
+                  }
+                },
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Green Dragon",
+                    "image": "/img/pets/pet_dragon1.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 662.44468586873,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Corn Seeds",
+                      "image": "/img/items/seeds_corn.png"
+                    }
+                  }
+                },
+                {
+                  "rate": 601.7028189777069,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Corn Seeds",
+                      "image": "/img/items/seeds_corn.png"
+                    }
+                  }
+                }
+              ],
+              "quizRewards": [
+                {
+                  "quantity": 100,
+                  "score": 90,
+                  "quiz": {
+                    "__typename": "FarmRPG_Quiz",
+                    "name": "CORN FACTS"
+                  }
+                }
+              ],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 220,
+                    "name": "Lava Sphere",
+                    "image": "/img/items/5249.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 602,
+                    "name": "Corn Prize Bag",
+                    "image": "/img/items/bagofcorn.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 398,
+                    "name": "Grab Bag 05",
+                    "image": "/img/items/4497.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2026-06-04T05:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 500,
+                  "outputQuantity": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 298,
+                    "name": "Buddystone",
+                    "image": "/img/items/buddystone.png"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 303,
+                  "itemQuantity": 3030
+                },
+                {
+                  "level": 237,
+                  "itemQuantity": 2300
+                },
+                {
+                  "level": 133,
+                  "itemQuantity": 1300
+                },
+                {
+                  "level": 33,
+                  "itemQuantity": 130
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2021-12-29",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 65,
+                    "name": "Corn",
+                    "image": "/img/items/8288.png"
+                  },
+                  "inputQuantity": 500000,
+                  "progress": 0,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 221,
+        "name": "Runestone 11"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

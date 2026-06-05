@@ -1,0 +1,546 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:11:23.306Z",
+  "httpStatus": 200,
+  "itemName": "Gold Carrot",
+  "canonicalKey": "gold carrot",
+  "buddyUrl": "https://buddy.farm/i/gold-carrot/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/gold-carrot/page-data.json",
+  "pageTitle": "Gold Carrot",
+  "buddyItemName": "Gold Carrot",
+  "buddyItemId": "159",
+  "buddyItemImage": "/img/items/8391g.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "npcItems",
+    "npcRewards",
+    "petItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "skillLevelRewards",
+    "templeRewardItems",
+    "towerRewards",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/gold-carrot/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 159,
+              "name": "Gold Carrot",
+              "image": "/img/items/8391g.png",
+              "type": "crop",
+              "description": "The classiest of bunnies might snack on this",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": true,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 2,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 2,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 402,
+                    "name": "Hare Handler III",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 141,
+                    "name": "Pirate's Cove IV",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 69,
+                    "name": "A Taste for Gold",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 30,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 740,
+                    "name": "Hoptimistic VII",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 741,
+                    "name": "Hoptimistic VIII",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2283381,
+                    "name": "Far Away XXVII",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 228,
+                    "name": "A Tower Redecorated II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8817536,
+                    "name": "The Smell of a Fun Guy VI",
+                    "image": "/img/items/mariya.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 907,
+                    "name": "Giamics' Jubilee IX",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 730,
+                    "name": "Hoptimistic I",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553584,
+                    "name": "Pirate Stealth Arrival XXVII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2694543,
+                    "name": "King of Cakes II",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-03-14T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7083979,
+                    "name": "The Void and You II",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7514221,
+                    "name": "Archeology Requires Knowhow III",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 856,
+                    "name": "Eggstra Lucky IV",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277986,
+                    "name": "Pirates Start Arriving X",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523430,
+                    "name": "Bringing Egg-sy Back VIII",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7552599,
+                    "name": "Home For The Holidays IV",
+                    "image": "/img/items/npc_figure2.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553583,
+                    "name": "You Must Build A Stealth Boat IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 400,
+                    "name": "Feathers VI",
+                    "image": "/img/items/8263.PNG",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 814,
+                    "name": "Green Initiative IX",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7535507,
+                    "name": "Horse Before The Carton I",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Snake",
+                    "image": "/img/pets/pet_snake.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 401.74356708113214,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Carrot Seeds",
+                      "image": "/img/items/seeds_carrots.png"
+                    }
+                  }
+                },
+                {
+                  "rate": 322.09334909443453,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Carrot Seeds",
+                      "image": "/img/items/seeds_carrots.png"
+                    }
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Borgen",
+                    "image": "/img/items/borgen.png"
+                  }
+                },
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Charles Horsington III",
+                    "image": "/img/items/npc_horse.png"
+                  }
+                },
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "frank",
+                    "image": "/img/items/npc_bunny1.png"
+                  }
+                },
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Rosalie",
+                    "image": "/img/items/a_098.png"
+                  }
+                }
+              ],
+              "npcRewards": [
+                {
+                  "level": 20,
+                  "quantity": 5,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Borgen",
+                    "image": "/img/items/borgen.png"
+                  }
+                },
+                {
+                  "level": 20,
+                  "quantity": 5,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Charles Horsington III",
+                    "image": "/img/items/npc_horse.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 189,
+                    "name": "Gold Cucumber",
+                    "image": "/img/items/5805g.png?1"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 262,
+                    "name": "Gold Eggplant",
+                    "image": "/img/items/geggplant.png?1"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 168,
+                    "name": "Strange Letter",
+                    "image": "/img/items/7852.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 161,
+                    "name": "Gold Peas",
+                    "image": "/img/items/8259g.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 189,
+                    "name": "Gold Cucumber",
+                    "image": "/img/items/5805g.png?1"
+                  }
+                },
+                {
+                  "chance": 0.2,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 157,
+                    "name": "Gold Peppers",
+                    "image": "/img/items/8301g.png?1"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 262,
+                    "name": "Gold Eggplant",
+                    "image": "/img/items/geggplant.png?1"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 25,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 396,
+                    "name": "Grab Bag 03",
+                    "image": "/img/items/4497.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 236,
+                  "itemQuantity": 2300
+                },
+                {
+                  "level": 134,
+                  "itemQuantity": 1300
+                },
+                {
+                  "level": 34,
+                  "itemQuantity": 130
+                }
+              ],
+              "skillLevelRewards": [
+                {
+                  "skill": "farming",
+                  "level": 60,
+                  "itemQuantity": 24
+                }
+              ],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 11,
+                  "quantity": 3,
+                  "templeReward": {
+                    "inputQuantity": 2000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 178,
+                      "name": "Emberstone",
+                      "image": "/img/items/8166.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 159,
+        "name": "Gold Carrot"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

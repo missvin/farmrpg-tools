@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:56:52.182Z",
+  "httpStatus": 200,
+  "itemName": "Scrap Wire",
+  "canonicalKey": "scrap wire",
+  "buddyUrl": "https://buddy.farm/i/scrap-wire/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/scrap-wire/page-data.json",
+  "pageTitle": "Scrap Wire",
+  "buddyItemName": "Scrap Wire",
+  "buddyItemId": "600",
+  "buddyItemImage": "/img/items/9398.PNG",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "npcItems",
+    "recipeIngredientItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/scrap-wire/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 600,
+              "name": "Scrap Wire",
+              "image": "/img/items/9398.PNG",
+              "type": "item",
+              "description": "Do you know how wires are made?<br/>It's shocking",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": true,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 1,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1335563,
+                    "name": "Deck The Town (With Bats And Lanterns) XVII",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240282,
+                    "name": "Unexpected Visitor XII",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240286,
+                    "name": "Unexpected Visitor XIII",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240278,
+                    "name": "Unexpected Visitor XI",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 150,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240271,
+                    "name": "Unexpected Visitor X",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 32.88025799165631,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 32.87928357882322,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 22.869829383144594,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 22.86751155312419,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "ROOMBA",
+                    "image": "/img/items/robot_02.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 50,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 613,
+                    "name": "Y73841 Detector",
+                    "image": "/img/items/9304.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 682,
+                    "name": "Kill Switch",
+                    "image": "/img/items/9311.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 8,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 680,
+                    "name": "Energy Coil",
+                    "image": "/img/items/9379b.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 600,
+        "name": "Scrap Wire"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

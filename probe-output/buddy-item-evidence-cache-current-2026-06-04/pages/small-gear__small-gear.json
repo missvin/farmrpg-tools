@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:39:21.181Z",
+  "httpStatus": 200,
+  "itemName": "Small Gear",
+  "canonicalKey": "small gear",
+  "buddyUrl": "https://buddy.farm/i/small-gear/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/small-gear/page-data.json",
+  "pageTitle": "Small Gear",
+  "buddyItemName": "Small Gear",
+  "buddyItemId": "342",
+  "buddyItemImage": "/img/items/9388.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "npcRewards",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "towerRewards",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/small-gear/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 342,
+              "name": "Small Gear",
+              "image": "/img/items/9388.png",
+              "type": "item",
+              "description": "Helps keep things running like clockwork!",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 871,
+                    "name": "A Way Back XXIV",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240339,
+                    "name": "Unexpected Visitor XVIII",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 821,
+                    "name": "A Way Back XX",
+                    "image": "/img/items/cthomas2.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 795,
+                    "name": "A Towering Investment XII",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 160692,
+                    "name": "Unlikely Pair XX",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Armadillo",
+                    "image": "/img/pets/arma.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 10,
+                  "quantity": 5,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "ROOMBA",
+                    "image": "/img/items/robot_02.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 351,
+                    "name": "Gouda",
+                    "image": "/img/items/4601.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 348,
+                    "name": "Fancy Box",
+                    "image": "/img/items/4238.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 354,
+                    "name": "Wax Candle",
+                    "image": "/img/items/candle.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 259,
+                    "name": "Freaky Picture",
+                    "image": "/img/items/5592.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 246,
+                    "name": "Pirate Flag",
+                    "image": "/img/items/4924.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 272,
+                    "name": "Wooden Pipe",
+                    "image": "/img/items/4910.png?1"
+                  }
+                },
+                {
+                  "chance": 0.08333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 123,
+                    "name": "Ancient Coin",
+                    "image": "/img/items/6019.PNG"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1136,
+                    "name": "Fancy Clock",
+                    "image": "/img/items/viri_4696.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 341,
+                    "name": "Flywheel",
+                    "image": "/img/items/9387.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 613,
+                    "name": "Y73841 Detector",
+                    "image": "/img/items/9304.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 885,
+                    "name": "Flying Machine",
+                    "image": "/img/items/147.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 363,
+                    "name": "Large Chest 02",
+                    "image": "/img/items/LC-2.png?1"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 259,
+                  "itemQuantity": 2590
+                },
+                {
+                  "level": 218,
+                  "itemQuantity": 2100
+                },
+                {
+                  "level": 192,
+                  "itemQuantity": 1900
+                },
+                {
+                  "level": 118,
+                  "itemQuantity": 1100
+                },
+                {
+                  "level": 92,
+                  "itemQuantity": 190
+                },
+                {
+                  "level": 18,
+                  "itemQuantity": 110
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 342,
+        "name": "Small Gear"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:28:58.078Z",
+  "httpStatus": 200,
+  "itemName": "Frozen Radish",
+  "canonicalKey": "frozen radish",
+  "buddyUrl": "https://buddy.farm/i/frozen-radish/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/frozen-radish/page-data.json",
+  "pageTitle": "Frozen Radish",
+  "buddyItemName": "Frozen Radish",
+  "buddyItemId": "1171",
+  "buddyItemImage": "/img/items/frozen_radish.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "petItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/frozen-radish/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1171,
+              "name": "Frozen Radish",
+              "image": "/img/items/frozen_radish.png",
+              "type": "crop",
+              "description": "Blue Meat",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 10,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 750,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13670339,
+                    "name": "Baited And Outsmarted VII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13668714,
+                    "name": "Baited And Outsmarted VI",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7554035,
+                    "name": "Iced Crops Examination II",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7555297,
+                    "name": "Iced Crops Extreme Examination II",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7555423,
+                    "name": "Iced Crops Extreme Examination Extra Extremey I",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 1,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Polar Bear",
+                    "image": "/img/pets/pet_polar_bear.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 50,
+                  "quantityMin": 50,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1175,
+                    "name": "Frozen Chest 02",
+                    "image": "/img/items/frozen_chest.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1171,
+        "name": "Frozen Radish"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

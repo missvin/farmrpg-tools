@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:40:16.850Z",
+  "httpStatus": 200,
+  "itemName": "Sand Dollar",
+  "canonicalKey": "sand dollar",
+  "buddyUrl": "https://buddy.farm/i/sand-dollar/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/sand-dollar/page-data.json",
+  "pageTitle": "Sand Dollar",
+  "buddyItemName": "Sand Dollar",
+  "buddyItemId": "604",
+  "buddyItemImage": "/img/items/sanddollar.png?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/sand-dollar/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 604,
+              "name": "Sand Dollar",
+              "image": "/img/items/sanddollar.png?1",
+              "type": "item",
+              "description": "Actually worthless",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 46198,
+                    "name": "Beach Bum Hard Mode",
+                    "image": "/img/items/borgen.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4360744,
+                    "name": "Shell Collection Attempt Two VI",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 603,
+                    "name": "Summer Basket",
+                    "image": "/img/items/basket.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1082,
+                    "name": "Rosalie's Beach Tote",
+                    "image": "/img/items/tote1.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 604,
+        "name": "Sand Dollar"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

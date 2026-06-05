@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:34:03.273Z",
+  "httpStatus": 200,
+  "itemName": "Amethyst",
+  "canonicalKey": "amethyst",
+  "buddyUrl": "https://buddy.farm/i/amethyst/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/amethyst/page-data.json",
+  "pageTitle": "Amethyst",
+  "buddyItemName": "Amethyst",
+  "buddyItemId": "54",
+  "buddyItemImage": "/img/items/amethyst.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "manualProductions",
+    "petItems",
+    "quizRewards",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "templeRewardItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/amethyst/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 54,
+              "name": "Amethyst",
+              "image": "/img/items/amethyst.png",
+              "type": "item",
+              "description": "Am-e-thyst, am-e-that",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 239,
+                    "name": "A Horse Of A Different Color III",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 785,
+                    "name": "Bons Temps IV",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2026-03-14T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 24,
+                    "name": "Bling Things",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 824426,
+                    "name": "Our Patron of Refreshment II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2025-10-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 324,
+                    "name": "Frog Got Your Tongue I",
+                    "image": "/img/items/frog_t_01.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 877,
+                    "name": "A Way Back XXX",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 700,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 796,
+                    "name": "A Towering Investment XIV",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 837,
+                    "name": "Strange Companions IX",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 221,
+                    "name": "Islands Are Hard To Catch IX",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 9,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5460898,
+                    "name": "Happy Homunculus II",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 354,
+                    "name": "Free Candy V",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 225,
+                    "name": "A Tower Divided II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 38,
+                    "name": "Interior Design I",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Pet Rock",
+                    "image": "/img/pets/petrock.png"
+                  }
+                },
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Dog",
+                    "image": "/img/pets/pet_dog1.png"
+                  }
+                },
+                {
+                  "level": 1,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Spider",
+                    "image": "/img/pets/pet_spider1.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 72.52448109187057,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Highland Hills",
+                      "image": "/img/items/hills.png",
+                      "type": "explore",
+                      "baseDropRate": 0.25
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 96.53390198237194,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Highland Hills",
+                      "image": "/img/items/hills.png",
+                      "type": "explore",
+                      "baseDropRate": 0.25
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 96.72547978860646,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Highland Hills",
+                      "image": "/img/items/hills.png",
+                      "type": "explore",
+                      "baseDropRate": 0.25
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 72.58287240185072,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Highland Hills",
+                      "image": "/img/items/hills.png",
+                      "type": "explore",
+                      "baseDropRate": 0.25
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [
+                {
+                  "quantity": 50,
+                  "score": 80,
+                  "quiz": {
+                    "__typename": "FarmRPG_Quiz",
+                    "name": "Independence Day"
+                  }
+                }
+              ],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 41,
+                    "name": "Aquamarine",
+                    "image": "/img/items/6146.PNG"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 264,
+                    "name": "Jade",
+                    "image": "/img/items/jade.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 126,
+                    "name": "Amethyst Necklace",
+                    "image": "/img/items/8016.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 837,
+                    "name": "Linked Lantern",
+                    "image": "/img/items/mlantern.png?1",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 332,
+                    "name": "Small Chest 01",
+                    "image": "/img/items/4493.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [
+                {
+                  "image": "/img/items/quarry_sm.png",
+                  "lineOne": "Quarry",
+                  "lineTwo": "Building",
+                  "value": "Rarely",
+                  "sort": 1000
+                }
+              ],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 439,
+                  "quantity": 10,
+                  "templeReward": {
+                    "inputQuantity": 500,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 378,
+                      "name": "Water Lily",
+                      "image": "/img/items/3258.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 54,
+        "name": "Amethyst"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

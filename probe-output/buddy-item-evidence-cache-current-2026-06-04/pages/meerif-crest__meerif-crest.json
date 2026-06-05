@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:22:43.879Z",
+  "httpStatus": 200,
+  "itemName": "Meerif Crest",
+  "canonicalKey": "meerif crest",
+  "buddyUrl": "https://buddy.farm/i/meerif-crest/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/meerif-crest/page-data.json",
+  "pageTitle": "Meerif Crest",
+  "buddyItemName": "Meerif Crest",
+  "buddyItemId": "633",
+  "buddyItemImage": "/img/items/meerif.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/meerif-crest/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 633,
+              "name": "Meerif Crest",
+              "image": "/img/items/meerif.png",
+              "type": "item",
+              "description": "Crest of House Meerif",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4388093,
+                    "name": "Starting To Actually Realize  Magic Ain't Pretty XII",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2023-04-01",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 298,
+                    "name": "Buddystone",
+                    "image": "/img/items/buddystone.png"
+                  },
+                  "inputQuantity": 15000000,
+                  "progress": 5592,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 633,
+        "name": "Meerif Crest"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

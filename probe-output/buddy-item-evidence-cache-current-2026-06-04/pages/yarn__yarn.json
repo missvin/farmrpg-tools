@@ -1,0 +1,555 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:05:10.363Z",
+  "httpStatus": 200,
+  "itemName": "Yarn",
+  "canonicalKey": "yarn",
+  "buddyUrl": "https://buddy.farm/i/yarn/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/yarn/page-data.json",
+  "pageTitle": "Yarn",
+  "buddyItemName": "Yarn",
+  "buddyItemId": "427",
+  "buddyItemImage": "/img/items/pt_t_07.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "npcItems",
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "skillLevelRewards",
+    "templeRewardItems",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/yarn/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 427,
+              "name": "Yarn",
+              "image": "/img/items/pt_t_07.png",
+              "type": "item",
+              "description": "Knit one, purl two, craft three",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 50,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 464984,
+                    "name": "Artistic Rosalie IV",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277984,
+                    "name": "Pirates Start Arriving VIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1893638,
+                    "name": "A Wall In The Way V",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1090561,
+                    "name": "Strange Companions XVII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 667,
+                    "name": "Covert Santa XIII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 912,
+                    "name": "Giamics' Jubilee XIV",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1334760,
+                    "name": "Deck The Town (With Bats And Lanterns) XV",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277983,
+                    "name": "Pirates Start Arriving VII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277985,
+                    "name": "Pirates Start Arriving IX",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1606092,
+                    "name": "200,000 III",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2022-11-23T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1090591,
+                    "name": "As The Horse Clops II",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 69.84545273340348,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Santa's Workshop",
+                      "image": "/img/items/santa_ws.png",
+                      "type": "explore",
+                      "baseDropRate": 0.42857143
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 109.16046520863632,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Santa's Workshop",
+                      "image": "/img/items/santa_ws.png",
+                      "type": "explore",
+                      "baseDropRate": 0.42857143
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 90.2542898723684,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Santa's Workshop",
+                      "image": "/img/items/santa_ws.png",
+                      "type": "explore",
+                      "baseDropRate": 0.42857143
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 83.9095519357774,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Santa's Workshop",
+                      "image": "/img/items/santa_ws.png",
+                      "type": "explore",
+                      "baseDropRate": 0.42857143
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Gary Bearson V",
+                    "image": "/img/items/bear_01.png"
+                  }
+                },
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Cecil",
+                    "image": "/img/items/a_027.png"
+                  }
+                },
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Mummy",
+                    "image": "/img/items/mummy_t_01.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 163,
+                    "name": "Twine",
+                    "image": "/img/items/6172-1.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 414,
+                    "name": "Green Scarf",
+                    "image": "/img/items/scarf.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 474,
+                    "name": "Fancy Drum",
+                    "image": "/img/items/drum.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1327,
+                    "name": "Seashell Necklace",
+                    "image": "/img/items/shell_necklace.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1336,
+                    "name": "Red Scarf",
+                    "image": "/img/items/redscarf.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 32,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1132,
+                    "name": "Snow Shoes",
+                    "image": "/img/items/snowshoes.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1405,
+                    "name": "Yellow Scarf",
+                    "image": "/img/items/yellowscarf.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1406,
+                    "name": "Orange Scarf",
+                    "image": "/img/items/orangescarf.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1407,
+                    "name": "Black Scarf",
+                    "image": "/img/items/blackscarf.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1408,
+                    "name": "White Scarf",
+                    "image": "/img/items/whitescarf.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 6,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1418,
+                    "name": "Tie Dye Scarf",
+                    "image": "/img/items/tiedyescarf2.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 610,
+                    "name": "Backpack",
+                    "image": "/img/items/BagsAndBoxes_64_t.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 272,
+                  "itemQuantity": 2720
+                },
+                {
+                  "level": 132,
+                  "itemQuantity": 1300
+                },
+                {
+                  "level": 99,
+                  "itemQuantity": 190
+                },
+                {
+                  "level": 32,
+                  "itemQuantity": 130
+                }
+              ],
+              "skillLevelRewards": [
+                {
+                  "skill": "crafting",
+                  "level": 90,
+                  "itemQuantity": 60
+                }
+              ],
+              "communityCenterOutputs": [
+                {
+                  "date": "2026-02-26",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 114,
+                    "name": "Marlin",
+                    "image": "/img/items/7816.png"
+                  },
+                  "inputQuantity": 6956700,
+                  "progress": 9899827,
+                  "outputQuantity": 150
+                },
+                {
+                  "date": "2025-12-12",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 170,
+                    "name": "Antler",
+                    "image": "/img/items/5922.png"
+                  },
+                  "inputQuantity": 4359600,
+                  "progress": 7426390,
+                  "outputQuantity": 150
+                },
+                {
+                  "date": "2025-11-29",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 85,
+                    "name": "Milk",
+                    "image": "/img/items/8382.PNG"
+                  },
+                  "inputQuantity": 1402500,
+                  "progress": 3614492,
+                  "outputQuantity": 150
+                },
+                {
+                  "date": "2025-07-11",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 11,
+                    "name": "Peppers",
+                    "image": "/img/items/8301.png"
+                  },
+                  "inputQuantity": 6816800,
+                  "progress": 9437267,
+                  "outputQuantity": 150
+                },
+                {
+                  "date": "2025-02-24",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 21,
+                    "name": "Board",
+                    "image": "/img/items/5885.png"
+                  },
+                  "inputQuantity": 26461400,
+                  "progress": 29210258,
+                  "outputQuantity": 150
+                }
+              ],
+              "templeRewardItems": [
+                {
+                  "id": 55,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 28000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 427,
+        "name": "Yarn"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

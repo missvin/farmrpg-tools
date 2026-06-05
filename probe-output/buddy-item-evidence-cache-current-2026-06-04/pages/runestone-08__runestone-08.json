@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:38:21.088Z",
+  "httpStatus": 200,
+  "itemName": "Runestone 08",
+  "canonicalKey": "runestone 08",
+  "buddyUrl": "https://buddy.farm/i/runestone-08/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/runestone-08/page-data.json",
+  "pageTitle": "Runestone 08",
+  "buddyItemName": "Runestone 08",
+  "buddyItemId": "154",
+  "buddyItemImage": "/img/items/rs8.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "towerRewards",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/runestone-08/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 154,
+              "name": "Runestone 08",
+              "image": "/img/items/rs8.png",
+              "type": "item",
+              "description": "Some say it can be found<br/>at a nice, quiet spot just outside of town",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 305,
+                    "name": "Consequences and Defenses XVIII",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 420,
+                    "name": "A Way Forward VI",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 796,
+                    "name": "A Towering Investment XIV",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Blue Dragon",
+                    "image": "/img/pets/pet_dragon5.png"
+                  }
+                },
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Green Dragon",
+                    "image": "/img/pets/pet_dragon1.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 1531.417020168762,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Pond",
+                      "image": "/img/items/pond.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 1192.8619143048002,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Pond",
+                      "image": "/img/items/pond.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 1497.6785981728322,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Pond",
+                      "image": "/img/items/pond.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 1244.1370043669208,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Pond",
+                      "image": "/img/items/pond.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 172,
+                    "name": "Gold Feather",
+                    "image": "/img/items/5996.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 155,
+                    "name": "Runestone 09",
+                    "image": "/img/items/rs9.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 156,
+                    "name": "Runestone 10",
+                    "image": "/img/items/rs10.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 286,
+                    "name": "Fire Ant",
+                    "image": "/img/items/fireant.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 153,
+                    "name": "Runestone 07",
+                    "image": "/img/items/rs7.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 156,
+                    "name": "Runestone 10",
+                    "image": "/img/items/rs10.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 155,
+                    "name": "Runestone 09",
+                    "image": "/img/items/rs9.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 169,
+                    "name": "Inferno Sphere",
+                    "image": "/img/items/6017.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 397,
+                    "name": "Grab Bag 04",
+                    "image": "/img/items/4497.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 293,
+                  "itemQuantity": 2930
+                },
+                {
+                  "level": 223,
+                  "itemQuantity": 2200
+                },
+                {
+                  "level": 193,
+                  "itemQuantity": 1900
+                },
+                {
+                  "level": 123,
+                  "itemQuantity": 1200
+                },
+                {
+                  "level": 93,
+                  "itemQuantity": 190
+                },
+                {
+                  "level": 23,
+                  "itemQuantity": 120
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 154,
+        "name": "Runestone 08"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:58:56.738Z",
+  "httpStatus": 200,
+  "itemName": "Mug of Beer",
+  "canonicalKey": "mug of beer",
+  "buddyUrl": "https://buddy.farm/i/mug-of-beer/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/mug-of-beer/page-data.json",
+  "pageTitle": "Mug of Beer",
+  "buddyItemName": "Mug of Beer",
+  "buddyItemId": "505",
+  "buddyItemImage": "/img/items/7264.png?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "exchangeCenterOutputs",
+    "locksmithOutputItems",
+    "npcItems",
+    "npcRewards",
+    "passwordItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/mug-of-beer/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 505,
+              "name": "Mug of Beer",
+              "image": "/img/items/7264.png?1",
+              "type": "item",
+              "description": "Crisp and dark with a balance of bitter<br/>and sweet notes with a dry finish.",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 10,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1587942,
+                    "name": "Far Away XVIII",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 228487,
+                    "name": "Unexpected Visitor VII",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8817533,
+                    "name": "The Smell of a Fun Guy I",
+                    "image": "/img/items/mariya.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 949,
+                    "name": "Intruders Beware II",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2968859,
+                    "name": "Just A Pinch III",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1334672,
+                    "name": "Deck The Town (With Bats And Lanterns) VIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 150,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512019,
+                    "name": "Distant Illusions III",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1938450,
+                    "name": "Buddy's Christmas Adventure IX",
+                    "image": "/img/items/buddyelf.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 815183,
+                    "name": "Far Away XIII",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308085,
+                    "name": "Corn of Interest Part 08",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 814,
+                    "name": "Green Initiative IX",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277993,
+                    "name": "Problems Start Arising I",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277983,
+                    "name": "Pirates Start Arriving VII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "George",
+                    "image": "/img/items/a_034.png"
+                  }
+                },
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Holger",
+                    "image": "/img/items/a_028.png"
+                  }
+                }
+              ],
+              "npcRewards": [
+                {
+                  "level": 20,
+                  "quantity": 1,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "George",
+                    "image": "/img/items/a_034.png"
+                  }
+                }
+              ],
+              "passwordItems": [
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 146,
+                    "password": "greedo"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 581,
+                    "name": "Cutlass",
+                    "image": "/img/items/pirates_47_t.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1270,
+                    "name": "Thomas's Tavern Tote",
+                    "image": "/img/items/7307.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [
+                {
+                  "lastSeen": "2026-06-02T17:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 400,
+                  "outputQuantity": 3,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 237,
+                    "name": "Axe",
+                    "image": "/img/items/5875.png?1"
+                  }
+                }
+              ],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2026-04-25",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 188,
+                    "name": "4-leaf Clover",
+                    "image": "/img/items/fourleaf.png"
+                  },
+                  "inputQuantity": 5047600,
+                  "progress": 6296715,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2026-01-05",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 238,
+                    "name": "Shovel",
+                    "image": "/img/items/5853.png?1"
+                  },
+                  "inputQuantity": 3089700,
+                  "progress": 5438872,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-10-16",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 17,
+                    "name": "Drum",
+                    "image": "/img/items/7718.PNG"
+                  },
+                  "inputQuantity": 9671300,
+                  "progress": 21529294,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-08-02",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 170,
+                    "name": "Antler",
+                    "image": "/img/items/5922.png"
+                  },
+                  "inputQuantity": 1705000,
+                  "progress": 4028907,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-05-02",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 17,
+                    "name": "Drum",
+                    "image": "/img/items/7718.PNG"
+                  },
+                  "inputQuantity": 9764700,
+                  "progress": 17449757,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 505,
+        "name": "Mug of Beer"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

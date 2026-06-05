@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:58:03.567Z",
+  "httpStatus": 200,
+  "itemName": "Purple Mushroom",
+  "canonicalKey": "purple mushroom",
+  "buddyUrl": "https://buddy.farm/i/purple-mushroom/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/purple-mushroom/page-data.json",
+  "pageTitle": "Purple Mushroom",
+  "buddyItemName": "Purple Mushroom",
+  "buddyItemId": "909",
+  "buddyItemImage": "/img/items/woodblewit.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/purple-mushroom/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 909,
+              "name": "Purple Mushroom",
+              "image": "/img/items/woodblewit.png",
+              "type": "item",
+              "description": "Rasmodius loves these",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 6,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8026625,
+                    "name": "Junction Of Joyful Appreciation",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2024-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 909,
+        "name": "Purple Mushroom"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

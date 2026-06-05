@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:07:14.734Z",
+  "httpStatus": 200,
+  "itemName": "Pirate Flag",
+  "canonicalKey": "pirate flag",
+  "buddyUrl": "https://buddy.farm/i/pirate-flag/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/pirate-flag/page-data.json",
+  "pageTitle": "Pirate Flag",
+  "buddyItemName": "Pirate Flag",
+  "buddyItemId": "246",
+  "buddyItemImage": "/img/items/4924.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "npcItems",
+    "npcRewards",
+    "passwordItems",
+    "petItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/pirate-flag/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 246,
+              "name": "Pirate Flag",
+              "image": "/img/items/4924.png",
+              "type": "item",
+              "description": "Jolly Roger",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 5,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7462786,
+                    "name": "Archeology Requires Knowhow I",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7514015,
+                    "name": "Effigy of Friendship",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 161,
+                    "name": "Let's Play Pirates I",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 954,
+                    "name": "Intruders Beware VII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 179,
+                    "name": "The Collector",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 107,
+                    "name": "Warning Shots",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 171,
+                    "name": "Let's Play Pirates V",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Bird",
+                    "image": "/img/pets/pet_a_parrot.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Buddy",
+                    "image": "/img/items/buddy.png"
+                  }
+                }
+              ],
+              "npcRewards": [
+                {
+                  "level": 20,
+                  "quantity": 1,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Buddy",
+                    "image": "/img/items/buddy.png"
+                  }
+                }
+              ],
+              "passwordItems": [
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 204,
+                    "password": "thunderhead"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 274,
+                    "name": "Sealed Letter",
+                    "image": "/img/items/7475.png?1"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 342,
+                    "name": "Small Gear",
+                    "image": "/img/items/9388.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 243,
+                    "name": "Spectacles",
+                    "image": "/img/items/5392.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 273,
+                    "name": "Small Flute",
+                    "image": "/img/items/5255.png?1"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 247,
+                    "name": "Captains Log",
+                    "image": "/img/items/4868.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 259,
+                    "name": "Freaky Picture",
+                    "image": "/img/items/5592.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 258,
+                    "name": "Pirate Bandana",
+                    "image": "/img/items/4903.png"
+                  }
+                },
+                {
+                  "chance": 0.14285714285714285,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 280,
+                    "name": "Teapot",
+                    "image": "/img/items/teapot.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 246,
+        "name": "Pirate Flag"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

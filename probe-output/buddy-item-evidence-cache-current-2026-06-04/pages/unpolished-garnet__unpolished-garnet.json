@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:41:25.968Z",
+  "httpStatus": 200,
+  "itemName": "Unpolished Garnet",
+  "canonicalKey": "unpolished garnet",
+  "buddyUrl": "https://buddy.farm/i/unpolished-garnet/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/unpolished-garnet/page-data.json",
+  "pageTitle": "Unpolished Garnet",
+  "buddyItemName": "Unpolished Garnet",
+  "buddyItemId": "318",
+  "buddyItemImage": "/img/items/8030.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/unpolished-garnet/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 318,
+              "name": "Unpolished Garnet",
+              "image": "/img/items/8030.png",
+              "type": "item",
+              "description": "Even unpolished, garnet has<br/>many uses as an abrasive",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 700,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2993374,
+                    "name": "Strange Companions XL",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 732,
+                    "name": "Strange Companions IV",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 836,
+                    "name": "Strange Companions VIII",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 1,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Red Dragon",
+                    "image": "/img/pets/pet_dragon4.png"
+                  }
+                },
+                {
+                  "level": 1,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Pet Rock",
+                    "image": "/img/pets/petrock.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 41.46416031481802,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Whispering Creek",
+                      "image": "/img/items/creek.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 41.4378422972963,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Whispering Creek",
+                      "image": "/img/items/creek.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 50.11447482435879,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Whispering Creek",
+                      "image": "/img/items/creek.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 50.13163899979493,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Whispering Creek",
+                      "image": "/img/items/creek.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 317,
+                    "name": "Garnet",
+                    "image": "/img/items/8008.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 318,
+        "name": "Unpolished Garnet"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

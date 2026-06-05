@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:17:36.841Z",
+  "httpStatus": 200,
+  "itemName": "Wooden Bow",
+  "canonicalKey": "wooden bow",
+  "buddyUrl": "https://buddy.farm/i/wooden-bow/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/wooden-bow/page-data.json",
+  "pageTitle": "Wooden Bow",
+  "buddyItemName": "Wooden Bow",
+  "buddyItemId": "455",
+  "buddyItemImage": "/img/items/4764.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "recipeItems",
+    "requiredForQuests",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/wooden-bow/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 455,
+              "name": "Wooden Bow",
+              "image": "/img/items/4764.png",
+              "type": "item",
+              "description": "Semi-accurate, not very solid",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 30,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2332127,
+                    "name": "Strange Companions XXX",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277984,
+                    "name": "Pirates Start Arriving VIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 800,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5887008,
+                    "name": "Peculiar Endings VII",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7522716,
+                    "name": "Monster Hunter IV",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 458,
+                    "name": "Gold Catfish",
+                    "image": "/img/items/goldcatfish.png"
+                  }
+                },
+                {
+                  "chance": 0.5,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 492,
+                    "name": "Essence of Slime",
+                    "image": "/img/items/essense.png"
+                  }
+                }
+              ],
+              "recipeItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 52,
+                    "name": "Fern Leaf",
+                    "image": "/img/items/fern.png"
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 22,
+                    "name": "Iron",
+                    "image": "/img/items/5779.PNG"
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 163,
+                    "name": "Twine",
+                    "image": "/img/items/6172-1.png"
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 35,
+                    "name": "Wood",
+                    "image": "/img/items/6143.PNG"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 455,
+        "name": "Wooden Bow"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

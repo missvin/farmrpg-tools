@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:36:08.005Z",
+  "httpStatus": 200,
+  "itemName": "Fuzzy Chick 01",
+  "canonicalKey": "fuzzy chick 01",
+  "buddyUrl": "https://buddy.farm/i/fuzzy-chick-01/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/fuzzy-chick-01/page-data.json",
+  "pageTitle": "Fuzzy Chick 01",
+  "buddyItemName": "Fuzzy Chick 01",
+  "buddyItemId": "1212",
+  "buddyItemImage": "/img/items/fuzzychick1pink.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "locksmithOutputItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/fuzzy-chick-01/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1212,
+              "name": "Fuzzy Chick 01",
+              "image": "/img/items/fuzzychick1pink.png",
+              "type": "item",
+              "description": "Fuzzy and adorable",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523672,
+                    "name": "A Difficult Option Requires Bravery Sometimes I",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7558711,
+                    "name": "Borgen Builds a Nest Egg III",
+                    "image": "/img/items/borgen.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523923,
+                    "name": "Calm, Cool, Collected II",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-04T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523493,
+                    "name": "Bringing Egg-sy Back XIII",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1228,
+                    "name": "Fuzzy Egg",
+                    "image": "/img/items/fuzzychickegg.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2026-04-21",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 111,
+                    "name": "Bird Egg",
+                    "image": "/img/items/6067.PNG"
+                  },
+                  "inputQuantity": 4991400,
+                  "progress": 6596493,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-04-21",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 163,
+                    "name": "Twine",
+                    "image": "/img/items/6172-1.png"
+                  },
+                  "inputQuantity": 14294000,
+                  "progress": 23386189,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1212,
+        "name": "Fuzzy Chick 01"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

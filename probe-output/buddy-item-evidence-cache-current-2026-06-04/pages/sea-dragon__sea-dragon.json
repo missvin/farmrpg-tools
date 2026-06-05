@@ -1,0 +1,464 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:31:02.736Z",
+  "httpStatus": 200,
+  "itemName": "Sea Dragon",
+  "canonicalKey": "sea dragon",
+  "buddyUrl": "https://buddy.farm/i/sea-dragon/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/sea-dragon/page-data.json",
+  "pageTitle": "Sea Dragon",
+  "buddyItemName": "Sea Dragon",
+  "buddyItemId": "478",
+  "buddyItemImage": "/img/items/seadragon.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "dropRatesItems",
+    "npcRewards",
+    "requiredForQuests",
+    "rewardForQuests",
+    "templeRewardItems",
+    "towerRewards",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/sea-dragon/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 478,
+              "name": "Sea Dragon",
+              "image": "/img/items/seadragon.png",
+              "type": "item",
+              "description": "Rare saltwater fish",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 15,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2869947,
+                    "name": "Far Away XXXIII",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 733,
+                    "name": "Strange Companions V",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 798,
+                    "name": "A Towering Investment XVI",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 813578,
+                    "name": "Far Away X",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1893466,
+                    "name": "A Wall In The Way I",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2869931,
+                    "name": "Far Away XXXII",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 731,
+                    "name": "Strange Companions III",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2868640,
+                    "name": "Far Away XXXI",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2868585,
+                    "name": "Far Away XXX",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7522713,
+                    "name": "Monster Hunter I",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 755,
+                    "name": "Be Mine XI",
+                    "image": "/img/items/a_048.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 790,
+                    "name": "A Way Back XIII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1626191,
+                    "name": "Rapturous Thanksgiving I",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 2340.0570973931763,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Vast Ocean",
+                      "image": "/img/items/ocean.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 2432.9716315507762,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Vast Ocean",
+                      "image": "/img/items/ocean.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 2665.45832555908,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Vast Ocean",
+                      "image": "/img/items/ocean.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 2746.573649372408,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Vast Ocean",
+                      "image": "/img/items/ocean.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 30,
+                  "quantity": 10,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Lorn",
+                    "image": "/img/items/a_088.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 389,
+                    "name": "Orange Gecko",
+                    "image": "/img/items/3493.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 479,
+                    "name": "Frog",
+                    "image": "/img/items/frog.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 474,
+                    "name": "Fancy Drum",
+                    "image": "/img/items/drum.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 389,
+                    "name": "Orange Gecko",
+                    "image": "/img/items/3493.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 479,
+                    "name": "Frog",
+                    "image": "/img/items/frog.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 475,
+                    "name": "Crab Claw",
+                    "image": "/img/items/crabclaw.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 248,
+                  "itemQuantity": 2400
+                },
+                {
+                  "level": 142,
+                  "itemQuantity": 1400
+                },
+                {
+                  "level": 42,
+                  "itemQuantity": 140
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2026-05-09",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 43,
+                    "name": "Mushroom",
+                    "image": "/img/items/mushroom.png"
+                  },
+                  "inputQuantity": 7765800,
+                  "progress": 10716625,
+                  "outputQuantity": 7
+                },
+                {
+                  "date": "2026-05-02",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 103,
+                    "name": "Coal",
+                    "image": "/img/items/coal.png"
+                  },
+                  "inputQuantity": 13017900,
+                  "progress": 18547390,
+                  "outputQuantity": 5
+                },
+                {
+                  "date": "2026-02-18",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 43,
+                    "name": "Mushroom",
+                    "image": "/img/items/mushroom.png"
+                  },
+                  "inputQuantity": 2876000,
+                  "progress": 8886037,
+                  "outputQuantity": 7
+                },
+                {
+                  "date": "2026-01-09",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 206,
+                    "name": "Seahorse",
+                    "image": "/img/items/8819.png"
+                  },
+                  "inputQuantity": 2696600,
+                  "progress": 5709784,
+                  "outputQuantity": 5
+                },
+                {
+                  "date": "2025-11-21",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 17,
+                    "name": "Drum",
+                    "image": "/img/items/7718.PNG"
+                  },
+                  "inputQuantity": 23682300,
+                  "progress": 28154850,
+                  "outputQuantity": 5
+                }
+              ],
+              "templeRewardItems": [
+                {
+                  "id": 453,
+                  "quantity": 10,
+                  "templeReward": {
+                    "inputQuantity": 75000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 378,
+                      "name": "Water Lily",
+                      "image": "/img/items/3258.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 478,
+        "name": "Sea Dragon"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

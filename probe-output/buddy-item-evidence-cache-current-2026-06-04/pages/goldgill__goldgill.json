@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:26:53.643Z",
+  "httpStatus": 200,
+  "itemName": "Goldgill",
+  "canonicalKey": "goldgill",
+  "buddyUrl": "https://buddy.farm/i/goldgill/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/goldgill/page-data.json",
+  "pageTitle": "Goldgill",
+  "buddyItemName": "Goldgill",
+  "buddyItemId": "463",
+  "buddyItemImage": "/img/items/goldgill.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "npcItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "templeRewardItems",
+    "towerRewards",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/goldgill/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 463,
+              "name": "Goldgill",
+              "image": "/img/items/goldgill.png",
+              "type": "fish",
+              "description": "1 gill is equal to 40 drams or 8 tablespoons",
+              "manualFishingOnly": true,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 711,
+                    "name": "Fine Fishing II",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 150,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 793,
+                    "name": "A Towering Investment X",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 755,
+                    "name": "Be Mine XI",
+                    "image": "/img/items/a_048.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4336060,
+                    "name": "A Study of Spuds II",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 30.781666562522027,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Forest Pond",
+                      "image": "/img/items/fpond.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 27.513798169782145,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Forest Pond",
+                      "image": "/img/items/fpond.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Thomas",
+                    "image": "/img/items/a_048.png"
+                  }
+                },
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Geist",
+                    "image": "/img/items/npc_beast.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 458,
+                    "name": "Gold Catfish",
+                    "image": "/img/items/goldcatfish.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 461,
+                    "name": "Goldfin",
+                    "image": "/img/items/goldfin.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 466,
+                    "name": "Goldjack",
+                    "image": "/img/items/goldjack.png?1"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 462,
+                    "name": "Gold Flier",
+                    "image": "/img/items/goldflier.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 458,
+                    "name": "Gold Catfish",
+                    "image": "/img/items/goldcatfish.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 466,
+                    "name": "Goldjack",
+                    "image": "/img/items/goldjack.png?1"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 457,
+                    "name": "Gold Trout",
+                    "image": "/img/items/goldtrout.png?1"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 491,
+                    "name": "Grab Bag 07",
+                    "image": "/img/items/4497.png"
+                  }
+                },
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 482,
+                    "name": "Mystical Chest 01",
+                    "image": "/img/items/4456.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 243,
+                  "itemQuantity": 2400
+                },
+                {
+                  "level": 147,
+                  "itemQuantity": 1400
+                },
+                {
+                  "level": 47,
+                  "itemQuantity": 140
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 18,
+                  "quantity": 10,
+                  "templeReward": {
+                    "inputQuantity": 300,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 713,
+                      "name": "Pair of Boots",
+                      "image": "/img/items/pboot2.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 463,
+        "name": "Goldgill"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

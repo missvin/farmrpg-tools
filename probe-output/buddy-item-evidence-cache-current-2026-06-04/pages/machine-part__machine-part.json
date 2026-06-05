@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:56:52.182Z",
+  "httpStatus": 200,
+  "itemName": "Machine Part",
+  "canonicalKey": "machine part",
+  "buddyUrl": "https://buddy.farm/i/machine-part/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/machine-part/page-data.json",
+  "pageTitle": "Machine Part",
+  "buddyItemName": "Machine Part",
+  "buddyItemId": "598",
+  "buddyItemImage": "/img/items/9331.PNG",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/machine-part/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 598,
+              "name": "Machine Part",
+              "image": "/img/items/9331.PNG",
+              "type": "item",
+              "description": "From some sort of ancient machine",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 726577,
+                    "name": "Far Away III",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240335,
+                    "name": "Unexpected Visitor XVII",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1938583,
+                    "name": "Buddy's Christmas Adventure X",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7517232,
+                    "name": "Fitness Friends Fit Forever II",
+                    "image": "/img/items/bear_01.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539272,
+                    "name": "King of Apples X",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 57.01870624099389,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 57.019503863413505,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 49.31962589682808,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 49.32345969740649,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Jundland Desert",
+                      "image": "/img/items/desert.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 6,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 628,
+                    "name": "Machine Press",
+                    "image": "/img/items/press.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 681,
+                    "name": "Control Box",
+                    "image": "/img/items/9306b32.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 6,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 978,
+                    "name": "Cannon",
+                    "image": "/img/items/1096.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 598,
+        "name": "Machine Part"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

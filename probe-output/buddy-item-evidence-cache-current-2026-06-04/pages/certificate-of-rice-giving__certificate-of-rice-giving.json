@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:26:53.643Z",
+  "httpStatus": 200,
+  "itemName": "Certificate of Rice Giving",
+  "canonicalKey": "certificate of rice giving",
+  "buddyUrl": "https://buddy.farm/i/certificate-of-rice-giving/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/certificate-of-rice-giving/page-data.json",
+  "pageTitle": "Certificate of Rice Giving",
+  "buddyItemName": "Certificate of Rice Giving",
+  "buddyItemId": "1013",
+  "buddyItemImage": "/img/items/7896-yellow.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "requiredForQuests",
+    "rewardForQuests",
+    "templeRewardItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/certificate-of-rice-giving/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1013,
+              "name": "Certificate of Rice Giving",
+              "image": "/img/items/7896-yellow.png",
+              "type": "item",
+              "description": "Receipt of Rice Realization",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7535565,
+                    "name": "Book of Dewstar Mastery XI",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7535566,
+                    "name": "Book of Dewstar Mastery XII",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 389,
+                  "quantity": 1,
+                  "templeReward": {
+                    "inputQuantity": 100000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 630,
+                      "name": "Rice",
+                      "image": "/img/items/rice.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1013,
+        "name": "Certificate of Rice Giving"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

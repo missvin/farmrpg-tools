@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:45:35.655Z",
+  "httpStatus": 200,
+  "itemName": "Safety Pin",
+  "canonicalKey": "safety pin",
+  "buddyUrl": "https://buddy.farm/i/safety-pin/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/safety-pin/page-data.json",
+  "pageTitle": "Safety Pin",
+  "buddyItemName": "Safety Pin",
+  "buddyItemId": "620",
+  "buddyItemImage": "/img/items/pin_t_01.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/safety-pin/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 620,
+              "name": "Safety Pin",
+              "image": "/img/items/pin_t_01.png",
+              "type": "item",
+              "description": "Can pin things together",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 465052,
+                    "name": "Artistic Rosalie VI",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 464942,
+                    "name": "Artistic Rosalie III",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 8,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 464946,
+                    "name": "Artistic Rosalie II",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 465027,
+                    "name": "Artistic Rosalie V",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7492888,
+                    "name": "The Mystery Triangle II",
+                    "image": "/img/items/merchant.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 620,
+        "name": "Safety Pin"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

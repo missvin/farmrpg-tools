@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:48:34.626Z",
+  "httpStatus": 200,
+  "itemName": "Feed",
+  "canonicalKey": "feed",
+  "buddyUrl": "https://buddy.farm/i/feed/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/feed/page-data.json",
+  "pageTitle": "Feed",
+  "buddyItemName": "Feed",
+  "buddyItemId": "275",
+  "buddyItemImage": "/img/items/8299.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "requiredForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/feed/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 275,
+              "name": "Feed",
+              "image": "/img/items/8299.png",
+              "type": "item",
+              "description": "Animal feed for pigs/horses",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7511903,
+                    "name": "Cuucoo's Awakening I",
+                    "image": "/img/items/spooky_chicken_crop.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 591,
+                    "name": "Blizzard Warning IV - F",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7511905,
+                    "name": "Cuucoo's Awakening III",
+                    "image": "/img/items/spooky_chicken_crop.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 150,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7511907,
+                    "name": "Cuucoo's Awakening V",
+                    "image": "/img/items/spooky_chicken_crop.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7511909,
+                    "name": "Cuucoo's Awakening VII",
+                    "image": "/img/items/spooky_chicken_crop.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7556566,
+                    "name": "Happy Neigh Year V",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 271,
+                  "itemQuantity": 2710
+                },
+                {
+                  "level": 188,
+                  "itemQuantity": 1800
+                },
+                {
+                  "level": 157,
+                  "itemQuantity": 1500
+                },
+                {
+                  "level": 88,
+                  "itemQuantity": 180
+                },
+                {
+                  "level": 57,
+                  "itemQuantity": 150
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 275,
+        "name": "Feed"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

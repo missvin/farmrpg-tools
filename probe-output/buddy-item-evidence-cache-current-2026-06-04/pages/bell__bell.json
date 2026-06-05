@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:18:34.679Z",
+  "httpStatus": 200,
+  "itemName": "Bell",
+  "canonicalKey": "bell",
+  "buddyUrl": "https://buddy.farm/i/bell/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/bell/page-data.json",
+  "pageTitle": "Bell",
+  "buddyItemName": "Bell",
+  "buddyItemId": "471",
+  "buddyItemImage": "/img/items/bell.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "exchangeCenterOutputs",
+    "requiredForQuests",
+    "rewardForQuests",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/bell/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 471,
+              "name": "Bell",
+              "image": "/img/items/bell.png",
+              "type": "item",
+              "description": "Creates a terribly annoying sound",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 955,
+                    "name": "Intruders Beware VIII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2296235,
+                    "name": "Strange Companions XXVII",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5243757,
+                    "name": "Sound Unstable I",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 868499,
+                    "name": "The Otipeg Line III",
+                    "image": "/img/items/a_048.png",
+                    "endDate": "2025-09-16T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 759,
+                    "name": "Better Late Than Never II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.5,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 382,
+                    "name": "Grasshopper",
+                    "image": "/img/items/3315.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [
+                {
+                  "lastSeen": "2026-06-04T17:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 250,
+                  "outputQuantity": 10,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 236,
+                    "name": "Hammer",
+                    "image": "/img/items/hammer.png?2"
+                  }
+                }
+              ],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 471,
+        "name": "Bell"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

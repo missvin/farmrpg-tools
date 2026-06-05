@@ -7,14 +7,14 @@ Source target set:
 - 1,461 reviewed current museum universe targets from the 2026-06-04 Library Everything export.
 
 Current status:
-- Two bounded cache batches run on 2026-06-04.
-- 50 cumulative page-data records cached under `pages/`.
-- Latest manifest run: 25 fresh rows skipped, 25 new rows cached, 1,411 targets deferred.
-- 8 rows currently require review before parser promotion because Buddy page-data had blank source sections.
+- Full current-universe cache run completed on 2026-06-04.
+- 1,461 cumulative page-data evidence records are present under `pages/`.
+- Latest manifest run: 1,456 fresh rows skipped and 5 terminal rows skipped; no deferred targets remain.
+- 273 rows currently require review before parser promotion: 268 `sources_blank` rows and 5 terminal `uncertain` rows.
+- Terminal rows are explicit evidence artifacts for Buddy page-data failures: `Pot of Gold (Medium)`, `Pot of Gold (Large)`, `Pot of Gold (Small)`, `Green Shield`, and `R.O.A.S.`.
 
 Important:
-- This is a partial current-universe artifact, not the completed BL-249 corpus.
-- Re-run `scripts/cacheBuddyItemPageEvidence.mjs` with the same target CSV and output directory to continue from the next uncached targets.
-- The manifest and review CSVs are regenerated per resume run, but skipped fresh rows preserve existing source-status/review information so current review candidates remain visible.
-- Keep runs bounded, sequential, delayed, and cache-first.
-- Do not use this partial artifact as the sufficient dependency for BL-245, BL-246, BL-242, BL-250, or BL-251.
+- This is the completed BL-249 current-universe evidence corpus for parser and promotion work.
+- The manifest and review CSVs are regenerated per resume run, and skipped rows preserve existing source-status/review information so review candidates remain visible.
+- Any rechecks should stay bounded, sequential, delayed, and cache-first.
+- Parser and promotion work may consume this artifact, but review rows must remain visible and handled before canonical promotion.

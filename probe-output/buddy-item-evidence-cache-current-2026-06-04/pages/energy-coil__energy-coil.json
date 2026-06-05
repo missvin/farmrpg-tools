@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:40:25.590Z",
+  "httpStatus": 200,
+  "itemName": "Energy Coil",
+  "canonicalKey": "energy coil",
+  "buddyUrl": "https://buddy.farm/i/energy-coil/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/energy-coil/page-data.json",
+  "pageTitle": "Energy Coil",
+  "buddyItemName": "Energy Coil",
+  "buddyItemId": "680",
+  "buddyItemImage": "/img/items/9379b.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests",
+    "towerRewards",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/energy-coil/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 680,
+              "name": "Energy Coil",
+              "image": "/img/items/9379b.png",
+              "type": "item",
+              "description": "Directional energy amplifier",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 84,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1893628,
+                    "name": "A Wall In The Way IV",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1938583,
+                    "name": "Buddy's Christmas Adventure X",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2175549,
+                    "name": "Far Away XXIV",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553575,
+                    "name": "Problems Still Abound XXII",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553577,
+                    "name": "You Must Build A Stealth Boat I",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553579,
+                    "name": "You Must Build A Stealth Boat II",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7462459,
+                    "name": "Belt out of Shape III",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 677,
+                    "name": "Belt Drive",
+                    "image": "/img/items/9347.png"
+                  }
+                }
+              ],
+              "recipeItems": [
+                {
+                  "quantity": 25,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 597,
+                    "name": "Transistor",
+                    "image": "/img/items/9319.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 78,
+                    "name": "Glass Orb",
+                    "image": "/img/items/5708.PNG"
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 145,
+                    "name": "Steel",
+                    "image": "/img/items/6150.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 594,
+                    "name": "Wrench",
+                    "image": "/img/items/9310.png"
+                  }
+                },
+                {
+                  "quantity": 8,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 600,
+                    "name": "Scrap Wire",
+                    "image": "/img/items/9398.PNG"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 679,
+                    "name": "Spool of Copper",
+                    "image": "/img/items/9324.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 685,
+                    "name": "Engine",
+                    "image": "/img/items/engine.png?1",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 182,
+                  "itemQuantity": 1800
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 680,
+        "name": "Energy Coil"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

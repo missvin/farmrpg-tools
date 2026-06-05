@@ -1,0 +1,312 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:11:23.306Z",
+  "httpStatus": 200,
+  "itemName": "Block of Wood",
+  "canonicalKey": "block of wood",
+  "buddyUrl": "https://buddy.farm/i/block-of-wood/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/block-of-wood/page-data.json",
+  "pageTitle": "Block of Wood",
+  "buddyItemName": "Block of Wood",
+  "buddyItemId": "1065",
+  "buddyItemImage": "/img/items/wood_block.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards",
+    "wishingWellInputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/block-of-wood/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1065,
+              "name": "Block of Wood",
+              "image": "/img/items/wood_block.png",
+              "type": "item",
+              "description": "Ready for carving",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 75,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277987,
+                    "name": "Pirates Start Arriving XI",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 5000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512022,
+                    "name": "Distant Illusions VII",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 290,
+                    "name": "Carved Rhino",
+                    "image": "/img/items/carvedrhino.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 288,
+                    "name": "Carved Owl",
+                    "image": "/img/items/carvedowl.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 293,
+                    "name": "Carved Squirrel",
+                    "image": "/img/items/carvedsquirrel.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 294,
+                    "name": "Carved Bear",
+                    "image": "/img/items/carvedbear.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1054,
+                    "name": "Carved Chicken",
+                    "image": "/img/items/carved_chicken.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1053,
+                    "name": "Carved Kitty",
+                    "image": "/img/items/carved_cat.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1056,
+                    "name": "Carved Dragon",
+                    "image": "/img/items/carved_dragon.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1055,
+                    "name": "Carved Cow",
+                    "image": "/img/items/carved_cow.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1058,
+                    "name": "Carved Mouse",
+                    "image": "/img/items/carved_mouse.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1057,
+                    "name": "Carved Fox",
+                    "image": "/img/items/carved_fox.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1060,
+                    "name": "Carved Squisquatch",
+                    "image": "/img/items/carved_squisquatch.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 292,
+                    "name": "Carved Rabbit",
+                    "image": "/img/items/carvedrabbit.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 296,
+                    "name": "Carved Warthog",
+                    "image": "/img/items/carvedwh.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 295,
+                    "name": "Carved Moose",
+                    "image": "/img/items/carvedmoose.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 291,
+                    "name": "Carved Camel",
+                    "image": "/img/items/carvedcamel.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1059,
+                    "name": "Carved Pig",
+                    "image": "/img/items/carved_pig.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 237,
+                    "name": "Axe",
+                    "image": "/img/items/5875.png?1"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 409,
+                    "name": "Pine Tree",
+                    "image": "/img/items/cr_t_06.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1066,
+                    "name": "Handsaw",
+                    "image": "/img/items/3149.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 8,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1130,
+                    "name": "Grand Piano",
+                    "image": "/img/items/piano.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 288,
+                  "itemQuantity": 2880
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1065,
+        "name": "Block of Wood"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

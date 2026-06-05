@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:33:07.093Z",
+  "httpStatus": 200,
+  "itemName": "Runestone 09",
+  "canonicalKey": "runestone 09",
+  "buddyUrl": "https://buddy.farm/i/runestone-09/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/runestone-09/page-data.json",
+  "pageTitle": "Runestone 09",
+  "buddyItemName": "Runestone 09",
+  "buddyItemId": "155",
+  "buddyItemImage": "/img/items/rs9.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/runestone-09/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 155,
+              "name": "Runestone 09",
+              "image": "/img/items/rs9.png",
+              "type": "item",
+              "description": "Some say it can be found<br/>amid piles of coal and sand",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 900,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 305,
+                    "name": "Consequences and Defenses XVIII",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7517697,
+                    "name": "Archeology Requires Knowhow XI",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 419,
+                    "name": "A Way Forward V",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 796,
+                    "name": "A Towering Investment XIV",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 228509,
+                    "name": "Unexpected Visitor VIII",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7517699,
+                    "name": "Archeology Requires Knowhow XIII",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7517700,
+                    "name": "Archeology Requires Knowhow XIV",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7517698,
+                    "name": "Archeology Requires Knowhow XII",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 116,
+                    "name": "Strange Stones III",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Green Dragon",
+                    "image": "/img/pets/pet_dragon1.png"
+                  }
+                },
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Blue Dragon",
+                    "image": "/img/pets/pet_dragon5.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 5853.544321086418,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Black Rock Canyon",
+                      "image": "/img/items/canyon.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 5853.886980955354,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Black Rock Canyon",
+                      "image": "/img/items/canyon.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 4982.643790795396,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Black Rock Canyon",
+                      "image": "/img/items/canyon.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 5005.33902829685,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Black Rock Canyon",
+                      "image": "/img/items/canyon.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 154,
+                    "name": "Runestone 08",
+                    "image": "/img/items/rs8.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 156,
+                    "name": "Runestone 10",
+                    "image": "/img/items/rs10.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 172,
+                    "name": "Gold Feather",
+                    "image": "/img/items/5996.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 285,
+                    "name": "Caterpillar",
+                    "image": "/img/items/caterpillar.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 154,
+                    "name": "Runestone 08",
+                    "image": "/img/items/rs8.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 156,
+                    "name": "Runestone 10",
+                    "image": "/img/items/rs10.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 169,
+                    "name": "Inferno Sphere",
+                    "image": "/img/items/6017.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 397,
+                    "name": "Grab Bag 04",
+                    "image": "/img/items/4497.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 293,
+                  "itemQuantity": 2930
+                },
+                {
+                  "level": 223,
+                  "itemQuantity": 2200
+                },
+                {
+                  "level": 193,
+                  "itemQuantity": 1900
+                },
+                {
+                  "level": 123,
+                  "itemQuantity": 1200
+                },
+                {
+                  "level": 93,
+                  "itemQuantity": 190
+                },
+                {
+                  "level": 23,
+                  "itemQuantity": 120
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 155,
+        "name": "Runestone 09"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

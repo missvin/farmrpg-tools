@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:56:52.182Z",
+  "httpStatus": 200,
+  "itemName": "Corn Seeds",
+  "canonicalKey": "corn seeds",
+  "buddyUrl": "https://buddy.farm/i/corn-seeds/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/corn-seeds/page-data.json",
+  "pageTitle": "Corn Seeds",
+  "buddyItemName": "Corn Seeds",
+  "buddyItemId": "64",
+  "buddyItemImage": "/img/items/seeds_corn.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRates",
+    "npcRewards",
+    "quizRewards",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/corn-seeds/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 64,
+              "name": "Corn Seeds",
+              "image": "/img/items/seeds_corn.png",
+              "type": "seeds",
+              "description": "Harvest every 4 hours",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 2960,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 240,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 159476,
+                    "name": "Unlikely Pair IX",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 159485,
+                    "name": "Unlikely Pair VI",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 676,
+                    "name": "Lost Reindeer IV",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 118,
+                    "name": "Strange Stones V",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [
+                {
+                  "runecube": false,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 221,
+                        "name": "Runestone 11",
+                        "image": "/img/items/rs11.png?1"
+                      },
+                      "rate": 662.44468586873
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 375,
+                        "name": "Popcorn",
+                        "image": "/img/items/popcorn.png"
+                      },
+                      "rate": 150.21194906012383
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 65,
+                        "name": "Corn",
+                        "image": "/img/items/8288.png"
+                      },
+                      "rate": 1.0082340661360008
+                    }
+                  ]
+                },
+                {
+                  "runecube": true,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 65,
+                        "name": "Corn",
+                        "image": "/img/items/8288.png"
+                      },
+                      "rate": 1.0100823184766925
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 221,
+                        "name": "Runestone 11",
+                        "image": "/img/items/rs11.png?1"
+                      },
+                      "rate": 601.7028189777069
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 375,
+                        "name": "Popcorn",
+                        "image": "/img/items/popcorn.png"
+                      },
+                      "rate": 120.19620829041327
+                    }
+                  ]
+                }
+              ],
+              "dropRatesItems": [],
+              "quizRewards": [
+                {
+                  "quantity": 5000,
+                  "score": 80,
+                  "quiz": {
+                    "__typename": "FarmRPG_Quiz",
+                    "name": "CORN FACTS"
+                  }
+                }
+              ],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 10,
+                  "quantity": 10,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Jill",
+                    "image": "/img/items/a_024.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 64,
+        "name": "Corn Seeds"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

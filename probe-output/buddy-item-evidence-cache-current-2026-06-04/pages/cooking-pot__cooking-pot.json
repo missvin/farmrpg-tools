@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:01:01.363Z",
+  "httpStatus": 200,
+  "itemName": "Cooking Pot",
+  "canonicalKey": "cooking pot",
+  "buddyUrl": "https://buddy.farm/i/cooking-pot/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/cooking-pot/page-data.json",
+  "pageTitle": "Cooking Pot",
+  "buddyItemName": "Cooking Pot",
+  "buddyItemId": "637",
+  "buddyItemImage": "/img/items/2364.png?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "npcRewards",
+    "petItems",
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "skillLevelRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/cooking-pot/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 637,
+              "name": "Cooking Pot",
+              "image": "/img/items/2364.png?1",
+              "type": "item",
+              "description": "Used to cook things.",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 75,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1595113,
+                    "name": "Gourd Intentions I",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3691031,
+                    "name": "Concessions To Be Made V",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553584,
+                    "name": "Pirate Stealth Arrival XXVII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1334655,
+                    "name": "Deck The Town (With Bats And Lanterns) VI",
+                    "image": "/img/items/a_028.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553583,
+                    "name": "You Must Build A Stealth Boat IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553572,
+                    "name": "Pirates Start Arriving XIX",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2993340,
+                    "name": "Strange Companions XXXIX",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7527576,
+                    "name": "Lorn's Awakening II",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2025-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 1,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Skunk",
+                    "image": "/img/pets/pet_skunk.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 20,
+                  "quantity": 25,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Mariya",
+                    "image": "/img/items/mariya.png"
+                  }
+                },
+                {
+                  "level": 10,
+                  "quantity": 10,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Rosalie",
+                    "image": "/img/items/a_098.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 177,
+                    "name": "Moonstone",
+                    "image": "/img/items/8014.png"
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 22,
+                    "name": "Iron",
+                    "image": "/img/items/5779.PNG"
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 178,
+                    "name": "Emberstone",
+                    "image": "/img/items/8166.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 654,
+                    "name": "Neigh",
+                    "image": "/img/items/vegsoup4.png",
+                    "cookingLevel": 30,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 641,
+                    "name": "Bone Broth",
+                    "image": "/img/items/bonebroth.png",
+                    "cookingLevel": 1,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 635,
+                    "name": "Onion Soup",
+                    "image": "/img/items/onionsoup.png",
+                    "cookingLevel": 5,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 643,
+                    "name": "Cat's Meow",
+                    "image": "/img/items/fishessensestew.png",
+                    "cookingLevel": 15,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 644,
+                    "name": "Quandary Chowder",
+                    "image": "/img/items/corngreens.png",
+                    "cookingLevel": 25,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 646,
+                    "name": "Shrimp-a-Plenty",
+                    "image": "/img/items/shrimpgreensmix.png",
+                    "cookingLevel": 35,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 634,
+                    "name": "Mushroom Stew",
+                    "image": "/img/items/mushroomstew.png",
+                    "cookingLevel": 20,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 645,
+                    "name": "Sea Pincher Special",
+                    "image": "/img/items/crabclawsoup.png",
+                    "cookingLevel": 30,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [
+                {
+                  "skill": "cooking",
+                  "level": 10,
+                  "itemQuantity": 3
+                }
+              ],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 637,
+        "name": "Cooking Pot"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

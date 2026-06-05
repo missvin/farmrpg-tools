@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:25:54.541Z",
+  "httpStatus": 200,
+  "itemName": "Glass Eyes",
+  "canonicalKey": "glass eyes",
+  "buddyUrl": "https://buddy.farm/i/glass-eyes/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/glass-eyes/page-data.json",
+  "pageTitle": "Glass Eyes",
+  "buddyItemName": "Glass Eyes",
+  "buddyItemId": "664",
+  "buddyItemImage": "/img/items/eyes_t_01.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "passwordItems",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/glass-eyes/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 664,
+              "name": "Glass Eyes",
+              "image": "/img/items/eyes_t_01.png",
+              "type": "item",
+              "description": "Craniofacial prosthesis",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 82,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 4,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1153170,
+                    "name": "frank's pranks V",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 164,
+                    "password": "doot"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2022-10-26",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 69,
+                    "name": "Pumpkin",
+                    "image": "/img/items/8294.png"
+                  },
+                  "inputQuantity": 1595000,
+                  "progress": 451243,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 664,
+        "name": "Glass Eyes"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

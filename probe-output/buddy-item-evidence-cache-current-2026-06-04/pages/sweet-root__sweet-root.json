@@ -1,0 +1,560 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:03:05.791Z",
+  "httpStatus": 200,
+  "itemName": "Sweet Root",
+  "canonicalKey": "sweet root",
+  "buddyUrl": "https://buddy.farm/i/sweet-root/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/sweet-root/page-data.json",
+  "pageTitle": "Sweet Root",
+  "buddyItemName": "Sweet Root",
+  "buddyItemId": "92",
+  "buddyItemImage": "/img/items/5685.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "npcRewards",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/sweet-root/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 92,
+              "name": "Sweet Root",
+              "image": "/img/items/5685.png",
+              "type": "item",
+              "description": "A sweet smelling root",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 766,
+                    "name": "A Way Back IV",
+                    "image": "/img/items/cthomas2.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7515509,
+                    "name": "Don't Nog It Until You Try It",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-01-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8625143,
+                    "name": "The Wind Beneath My Wings III",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8625144,
+                    "name": "The Wind Beneath My Wings IV",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 874,
+                    "name": "A Way Back XXVII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 267,
+                    "name": "Consequences and Defenses XIII",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7504670,
+                    "name": "Pumpkins Spiced, Apples Tart II",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 935,
+                    "name": "Always Be Corn-ing IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 592,
+                    "name": "Blizzard Warning IV - G",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 776,
+                    "name": "A Towering Investment IV",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7504851,
+                    "name": "Pumpkins Spiced, Apples Tart III",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7509692,
+                    "name": "Pumpkins Spiced, Apples Tart IV",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7510242,
+                    "name": "Pumpkins Spiced, Apples Tart V",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 726821,
+                    "name": "Far Away IV",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 838,
+                    "name": "Strange Companions X",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2262325,
+                    "name": "Far Away XXV",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3408291,
+                    "name": "Sandwich Quest IV",
+                    "image": "/img/items/a_028.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3142357,
+                    "name": "April Trout Brings May Flowers XIX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512486,
+                    "name": "Pumpkins Spiced, Apples Tart VI",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3689620,
+                    "name": "Concessions To Be Made I",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3692631,
+                    "name": "Concessions To Be Made VI",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 75,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 28,
+                    "name": "Experimental Bait II",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512487,
+                    "name": "Pumpkins Spiced, Apples Tart VII",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512488,
+                    "name": "Pumpkins Spiced, Apples Tart VIII",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 723,
+                    "name": "Find A Way V",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2694155,
+                    "name": "King of Cakes I",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-03-14T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1626191,
+                    "name": "Rapturous Thanksgiving I",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8625145,
+                    "name": "The Wind Beneath My Wings V",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 228487,
+                    "name": "Unexpected Visitor VII",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3958668,
+                    "name": "My Cabbages XIV",
+                    "image": "/img/items/merchant.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 726843,
+                    "name": "Far Away V",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 98,
+                    "name": "Shark Week I",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Skunk",
+                    "image": "/img/pets/pet_skunk.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 42.14745793929558,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Misty Forest",
+                      "image": "/img/items/mistforest.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 42.16751720891517,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Misty Forest",
+                      "image": "/img/items/mistforest.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 41.232749248533146,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Misty Forest",
+                      "image": "/img/items/mistforest.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 41.19915920755889,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Misty Forest",
+                      "image": "/img/items/mistforest.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 40,
+                  "quantity": 50,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Geist",
+                    "image": "/img/items/npc_beast.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 100,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 723,
+                    "name": "Red Berry Pie",
+                    "image": "/img/items/pie1.png?1",
+                    "cookingLevel": 40,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 726,
+                    "name": "Concord Grape Pie",
+                    "image": "/img/items/grapepie.png",
+                    "cookingLevel": 40,
+                    "canCraft": false,
+                    "canCook": true
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 92,
+        "name": "Sweet Root"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

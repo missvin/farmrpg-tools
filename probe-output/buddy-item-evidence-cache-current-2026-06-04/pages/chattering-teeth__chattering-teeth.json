@@ -1,0 +1,350 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:39:21.181Z",
+  "httpStatus": 200,
+  "itemName": "Chattering Teeth",
+  "canonicalKey": "chattering teeth",
+  "buddyUrl": "https://buddy.farm/i/chattering-teeth/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/chattering-teeth/page-data.json",
+  "pageTitle": "Chattering Teeth",
+  "buddyItemName": "Chattering Teeth",
+  "buddyItemId": "356",
+  "buddyItemImage": "/img/items/jaw_t_01.png?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "passwordItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/chattering-teeth/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 356,
+              "name": "Chattering Teeth",
+              "image": "/img/items/jaw_t_01.png?1",
+              "type": "item",
+              "description": "Not to be used as dentures",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 341,
+                    "name": "Funny Teeth",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5883904,
+                    "name": "Spooky Exchanges IV",
+                    "image": "/img/items/ghorgen.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 361,
+                    "name": "Trapper’s Delight III",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512520,
+                    "name": "That Which Hat Bewitches Witches And Wizards IV",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 381,
+                    "name": "Happy All Hallows' Eve",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1308567,
+                    "name": "Let’s Do The Time Warp IV",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 377,
+                    "name": "Once Upon A Halloween III",
+                    "image": "/img/items/a_083.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 587.7495364125531,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Haunted House",
+                      "image": "/img/items/hauntedhouse.png?1",
+                      "type": "explore",
+                      "baseDropRate": 0.375
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 587.3857442948324,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Haunted House",
+                      "image": "/img/items/hauntedhouse.png?1",
+                      "type": "explore",
+                      "baseDropRate": 0.375
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 503.59408805720324,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Haunted House",
+                      "image": "/img/items/hauntedhouse.png?1",
+                      "type": "explore",
+                      "baseDropRate": 0.375
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 502.56528165957104,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Haunted House",
+                      "image": "/img/items/hauntedhouse.png?1",
+                      "type": "explore",
+                      "baseDropRate": 0.375
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [
+                {
+                  "quantity": 10,
+                  "password": {
+                    "id": 100,
+                    "password": "haunted house"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 99,
+                    "password": "joke"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 359,
+                    "name": "Lollipop",
+                    "image": "/img/items/candy_t_08.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 360,
+                    "name": "Treat Bag 01",
+                    "image": "/img/items/bag_t_03.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 357,
+                    "name": "Witch Hat",
+                    "image": "/img/items/hat_t_02.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 358,
+                    "name": "Candy",
+                    "image": "/img/items/candy_t_09.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 351,
+                    "name": "Gouda",
+                    "image": "/img/items/4601.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 357,
+                    "name": "Witch Hat",
+                    "image": "/img/items/hat_t_02.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 372,
+                    "name": "Treat Bag 03",
+                    "image": "/img/items/bag_t_03.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2023-10-29",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 131,
+                    "name": "Bluegill",
+                    "image": "/img/items/7722.PNG"
+                  },
+                  "inputQuantity": 3465500,
+                  "progress": 4636062,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2022-10-25",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 91,
+                    "name": "Acorn",
+                    "image": "/img/items/5759.PNG"
+                  },
+                  "inputQuantity": 3061200,
+                  "progress": 3787419,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 356,
+        "name": "Chattering Teeth"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

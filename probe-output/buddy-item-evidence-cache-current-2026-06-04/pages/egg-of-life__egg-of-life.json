@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:24:49.159Z",
+  "httpStatus": 200,
+  "itemName": "Egg of Life",
+  "canonicalKey": "egg of life",
+  "buddyUrl": "https://buddy.farm/i/egg-of-life/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/egg-of-life/page-data.json",
+  "pageTitle": "Egg of Life",
+  "buddyItemName": "Egg of Life",
+  "buddyItemId": "1025",
+  "buddyItemImage": "/img/items/lifeegg.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/egg-of-life/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1025,
+              "name": "Egg of Life",
+              "image": "/img/items/lifeegg.png",
+              "type": "item",
+              "description": "A strange, magical Egg",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 8,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8550215,
+                    "name": "Uneggspected Consequences II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523922,
+                    "name": "Calm, Cool, Collected I",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-04T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7558710,
+                    "name": "Borgen Builds a Nest Egg II",
+                    "image": "/img/items/borgen.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523598,
+                    "name": "Bringing Egg-sy Back XVIII",
+                    "image": "/img/items/buddyl.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1031,
+                    "name": "Magical Egg Basket",
+                    "image": "/img/items/mageggbasket.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1025,
+        "name": "Egg of Life"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

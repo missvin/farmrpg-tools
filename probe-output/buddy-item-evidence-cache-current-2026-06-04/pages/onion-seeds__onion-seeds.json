@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:40:16.850Z",
+  "httpStatus": 200,
+  "itemName": "Onion Seeds",
+  "canonicalKey": "onion seeds",
+  "buddyUrl": "https://buddy.farm/i/onion-seeds/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/onion-seeds/page-data.json",
+  "pageTitle": "Onion Seeds",
+  "buddyItemName": "Onion Seeds",
+  "buddyItemId": "34",
+  "buddyItemImage": "/img/items/seeds_onions.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRates",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/onion-seeds/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 34,
+              "name": "Onion Seeds",
+              "image": "/img/items/seeds_onions.png",
+              "type": "seeds",
+              "description": "Harvest every 15 minutes",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 159,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 15,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5103742,
+                    "name": "Fun With Fusion II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2023-10-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5648086,
+                    "name": "New Moon II",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 15,
+                    "name": "Unique Fish I",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 90,
+                    "name": "20,000 Players!",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2021-07-13T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [
+                {
+                  "runecube": false,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 33,
+                        "name": "Onion",
+                        "image": "/img/items/8317.png"
+                      },
+                      "rate": 1
+                    }
+                  ]
+                },
+                {
+                  "runecube": true,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 33,
+                        "name": "Onion",
+                        "image": "/img/items/8317.png"
+                      },
+                      "rate": 1
+                    }
+                  ]
+                }
+              ],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 34,
+        "name": "Onion Seeds"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

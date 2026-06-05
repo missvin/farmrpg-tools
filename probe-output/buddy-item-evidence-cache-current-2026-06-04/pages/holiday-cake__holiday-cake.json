@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:55:58.863Z",
+  "httpStatus": 200,
+  "itemName": "Holiday Cake",
+  "canonicalKey": "holiday cake",
+  "buddyUrl": "https://buddy.farm/i/holiday-cake/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/holiday-cake/page-data.json",
+  "pageTitle": "Holiday Cake",
+  "buddyItemName": "Holiday Cake",
+  "buddyItemId": "1338",
+  "buddyItemImage": "/img/items/treecake.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/holiday-cake/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1338,
+              "name": "Holiday Cake",
+              "image": "/img/items/treecake.png",
+              "type": "item",
+              "description": "A festive little cake shaped like a tree",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7552993,
+                    "name": "12 Days of Sweet Treats XII",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7549565,
+                    "name": "A Little Cheer I",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7550594,
+                    "name": "A Little Cheer II",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7552710,
+                    "name": "12 Days of Sweet Treats II",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7552711,
+                    "name": "12 Days of Sweet Treats III",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1339,
+                    "name": "Box of Holiday Cakes",
+                    "image": "/img/items/treecakebox.png"
+                  }
+                },
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1337,
+                    "name": "Holiday Cheer Bundle 01",
+                    "image": "/img/items/holidaycheerbundle.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1338,
+        "name": "Holiday Cake"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

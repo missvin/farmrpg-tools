@@ -1,0 +1,426 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:53:54.182Z",
+  "httpStatus": 200,
+  "itemName": "Gummy Worms",
+  "canonicalKey": "gummy worms",
+  "buddyUrl": "https://buddy.farm/i/gummy-worms/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/gummy-worms/page-data.json",
+  "pageTitle": "Gummy Worms",
+  "buddyItemName": "Gummy Worms",
+  "buddyItemId": "277",
+  "buddyItemImage": "/img/items/gworm.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "locksmithOutputItems",
+    "manualProductions",
+    "npcItems",
+    "npcRewards",
+    "requiredForQuests",
+    "rewardForQuests",
+    "skillLevelRewards",
+    "templeRewardItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/gummy-worms/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 277,
+              "name": "Gummy Worms",
+              "image": "/img/items/gworm.png",
+              "type": "bait",
+              "description": "Quick fish, 3x Fishing XP",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": true,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 300,
+              "fleaMarketPrice": 1,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 222,
+                    "name": "Islands Are Hard To Catch X",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2450095,
+                    "name": "Breaking The Ice Even Icier I",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 214,
+                    "name": "Islands Are Hard To Catch II",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 765,
+                    "name": "A Way Back III",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2450220,
+                    "name": "Breaking The Ice Even Icier III",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1894913,
+                    "name": "The Fall of Water VI",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 875,
+                    "name": "A Way Back XXVIII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3141253,
+                    "name": "April Trout Brings May Flowers XVI",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2283134,
+                    "name": "Far Away XXVI",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2450156,
+                    "name": "Breaking The Ice Even Icier II",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 401,
+                    "name": "Hare Handler II",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4336056,
+                    "name": "A Study of Spuds I",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 174,
+                    "name": "Last but not least...",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7040126,
+                    "name": "Half a Million I",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2024-01-24T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9058638,
+                    "name": "Red Diamond Runathon I",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Thomas",
+                    "image": "/img/items/a_048.png"
+                  }
+                },
+                {
+                  "relationship": "hates",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Geist",
+                    "image": "/img/items/npc_beast.png"
+                  }
+                },
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Buddy",
+                    "image": "/img/items/buddy.png"
+                  }
+                }
+              ],
+              "npcRewards": [
+                {
+                  "level": 10,
+                  "quantity": 25,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Thomas",
+                    "image": "/img/items/a_048.png"
+                  }
+                },
+                {
+                  "level": 20,
+                  "quantity": 50,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Captain Thomas",
+                    "image": "/img/items/Captthomas.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 24,
+                  "quantityMin": 24,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 364,
+                    "name": "Treat Bag 02",
+                    "image": "/img/items/bag_t_03.png"
+                  }
+                },
+                {
+                  "quantityMax": 25,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 334,
+                    "name": "Grab Bag 02",
+                    "image": "/img/items/4497.png"
+                  }
+                },
+                {
+                  "quantityMax": 250,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1230,
+                    "name": "Bait Bag 01",
+                    "image": "/img/items/baitbag01.png"
+                  }
+                },
+                {
+                  "quantityMax": 100,
+                  "quantityMin": 100,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 584,
+                    "name": "Tackle Box",
+                    "image": "/img/items/7847.png"
+                  }
+                },
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1043,
+                    "name": "Bug Bag 01",
+                    "image": "/img/items/bug_bag.png"
+                  }
+                },
+                {
+                  "quantityMax": 8,
+                  "quantityMin": 8,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 888,
+                    "name": "Welcome Card",
+                    "image": "/img/items/card_welcome.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [
+                {
+                  "image": "/img/items/worm.png",
+                  "lineOne": "Worm Habitat",
+                  "lineTwo": "Building",
+                  "value": "Hourly",
+                  "sort": 1
+                }
+              ],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [
+                {
+                  "skill": "fishing",
+                  "level": 30,
+                  "itemQuantity": 50
+                }
+              ],
+              "communityCenterOutputs": [
+                {
+                  "date": "2022-01-16",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 18,
+                    "name": "Worms",
+                    "image": "/img/items/7758.png"
+                  },
+                  "inputQuantity": 3000000,
+                  "progress": 0,
+                  "outputQuantity": 100
+                }
+              ],
+              "templeRewardItems": [
+                {
+                  "id": 7,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 500,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 178,
+                      "name": "Emberstone",
+                      "image": "/img/items/8166.png"
+                    }
+                  }
+                },
+                {
+                  "id": 134,
+                  "quantity": 200,
+                  "templeReward": {
+                    "inputQuantity": 15,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 324,
+                      "name": "Tribal Staff",
+                      "image": "/img/items/3972.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 277,
+        "name": "Gummy Worms"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

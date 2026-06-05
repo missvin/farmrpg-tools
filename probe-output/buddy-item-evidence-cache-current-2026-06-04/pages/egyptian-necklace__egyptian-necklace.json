@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:24:49.159Z",
+  "httpStatus": 200,
+  "itemName": "Egyptian Necklace",
+  "canonicalKey": "egyptian necklace",
+  "buddyUrl": "https://buddy.farm/i/egyptian-necklace/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/egyptian-necklace/page-data.json",
+  "pageTitle": "Egyptian Necklace",
+  "buddyItemName": "Egyptian Necklace",
+  "buddyItemId": "371",
+  "buddyItemImage": "/img/items/egyptian1.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "passwordItems",
+    "requiredForQuests",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/egyptian-necklace/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 371,
+              "name": "Egyptian Necklace",
+              "image": "/img/items/egyptian1.png",
+              "type": "item",
+              "description": "Show off your wealth",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1310374,
+                    "name": "Tell-Tale Beat III",
+                    "image": "/img/items/skull.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 98,
+                    "password": "afraid of hard work"
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "password": {
+                    "id": 166,
+                    "password": "dread dreads"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 361,
+                    "name": "Candy Corn",
+                    "image": "/img/items/candycorn.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 364,
+                    "name": "Treat Bag 02",
+                    "image": "/img/items/bag_t_03.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 482,
+                    "name": "Mystical Chest 01",
+                    "image": "/img/items/4456.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 371,
+        "name": "Egyptian Necklace"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

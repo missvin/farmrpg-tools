@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:41:25.968Z",
+  "httpStatus": 200,
+  "itemName": "Dragonfly",
+  "canonicalKey": "dragonfly",
+  "buddyUrl": "https://buddy.farm/i/dragonfly/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/dragonfly/page-data.json",
+  "pageTitle": "Dragonfly",
+  "buddyItemName": "Dragonfly",
+  "buddyItemId": "384",
+  "buddyItemImage": "/img/items/fishing_64_t.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "petItems",
+    "requiredForQuests",
+    "towerRewards",
+    "wishingWellInputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/dragonfly/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 384,
+              "name": "Dragonfly",
+              "image": "/img/items/fishing_64_t.png",
+              "type": "item",
+              "description": "Amazingly successful predator, ~95% good hunts",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 798,
+                    "name": "A Towering Investment XVI",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4719082,
+                    "name": "I Hate To Bug You VI",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Lemur\n",
+                    "image": "/img/pets/lemur.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 103,
+                    "name": "Coal",
+                    "image": "/img/items/coal.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 522,
+                    "name": "Egg 02",
+                    "image": "/img/items/egg02.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 40,
+                    "name": "Stone",
+                    "image": "/img/items/6174.PNG"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1043,
+                    "name": "Bug Bag 01",
+                    "image": "/img/items/bug_bag.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 209,
+                  "itemQuantity": 2000
+                },
+                {
+                  "level": 178,
+                  "itemQuantity": 1700
+                },
+                {
+                  "level": 109,
+                  "itemQuantity": 1000
+                },
+                {
+                  "level": 78,
+                  "itemQuantity": 170
+                },
+                {
+                  "level": 9,
+                  "itemQuantity": 100
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 384,
+        "name": "Dragonfly"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

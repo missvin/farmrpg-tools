@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:25:43.956Z",
+  "httpStatus": 200,
+  "itemName": "Event Token Purse",
+  "canonicalKey": "event token purse",
+  "buddyUrl": "https://buddy.farm/i/event-token-purse/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/event-token-purse/page-data.json",
+  "pageTitle": "Event Token Purse",
+  "buddyItemName": "Event Token Purse",
+  "buddyItemId": "1264",
+  "buddyItemImage": "/img/items/BagsAndBoxes_46_t.png",
+  "sourceStatus": "sources_blank",
+  "blankSourceIndicators": [
+    "no_nonempty_known_source_sections"
+  ],
+  "detectedSections": [
+    "locksmithItems",
+    "locksmithOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/event-token-purse/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1264,
+              "name": "Event Token Purse",
+              "image": "/img/items/BagsAndBoxes_46_t.png",
+              "type": "item",
+              "description": "Contains 200 Event Tokens",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 200,
+                  "quantityMin": 200,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1097,
+                    "name": "Event Token",
+                    "image": "/img/items/token.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1261,
+                    "name": "Beatrix's Booming Brawl Box 02",
+                    "image": "/img/items/fireworks_box_2.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1264,
+        "name": "Event Token Purse"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

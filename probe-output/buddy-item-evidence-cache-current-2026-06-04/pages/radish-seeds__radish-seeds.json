@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:38:12.359Z",
+  "httpStatus": 200,
+  "itemName": "Radish Seeds",
+  "canonicalKey": "radish seeds",
+  "buddyUrl": "https://buddy.farm/i/radish-seeds/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/radish-seeds/page-data.json",
+  "pageTitle": "Radish Seeds",
+  "buddyItemName": "Radish Seeds",
+  "buddyItemId": "32",
+  "buddyItemImage": "/img/items/seeds_radish.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRates",
+    "requiredForQuests",
+    "rewardForQuests",
+    "templeRewardItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/radish-seeds/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 32,
+              "name": "Radish Seeds",
+              "image": "/img/items/seeds_radish.png",
+              "type": "seeds",
+              "description": "Harvest every 10 minutes",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 100,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 10,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5648086,
+                    "name": "New Moon II",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 24,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 298,
+                    "name": "Feathers IV",
+                    "image": "/img/items/feathers.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 24,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 476578,
+                    "name": "Schoolhouse Rocks III",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 24,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 83,
+                    "name": "Grill Party",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 128,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 420,
+                    "name": "A Way Forward VI",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [
+                {
+                  "runecube": false,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 153,
+                        "name": "Runestone 07",
+                        "image": "/img/items/rs7.png"
+                      },
+                      "rate": 839.6940155007516
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 31,
+                        "name": "Radish",
+                        "image": "/img/items/radish.png?1"
+                      },
+                      "rate": 1.00119232995767
+                    }
+                  ]
+                },
+                {
+                  "runecube": true,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 31,
+                        "name": "Radish",
+                        "image": "/img/items/radish.png?1"
+                      },
+                      "rate": 1.0014881412737628
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 153,
+                        "name": "Runestone 07",
+                        "image": "/img/items/rs7.png"
+                      },
+                      "rate": 672.9792116721515
+                    }
+                  ]
+                }
+              ],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 431,
+                  "quantity": 200,
+                  "templeReward": {
+                    "inputQuantity": 125,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 31,
+                      "name": "Radish",
+                      "image": "/img/items/radish.png?1"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 32,
+        "name": "Radish Seeds"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

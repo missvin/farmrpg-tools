@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:58:56.738Z",
+  "httpStatus": 200,
+  "itemName": "Slimestone",
+  "canonicalKey": "slimestone",
+  "buddyUrl": "https://buddy.farm/i/slimestone/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/slimestone/page-data.json",
+  "pageTitle": "Slimestone",
+  "buddyItemName": "Slimestone",
+  "buddyItemId": "302",
+  "buddyItemImage": "/img/items/5655.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "npcItems",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/slimestone/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 302,
+              "name": "Slimestone",
+              "image": "/img/items/5655.png",
+              "type": "item",
+              "description": "A gelatinous green glob",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 5000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7522714,
+                    "name": "Monster Hunter II",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512028,
+                    "name": "Distant Illusions XIII",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 1,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Red Dragon",
+                    "image": "/img/pets/pet_dragon4.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 26.389444728785826,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Whispering Creek",
+                      "image": "/img/items/creek.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 26.389142029177243,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Whispering Creek",
+                      "image": "/img/items/creek.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 23.25370994339179,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Whispering Creek",
+                      "image": "/img/items/creek.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 23.259004584070695,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Whispering Creek",
+                      "image": "/img/items/creek.png",
+                      "type": "explore",
+                      "baseDropRate": 0.26666666666666666
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Cecil",
+                    "image": "/img/items/a_027.png"
+                  }
+                },
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Goostav",
+                    "image": "/img/items/slime.png"
+                  }
+                },
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Borgen",
+                    "image": "/img/items/borgen.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 492,
+                    "name": "Essence of Slime",
+                    "image": "/img/items/essense.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 142,
+                  "itemQuantity": 1400
+                },
+                {
+                  "level": 42,
+                  "itemQuantity": 140
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 302,
+        "name": "Slimestone"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

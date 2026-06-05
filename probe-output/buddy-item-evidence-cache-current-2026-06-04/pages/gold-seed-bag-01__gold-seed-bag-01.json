@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:26:53.643Z",
+  "httpStatus": 200,
+  "itemName": "Gold Seed Bag 01",
+  "canonicalKey": "gold seed bag 01",
+  "buddyUrl": "https://buddy.farm/i/gold-seed-bag-01/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/gold-seed-bag-01/page-data.json",
+  "pageTitle": "Gold Seed Bag 01",
+  "buddyItemName": "Gold Seed Bag 01",
+  "buddyItemId": "1296",
+  "buddyItemImage": "/img/items/gold_bag.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithItems",
+    "npcRewards",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/gold-seed-bag-01/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1296,
+              "name": "Gold Seed Bag 01",
+              "image": "/img/items/gold_bag.png",
+              "type": "item",
+              "description": "Full of gold seeds",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539160,
+                    "name": "Sweet Tooth I",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7462782,
+                    "name": "Far Away XXXVI",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539272,
+                    "name": "King of Apples X",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543676,
+                    "name": "Candy And Non Dairy Yummies V",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553577,
+                    "name": "You Must Build A Stealth Boat I",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7555423,
+                    "name": "Iced Crops Extreme Examination Extra Extremey I",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 22614170,
+                    "name": "Drink in the Green I",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7560533,
+                    "name": "Steam Powered 2: Episode 1",
+                    "image": "/img/items/robot_05.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 30,
+                  "quantity": 10,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Goostav",
+                    "image": "/img/items/slime.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 200,
+                  "quantityMin": 200,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 158,
+                    "name": "Gold Pepper Seeds",
+                    "image": "/img/items/seeds_gpeppers.png"
+                  }
+                },
+                {
+                  "quantityMax": 100,
+                  "quantityMin": 100,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 160,
+                    "name": "Gold Carrot Seeds",
+                    "image": "/img/items/seeds_gcarrots.png"
+                  }
+                },
+                {
+                  "quantityMax": 80,
+                  "quantityMin": 80,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 162,
+                    "name": "Gold Pea Seeds",
+                    "image": "/img/items/seeds_gpeas.png"
+                  }
+                },
+                {
+                  "quantityMax": 40,
+                  "quantityMin": 40,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 352,
+                    "name": "Gold Eggplant Seeds",
+                    "image": "/img/items/seeds_geggplants.png"
+                  }
+                },
+                {
+                  "quantityMax": 50,
+                  "quantityMin": 50,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 190,
+                    "name": "Gold Cucumber Seeds",
+                    "image": "/img/items/seeds_gcucumber.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1296,
+        "name": "Gold Seed Bag 01"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

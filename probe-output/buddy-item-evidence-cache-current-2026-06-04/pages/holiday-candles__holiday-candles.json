@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:35:11.796Z",
+  "httpStatus": 200,
+  "itemName": "Holiday Candles",
+  "canonicalKey": "holiday candles",
+  "buddyUrl": "https://buddy.farm/i/holiday-candles/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/holiday-candles/page-data.json",
+  "pageTitle": "Holiday Candles",
+  "buddyItemName": "Holiday Candles",
+  "buddyItemId": "451",
+  "buddyItemImage": "/img/items/11_sm.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "locksmithOutputItems",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/holiday-candles/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 451,
+              "name": "Holiday Candles",
+              "image": "/img/items/11_sm.png",
+              "type": "item",
+              "description": "Smell like sugar cookies",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2031565,
+                    "name": "The Light Continues II",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1337,
+                    "name": "Holiday Cheer Bundle 01",
+                    "image": "/img/items/holidaycheerbundle.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2022-01-04",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 412,
+                    "name": "Snowball",
+                    "image": "/img/items/cr_t_07.png"
+                  },
+                  "inputQuantity": 1000000,
+                  "progress": 0,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 451,
+        "name": "Holiday Candles"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

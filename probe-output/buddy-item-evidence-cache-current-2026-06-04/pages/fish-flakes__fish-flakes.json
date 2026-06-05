@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:53:54.182Z",
+  "httpStatus": 200,
+  "itemName": "Fish Flakes",
+  "canonicalKey": "fish flakes",
+  "buddyUrl": "https://buddy.farm/i/fish-flakes/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/fish-flakes/page-data.json",
+  "pageTitle": "Fish Flakes",
+  "buddyItemName": "Fish Flakes",
+  "buddyItemId": "1503",
+  "buddyItemImage": "/img/items/fish_flakes.png",
+  "sourceStatus": "sources_blank",
+  "blankSourceIndicators": [
+    "no_nonempty_known_source_sections"
+  ],
+  "detectedSections": [
+    "locksmithOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe new item",
+    "cache Buddy page evidence when available."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/fish-flakes/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1503,
+              "name": "Fish Flakes",
+              "image": "/img/items/fish_flakes.png",
+              "type": "item",
+              "description": "Makes fish go crazy",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1504,
+                    "name": "Traveler's Bag 01",
+                    "image": "/img/items/Patches.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1503,
+        "name": "Fish Flakes"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

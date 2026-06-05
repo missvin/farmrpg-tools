@@ -1,0 +1,521 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:36:08.005Z",
+  "httpStatus": 200,
+  "itemName": "Frog",
+  "canonicalKey": "frog",
+  "buddyUrl": "https://buddy.farm/i/frog/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/frog/page-data.json",
+  "pageTitle": "Frog",
+  "buddyItemName": "Frog",
+  "buddyItemId": "479",
+  "buddyItemImage": "/img/items/frog.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "exchangeCenterInputs",
+    "npcItems",
+    "npcRewards",
+    "passwordItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/frog/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 479,
+              "name": "Frog",
+              "image": "/img/items/frog.png",
+              "type": "item",
+              "description": "Ribbit.",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 10,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 809,
+                    "name": "Green Initiative IV",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 35,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 733,
+                    "name": "Strange Companions V",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2550973,
+                    "name": "A Study of Color X",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 798,
+                    "name": "A Towering Investment XVI",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 813,
+                    "name": "Green Initiative VIII",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7721606,
+                    "name": "Green Alchemy II",
+                    "image": "/img/items/bear_01.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7721621,
+                    "name": "Green Alchemy XVII",
+                    "image": "/img/items/bear_01.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7721610,
+                    "name": "Green Alchemy VI",
+                    "image": "/img/items/bear_01.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7721618,
+                    "name": "Green Alchemy XIV",
+                    "image": "/img/items/bear_01.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7462777,
+                    "name": "Far Away XXXV",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 839,
+                    "name": "Eggstremely Valuable IX",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 754,
+                    "name": "Be Mine X",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 789,
+                    "name": "A Way Back XII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 819,
+                    "name": "A Way Back XVIII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 875,
+                    "name": "A Way Back XXVIII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1310346,
+                    "name": "Tell-Tale Beat II",
+                    "image": "/img/items/skull.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 8345.852111500584,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Forest",
+                      "image": "/img/items/trees.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 17517.225271516993,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Misty Forest",
+                      "image": "/img/items/mistforest.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 17640.83264730095,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Misty Forest",
+                      "image": "/img/items/mistforest.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 14230.823964707557,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Misty Forest",
+                      "image": "/img/items/mistforest.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 14375.389333461115,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Misty Forest",
+                      "image": "/img/items/mistforest.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 8264.918177310044,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Forest",
+                      "image": "/img/items/trees.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 7036.142317705279,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Forest",
+                      "image": "/img/items/trees.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 7084.996339418558,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Forest",
+                      "image": "/img/items/trees.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Goostav",
+                    "image": "/img/items/slime.png"
+                  }
+                }
+              ],
+              "npcRewards": [
+                {
+                  "level": 20,
+                  "quantity": 10,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Vincent",
+                    "image": "/img/items/a_047.png"
+                  }
+                }
+              ],
+              "passwordItems": [
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 126,
+                    "password": "baby yoda"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 389,
+                    "name": "Orange Gecko",
+                    "image": "/img/items/3493.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 475,
+                    "name": "Crab Claw",
+                    "image": "/img/items/crabclaw.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 478,
+                    "name": "Sea Dragon",
+                    "image": "/img/items/seadragon.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 389,
+                    "name": "Orange Gecko",
+                    "image": "/img/items/3493.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 478,
+                    "name": "Sea Dragon",
+                    "image": "/img/items/seadragon.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 475,
+                    "name": "Crab Claw",
+                    "image": "/img/items/crabclaw.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2023-03-22T17:00:00+00:00",
+                  "oneshot": true,
+                  "inputQuantity": 350,
+                  "outputQuantity": 3,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 581,
+                    "name": "Cutlass",
+                    "image": "/img/items/pirates_47_t.png"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 255,
+                  "itemQuantity": 2550
+                },
+                {
+                  "level": 229,
+                  "itemQuantity": 2200
+                },
+                {
+                  "level": 129,
+                  "itemQuantity": 1200
+                },
+                {
+                  "level": 29,
+                  "itemQuantity": 120
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 479,
+        "name": "Frog"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

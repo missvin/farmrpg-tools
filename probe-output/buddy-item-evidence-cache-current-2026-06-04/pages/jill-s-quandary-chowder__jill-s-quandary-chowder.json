@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:11:07.224Z",
+  "httpStatus": 200,
+  "itemName": "Jill's Quandary Chowder",
+  "canonicalKey": "jill's quandary chowder",
+  "buddyUrl": "https://buddy.farm/i/jill-s-quandary-chowder/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/jill-s-quandary-chowder/page-data.json",
+  "pageTitle": "Jill's Quandary Chowder",
+  "buddyItemName": "Jill's Quandary Chowder",
+  "buddyItemId": "649",
+  "buddyItemImage": "/img/items/recipe.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "cookingRecipeCookable",
+    "npcRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/jill-s-quandary-chowder/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 649,
+              "name": "Jill's Quandary Chowder",
+              "image": "/img/items/recipe.png",
+              "type": "item",
+              "description": "Jills's Recipe. Allows you to cook Quandary Chowder",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 50,
+                  "quantity": 1,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Jill",
+                    "image": "/img/items/a_024.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": {
+                "__typename": "FarmRPG_Item",
+                "id": 644,
+                "name": "Quandary Chowder",
+                "image": "/img/items/corngreens.png"
+              },
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 649,
+        "name": "Jill's Quandary Chowder"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

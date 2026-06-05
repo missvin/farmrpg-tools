@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:42:21.718Z",
+  "httpStatus": 200,
+  "itemName": "Pea Seeds",
+  "canonicalKey": "pea seeds",
+  "buddyUrl": "https://buddy.farm/i/pea-seeds/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/pea-seeds/page-data.json",
+  "pageTitle": "Pea Seeds",
+  "buddyItemName": "Pea Seeds",
+  "buddyItemId": "28",
+  "buddyItemImage": "/img/items/seeds_peas.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRates",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/pea-seeds/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 28,
+              "name": "Pea Seeds",
+              "image": "/img/items/seeds_peas.png",
+              "type": "seeds",
+              "description": "Harvest every 3 minutes",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 29,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 3,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2245978,
+                    "name": "Bad Dirt I",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2023-01-16T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 476252,
+                    "name": "Schoolhouse Rocks I",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [
+                {
+                  "runecube": false,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 27,
+                        "name": "Peas",
+                        "image": "/img/items/8259.PNG"
+                      },
+                      "rate": 1.0016692818582167
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 161,
+                        "name": "Gold Peas",
+                        "image": "/img/items/8259g.png"
+                      },
+                      "rate": 600.0600060006001
+                    }
+                  ]
+                },
+                {
+                  "runecube": true,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 27,
+                        "name": "Peas",
+                        "image": "/img/items/8259.PNG"
+                      },
+                      "rate": 1.0020813731160307
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 161,
+                        "name": "Gold Peas",
+                        "image": "/img/items/8259g.png"
+                      },
+                      "rate": 481.4520594111841
+                    }
+                  ]
+                }
+              ],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 28,
+        "name": "Pea Seeds"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:58:56.738Z",
+  "httpStatus": 200,
+  "itemName": "Rosalie's Red Berry Pie",
+  "canonicalKey": "rosalie's red berry pie",
+  "buddyUrl": "https://buddy.farm/i/rosalie-s-red-berry-pie/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/rosalie-s-red-berry-pie/page-data.json",
+  "pageTitle": "Rosalie's Red Berry Pie",
+  "buddyItemName": "Rosalie's Red Berry Pie",
+  "buddyItemId": "724",
+  "buddyItemImage": "/img/items/recipe.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "cookingRecipeCookable",
+    "npcRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/rosalie-s-red-berry-pie/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 724,
+              "name": "Rosalie's Red Berry Pie",
+              "image": "/img/items/recipe.png",
+              "type": "item",
+              "description": "Rosalie's Recipe. Allows you to cook Red Berry Pie",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 40,
+                  "quantity": 1,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Rosalie",
+                    "image": "/img/items/a_098.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": {
+                "__typename": "FarmRPG_Item",
+                "id": 723,
+                "name": "Red Berry Pie",
+                "image": "/img/items/pie1.png?1"
+              },
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 724,
+        "name": "Rosalie's Red Berry Pie"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

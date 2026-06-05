@@ -1,0 +1,421 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:01:01.363Z",
+  "httpStatus": 200,
+  "itemName": "Pirate Bandana",
+  "canonicalKey": "pirate bandana",
+  "buddyUrl": "https://buddy.farm/i/pirate-bandana/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/pirate-bandana/page-data.json",
+  "pageTitle": "Pirate Bandana",
+  "buddyItemName": "Pirate Bandana",
+  "buddyItemId": "258",
+  "buddyItemImage": "/img/items/4903.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "npcItems",
+    "npcRewards",
+    "passwordItems",
+    "petItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/pirate-bandana/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 258,
+              "name": "Pirate Bandana",
+              "image": "/img/items/4903.png",
+              "type": "item",
+              "description": "Keeps hair out of the rigging",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 5,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2646496,
+                    "name": "A Study of Color XI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 161,
+                    "name": "Let's Play Pirates I",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7534438,
+                    "name": "The Heat Makes It Hotter X",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 875,
+                    "name": "A Way Back XXVIII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7534410,
+                    "name": "The Heat Makes It Hotter IX",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7533915,
+                    "name": "The Heat Makes It Hotter VI",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 954,
+                    "name": "Intruders Beware VII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7533905,
+                    "name": "The Heat Makes It Hotter V",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7534409,
+                    "name": "The Heat Makes It Hotter VIII",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7534408,
+                    "name": "The Heat Makes It Hotter VII",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1090568,
+                    "name": "Buddy Found",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1694834,
+                    "name": "Far Away XX",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7462786,
+                    "name": "Archeology Requires Knowhow I",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277989,
+                    "name": "Pirates Start Arriving XIII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 179,
+                    "name": "The Collector",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 135,
+                    "name": "Bling Things II",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 148,
+                    "name": "Escape from Pirate's Cove",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1090561,
+                    "name": "Strange Companions XVII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 171,
+                    "name": "Let's Play Pirates V",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277982,
+                    "name": "Pirates Start Arriving VI",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Bird",
+                    "image": "/img/pets/pet_a_parrot.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Buddy",
+                    "image": "/img/items/buddy.png"
+                  }
+                },
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Ragvin",
+                    "image": "/img/items/ragvin.png?1"
+                  }
+                }
+              ],
+              "npcRewards": [
+                {
+                  "level": 10,
+                  "quantity": 1,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Buddy",
+                    "image": "/img/items/buddy.png"
+                  }
+                }
+              ],
+              "passwordItems": [
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 149,
+                    "password": "i know"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 294,
+                    "name": "Carved Bear",
+                    "image": "/img/items/carvedbear.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 245,
+                    "name": "Eye Patch",
+                    "image": "/img/items/4920.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 246,
+                    "name": "Pirate Flag",
+                    "image": "/img/items/4924.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 247,
+                    "name": "Captains Log",
+                    "image": "/img/items/4868.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 213,
+                    "name": "Pocket Watch",
+                    "image": "/img/items/4887.png"
+                  }
+                },
+                {
+                  "chance": 0.2,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 243,
+                    "name": "Spectacles",
+                    "image": "/img/items/5392.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 258,
+        "name": "Pirate Bandana"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

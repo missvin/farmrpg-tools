@@ -1,0 +1,747 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:15:32.474Z",
+  "httpStatus": 200,
+  "itemName": "Candy Corn",
+  "canonicalKey": "candy corn",
+  "buddyUrl": "https://buddy.farm/i/candy-corn/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/candy-corn/page-data.json",
+  "pageTitle": "Candy Corn",
+  "buddyItemName": "Candy Corn",
+  "buddyItemId": "361",
+  "buddyItemImage": "/img/items/candycorn.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "npcRewards",
+    "passwordItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/candy-corn/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 361,
+              "name": "Candy Corn",
+              "image": "/img/items/candycorn.png",
+              "type": "item",
+              "description": "Who really likes this stuff?",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 358,
+                    "name": "Candy Mystery IV",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 329,
+                    "name": "Tricks Not Treats III",
+                    "image": "/img/items/buddypatch.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1286507,
+                    "name": "frank's pranks XIV",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1334672,
+                    "name": "Deck The Town (With Bats And Lanterns) VIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1286512,
+                    "name": "frank's pranks XVII",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1286560,
+                    "name": "frank's pranks XIX",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7510242,
+                    "name": "Pumpkins Spiced, Apples Tart V",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512486,
+                    "name": "Pumpkins Spiced, Apples Tart VI",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512488,
+                    "name": "Pumpkins Spiced, Apples Tart VIII",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5792461,
+                    "name": "Trouble A Head III",
+                    "image": "/img/items/pumpkinheadsm.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5792463,
+                    "name": "Trouble A Head V",
+                    "image": "/img/items/pumpkinheadsm.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5792459,
+                    "name": "Trouble A Head I",
+                    "image": "/img/items/pumpkinheadsm.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5792460,
+                    "name": "Trouble A Head II",
+                    "image": "/img/items/pumpkinheadsm.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5883902,
+                    "name": "Spooky Exchanges II",
+                    "image": "/img/items/ghorgen.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543673,
+                    "name": "Candy And Non Dairy Yummies II",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543675,
+                    "name": "Candy And Non Dairy Yummies IV",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543676,
+                    "name": "Candy And Non Dairy Yummies V",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543677,
+                    "name": "Candy And Non Dairy Yummies VI",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543674,
+                    "name": "Candy And Non Dairy Yummies III",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512487,
+                    "name": "Pumpkins Spiced, Apples Tart VII",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543672,
+                    "name": "Candy And Non Dairy Yummies I",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1286943,
+                    "name": "Let’s Do The Time Warp I",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 352,
+                    "name": "Free Candy III",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 336,
+                    "name": "I <3 Halloween",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 822,
+                    "name": "Fooled I",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 353,
+                    "name": "Free Candy IV",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 313,
+                    "name": "Dread Stations I",
+                    "image": "/img/items/skull.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 378,
+                    "name": "Once Upon A Halloween IV",
+                    "image": "/img/items/a_056.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5460898,
+                    "name": "Happy Homunculus II",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5741017,
+                    "name": "Liberty To The Captives I",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1119430,
+                    "name": "frank's pranks I",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 343,
+                    "name": "Temporary Prankster II",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 369,
+                    "name": "Take this.",
+                    "image": "/img/items/gold.png",
+                    "endDate": "2021-11-04T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 380,
+                    "name": "Once Upon A Halloween VI",
+                    "image": "/img/items/skull.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5741018,
+                    "name": "Liberty To The Captives II",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5741019,
+                    "name": "Liberty To The Captives III",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 361,
+                    "name": "Trapper’s Delight III",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5648085,
+                    "name": "New Moon I",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1265731,
+                    "name": "Treat or Fear III",
+                    "image": "/img/items/ghost.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 354,
+                    "name": "Free Candy V",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 381,
+                    "name": "Happy All Hallows' Eve",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 76.56591166935317,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Haunted House",
+                      "image": "/img/items/hauntedhouse.png?1",
+                      "type": "explore",
+                      "baseDropRate": 0.375
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 76.52153019338712,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Haunted House",
+                      "image": "/img/items/hauntedhouse.png?1",
+                      "type": "explore",
+                      "baseDropRate": 0.375
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 82.00775485831879,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Haunted House",
+                      "image": "/img/items/hauntedhouse.png?1",
+                      "type": "explore",
+                      "baseDropRate": 0.375
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 81.96976627140845,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Haunted House",
+                      "image": "/img/items/hauntedhouse.png?1",
+                      "type": "explore",
+                      "baseDropRate": 0.375
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 20,
+                  "quantity": 5,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Mummy",
+                    "image": "/img/items/mummy_t_01.png"
+                  }
+                }
+              ],
+              "passwordItems": [
+                {
+                  "quantity": 10,
+                  "password": {
+                    "id": 100,
+                    "password": "haunted house"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 371,
+                    "name": "Egyptian Necklace",
+                    "image": "/img/items/egyptian1.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 369,
+                    "name": "R.O.A.S.",
+                    "image": "/img/items/rat_t_01.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 370,
+                    "name": "Taffy",
+                    "image": "/img/items/candy_t_11.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 355,
+                    "name": "Jack-o-lantern",
+                    "image": "/img/items/pumpkin_t_05.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 351,
+                    "name": "Gouda",
+                    "image": "/img/items/4601.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 372,
+                    "name": "Treat Bag 03",
+                    "image": "/img/items/bag_t_03.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 369,
+                    "name": "R.O.A.S.",
+                    "image": "/img/items/rat_t_01.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 656,
+                    "name": "Treat Bag 04",
+                    "image": "/img/items/bag_t_03.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 187,
+                  "itemQuantity": 1800
+                },
+                {
+                  "level": 87,
+                  "itemQuantity": 180
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2022-10-28",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 65,
+                    "name": "Corn",
+                    "image": "/img/items/8288.png"
+                  },
+                  "inputQuantity": 1384700,
+                  "progress": 550217,
+                  "outputQuantity": 25
+                },
+                {
+                  "date": "2022-10-14",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 29,
+                    "name": "Cucumber",
+                    "image": "/img/items/5805.png"
+                  },
+                  "inputQuantity": 1140000,
+                  "progress": 1531570,
+                  "outputQuantity": 10
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 361,
+        "name": "Candy Corn"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

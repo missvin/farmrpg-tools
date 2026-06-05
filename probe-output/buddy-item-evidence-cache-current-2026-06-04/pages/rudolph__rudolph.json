@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:52:43.724Z",
+  "httpStatus": 200,
+  "itemName": "Rudolph",
+  "canonicalKey": "rudolph",
+  "buddyUrl": "https://buddy.farm/i/rudolph/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/rudolph/page-data.json",
+  "pageTitle": "Rudolph",
+  "buddyItemName": "Rudolph",
+  "buddyItemId": "448",
+  "buddyItemImage": "/img/items/rudolph.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/rudolph/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 448,
+              "name": "Rudolph",
+              "image": "/img/items/rudolph.png",
+              "type": "item",
+              "description": "The most famous reindeer of all",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 674,
+                    "name": "Lost Reindeer I",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7514931,
+                    "name": "Reindeer Safety Program I",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 48409.405094513604,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Santa's Workshop",
+                      "image": "/img/items/santa_ws.png",
+                      "type": "explore",
+                      "baseDropRate": 0.42857143
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 69923.08437385544,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Santa's Workshop",
+                      "image": "/img/items/santa_ws.png",
+                      "type": "explore",
+                      "baseDropRate": 0.42857143
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 57428.82908086527,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Santa's Workshop",
+                      "image": "/img/items/santa_ws.png",
+                      "type": "explore",
+                      "baseDropRate": 0.42857143
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 56116.72259633371,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Santa's Workshop",
+                      "image": "/img/items/santa_ws.png",
+                      "type": "explore",
+                      "baseDropRate": 0.42857143
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 448,
+        "name": "Rudolph"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

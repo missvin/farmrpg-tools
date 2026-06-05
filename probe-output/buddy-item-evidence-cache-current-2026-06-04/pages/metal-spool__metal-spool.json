@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:11:07.224Z",
+  "httpStatus": 200,
+  "itemName": "Metal Spool",
+  "canonicalKey": "metal spool",
+  "buddyUrl": "https://buddy.farm/i/metal-spool/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/metal-spool/page-data.json",
+  "pageTitle": "Metal Spool",
+  "buddyItemName": "Metal Spool",
+  "buddyItemId": "678",
+  "buddyItemImage": "/img/items/9325.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests",
+    "templeRewardItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/metal-spool/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 678,
+              "name": "Metal Spool",
+              "image": "/img/items/9325.png",
+              "type": "item",
+              "description": "Useful to spool wire",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 83,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1893628,
+                    "name": "A Wall In The Way IV",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 6815345,
+                    "name": "It’s Beginning To Look A Lot Like Warfare XIII",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-02-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 677,
+                    "name": "Belt Drive",
+                    "image": "/img/items/9347.png"
+                  }
+                }
+              ],
+              "recipeItems": [
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 38,
+                    "name": "Nails",
+                    "image": "/img/items/5860.png"
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 103,
+                    "name": "Coal",
+                    "image": "/img/items/coal.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 593,
+                    "name": "Broken Pipe",
+                    "image": "/img/items/9389.PNG"
+                  }
+                },
+                {
+                  "quantity": 12,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 601,
+                    "name": "Scrap Metal",
+                    "image": "/img/items/9383.PNG"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 679,
+                    "name": "Spool of Copper",
+                    "image": "/img/items/9324.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 441,
+                  "quantity": 10,
+                  "templeReward": {
+                    "inputQuantity": 1000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 378,
+                      "name": "Water Lily",
+                      "image": "/img/items/3258.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 678,
+        "name": "Metal Spool"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:48:34.626Z",
+  "httpStatus": 200,
+  "itemName": "Stack of Cards",
+  "canonicalKey": "stack of cards",
+  "buddyUrl": "https://buddy.farm/i/stack-of-cards/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/stack-of-cards/page-data.json",
+  "pageTitle": "Stack of Cards",
+  "buddyItemName": "Stack of Cards",
+  "buddyItemId": "766",
+  "buddyItemImage": "/img/items/stack_cards.png?2",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithItems",
+    "locksmithOutputItems",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/stack-of-cards/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 766,
+              "name": "Stack of Cards",
+              "image": "/img/items/stack_cards.png?2",
+              "type": "item",
+              "description": "Contains 5 Playing Cards and 25 Gold",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 25,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3768372,
+                    "name": "Secretly A Society Summons You IX",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 606,
+                    "name": "Diamonds",
+                    "image": "/img/items/card_diamonds.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 607,
+                    "name": "Hearts",
+                    "image": "/img/items/card_hearts.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 608,
+                    "name": "Spades",
+                    "image": "/img/items/card_spades.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 605,
+                    "name": "Clubs",
+                    "image": "/img/items/card_clubs.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 762,
+                    "name": "Joker",
+                    "image": "/img/items/joker.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1233,
+                    "name": "Birthday Surprise Box 04",
+                    "image": "/img/items/bsb01.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1039,
+                    "name": "Birthday Surprise Box 03",
+                    "image": "/img/items/bsb01.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1490,
+                    "name": "Birthday Surprise Box 05",
+                    "image": "/img/items/bsb01.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 766,
+        "name": "Stack of Cards"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

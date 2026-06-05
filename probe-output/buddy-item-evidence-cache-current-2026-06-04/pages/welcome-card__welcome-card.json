@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:54:48.000Z",
+  "httpStatus": 200,
+  "itemName": "Welcome Card",
+  "canonicalKey": "welcome card",
+  "buddyUrl": "https://buddy.farm/i/welcome-card/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/welcome-card/page-data.json",
+  "pageTitle": "Welcome Card",
+  "buddyItemName": "Welcome Card",
+  "buddyItemId": "888",
+  "buddyItemImage": "/img/items/card_welcome.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithItems",
+    "npcItems",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/welcome-card/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 888,
+              "name": "Welcome Card",
+              "image": "/img/items/card_welcome.png",
+              "type": "card",
+              "description": "Welcome to Redbrook! Open this card<br/>\r\nat the Locksmith for some goodies!<br/>\r\n(Must be Farming 10 or less to open)",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 1500,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7558927,
+                    "name": "Change of Address",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "hates",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Goostav",
+                    "image": "/img/items/slime.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 8,
+                  "quantityMin": 8,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 277,
+                    "name": "Gummy Worms",
+                    "image": "/img/items/gworm.png"
+                  }
+                },
+                {
+                  "quantityMax": 8,
+                  "quantityMin": 8,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 22,
+                    "name": "Iron",
+                    "image": "/img/items/5779.PNG"
+                  }
+                },
+                {
+                  "quantityMax": 8,
+                  "quantityMin": 8,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 12,
+                    "name": "Pepper Seeds",
+                    "image": "/img/items/seeds_peppers.png"
+                  }
+                },
+                {
+                  "quantityMax": 8,
+                  "quantityMin": 8,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 18,
+                    "name": "Worms",
+                    "image": "/img/items/7758.png"
+                  }
+                },
+                {
+                  "quantityMax": 8,
+                  "quantityMin": 8,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 20,
+                    "name": "Carrot Seeds",
+                    "image": "/img/items/seeds_carrots.png"
+                  }
+                },
+                {
+                  "quantityMax": 8,
+                  "quantityMin": 8,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 35,
+                    "name": "Wood",
+                    "image": "/img/items/6143.PNG"
+                  }
+                },
+                {
+                  "quantityMax": 8,
+                  "quantityMin": 8,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 38,
+                    "name": "Nails",
+                    "image": "/img/items/5860.png"
+                  }
+                },
+                {
+                  "quantityMax": 8,
+                  "quantityMin": 8,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 40,
+                    "name": "Stone",
+                    "image": "/img/items/6174.PNG"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 888,
+        "name": "Welcome Card"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

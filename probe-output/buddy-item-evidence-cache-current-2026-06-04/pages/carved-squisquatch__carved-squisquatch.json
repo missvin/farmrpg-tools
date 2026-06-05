@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:54:48.000Z",
+  "httpStatus": 200,
+  "itemName": "Carved Squisquatch",
+  "canonicalKey": "carved squisquatch",
+  "buddyUrl": "https://buddy.farm/i/carved-squisquatch/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/carved-squisquatch/page-data.json",
+  "pageTitle": "Carved Squisquatch",
+  "buddyItemName": "Carved Squisquatch",
+  "buddyItemId": "1060",
+  "buddyItemImage": "/img/items/carved_squisquatch.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "requiredForQuests",
+    "towerRewards",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/carved-squisquatch/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1060,
+              "name": "Carved Squisquatch",
+              "image": "/img/items/carved_squisquatch.png",
+              "type": "item",
+              "description": "Skillfully Squittled",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 56,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277987,
+                    "name": "Pirates Start Arriving XI",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.0625,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1065,
+                    "name": "Block of Wood",
+                    "image": "/img/items/wood_block.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 296,
+                    "name": "Carved Warthog",
+                    "image": "/img/items/carvedwh.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 288,
+                  "itemQuantity": 288
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1060,
+        "name": "Carved Squisquatch"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

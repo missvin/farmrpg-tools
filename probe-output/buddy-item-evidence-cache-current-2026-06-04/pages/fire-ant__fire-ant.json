@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:37:16.422Z",
+  "httpStatus": 200,
+  "itemName": "Fire Ant",
+  "canonicalKey": "fire ant",
+  "buddyUrl": "https://buddy.farm/i/fire-ant/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/fire-ant/page-data.json",
+  "pageTitle": "Fire Ant",
+  "buddyItemName": "Fire Ant",
+  "buddyItemId": "286",
+  "buddyItemImage": "/img/items/fireant.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "npcItems",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "templeRewardItems",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/fire-ant/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 286,
+              "name": "Fire Ant",
+              "image": "/img/items/fireant.png",
+              "type": "item",
+              "description": "Avoid stepping on these at all costs",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 1,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 403,
+                    "name": "Hare Handler IV",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 173,
+                    "name": "Hakuna Matata",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7083979,
+                    "name": "The Void and You II",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434077,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted XIII",
+                    "image": "/img/items/borgen.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434065,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted I",
+                    "image": "/img/items/borgen.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434066,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted II",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434067,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted III",
+                    "image": "/img/items/borgen.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434068,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted IV",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434069,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted V",
+                    "image": "/img/items/borgen.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434070,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted VI",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434071,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted VII",
+                    "image": "/img/items/borgen.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434072,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted VIII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434073,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted IX",
+                    "image": "/img/items/borgen.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4719077,
+                    "name": "I Hate To Bug You I",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4719078,
+                    "name": "I Hate To Bug You II",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4719079,
+                    "name": "I Hate To Bug You III",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4719081,
+                    "name": "I Hate To Bug You V",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4719082,
+                    "name": "I Hate To Bug You VI",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4719080,
+                    "name": "I Hate To Bug You IV",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434074,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted X",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434075,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted XI",
+                    "image": "/img/items/borgen.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5434076,
+                    "name": "Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted XII",
+                    "image": "/img/items/borgen.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 225,
+                    "name": "A Tower Divided II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 404,
+                    "name": "Feathers VII",
+                    "image": "/img/items/whiteparchment.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 283,
+                    "name": "Parts Unknown XII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553583,
+                    "name": "You Must Build A Stealth Boat IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 1,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Lemur\n",
+                    "image": "/img/pets/lemur.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 304.83746574388977,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Forest",
+                      "image": "/img/items/trees.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 360.8466906749998,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Forest",
+                      "image": "/img/items/trees.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 360.9539290436766,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Forest",
+                      "image": "/img/items/trees.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 305.2763972500702,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Forest",
+                      "image": "/img/items/trees.png",
+                      "type": "explore",
+                      "baseDropRate": 0.3333333333333333
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "hates",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Beatrix",
+                    "image": "/img/items/a_011.png"
+                  }
+                },
+                {
+                  "relationship": "hates",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "frank",
+                    "image": "/img/items/npc_bunny1.png"
+                  }
+                },
+                {
+                  "relationship": "hates",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Rosalie",
+                    "image": "/img/items/a_098.png"
+                  }
+                }
+              ],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 287,
+                    "name": "Giant Centipede",
+                    "image": "/img/items/giantcent.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 285,
+                    "name": "Caterpillar",
+                    "image": "/img/items/caterpillar.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 283,
+                    "name": "Horned Beetle",
+                    "image": "/img/items/hbeetle.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 154,
+                    "name": "Runestone 08",
+                    "image": "/img/items/rs8.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 285,
+                    "name": "Caterpillar",
+                    "image": "/img/items/caterpillar.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 283,
+                    "name": "Horned Beetle",
+                    "image": "/img/items/hbeetle.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 25,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1089,
+                    "name": "Fire Ant Farm",
+                    "image": "/img/items/antfarm.png?1",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 25,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 334,
+                    "name": "Grab Bag 02",
+                    "image": "/img/items/4497.png"
+                  }
+                },
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1043,
+                    "name": "Bug Bag 01",
+                    "image": "/img/items/bug_bag.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 436,
+                  "quantity": 10,
+                  "templeReward": {
+                    "inputQuantity": 100,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 378,
+                      "name": "Water Lily",
+                      "image": "/img/items/3258.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 286,
+        "name": "Fire Ant"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

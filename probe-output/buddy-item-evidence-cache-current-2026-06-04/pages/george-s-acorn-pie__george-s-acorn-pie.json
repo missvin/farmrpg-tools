@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:18:34.679Z",
+  "httpStatus": 200,
+  "itemName": "George's Acorn Pie",
+  "canonicalKey": "george's acorn pie",
+  "buddyUrl": "https://buddy.farm/i/george-s-acorn-pie/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/george-s-acorn-pie/page-data.json",
+  "pageTitle": "George's Acorn Pie",
+  "buddyItemName": "George's Acorn Pie",
+  "buddyItemId": "1306",
+  "buddyItemImage": "/img/items/recipe.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "cookingRecipeCookable",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/george-s-acorn-pie/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1306,
+              "name": "George's Acorn Pie",
+              "image": "/img/items/recipe.png",
+              "type": "item",
+              "description": "George's Recipe. Allows you to cook Acorn Pie",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539165,
+                    "name": "Sweet Tooth III",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": {
+                "__typename": "FarmRPG_Item",
+                "id": 1304,
+                "name": "Acorn Pie",
+                "image": "/img/items/acorn_pie.png"
+              },
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1306,
+        "name": "George's Acorn Pie"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

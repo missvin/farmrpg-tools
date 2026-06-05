@@ -1,0 +1,1938 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:54:48.000Z",
+  "httpStatus": 200,
+  "itemName": "Glass Bottle",
+  "canonicalKey": "glass bottle",
+  "buddyUrl": "https://buddy.farm/i/glass-bottle/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/glass-bottle/page-data.json",
+  "pageTitle": "Glass Bottle",
+  "buddyItemName": "Glass Bottle",
+  "buddyItemId": "117",
+  "buddyItemImage": "/img/items/7727.PNG?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "npcRewards",
+    "passwordItems",
+    "petItems",
+    "recipeIngredientItems",
+    "recipeItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "skillLevelRewards",
+    "towerRewards",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/glass-bottle/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 117,
+              "name": "Glass Bottle",
+              "image": "/img/items/7727.PNG?1",
+              "type": "item",
+              "description": "Should be recycled",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 5,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 96,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 581,
+                    "name": "99 Bottles XCVI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 98,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 583,
+                    "name": "99 Bottles XCVIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 489,
+                    "name": "99 Bottles IV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 71,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 556,
+                    "name": "99 Bottles LXXI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 941,
+                    "name": "To Quench The Worst Thirst II",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 22,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 507,
+                    "name": "99 Bottles XXII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 921,
+                    "name": "Jubilee Invitation IX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 75,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 560,
+                    "name": "99 Bottles LXXV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 488,
+                    "name": "99 Bottles III",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 65,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 550,
+                    "name": "99 Bottles LXV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 73,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 558,
+                    "name": "99 Bottles LXXIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 505,
+                    "name": "99 Bottles XX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 30,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 515,
+                    "name": "99 Bottles XXX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 85,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 570,
+                    "name": "99 Bottles LXXXV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 61,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 546,
+                    "name": "99 Bottles LXI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 77,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 562,
+                    "name": "99 Bottles LXXVII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 76,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 561,
+                    "name": "99 Bottles LXXVI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 18,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 503,
+                    "name": "99 Bottles XVIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1153171,
+                    "name": "frank's pranks IV",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 35,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 520,
+                    "name": "99 Bottles XXXV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 72,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 557,
+                    "name": "99 Bottles LXXII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 89,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 574,
+                    "name": "99 Bottles LXXXIX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 510,
+                    "name": "99 Bottles XXV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 74,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 559,
+                    "name": "99 Bottles LXXIV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 78,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 563,
+                    "name": "99 Bottles LXXVIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 17,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 502,
+                    "name": "99 Bottles XVII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 28,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 513,
+                    "name": "99 Bottles XXVIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 95,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 580,
+                    "name": "99 Bottles XCV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 800,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3691031,
+                    "name": "Concessions To Be Made V",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 42,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 527,
+                    "name": "99 Bottles XLII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 45,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 530,
+                    "name": "99 Bottles XLV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1153170,
+                    "name": "frank's pranks V",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 52,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 537,
+                    "name": "99 Bottles LII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 46,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 531,
+                    "name": "99 Bottles XLVI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 86,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 571,
+                    "name": "99 Bottles LXXXVI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 29,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 514,
+                    "name": "99 Bottles XXIX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 90,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 575,
+                    "name": "99 Bottles XC",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 99,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 584,
+                    "name": "99 Bottles XCIX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 92,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 577,
+                    "name": "99 Bottles XCII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 7,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 492,
+                    "name": "99 Bottles VII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 486,
+                    "name": "99 Bottles I",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 500,
+                    "name": "99 Bottles XV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 19,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 504,
+                    "name": "99 Bottles XIX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 39,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 524,
+                    "name": "99 Bottles XXXIX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 40,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 525,
+                    "name": "99 Bottles XL",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 43,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 528,
+                    "name": "99 Bottles XLIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 47,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 532,
+                    "name": "99 Bottles XLVII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 58,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 543,
+                    "name": "99 Bottles LVIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 62,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 547,
+                    "name": "99 Bottles LXII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 63,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 548,
+                    "name": "99 Bottles LXIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 64,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 549,
+                    "name": "99 Bottles LXIV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 48,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 533,
+                    "name": "99 Bottles XLVIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 55,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 540,
+                    "name": "99 Bottles LV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 79,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 564,
+                    "name": "99 Bottles LXXIX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 70,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 555,
+                    "name": "99 Bottles LXX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 68,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 553,
+                    "name": "99 Bottles LXVIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 57,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 542,
+                    "name": "99 Bottles LVII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 82,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 567,
+                    "name": "99 Bottles LXXXII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 84,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 569,
+                    "name": "99 Bottles LXXXIV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 87,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 572,
+                    "name": "99 Bottles LXXXVII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 91,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 576,
+                    "name": "99 Bottles XCI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 93,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 578,
+                    "name": "99 Bottles XCIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 94,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 579,
+                    "name": "99 Bottles XCIV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 44,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 529,
+                    "name": "99 Bottles XLIV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 56,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 541,
+                    "name": "99 Bottles LVI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 67,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 552,
+                    "name": "99 Bottles LXVII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 97,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 582,
+                    "name": "99 Bottles XCVII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 493,
+                    "name": "99 Bottles VIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 54,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 539,
+                    "name": "99 Bottles LIV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1153172,
+                    "name": "frank's pranks III",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 23,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 508,
+                    "name": "99 Bottles XXIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 26,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 511,
+                    "name": "99 Bottles XXVI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 49,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 534,
+                    "name": "99 Bottles XLIX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 535,
+                    "name": "99 Bottles L",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 51,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 536,
+                    "name": "99 Bottles LI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 32,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 517,
+                    "name": "99 Bottles XXXII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 83,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 568,
+                    "name": "99 Bottles LXXXIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 88,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 573,
+                    "name": "99 Bottles LXXXVIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 59,
+                    "name": "Recycling Project",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 662,
+                    "name": "Covert Santa VIII",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 21,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 506,
+                    "name": "99 Bottles XXI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 27,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 512,
+                    "name": "99 Bottles XXVII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 59,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 544,
+                    "name": "99 Bottles LIX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 60,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 545,
+                    "name": "99 Bottles LX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 69,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 554,
+                    "name": "99 Bottles LXIX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 80,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 565,
+                    "name": "99 Bottles LXXX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 24,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 509,
+                    "name": "99 Bottles XXIV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 66,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 551,
+                    "name": "99 Bottles LXVI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 16,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 501,
+                    "name": "99 Bottles XVI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 53,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 538,
+                    "name": "99 Bottles LIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 875,
+                    "name": "A Way Back XXVIII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 9,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 494,
+                    "name": "99 Bottles IX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 495,
+                    "name": "99 Bottles X",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 11,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 496,
+                    "name": "99 Bottles XI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 13,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 498,
+                    "name": "99 Bottles XIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 81,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 566,
+                    "name": "99 Bottles LXXXI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 41,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 526,
+                    "name": "99 Bottles XLI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 487,
+                    "name": "99 Bottles II",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 490,
+                    "name": "99 Bottles V",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1153251,
+                    "name": "frank's pranks VI",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 491,
+                    "name": "99 Bottles VI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 12,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 497,
+                    "name": "99 Bottles XII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 75,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 398,
+                    "name": "Strange Companions II",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 912,
+                    "name": "Giamics' Jubilee XIV",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 14,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 499,
+                    "name": "99 Bottles XIV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 31,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 516,
+                    "name": "99 Bottles XXXI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 33,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 518,
+                    "name": "99 Bottles XXXIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 34,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 519,
+                    "name": "99 Bottles XXXIV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 36,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 521,
+                    "name": "99 Bottles XXXVI",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 37,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 522,
+                    "name": "99 Bottles XXXVII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277986,
+                    "name": "Pirates Start Arriving X",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 38,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 523,
+                    "name": "99 Bottles XXXVIII",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 139,
+                    "name": "Shipwrecked!",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 323,
+                    "name": "Fishing Tournament VIII",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 146,
+                    "name": "Pirate's Cove IX",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 43292,
+                    "name": "The Rocket’s Red Glare VII",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 6,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 27,
+                    "name": "Cecil's New Steed",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 55,
+                    "name": "Fellow Farmer I",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 341,
+                    "name": "Funny Teeth",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 750,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7559223,
+                    "name": "Blue Diamond Fish VI",
+                    "image": "/img/items/a_048.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 33,
+                    "name": "Hungry Holger III",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 299,
+                    "name": "Feathers V",
+                    "image": "/img/items/feathers.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 99,
+                    "name": "Shark Week II",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 1,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Baboon",
+                    "image": "/img/pets/pet_Baboon.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 65.79665937201037,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Crystal River",
+                      "image": "/img/items/river.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 63.57072974747799,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Crystal River",
+                      "image": "/img/items/river.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 76.82828264203245,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Crystal River",
+                      "image": "/img/items/river.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 79.27441711502956,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Crystal River",
+                      "image": "/img/items/river.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 10,
+                  "quantity": 50,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Rosalie",
+                    "image": "/img/items/a_098.png"
+                  }
+                }
+              ],
+              "passwordItems": [
+                {
+                  "quantity": 2,
+                  "password": {
+                    "id": 140,
+                    "password": "jar jar"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 116,
+                    "name": "Old Boot",
+                    "image": "/img/items/7848.PNG"
+                  }
+                }
+              ],
+              "recipeItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 40,
+                    "name": "Stone",
+                    "image": "/img/items/6174.PNG"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 78,
+                    "name": "Glass Orb",
+                    "image": "/img/items/5708.PNG"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 86,
+                    "name": "Lemonade",
+                    "image": "/img/items/lemonade.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 112,
+                    "name": "Grape Juice",
+                    "image": "/img/items/grapejuice.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 629,
+                    "name": "Corn Oil",
+                    "image": "/img/items/cornoil.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 185,
+                    "name": "Iced Tea",
+                    "image": "/img/items/tea.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 203,
+                    "name": "Green Dye",
+                    "image": "/img/items/greendye.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 388,
+                    "name": "Hourglass",
+                    "image": "/img/items/4241.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 535,
+                    "name": "Blue Dye",
+                    "image": "/img/items/bluedye.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 537,
+                    "name": "Purple Dye",
+                    "image": "/img/items/purpledye.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 683,
+                    "name": "Pear Grease",
+                    "image": "/img/items/8957.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 776,
+                    "name": "Ship in a Bottle",
+                    "image": "/img/items/shipinabottle.png?3",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 368,
+                    "name": "Lantern",
+                    "image": "/img/items/lantern.png?1",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 121,
+                    "name": "Wine",
+                    "image": "/img/items/wine.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 536,
+                    "name": "Red Dye",
+                    "image": "/img/items/reddye.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 787,
+                    "name": "Acorn Butter",
+                    "image": "/img/items/Acorn_butter.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 84,
+                    "name": "Orange Juice",
+                    "image": "/img/items/orangejuice.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 379,
+                    "name": "Apple Cider",
+                    "image": "/img/items/8984.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 587,
+                    "name": "Peach Juice",
+                    "image": "/img/items/peachjuice.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 825,
+                    "name": "Sunflower Oil",
+                    "image": "/img/items/nj_985.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 653,
+                    "name": "Fruit Punch",
+                    "image": "/img/items/fruitpunch.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1437,
+                    "name": "Veggie Juice",
+                    "image": "/img/items/8879.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1363,
+                    "name": "Orange Dye",
+                    "image": "/img/items/orangedye.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1364,
+                    "name": "Yellow Dye",
+                    "image": "/img/items/yellowdye.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1365,
+                    "name": "Brown Dye",
+                    "image": "/img/items/browndye.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1366,
+                    "name": "Black Dye",
+                    "image": "/img/items/blackdye.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1387,
+                    "name": "White Dye",
+                    "image": "/img/items/whitedye.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1424,
+                    "name": "Glowing Lantern",
+                    "image": "/img/items/glowinglantern.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 200,
+                  "quantityMin": 200,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 547,
+                    "name": "Birthday Present",
+                    "image": "/img/items/present03.png"
+                  }
+                },
+                {
+                  "quantityMax": 50,
+                  "quantityMin": 50,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 610,
+                    "name": "Backpack",
+                    "image": "/img/items/BagsAndBoxes_64_t.png"
+                  }
+                },
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 573,
+                    "name": "Large Chest 03",
+                    "image": "/img/items/LC-3.png?1"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 138,
+                  "itemQuantity": 1300
+                },
+                {
+                  "level": 38,
+                  "itemQuantity": 130
+                }
+              ],
+              "skillLevelRewards": [
+                {
+                  "skill": "crafting",
+                  "level": 60,
+                  "itemQuantity": 75
+                }
+              ],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 117,
+        "name": "Glass Bottle"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

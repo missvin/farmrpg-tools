@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:15:32.474Z",
+  "httpStatus": 200,
+  "itemName": "Frozen Peas",
+  "canonicalKey": "frozen peas",
+  "buddyUrl": "https://buddy.farm/i/frozen-peas/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/frozen-peas/page-data.json",
+  "pageTitle": "Frozen Peas",
+  "buddyItemName": "Frozen Peas",
+  "buddyItemId": "706",
+  "buddyItemImage": "/img/items/frozenpeas.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "exchangeCenterOutputs",
+    "locksmithOutputItems",
+    "petItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/frozen-peas/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 706,
+              "name": "Frozen Peas",
+              "image": "/img/items/frozenpeas.png",
+              "type": "crop",
+              "description": "Nasty jaw-breakers",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 3,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2113273,
+                    "name": "Glacier Lake Effect III",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2032028,
+                    "name": "Glacier Lake Effect I",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2066472,
+                    "name": "Glacier Lake Effect II",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13392872,
+                    "name": "Baited And Outsmarted II",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2124302,
+                    "name": "Glacier Lake Effect IV",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13668628,
+                    "name": "Baited And Outsmarted III",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9340407,
+                    "name": "Baited And Outsmarted IV",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13668714,
+                    "name": "Baited And Outsmarted VI",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 6756739,
+                    "name": "A Cold Start II",
+                    "image": "/img/items/borgen.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208135,
+                    "name": "Best Stored Frozen IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208134,
+                    "name": "Best Stored Frozen III",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208136,
+                    "name": "Best Stored Frozen V",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208137,
+                    "name": "Best Stored Frozen VI",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208132,
+                    "name": "Best Stored Frozen I",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208133,
+                    "name": "Best Stored Frozen II",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7554043,
+                    "name": "Iced Crops Examination VII",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7555423,
+                    "name": "Iced Crops Extreme Examination Extra Extremey I",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7554054,
+                    "name": "Iced Crops Extreme Examination I",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2136649,
+                    "name": "Glacier Lake Effect V",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2246207,
+                    "name": "Bad Dirt II",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2023-01-16T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 1,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Polar Bear",
+                    "image": "/img/pets/pet_polar_bear.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 705,
+                    "name": "Winter Basket",
+                    "image": "/img/items/winterbasket.png?2"
+                  }
+                },
+                {
+                  "quantityMax": 50,
+                  "quantityMin": 50,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 963,
+                    "name": "Frozen Chest 01",
+                    "image": "/img/items/frozen_chest.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [
+                {
+                  "lastSeen": "2023-01-10T18:00:00+00:00",
+                  "oneshot": true,
+                  "inputQuantity": 500,
+                  "outputQuantity": 10,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 27,
+                    "name": "Peas",
+                    "image": "/img/items/8259.PNG"
+                  }
+                }
+              ],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 174,
+                  "itemQuantity": 100
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 706,
+        "name": "Frozen Peas"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

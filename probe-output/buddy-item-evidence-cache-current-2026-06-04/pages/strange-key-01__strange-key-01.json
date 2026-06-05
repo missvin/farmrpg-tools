@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:48:34.626Z",
+  "httpStatus": 200,
+  "itemName": "Strange Key 01",
+  "canonicalKey": "strange key 01",
+  "buddyUrl": "https://buddy.farm/i/strange-key-01/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/strange-key-01/page-data.json",
+  "pageTitle": "Strange Key 01",
+  "buddyItemName": "Strange Key 01",
+  "buddyItemId": "1178",
+  "buddyItemImage": "/img/items/strangekey.png",
+  "sourceStatus": "sources_blank",
+  "blankSourceIndicators": [
+    "no_nonempty_known_source_sections"
+  ],
+  "detectedSections": [
+    "passwordItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/strange-key-01/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1178,
+              "name": "Strange Key 01",
+              "image": "/img/items/strangekey.png",
+              "type": "item",
+              "description": "What could this be?",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 256,
+                    "password": "4,8,15,16,23,42"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1178,
+        "name": "Strange Key 01"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

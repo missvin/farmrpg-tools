@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:22:43.879Z",
+  "httpStatus": 200,
+  "itemName": "Pine Tree",
+  "canonicalKey": "pine tree",
+  "buddyUrl": "https://buddy.farm/i/pine-tree/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/pine-tree/page-data.json",
+  "pageTitle": "Pine Tree",
+  "buddyItemName": "Pine Tree",
+  "buddyItemId": "409",
+  "buddyItemImage": "/img/items/cr_t_06.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRatesItems",
+    "exchangeCenterInputs",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "skillLevelRewards",
+    "templeRewardItems",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/pine-tree/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 409,
+              "name": "Pine Tree",
+              "image": "/img/items/cr_t_06.png",
+              "type": "crop",
+              "description": "Always green",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": true,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 4,
+              "fleaMarketRotate": true,
+              "baseYieldMinutes": 480,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 655,
+                    "name": "A Lot Of Trees XII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2550973,
+                    "name": "A Study of Color X",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 7,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1606092,
+                    "name": "200,000 III",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2022-11-23T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 811,
+                    "name": "Green Initiative VI",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 652,
+                    "name": "A Lot Of Trees IX",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7721619,
+                    "name": "Green Alchemy XV",
+                    "image": "/img/items/bear_01.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 643,
+                    "name": "A Lot Of Trees V",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 820,
+                    "name": "A Way Back XIX",
+                    "image": "/img/items/cthomas2.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 779,
+                    "name": "A Towering Investment VI",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 664,
+                    "name": "Covert Santa X",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1938632,
+                    "name": "The Light Continues I",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 683,
+                    "name": "A Lot Of Trees XVI",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 639,
+                    "name": "A Lot Of Trees I",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 684,
+                    "name": "A Lot Of Trees XVII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7515433,
+                    "name": "Another Lot Of Trees I",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Fox",
+                    "image": "/img/pets/pet_fox.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 1,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Pine Seeds",
+                      "image": "/img/items/seeds_pine.png"
+                    }
+                  }
+                },
+                {
+                  "rate": 1,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Pine Seeds",
+                      "image": "/img/items/seeds_pine.png"
+                    }
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1065,
+                    "name": "Block of Wood",
+                    "image": "/img/items/wood_block.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2023-01-10T18:00:00+00:00",
+                  "oneshot": true,
+                  "inputQuantity": 100,
+                  "outputQuantity": 5,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 708,
+                    "name": "Frozen Pine",
+                    "image": "/img/items/frozenpine.png"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 212,
+                  "itemQuantity": 2100
+                },
+                {
+                  "level": 164,
+                  "itemQuantity": 1600
+                },
+                {
+                  "level": 112,
+                  "itemQuantity": 1100
+                },
+                {
+                  "level": 64,
+                  "itemQuantity": 160
+                },
+                {
+                  "level": 12,
+                  "itemQuantity": 110
+                }
+              ],
+              "skillLevelRewards": [
+                {
+                  "skill": "farming",
+                  "level": 50,
+                  "itemQuantity": 20
+                }
+              ],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 51,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 20000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 409,
+        "name": "Pine Tree"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

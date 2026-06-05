@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:34:03.273Z",
+  "httpStatus": 200,
+  "itemName": "Carved Warthog",
+  "canonicalKey": "carved warthog",
+  "buddyUrl": "https://buddy.farm/i/carved-warthog/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/carved-warthog/page-data.json",
+  "pageTitle": "Carved Warthog",
+  "buddyItemName": "Carved Warthog",
+  "buddyItemId": "296",
+  "buddyItemImage": "/img/items/carvedwh.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "requiredForQuests",
+    "rewardForQuests",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/carved-warthog/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 296,
+              "name": "Carved Warthog",
+              "image": "/img/items/carvedwh.png",
+              "type": "item",
+              "description": "Its friends never stood downwind",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2692757,
+                    "name": "Strange Companions XXXIV",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2296227,
+                    "name": "Strange Companions XXV",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8817539,
+                    "name": "The Smell of a Fun Guy VII",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277987,
+                    "name": "Pirates Start Arriving XI",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2956555,
+                    "name": "Irrationally Hungry I",
+                    "image": "/img/items/a_028.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 173,
+                    "name": "Hakuna Matata",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 295,
+                    "name": "Carved Moose",
+                    "image": "/img/items/carvedmoose.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 292,
+                    "name": "Carved Rabbit",
+                    "image": "/img/items/carvedrabbit.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 293,
+                    "name": "Carved Squirrel",
+                    "image": "/img/items/carvedsquirrel.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1060,
+                    "name": "Carved Squisquatch",
+                    "image": "/img/items/carved_squisquatch.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 288,
+                    "name": "Carved Owl",
+                    "image": "/img/items/carvedowl.png"
+                  }
+                },
+                {
+                  "chance": 0.0625,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1065,
+                    "name": "Block of Wood",
+                    "image": "/img/items/wood_block.png"
+                  }
+                },
+                {
+                  "chance": 0.25,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 292,
+                    "name": "Carved Rabbit",
+                    "image": "/img/items/carvedrabbit.png"
+                  }
+                },
+                {
+                  "chance": 0.2,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 273,
+                    "name": "Small Flute",
+                    "image": "/img/items/5255.png?1"
+                  }
+                },
+                {
+                  "chance": 0.14285714285714285,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 280,
+                    "name": "Teapot",
+                    "image": "/img/items/teapot.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 296,
+        "name": "Carved Warthog"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

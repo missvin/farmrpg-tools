@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:24:49.159Z",
+  "httpStatus": 200,
+  "itemName": "Fancy Drum",
+  "canonicalKey": "fancy drum",
+  "buddyUrl": "https://buddy.farm/i/fancy-drum/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/fancy-drum/page-data.json",
+  "pageTitle": "Fancy Drum",
+  "buddyItemName": "Fancy Drum",
+  "buddyItemId": "474",
+  "buddyItemImage": "/img/items/drum.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "npcRewards",
+    "passwordItems",
+    "recipeItems",
+    "requiredForQuests",
+    "towerRewards",
+    "wishingWellOutputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/fancy-drum/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 474,
+              "name": "Fancy Drum",
+              "image": "/img/items/drum.png",
+              "type": "item",
+              "description": "Keeps the beat going",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 90,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 909,
+                    "name": "Giamics' Jubilee XI",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4133741,
+                    "name": "Starting To Actually Realize  Magic Ain't Pretty V",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4133695,
+                    "name": "Starting To Actually Realize  Magic Ain't Pretty I",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4133751,
+                    "name": "Starting To Actually Realize  Magic Ain't Pretty IX",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4133739,
+                    "name": "Starting To Actually Realize  Magic Ain't Pretty III",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4133743,
+                    "name": "Starting To Actually Realize  Magic Ain't Pretty VII",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3766101,
+                    "name": "Secretly A Society Summons You VII",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4388089,
+                    "name": "Starting To Actually Realize  Magic Ain't Pretty XI",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 30,
+                  "quantity": 3,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Ric Ryph",
+                    "image": "/img/items/npc_figure2.png"
+                  }
+                }
+              ],
+              "passwordItems": [
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 189,
+                    "password": "ghost-spider"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 155,
+                    "password": "yub nub"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 478,
+                    "name": "Sea Dragon",
+                    "image": "/img/items/seadragon.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 456,
+                    "name": "Sturdy Bow",
+                    "image": "/img/items/4765.png"
+                  }
+                }
+              ],
+              "recipeItems": [
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 427,
+                    "name": "Yarn",
+                    "image": "/img/items/pt_t_07.png"
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 75,
+                    "name": "Mushroom Paste",
+                    "image": "/img/items/5691.png"
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 110,
+                    "name": "Leather",
+                    "image": "/img/items/5987.PNG"
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 303,
+                    "name": "Oak",
+                    "image": "/img/items/6695.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 152,
+                  "itemQuantity": 1500
+                },
+                {
+                  "level": 52,
+                  "itemQuantity": 150
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 474,
+        "name": "Fancy Drum"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

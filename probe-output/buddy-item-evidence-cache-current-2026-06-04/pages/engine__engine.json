@@ -1,0 +1,656 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:40:16.850Z",
+  "httpStatus": 200,
+  "itemName": "Engine",
+  "canonicalKey": "engine",
+  "buddyUrl": "https://buddy.farm/i/engine/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/engine/page-data.json",
+  "pageTitle": "Engine",
+  "buddyItemName": "Engine",
+  "buddyItemId": "685",
+  "buddyItemImage": "/img/items/engine.png?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "recipeItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/engine/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 685,
+              "name": "Engine",
+              "image": "/img/items/engine.png?1",
+              "type": "item",
+              "description": "Used to power a machine",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 99,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 130,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308089,
+                    "name": "Corn of Interest Part 12",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 7500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512018,
+                    "name": "Distant Illusions IV",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277985,
+                    "name": "Pirates Start Arriving IX",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 180,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3318651,
+                    "name": "Corn of Interest Part 17",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3306207,
+                    "name": "Corn of Interest Part 01",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308079,
+                    "name": "Corn of Interest Part 02",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 110,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308087,
+                    "name": "Corn of Interest Part 10",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308081,
+                    "name": "Corn of Interest Part 04",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308082,
+                    "name": "Corn of Interest Part 05",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 240,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3321021,
+                    "name": "Corn of Interest Part 23",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 280,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3321025,
+                    "name": "Corn of Interest Part 27",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 150,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3318636,
+                    "name": "Corn of Interest Part 14",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 190,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3318652,
+                    "name": "Corn of Interest Part 18",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 220,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3321019,
+                    "name": "Corn of Interest Part 21",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 230,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3321020,
+                    "name": "Corn of Interest Part 22",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 120,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308088,
+                    "name": "Corn of Interest Part 11",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 170,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3318641,
+                    "name": "Corn of Interest Part 16",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 210,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3318654,
+                    "name": "Corn of Interest Part 20",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308085,
+                    "name": "Corn of Interest Part 08",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 250,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3321022,
+                    "name": "Corn of Interest Part 24",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308084,
+                    "name": "Corn of Interest Part 07",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 270,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3321024,
+                    "name": "Corn of Interest Part 26",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3318653,
+                    "name": "Corn of Interest Part 19",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2878279,
+                    "name": "Strange Companions XXXVIII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 160,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3318637,
+                    "name": "Corn of Interest Part 15",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 7500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512025,
+                    "name": "Distant Illusions X",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 140,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308090,
+                    "name": "Corn of Interest Part 13",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308086,
+                    "name": "Corn of Interest Part 09",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 290,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3321026,
+                    "name": "Corn of Interest Part 28",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 300,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3321027,
+                    "name": "Corn of Interest Part 29",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308080,
+                    "name": "Corn of Interest Part 03",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3308083,
+                    "name": "Corn of Interest Part 06",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 260,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3321023,
+                    "name": "Corn of Interest Part 25",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 8000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277991,
+                    "name": "Pirates Start Arriving XV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 600,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3321028,
+                    "name": "Corn of Interest Part 30",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 12500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512029,
+                    "name": "Distant Illusions XIV",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553573,
+                    "name": "Problems Still Abound XX",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553575,
+                    "name": "Problems Still Abound XXII",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553577,
+                    "name": "You Must Build A Stealth Boat I",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553579,
+                    "name": "You Must Build A Stealth Boat II",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3958669,
+                    "name": "My Cabbages XV",
+                    "image": "/img/items/merchant.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 677,
+                    "name": "Belt Drive",
+                    "image": "/img/items/9347.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 176,
+                    "name": "Magicite",
+                    "image": "/img/items/7963.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 683,
+                    "name": "Pear Grease",
+                    "image": "/img/items/8957.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 680,
+                    "name": "Energy Coil",
+                    "image": "/img/items/9379b.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 684,
+                    "name": "Power Monitor",
+                    "image": "/img/items/9314.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 682,
+                    "name": "Kill Switch",
+                    "image": "/img/items/9311.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 681,
+                    "name": "Control Box",
+                    "image": "/img/items/9306b32.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 592,
+                    "name": "Steel Plate",
+                    "image": "/img/items/9313.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 341,
+                    "name": "Flywheel",
+                    "image": "/img/items/9387.png"
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 392,
+                    "name": "Steel Wire",
+                    "image": "/img/items/wire.png"
+                  }
+                },
+                {
+                  "quantity": 12,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 597,
+                    "name": "Transistor",
+                    "image": "/img/items/9319.png"
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 145,
+                    "name": "Steel",
+                    "image": "/img/items/6150.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 685,
+        "name": "Engine"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

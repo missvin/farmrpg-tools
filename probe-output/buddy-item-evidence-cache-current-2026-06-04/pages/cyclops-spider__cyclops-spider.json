@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:07:14.734Z",
+  "httpStatus": 200,
+  "itemName": "Cyclops Spider",
+  "canonicalKey": "cyclops spider",
+  "buddyUrl": "https://buddy.farm/i/cyclops-spider/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/cyclops-spider/page-data.json",
+  "pageTitle": "Cyclops Spider",
+  "buddyItemName": "Cyclops Spider",
+  "buddyItemId": "383",
+  "buddyItemImage": "/img/items/4080.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "exchangeCenterInputs",
+    "locksmithOutputItems",
+    "npcRewards",
+    "petItems",
+    "requiredForQuests",
+    "templeRewardItems",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/cyclops-spider/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 383,
+              "name": "Cyclops Spider",
+              "image": "/img/items/4080.png",
+              "type": "item",
+              "description": "Avoid eye contact",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 4719082,
+                    "name": "I Hate To Bug You VI",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2296219,
+                    "name": "Strange Companions XXIII",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 240299,
+                    "name": "Unexpected Visitor XIV",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277986,
+                    "name": "Pirates Start Arriving X",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Lemur\n",
+                    "image": "/img/pets/lemur.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 50,
+                  "quantity": 10,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Mummy",
+                    "image": "/img/items/mummy_t_01.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1043,
+                    "name": "Bug Bag 01",
+                    "image": "/img/items/bug_bag.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2026-06-04T05:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 25,
+                  "outputQuantity": 3,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 581,
+                    "name": "Cutlass",
+                    "image": "/img/items/pirates_47_t.png"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 229,
+                  "itemQuantity": 2200
+                },
+                {
+                  "level": 129,
+                  "itemQuantity": 1200
+                },
+                {
+                  "level": 29,
+                  "itemQuantity": 120
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2022-03-26",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 362,
+                    "name": "Spider",
+                    "image": "/img/items/spiderbutcutererr.png"
+                  },
+                  "inputQuantity": 1250000,
+                  "progress": 1259750,
+                  "outputQuantity": 5
+                },
+                {
+                  "date": "2022-02-17",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 362,
+                    "name": "Spider",
+                    "image": "/img/items/spiderbutcutererr.png"
+                  },
+                  "inputQuantity": 1250000,
+                  "progress": 742250,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2022-01-23",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 362,
+                    "name": "Spider",
+                    "image": "/img/items/spiderbutcutererr.png"
+                  },
+                  "inputQuantity": 1500000,
+                  "progress": 0,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": [
+                {
+                  "id": 72,
+                  "quantity": 5,
+                  "templeReward": {
+                    "inputQuantity": 9000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 383,
+        "name": "Cyclops Spider"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

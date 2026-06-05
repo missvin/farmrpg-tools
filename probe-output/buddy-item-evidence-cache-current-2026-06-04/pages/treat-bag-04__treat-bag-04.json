@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:51:48.889Z",
+  "httpStatus": 200,
+  "itemName": "Treat Bag 04",
+  "canonicalKey": "treat bag 04",
+  "buddyUrl": "https://buddy.farm/i/treat-bag-04/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/treat-bag-04/page-data.json",
+  "pageTitle": "Treat Bag 04",
+  "buddyItemName": "Treat Bag 04",
+  "buddyItemId": "656",
+  "buddyItemImage": "/img/items/bag_t_03.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithItems",
+    "locksmithOutputItems",
+    "quizRewards",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/treat-bag-04/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 656,
+              "name": "Treat Bag 04",
+              "image": "/img/items/bag_t_03.png",
+              "type": "item",
+              "description": "Full of yummy treats",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 25,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1153801,
+                    "name": "frank's pranks XIII",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5741023,
+                    "name": "Liberty To The Captives VII",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [
+                {
+                  "quantity": 1,
+                  "score": 100,
+                  "quiz": {
+                    "__typename": "FarmRPG_Quiz",
+                    "name": "Halloween for everyone"
+                  }
+                }
+              ],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 25,
+                  "quantityMin": 25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 44,
+                    "name": "Apple",
+                    "image": "/img/items/8297.png"
+                  }
+                },
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 5,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 358,
+                    "name": "Candy",
+                    "image": "/img/items/candy_t_09.png"
+                  }
+                },
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 5,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 359,
+                    "name": "Lollipop",
+                    "image": "/img/items/candy_t_08.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 657,
+                    "name": "Spooky Cookies",
+                    "image": "/img/items/854.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 361,
+                    "name": "Candy Corn",
+                    "image": "/img/items/candycorn.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 355,
+                    "name": "Jack-o-lantern",
+                    "image": "/img/items/pumpkin_t_05.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1039,
+                    "name": "Birthday Surprise Box 03",
+                    "image": "/img/items/bsb01.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1233,
+                    "name": "Birthday Surprise Box 04",
+                    "image": "/img/items/bsb01.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1310,
+                    "name": "Pillow Case 01",
+                    "image": "/img/items/pillow_case.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1490,
+                    "name": "Birthday Surprise Box 05",
+                    "image": "/img/items/bsb01.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 656,
+        "name": "Treat Bag 04"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

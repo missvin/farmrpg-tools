@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:39:21.181Z",
+  "httpStatus": 200,
+  "itemName": "Piece of Heart",
+  "canonicalKey": "piece of heart",
+  "buddyUrl": "https://buddy.farm/i/piece-of-heart/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/piece-of-heart/page-data.json",
+  "pageTitle": "Piece of Heart",
+  "buddyItemName": "Piece of Heart",
+  "buddyItemId": "253",
+  "buddyItemImage": "/img/items/poh.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "cardsTrades",
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "skillLevelRewards",
+    "templeRewardItems",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/piece-of-heart/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 253,
+              "name": "Piece of Heart",
+              "image": "/img/items/poh.png",
+              "type": "item",
+              "description": "Way better than getting a<br/>piece of someone's mind",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 6,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7560600,
+                    "name": "Crates Unlocked for Buddy's Enrichment V",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7511908,
+                    "name": "Cuucoo's Awakening VI",
+                    "image": "/img/items/spooky_chicken_crop.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1893688,
+                    "name": "A Wall In The Way VIII",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7522717,
+                    "name": "Monster Hunter V",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553573,
+                    "name": "Problems Still Abound XX",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7462778,
+                    "name": "Far Away XXXIV",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7703450,
+                    "name": "Spirit of the Cards I",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1420032,
+                    "name": "Excuuuse me, Farmer IV",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13430133,
+                    "name": "750,000 Farmers VII",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2024-12-27T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7559222,
+                    "name": "Blue Diamond Fish V",
+                    "image": "/img/items/a_048.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1408018,
+                    "name": "Excuuuse me, Farmer II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1420007,
+                    "name": "Excuuuse me, Farmer III",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1400577,
+                    "name": "Excuuuse me, Farmer I",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7040216,
+                    "name": "Half a Million VII",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2024-01-24T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7522715,
+                    "name": "Monster Hunter III",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7551519,
+                    "name": "1,000,000 Farmers VII",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 9993.0048965724,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Watermelon Seeds",
+                      "image": "/img/items/seeds_watermelon.png"
+                    }
+                  }
+                },
+                {
+                  "rate": 7997.44081893794,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Watermelon Seeds",
+                      "image": "/img/items/seeds_watermelon.png"
+                    }
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 4,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 671,
+                    "name": "Heart Container",
+                    "image": "/img/items/heartcontainer.png?1",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 861,
+                    "name": "Borgen Bag 01",
+                    "image": "/img/items/BagsAndBoxes_59_t.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1187,
+                    "name": "Heart-shaped Box 02",
+                    "image": "/img/items/heartshapedbox1.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1444,
+                    "name": "Heart-shaped Box 03",
+                    "image": "/img/items/heartshapedbox1.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [
+                {
+                  "id": 10,
+                  "spadesQuantity": null,
+                  "heartsQuantity": 3,
+                  "diamondsQuantity": 2,
+                  "clubsQuantity": null,
+                  "jokerQuantity": null,
+                  "outputQuantity": 1
+                }
+              ],
+              "towerRewards": [
+                {
+                  "level": 199,
+                  "itemQuantity": 1
+                }
+              ],
+              "skillLevelRewards": [
+                {
+                  "skill": "cooking",
+                  "level": 70,
+                  "itemQuantity": 1
+                }
+              ],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 79,
+                  "quantity": 1,
+                  "templeReward": {
+                    "inputQuantity": 15000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 253,
+        "name": "Piece of Heart"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

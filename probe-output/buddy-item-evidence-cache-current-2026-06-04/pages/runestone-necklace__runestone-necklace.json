@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:36:16.381Z",
+  "httpStatus": 200,
+  "itemName": "Runestone Necklace",
+  "canonicalKey": "runestone necklace",
+  "buddyUrl": "https://buddy.farm/i/runestone-necklace/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/runestone-necklace/page-data.json",
+  "pageTitle": "Runestone Necklace",
+  "buddyItemName": "Runestone Necklace",
+  "buddyItemId": "582",
+  "buddyItemImage": "/img/items/pirates_17_t.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "cardsTrades",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/runestone-necklace/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 582,
+              "name": "Runestone Necklace",
+              "image": "/img/items/pirates_17_t.png",
+              "type": "item",
+              "description": "Made of magic and twine",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 950,
+                    "name": "Intruders Beware III",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [
+                {
+                  "id": 5,
+                  "spadesQuantity": null,
+                  "heartsQuantity": null,
+                  "diamondsQuantity": 2,
+                  "clubsQuantity": 3,
+                  "jokerQuantity": null,
+                  "outputQuantity": 1
+                }
+              ],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 582,
+        "name": "Runestone Necklace"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:30:03.373Z",
+  "httpStatus": 200,
+  "itemName": "Re'taw",
+  "canonicalKey": "re'taw",
+  "buddyUrl": "https://buddy.farm/i/re-taw/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/re-taw/page-data.json",
+  "pageTitle": "Re'taw",
+  "buddyItemName": "Re'taw",
+  "buddyItemId": "933",
+  "buddyItemImage": "/img/items/4696.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "exchangeCenterInputs",
+    "locksmithOutputItems",
+    "recipeIngredientItems",
+    "templeRewardItems",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/re-taw/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 933,
+              "name": "Re'taw",
+              "image": "/img/items/4696.png",
+              "type": "item",
+              "description": "The finest water in all of T'rah<br/>\r\n(According to Borgen)",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1335,
+                    "name": "Re'taw Pail",
+                    "image": "/img/items/8263w.PNG?1",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1452,
+                    "name": "Sugar Cube",
+                    "image": "/img/items/sugar_cube.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 963,
+                    "name": "Frozen Chest 01",
+                    "image": "/img/items/frozen_chest.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2025-01-30T18:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 10,
+                  "outputQuantity": 100,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 412,
+                    "name": "Snowball",
+                    "image": "/img/items/cr_t_07.png"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 318,
+                  "itemQuantity": 3180
+                },
+                {
+                  "level": 202,
+                  "itemQuantity": 200
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 706,
+                  "quantity": 1,
+                  "templeReward": {
+                    "inputQuantity": 300,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 647,
+                      "name": "Over The Moon",
+                      "image": "/img/items/leekmeatcorn.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 933,
+        "name": "Re'taw"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

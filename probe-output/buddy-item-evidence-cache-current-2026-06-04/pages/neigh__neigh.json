@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:45:35.655Z",
+  "httpStatus": 200,
+  "itemName": "Neigh",
+  "canonicalKey": "neigh",
+  "buddyUrl": "https://buddy.farm/i/neigh/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/neigh/page-data.json",
+  "pageTitle": "Neigh",
+  "buddyItemName": "Neigh",
+  "buddyItemId": "654",
+  "buddyItemImage": "/img/items/vegsoup4.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "cookingRecipeItem",
+    "npcRewards",
+    "recipeItems",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/neigh/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 654,
+              "name": "Neigh",
+              "image": "/img/items/vegsoup4.png",
+              "type": "meal",
+              "description": "Cider uses 20% less stamina\r\n<br/>for 5 minutes",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": true,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 30,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 180,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553583,
+                    "name": "You Must Build A Stealth Boat IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7462782,
+                    "name": "Far Away XXXVI",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 400,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553584,
+                    "name": "Pirate Stealth Arrival XXVII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7556550,
+                    "name": "Happy Neigh Year IV",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1346191,
+                    "name": "Happy Halloween II",
+                    "image": "/img/items/mummy_t_01.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1286511,
+                    "name": "frank's pranks XV",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1893628,
+                    "name": "A Wall In The Way IV",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1090580,
+                    "name": "Strange Companions XX",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3574903,
+                    "name": "Peculiar Endings IV",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7547090,
+                    "name": "Gratitude and Gravy II",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-12-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 3,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9460283,
+                    "name": "Beaches Are Like Deserts II",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2024-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7480894,
+                    "name": "Booms, Our Other Monetary System III",
+                    "image": "/img/items/beabrawler.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7480895,
+                    "name": "Booms, Our Other Monetary System IV",
+                    "image": "/img/items/beabrawler.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7522180,
+                    "name": "Business Is Blooming II",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7530258,
+                    "name": "Uni-que Meals II",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7533915,
+                    "name": "The Heat Makes It Hotter VI",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7533853,
+                    "name": "The Heat Makes It Hotter IV",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7535507,
+                    "name": "Horse Before The Carton I",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539246,
+                    "name": "King of Apples II",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 50,
+                  "quantity": 1,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Charles Horsington III",
+                    "image": "/img/items/npc_horse.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 15,
+                    "name": "Tomato",
+                    "image": "/img/items/8290.png"
+                  }
+                },
+                {
+                  "quantity": 30,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 29,
+                    "name": "Cucumber",
+                    "image": "/img/items/5805.png"
+                  }
+                },
+                {
+                  "quantity": 40,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 27,
+                    "name": "Peas",
+                    "image": "/img/items/8259.PNG"
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 19,
+                    "name": "Carrot",
+                    "image": "/img/items/8391.PNG"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 641,
+                    "name": "Bone Broth",
+                    "image": "/img/items/bonebroth.png"
+                  }
+                },
+                {
+                  "quantity": 180,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 103,
+                    "name": "Coal",
+                    "image": "/img/items/coal.png"
+                  }
+                },
+                {
+                  "quantity": 45,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 11,
+                    "name": "Peppers",
+                    "image": "/img/items/8301.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 637,
+                    "name": "Cooking Pot",
+                    "image": "/img/items/2364.png?1"
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 33,
+                    "name": "Onion",
+                    "image": "/img/items/8317.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": {
+                "__typename": "FarmRPG_Item",
+                "id": 655,
+                "name": "Charles's Neigh",
+                "image": "/img/items/recipe.png"
+              },
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 654,
+        "name": "Neigh"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

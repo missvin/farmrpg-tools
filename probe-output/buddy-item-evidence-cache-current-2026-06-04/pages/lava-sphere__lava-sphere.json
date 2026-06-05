@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:34:12.360Z",
+  "httpStatus": 200,
+  "itemName": "Lava Sphere",
+  "canonicalKey": "lava sphere",
+  "buddyUrl": "https://buddy.farm/i/lava-sphere/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/lava-sphere/page-data.json",
+  "pageTitle": "Lava Sphere",
+  "buddyItemName": "Lava Sphere",
+  "buddyItemId": "220",
+  "buddyItemImage": "/img/items/5249.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "petItems",
+    "recipeItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/lava-sphere/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 220,
+              "name": "Lava Sphere",
+              "image": "/img/items/5249.png",
+              "type": "item",
+              "description": "Opens portal to Lake Minerva",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": true,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 35,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 900,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8722295,
+                    "name": "Uneggspected Consequences IX",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 152,
+                    "name": "Return Our Lost Friend V",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3231311,
+                    "name": "Eggstremely Magical V",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 124,
+                    "name": "Strange Stones Exigent",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Blue Dragon",
+                    "image": "/img/pets/pet_dragon5.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 227,
+                    "name": "Runestone 17",
+                    "image": "/img/items/rs17.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 226,
+                    "name": "Runestone 16",
+                    "image": "/img/items/rs16.png?1"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 221,
+                    "name": "Runestone 11",
+                    "image": "/img/items/rs11.png?1"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 224,
+                    "name": "Runestone 14",
+                    "image": "/img/items/rs14.png?1"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 228,
+                    "name": "Runestone 18",
+                    "image": "/img/items/rs18.png?1"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 223,
+                    "name": "Runestone 13",
+                    "image": "/img/items/rs13.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 225,
+                    "name": "Runestone 15",
+                    "image": "/img/items/rs15.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 222,
+                    "name": "Runestone 12",
+                    "image": "/img/items/rs12.png"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 229,
+                    "name": "Runestone 19",
+                    "image": "/img/items/rs19.png?1"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 230,
+                    "name": "Runestone 20",
+                    "image": "/img/items/rs20.png"
+                  }
+                }
+              ],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 276,
+                  "itemQuantity": 2760
+                },
+                {
+                  "level": 242,
+                  "itemQuantity": 2400
+                },
+                {
+                  "level": 226,
+                  "itemQuantity": 2200
+                },
+                {
+                  "level": 196,
+                  "itemQuantity": 1900
+                },
+                {
+                  "level": 148,
+                  "itemQuantity": 1400
+                },
+                {
+                  "level": 126,
+                  "itemQuantity": 1200
+                },
+                {
+                  "level": 96,
+                  "itemQuantity": 190
+                },
+                {
+                  "level": 48,
+                  "itemQuantity": 140
+                },
+                {
+                  "level": 26,
+                  "itemQuantity": 120
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 220,
+        "name": "Lava Sphere"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

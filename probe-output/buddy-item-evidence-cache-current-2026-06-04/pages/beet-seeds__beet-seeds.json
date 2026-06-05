@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:21:45.783Z",
+  "httpStatus": 200,
+  "itemName": "Beet Seeds",
+  "canonicalKey": "beet seeds",
+  "buddyUrl": "https://buddy.farm/i/beet-seeds/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/beet-seeds/page-data.json",
+  "pageTitle": "Beet Seeds",
+  "buddyItemName": "Beet Seeds",
+  "buddyItemId": "449",
+  "buddyItemImage": "/img/items/seeds_beet.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRates",
+    "exchangeCenterInputs",
+    "quizRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/beet-seeds/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 449,
+              "name": "Beet Seeds",
+              "image": "/img/items/seeds_beet.png",
+              "type": "seeds",
+              "description": "Harvest every 216 hours",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 189000,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 12960,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [
+                {
+                  "runecube": false,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 450,
+                        "name": "Beet",
+                        "image": "/img/items/2850.png"
+                      },
+                      "rate": 1
+                    }
+                  ]
+                },
+                {
+                  "runecube": true,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 450,
+                        "name": "Beet",
+                        "image": "/img/items/2850.png"
+                      },
+                      "rate": 1
+                    }
+                  ]
+                }
+              ],
+              "dropRatesItems": [],
+              "quizRewards": [
+                {
+                  "quantity": 10,
+                  "score": 90,
+                  "quiz": {
+                    "__typename": "FarmRPG_Quiz",
+                    "name": "Piece It Together"
+                  }
+                }
+              ],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2026-06-03T05:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 500,
+                  "outputQuantity": 50,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 588,
+                    "name": "Mega Beet Seeds",
+                    "image": "/img/items/seeds_mbeet.png"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 449,
+        "name": "Beet Seeds"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

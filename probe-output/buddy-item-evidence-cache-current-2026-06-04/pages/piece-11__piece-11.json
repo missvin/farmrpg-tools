@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:26:53.643Z",
+  "httpStatus": 200,
+  "itemName": "Piece 11",
+  "canonicalKey": "piece 11",
+  "buddyUrl": "https://buddy.farm/i/piece-11/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/piece-11/page-data.json",
+  "pageTitle": "Piece 11",
+  "buddyItemName": "Piece 11",
+  "buddyItemId": "770",
+  "buddyItemImage": "/img/items/piece11.png?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "cardsTrades",
+    "exchangeCenterInputs",
+    "recipeIngredientItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/piece-11/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 770,
+              "name": "Piece 11",
+              "image": "/img/items/piece11.png?1",
+              "type": "item",
+              "description": "A piece to a puzzle...",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1352,
+                    "name": "Swamp Puzzle",
+                    "image": "/img/items/puzzle3.png",
+                    "cookingLevel": 0,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2026-06-04T17:00:00+00:00",
+                  "oneshot": true,
+                  "inputQuantity": 10,
+                  "outputQuantity": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1450,
+                    "name": "Piece 07",
+                    "image": "/img/items/piece07.png?1"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [
+                {
+                  "id": 2,
+                  "spadesQuantity": null,
+                  "heartsQuantity": null,
+                  "diamondsQuantity": null,
+                  "clubsQuantity": 4,
+                  "jokerQuantity": null,
+                  "outputQuantity": 1
+                }
+              ],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 770,
+        "name": "Piece 11"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

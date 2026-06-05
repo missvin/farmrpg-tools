@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:38:12.359Z",
+  "httpStatus": 200,
+  "itemName": "Runestone 18",
+  "canonicalKey": "runestone 18",
+  "buddyUrl": "https://buddy.farm/i/runestone-18/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/runestone-18/page-data.json",
+  "pageTitle": "Runestone 18",
+  "buddyItemName": "Runestone 18",
+  "buddyItemId": "228",
+  "buddyItemImage": "/img/items/rs18.png?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/runestone-18/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 228,
+              "name": "Runestone 18",
+              "image": "/img/items/rs18.png?1",
+              "type": "item",
+              "description": "Some say it can be found<br/>in a great blue",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 309,
+                    "name": "Consequences and Defenses XXII",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 123,
+                    "name": "Strange Stones X",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 4,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 797,
+                    "name": "A Towering Investment XV",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512028,
+                    "name": "Distant Illusions XIII",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523671,
+                    "name": "Bringing Egg-sy Back XXIX",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 153,
+                    "name": "Lost and Found",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Blue Dragon",
+                    "image": "/img/pets/pet_dragon5.png"
+                  }
+                },
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Red Dragon",
+                    "image": "/img/pets/pet_dragon4.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 3186.641598419426,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Vast Ocean",
+                      "image": "/img/items/ocean.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 3262.9621170098217,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Vast Ocean",
+                      "image": "/img/items/ocean.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 3599.971200230398,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": false,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Vast Ocean",
+                      "image": "/img/items/ocean.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 3755.4453958239446,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": true,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Vast Ocean",
+                      "image": "/img/items/ocean.png",
+                      "type": "fishing",
+                      "baseDropRate": null
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 220,
+                    "name": "Lava Sphere",
+                    "image": "/img/items/5249.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 398,
+                    "name": "Grab Bag 05",
+                    "image": "/img/items/4497.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 422,
+                    "name": "Bag of Presents 01",
+                    "image": "/img/items/12_sm.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 323,
+                  "itemQuantity": 3230
+                },
+                {
+                  "level": 253,
+                  "itemQuantity": 2530
+                },
+                {
+                  "level": 153,
+                  "itemQuantity": 1500
+                },
+                {
+                  "level": 53,
+                  "itemQuantity": 150
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2022-07-03",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 52,
+                    "name": "Fern Leaf",
+                    "image": "/img/items/fern.png"
+                  },
+                  "inputQuantity": 1000000,
+                  "progress": 1621082,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2022-06-05",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 83,
+                    "name": "Purple Diary",
+                    "image": "/img/items/purplebook.png"
+                  },
+                  "inputQuantity": 325000,
+                  "progress": 368288,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2022-01-19",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 140,
+                    "name": "Giant Squid",
+                    "image": "/img/items/7726.PNG"
+                  },
+                  "inputQuantity": 400000,
+                  "progress": 0,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 228,
+        "name": "Runestone 18"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

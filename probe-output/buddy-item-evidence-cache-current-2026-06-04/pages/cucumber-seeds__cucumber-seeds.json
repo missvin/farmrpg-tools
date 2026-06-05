@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:11:23.306Z",
+  "httpStatus": 200,
+  "itemName": "Cucumber Seeds",
+  "canonicalKey": "cucumber seeds",
+  "buddyUrl": "https://buddy.farm/i/cucumber-seeds/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/cucumber-seeds/page-data.json",
+  "pageTitle": "Cucumber Seeds",
+  "buddyItemName": "Cucumber Seeds",
+  "buddyItemId": "30",
+  "buddyItemImage": "/img/items/seeds_cucumber.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRates",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/cucumber-seeds/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 30,
+              "name": "Cucumber Seeds",
+              "image": "/img/items/seeds_cucumber.png",
+              "type": "seeds",
+              "description": "Harvest every 4 minutes",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 38,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 4,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5103742,
+                    "name": "Fun With Fusion II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2023-10-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 12,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 235,
+                    "name": "Dinner Party II",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2245978,
+                    "name": "Bad Dirt I",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2023-01-16T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [
+                {
+                  "runecube": false,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 29,
+                        "name": "Cucumber",
+                        "image": "/img/items/5805.png"
+                      },
+                      "rate": 1.0026439721545717
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 152,
+                        "name": "Runestone 06",
+                        "image": "/img/items/rs6.png"
+                      },
+                      "rate": 719.4762213108856
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 189,
+                        "name": "Gold Cucumber",
+                        "image": "/img/items/5805g.png?1"
+                      },
+                      "rate": 801.8603159329645
+                    }
+                  ]
+                },
+                {
+                  "runecube": true,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 29,
+                        "name": "Cucumber",
+                        "image": "/img/items/5805.png"
+                      },
+                      "rate": 1.0033098992915648
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 189,
+                        "name": "Gold Cucumber",
+                        "image": "/img/items/5805g.png?1"
+                      },
+                      "rate": 639.7379633302199
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 152,
+                        "name": "Runestone 06",
+                        "image": "/img/items/rs6.png"
+                      },
+                      "rate": 576.0899622084985
+                    }
+                  ]
+                }
+              ],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 30,
+        "name": "Cucumber Seeds"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

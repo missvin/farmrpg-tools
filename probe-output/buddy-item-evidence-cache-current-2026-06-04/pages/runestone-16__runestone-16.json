@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:19:41.455Z",
+  "httpStatus": 200,
+  "itemName": "Runestone 16",
+  "canonicalKey": "runestone 16",
+  "buddyUrl": "https://buddy.farm/i/runestone-16/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/runestone-16/page-data.json",
+  "pageTitle": "Runestone 16",
+  "buddyItemName": "Runestone 16",
+  "buddyItemId": "226",
+  "buddyItemImage": "/img/items/rs16.png?1",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "dropRatesItems",
+    "locksmithOutputItems",
+    "petItems",
+    "recipeIngredientItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/runestone-16/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 226,
+              "name": "Runestone 16",
+              "image": "/img/items/rs16.png?1",
+              "type": "item",
+              "description": "Some say it can be found<br/>with the brewers",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 4,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 797,
+                    "name": "A Towering Investment XV",
+                    "image": "/img/items/a_027.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 309,
+                    "name": "Consequences and Defenses XXII",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 120,
+                    "name": "Strange Stones VII",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 565,
+                    "name": "99 Bottles LXXX",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 153,
+                    "name": "Lost and Found",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Blue Dragon",
+                    "image": "/img/pets/pet_dragon5.png"
+                  }
+                },
+                {
+                  "level": 3,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Red Dragon",
+                    "image": "/img/pets/pet_dragon4.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 1925.0389820393864,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Hops Seeds",
+                      "image": "/img/items/seeds_hops.png"
+                    }
+                  }
+                },
+                {
+                  "rate": 1536.9482355834255,
+                  "dropRates": {
+                    "ironDepot": null,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": null,
+                    "seed": {
+                      "__typename": "FarmRPG_Item",
+                      "name": "Hops Seeds",
+                      "image": "/img/items/seeds_hops.png"
+                    }
+                  }
+                }
+              ],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [
+                {
+                  "quantity": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 220,
+                    "name": "Lava Sphere",
+                    "image": "/img/items/5249.png",
+                    "cookingLevel": 1,
+                    "canCraft": true,
+                    "canCook": false
+                  }
+                }
+              ],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 398,
+                    "name": "Grab Bag 05",
+                    "image": "/img/items/4497.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 323,
+                  "itemQuantity": 3230
+                },
+                {
+                  "level": 253,
+                  "itemQuantity": 2530
+                },
+                {
+                  "level": 153,
+                  "itemQuantity": 1500
+                },
+                {
+                  "level": 53,
+                  "itemQuantity": 150
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2025-07-31",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 238,
+                    "name": "Shovel",
+                    "image": "/img/items/5853.png?1"
+                  },
+                  "inputQuantity": 3830300,
+                  "progress": 5466087,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2023-11-25",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 27,
+                    "name": "Peas",
+                    "image": "/img/items/8259.PNG"
+                  },
+                  "inputQuantity": 3089500,
+                  "progress": 3463014,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2023-10-08",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 13,
+                    "name": "Eggplant",
+                    "image": "/img/items/eggplant.png"
+                  },
+                  "inputQuantity": 1333000,
+                  "progress": 1560001,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2022-02-05",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 46,
+                    "name": "Hops",
+                    "image": "/img/items/8248n.png"
+                  },
+                  "inputQuantity": 1500000,
+                  "progress": 0,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 226,
+        "name": "Runestone 16"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:43:30.554Z",
+  "httpStatus": 200,
+  "itemName": "Sand Castle Bucket",
+  "canonicalKey": "sand castle bucket",
+  "buddyUrl": "https://buddy.farm/i/sand-castle-bucket/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/sand-castle-bucket/page-data.json",
+  "pageTitle": "Sand Castle Bucket",
+  "buddyItemName": "Sand Castle Bucket",
+  "buddyItemId": "1084",
+  "buddyItemImage": "/img/items/sand_castle_bucket.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/sand-castle-bucket/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1084,
+              "name": "Sand Castle Bucket",
+              "image": "/img/items/sand_castle_bucket.png",
+              "type": "item",
+              "description": "Turns sand into mini-kingdoms",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9460282,
+                    "name": "Beaches Are Like Deserts I",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2024-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1244,
+                    "name": "Buddy's Beach Bag",
+                    "image": "/img/items/buddybag2.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1082,
+                    "name": "Rosalie's Beach Tote",
+                    "image": "/img/items/tote1.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1084,
+        "name": "Sand Castle Bucket"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

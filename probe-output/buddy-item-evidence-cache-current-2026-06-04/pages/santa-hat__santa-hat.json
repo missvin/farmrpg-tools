@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:20:39.266Z",
+  "httpStatus": 200,
+  "itemName": "Santa Hat",
+  "canonicalKey": "santa hat",
+  "buddyUrl": "https://buddy.farm/i/santa-hat/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/santa-hat/page-data.json",
+  "pageTitle": "Santa Hat",
+  "buddyItemName": "Santa Hat",
+  "buddyItemId": "413",
+  "buddyItemImage": "/img/items/cr_t_04.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/santa-hat/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 413,
+              "name": "Santa Hat",
+              "image": "/img/items/cr_t_04.png",
+              "type": "item",
+              "description": "Smells like Old Spice",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 672,
+                    "name": "Covert Santa XVIII",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1938583,
+                    "name": "Buddy's Christmas Adventure X",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2025-12-24",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 242,
+                    "name": "Bacon",
+                    "image": "/img/items/bacon.png"
+                  },
+                  "inputQuantity": 1155100,
+                  "progress": 1267215,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2024-12-24",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 237,
+                    "name": "Axe",
+                    "image": "/img/items/5875.png?1"
+                  },
+                  "inputQuantity": 1554800,
+                  "progress": 2298951,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2023-12-25",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 237,
+                    "name": "Axe",
+                    "image": "/img/items/5875.png?1"
+                  },
+                  "inputQuantity": 1645100,
+                  "progress": 2686391,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2022-12-25",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 237,
+                    "name": "Axe",
+                    "image": "/img/items/5875.png?1"
+                  },
+                  "inputQuantity": 1645100,
+                  "progress": 2166411,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 413,
+        "name": "Santa Hat"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

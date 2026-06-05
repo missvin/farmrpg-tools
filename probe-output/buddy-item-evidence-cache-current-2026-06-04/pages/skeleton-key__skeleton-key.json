@@ -1,0 +1,395 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:26:53.643Z",
+  "httpStatus": 200,
+  "itemName": "Skeleton Key",
+  "canonicalKey": "skeleton key",
+  "buddyUrl": "https://buddy.farm/i/skeleton-key/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/skeleton-key/page-data.json",
+  "pageTitle": "Skeleton Key",
+  "buddyItemName": "Skeleton Key",
+  "buddyItemId": "366",
+  "buddyItemImage": "/img/items/skelkey.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "dropRatesItems",
+    "exchangeCenterInputs",
+    "locksmithKeyItems",
+    "locksmithOutputItems",
+    "npcRewards",
+    "petItems",
+    "quizRewards",
+    "rewardForQuests",
+    "skillLevelRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/skeleton-key/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 366,
+              "name": "Skeleton Key",
+              "image": "/img/items/skelkey.png",
+              "type": "item",
+              "description": "A spooky key to open mystical chests",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 375,
+                    "name": "Once Upon A Halloween I",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 2,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 896,
+                    "name": "A Way Back XXXI",
+                    "image": "/img/items/a_048.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1090502,
+                    "name": "Strange Companions XV",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 330,
+                    "name": "Tricks Not Treats IV",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 815158,
+                    "name": "Far Away XII",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 3767953,
+                    "name": "Secretly A Society Summons You VIII",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 43966,
+                    "name": "The Rocket’s Red Glare X",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10000,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7553585,
+                    "name": "Pirate Stealth Arrival XXVIII",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Bird",
+                    "image": "/img/pets/pet_a_parrot.png"
+                  }
+                },
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Fox",
+                    "image": "/img/pets/pet_fox.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [
+                {
+                  "rate": 10167.561412070929,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Cave",
+                      "image": "/img/items/cave.png",
+                      "type": "explore",
+                      "baseDropRate": 0.4
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 12805.409004763613,
+                  "dropRates": {
+                    "ironDepot": false,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Cave",
+                      "image": "/img/items/cave.png",
+                      "type": "explore",
+                      "baseDropRate": 0.4
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 7976.517133558803,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": true,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Cave",
+                      "image": "/img/items/cave.png",
+                      "type": "explore",
+                      "baseDropRate": 0.4
+                    },
+                    "seed": null
+                  }
+                },
+                {
+                  "rate": 9825.885312266635,
+                  "dropRates": {
+                    "ironDepot": true,
+                    "manualFishing": null,
+                    "runecube": false,
+                    "location": {
+                      "__typename": "FarmRPG_Location",
+                      "name": "Small Cave",
+                      "image": "/img/items/cave.png",
+                      "type": "explore",
+                      "baseDropRate": 0.4
+                    },
+                    "seed": null
+                  }
+                }
+              ],
+              "quizRewards": [
+                {
+                  "quantity": 10,
+                  "score": 100,
+                  "quiz": {
+                    "__typename": "FarmRPG_Quiz",
+                    "name": "Shiny Badges"
+                  }
+                }
+              ],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 50,
+                  "quantity": 3,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Cecil",
+                    "image": "/img/items/a_027.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 583,
+                    "name": "Grab Bag 08",
+                    "image": "/img/items/4497.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [
+                {
+                  "__typename": "FarmRPG_Item",
+                  "id": 482,
+                  "name": "Mystical Chest 01",
+                  "image": "/img/items/4456.png"
+                },
+                {
+                  "__typename": "FarmRPG_Item",
+                  "id": 572,
+                  "name": "Mystical Chest 02",
+                  "image": "/img/items/4456.png"
+                }
+              ],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2024-04-01T05:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 1000,
+                  "outputQuantity": 100,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 347,
+                    "name": "Treasure Key",
+                    "image": "/img/items/7148.png"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [
+                {
+                  "skill": "fishing",
+                  "level": 99,
+                  "itemQuantity": 25
+                }
+              ],
+              "communityCenterOutputs": [
+                {
+                  "date": "2025-12-27",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 27,
+                    "name": "Peas",
+                    "image": "/img/items/8259.PNG"
+                  },
+                  "inputQuantity": 3089500,
+                  "progress": 4176718,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-10-03",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 238,
+                    "name": "Shovel",
+                    "image": "/img/items/5853.png?1"
+                  },
+                  "inputQuantity": 2137400,
+                  "progress": 3710274,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-07-20",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 163,
+                    "name": "Twine",
+                    "image": "/img/items/6172-1.png"
+                  },
+                  "inputQuantity": 6280600,
+                  "progress": 13893021,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-07-14",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 238,
+                    "name": "Shovel",
+                    "image": "/img/items/5853.png?1"
+                  },
+                  "inputQuantity": 7609800,
+                  "progress": 9147161,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-06-17",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 48,
+                    "name": "Potato",
+                    "image": "/img/items/potato.png"
+                  },
+                  "inputQuantity": 2061800,
+                  "progress": 2212196,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 366,
+        "name": "Skeleton Key"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

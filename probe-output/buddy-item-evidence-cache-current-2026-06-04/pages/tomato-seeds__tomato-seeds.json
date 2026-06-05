@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:26:53.643Z",
+  "httpStatus": 200,
+  "itemName": "Tomato Seeds",
+  "canonicalKey": "tomato seeds",
+  "buddyUrl": "https://buddy.farm/i/tomato-seeds/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/tomato-seeds/page-data.json",
+  "pageTitle": "Tomato Seeds",
+  "buddyItemName": "Tomato Seeds",
+  "buddyItemId": "16",
+  "buddyItemImage": "/img/items/seeds_tomato.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRates",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/tomato-seeds/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 16,
+              "name": "Tomato Seeds",
+              "image": "/img/items/seeds_tomato.png",
+              "type": "seeds",
+              "description": "Harvest every 30 minutes",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 330,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 30,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5103742,
+                    "name": "Fun With Fusion II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2023-10-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 181,
+                    "name": "Consequences and Defenses IV",
+                    "image": "/img/items/a_011.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [
+                {
+                  "runecube": false,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 297,
+                        "name": "Winged Amulet",
+                        "image": "/img/items/7422.png"
+                      },
+                      "rate": 10091.835704914723
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 15,
+                        "name": "Tomato",
+                        "image": "/img/items/8290.png"
+                      },
+                      "rate": 1.0000990998198012
+                    }
+                  ]
+                },
+                {
+                  "runecube": true,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 15,
+                        "name": "Tomato",
+                        "image": "/img/items/8290.png"
+                      },
+                      "rate": 1.0001266460371876
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 297,
+                        "name": "Winged Amulet",
+                        "image": "/img/items/7422.png"
+                      },
+                      "rate": 7897.022822395957
+                    }
+                  ]
+                }
+              ],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 16,
+        "name": "Tomato Seeds"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

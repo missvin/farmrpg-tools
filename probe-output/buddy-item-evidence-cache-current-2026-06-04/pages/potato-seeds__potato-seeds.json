@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:34:03.273Z",
+  "httpStatus": 200,
+  "itemName": "Potato Seeds",
+  "canonicalKey": "potato seeds",
+  "buddyUrl": "https://buddy.farm/i/potato-seeds/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/potato-seeds/page-data.json",
+  "pageTitle": "Potato Seeds",
+  "buddyItemName": "Potato Seeds",
+  "buddyItemId": "49",
+  "buddyItemImage": "/img/items/seeds_potato.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "dropRates",
+    "passwordItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "templeRewardItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/potato-seeds/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 49,
+              "name": "Potato Seeds",
+              "image": "/img/items/seeds_potato.png",
+              "type": "seeds",
+              "description": "Harvest every 25 minutes",
+              "manualFishingOnly": false,
+              "canBuy": true,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 267,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 25,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 5648086,
+                    "name": "New Moon II",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 140,
+                    "name": "Pirate's Cove III",
+                    "image": "/img/items/a_047.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [
+                {
+                  "runecube": false,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 658,
+                        "name": "Gold Potato",
+                        "image": "/img/items/gp3.png"
+                      },
+                      "rate": 10474.494605635278
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 48,
+                        "name": "Potato",
+                        "image": "/img/items/potato.png"
+                      },
+                      "rate": 1.0477255763643167
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 565,
+                        "name": "Hot Potato",
+                        "image": "/img/items/hotpotato.png"
+                      },
+                      "rate": 21.9992331067339
+                    }
+                  ]
+                },
+                {
+                  "runecube": true,
+                  "items": [
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 658,
+                        "name": "Gold Potato",
+                        "image": "/img/items/gp3.png"
+                      },
+                      "rate": 7135.212272565109
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 48,
+                        "name": "Potato",
+                        "image": "/img/items/potato.png"
+                      },
+                      "rate": 1.111276790133
+                    },
+                    {
+                      "item": {
+                        "__typename": "FarmRPG_Item",
+                        "id": 565,
+                        "name": "Hot Potato",
+                        "image": "/img/items/hotpotato.png"
+                      },
+                      "rate": 10.000597035643027
+                    }
+                  ]
+                }
+              ],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [
+                {
+                  "quantity": 20,
+                  "password": {
+                    "id": 13,
+                    "password": "farming"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 28,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 800,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 30,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 1600,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 32,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 3200,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 34,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 4800,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 36,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 6400,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 38,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 8000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 40,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 9600,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 42,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 11200,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 44,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 12800,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 46,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 14400,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 48,
+                  "quantity": 100,
+                  "templeReward": {
+                    "inputQuantity": 16000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 50,
+                  "quantity": 250,
+                  "templeReward": {
+                    "inputQuantity": 20000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 52,
+                  "quantity": 250,
+                  "templeReward": {
+                    "inputQuantity": 24000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 54,
+                  "quantity": 250,
+                  "templeReward": {
+                    "inputQuantity": 28000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 56,
+                  "quantity": 250,
+                  "templeReward": {
+                    "inputQuantity": 32000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 49,
+        "name": "Potato Seeds"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:34:12.360Z",
+  "httpStatus": 200,
+  "itemName": "Bait Bag 01",
+  "canonicalKey": "bait bag 01",
+  "buddyUrl": "https://buddy.farm/i/bait-bag-01/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/bait-bag-01/page-data.json",
+  "pageTitle": "Bait Bag 01",
+  "buddyItemName": "Bait Bag 01",
+  "buddyItemId": "1230",
+  "buddyItemImage": "/img/items/baitbag01.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithItems",
+    "npcRewards",
+    "rewardForQuests",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/bait-bag-01/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1230,
+              "name": "Bait Bag 01",
+              "image": "/img/items/baitbag01.png",
+              "type": "item",
+              "description": "Random selection of specific bait",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": true,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7528560,
+                    "name": "Lorn's Awakening XI",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2025-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7527939,
+                    "name": "Bug Exporter Enterprise II",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7533850,
+                    "name": "The Heat Makes It Hotter I",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7554039,
+                    "name": "Iced Crops Examination VI",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 10,
+                  "quantity": 10,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Goostav",
+                    "image": "/img/items/slime.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 250,
+                  "quantityMin": 10,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 191,
+                    "name": "Grubs",
+                    "image": "/img/items/7745.png"
+                  }
+                },
+                {
+                  "quantityMax": 250,
+                  "quantityMin": 10,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 18,
+                    "name": "Worms",
+                    "image": "/img/items/7758.png"
+                  }
+                },
+                {
+                  "quantityMax": 250,
+                  "quantityMin": 10,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 192,
+                    "name": "Minnows",
+                    "image": "/img/items/7749.png"
+                  }
+                },
+                {
+                  "quantityMax": 250,
+                  "quantityMin": 10,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 277,
+                    "name": "Gummy Worms",
+                    "image": "/img/items/gworm.png"
+                  }
+                },
+                {
+                  "quantityMax": 250,
+                  "quantityMin": 10,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 498,
+                    "name": "Mealworms",
+                    "image": "/img/items/mw.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 297,
+                  "itemQuantity": 297
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1230,
+        "name": "Bait Bag 01"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:27:59.049Z",
+  "httpStatus": 200,
+  "itemName": "Supply Crate 02",
+  "canonicalKey": "supply crate 02",
+  "buddyUrl": "https://buddy.farm/i/supply-crate-02/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/supply-crate-02/page-data.json",
+  "pageTitle": "Supply Crate 02",
+  "buddyItemName": "Supply Crate 02",
+  "buddyItemId": "1102",
+  "buddyItemImage": "/img/items/BagsAndBoxes_17_t.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithItems",
+    "locksmithOutputItems",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/supply-crate-02/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1102,
+              "name": "Supply Crate 02",
+              "image": "/img/items/BagsAndBoxes_17_t.png",
+              "type": "item",
+              "description": "A large amount of fishing items",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7492790,
+                    "name": "Booms Open Opportunities, Mark Successes IV",
+                    "image": "/img/items/beabrawler.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512025,
+                    "name": "Distant Illusions X",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 100,
+                  "quantityMin": 100,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 500,
+                    "name": "Large Net",
+                    "image": "/img/items/lnet.png?3"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 634,
+                    "name": "Mushroom Stew",
+                    "image": "/img/items/mushroomstew.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 645,
+                    "name": "Sea Pincher Special",
+                    "image": "/img/items/crabclawsoup.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 646,
+                    "name": "Shrimp-a-Plenty",
+                    "image": "/img/items/shrimpgreensmix.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1337,
+                    "name": "Holiday Cheer Bundle 01",
+                    "image": "/img/items/holidaycheerbundle.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1102,
+        "name": "Supply Crate 02"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

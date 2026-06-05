@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:27:48.571Z",
+  "httpStatus": 200,
+  "itemName": "Fireworks",
+  "canonicalKey": "fireworks",
+  "buddyUrl": "https://buddy.farm/i/fireworks/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/fireworks/page-data.json",
+  "pageTitle": "Fireworks",
+  "buddyItemName": "Fireworks",
+  "buddyItemId": "452",
+  "buddyItemImage": "/img/items/petard.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "exchangeCenterOutputs",
+    "locksmithOutputItems",
+    "npcItems",
+    "npcRewards",
+    "requiredForQuests",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/fireworks/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 452,
+              "name": "Fireworks",
+              "image": "/img/items/petard.png",
+              "type": "item",
+              "description": "Pyrotechnic device for entertainment",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 43973,
+                    "name": "The Rocket’s Red Glare IX",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 701,
+                    "name": "A New Year Extra",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 159612,
+                    "name": "Unlikely Pair XII",
+                    "image": "/img/items/a_024.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 46198,
+                    "name": "Beach Bum Hard Mode",
+                    "image": "/img/items/borgen.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1938632,
+                    "name": "The Light Continues I",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 2032028,
+                    "name": "Glacier Lake Effect I",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [
+                {
+                  "relationship": "likes",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Rosalie",
+                    "image": "/img/items/a_098.png"
+                  }
+                },
+                {
+                  "relationship": "loves",
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Beatrix",
+                    "image": "/img/items/a_011.png"
+                  }
+                }
+              ],
+              "npcRewards": [
+                {
+                  "level": 30,
+                  "quantity": 10,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Beatrix",
+                    "image": "/img/items/a_011.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 603,
+                    "name": "Summer Basket",
+                    "image": "/img/items/basket.png"
+                  }
+                },
+                {
+                  "quantityMax": 100,
+                  "quantityMin": 100,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 790,
+                    "name": "Beatrix's Big Box of Boom",
+                    "image": "/img/items/beatrixbox.png?1"
+                  }
+                },
+                {
+                  "quantityMax": 150,
+                  "quantityMin": 150,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1091,
+                    "name": "Beatrix's Booming Brawl Box 01",
+                    "image": "/img/items/bfw.png"
+                  }
+                },
+                {
+                  "quantityMax": 150,
+                  "quantityMin": 150,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1261,
+                    "name": "Beatrix's Booming Brawl Box 02",
+                    "image": "/img/items/fireworks_box_2.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [
+                {
+                  "lastSeen": "2022-07-01T17:00:00+00:00",
+                  "oneshot": true,
+                  "inputQuantity": 500,
+                  "outputQuantity": 10,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 81,
+                    "name": "White Parchment",
+                    "image": "/img/items/whiteparchment.png"
+                  }
+                }
+              ],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2026-01-01",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 111,
+                    "name": "Bird Egg",
+                    "image": "/img/items/6067.PNG"
+                  },
+                  "inputQuantity": 5234800,
+                  "progress": 7514058,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2025-07-04",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 27,
+                    "name": "Peas",
+                    "image": "/img/items/8259.PNG"
+                  },
+                  "inputQuantity": 3809400,
+                  "progress": 5907143,
+                  "outputQuantity": 1
+                },
+                {
+                  "date": "2023-12-31",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 124,
+                    "name": "Lemon Quartz Ring",
+                    "image": "/img/items/lemonring.png"
+                  },
+                  "inputQuantity": 508400,
+                  "progress": 2413424,
+                  "outputQuantity": 3
+                },
+                {
+                  "date": "2022-12-31",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 41,
+                    "name": "Aquamarine",
+                    "image": "/img/items/6146.PNG"
+                  },
+                  "inputQuantity": 1282500,
+                  "progress": 1532068,
+                  "outputQuantity": 3
+                },
+                {
+                  "date": "2021-12-31",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 104,
+                    "name": "Black Powder",
+                    "image": "/img/items/powder.png"
+                  },
+                  "inputQuantity": 1000000,
+                  "progress": 0,
+                  "outputQuantity": 3
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 452,
+        "name": "Fireworks"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

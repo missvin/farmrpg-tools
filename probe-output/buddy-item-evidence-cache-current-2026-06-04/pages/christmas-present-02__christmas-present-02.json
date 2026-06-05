@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:01:01.363Z",
+  "httpStatus": 200,
+  "itemName": "Christmas Present 02",
+  "canonicalKey": "christmas present 02",
+  "buddyUrl": "https://buddy.farm/i/christmas-present-02/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/christmas-present-02/page-data.json",
+  "pageTitle": "Christmas Present 02",
+  "buddyItemName": "Christmas Present 02",
+  "buddyItemId": "429",
+  "buddyItemImage": "/img/items/7468.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithItems",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/christmas-present-02/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 429,
+              "name": "Christmas Present 02",
+              "image": "/img/items/7468.png",
+              "type": "item",
+              "description": "Two turtle doves",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 621,
+                    "name": "12 Days of Christmas II",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7552710,
+                    "name": "12 Days of Sweet Treats II",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 20,
+                  "quantityMin": 20,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 84,
+                    "name": "Orange Juice",
+                    "image": "/img/items/orangejuice.png"
+                  }
+                },
+                {
+                  "quantityMax": 20,
+                  "quantityMin": 20,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 86,
+                    "name": "Lemonade",
+                    "image": "/img/items/lemonade.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 429,
+        "name": "Christmas Present 02"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

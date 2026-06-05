@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:23:50.112Z",
+  "httpStatus": 200,
+  "itemName": "Bag of Snowballs",
+  "canonicalKey": "bag of snowballs",
+  "buddyUrl": "https://buddy.farm/i/bag-of-snowballs/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/bag-of-snowballs/page-data.json",
+  "pageTitle": "Bag of Snowballs",
+  "buddyItemName": "Bag of Snowballs",
+  "buddyItemId": "940",
+  "buddyItemImage": "/img/items/bagofsnowballs.png",
+  "sourceStatus": "sources_blank",
+  "blankSourceIndicators": [
+    "no_nonempty_known_source_sections"
+  ],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "locksmithItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/bag-of-snowballs/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 940,
+              "name": "Bag of Snowballs",
+              "image": "/img/items/bagofsnowballs.png",
+              "type": "item",
+              "description": "For helping prep epic snowball battles",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 400,
+                  "quantityMin": 400,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 412,
+                    "name": "Snowball",
+                    "image": "/img/items/cr_t_07.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2024-12-20",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 41,
+                    "name": "Aquamarine",
+                    "image": "/img/items/6146.PNG"
+                  },
+                  "inputQuantity": 2571200,
+                  "progress": 3329574,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 940,
+        "name": "Bag of Snowballs"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

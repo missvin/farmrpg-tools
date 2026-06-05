@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:47:40.178Z",
+  "httpStatus": 200,
+  "itemName": "Picnic Basket 01",
+  "canonicalKey": "picnic basket 01",
+  "buddyUrl": "https://buddy.farm/i/picnic-basket-01/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/picnic-basket-01/page-data.json",
+  "pageTitle": "Picnic Basket 01",
+  "buddyItemName": "Picnic Basket 01",
+  "buddyItemId": "1448",
+  "buddyItemImage": "/img/items/picnicbasket.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithItems",
+    "locksmithOutputItems",
+    "npcRewards",
+    "rewardForQuests",
+    "templeRewardItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/picnic-basket-01/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1448,
+              "name": "Picnic Basket 01",
+              "image": "/img/items/picnicbasket.png",
+              "type": "item",
+              "description": "Full of helpful items<br/>\r\nIncludes Meals, Orange Juices<br/>\r\nLarge Nets, Arnold Palmers<br/>\r\nGrape Juice and a Mini Time Egg",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 22754036,
+                    "name": "Drink in the Green VI",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [
+                {
+                  "level": 50,
+                  "quantity": 1,
+                  "npc": {
+                    "__typename": "FarmRPG_NPC",
+                    "name": "Goostav",
+                    "image": "/img/items/slime.png"
+                  }
+                }
+              ],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 15,
+                  "quantityMin": 15,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 112,
+                    "name": "Grape Juice",
+                    "image": "/img/items/grapejuice.png"
+                  }
+                },
+                {
+                  "quantityMax": 100,
+                  "quantityMin": 100,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 500,
+                    "name": "Large Net",
+                    "image": "/img/items/lnet.png?3"
+                  }
+                },
+                {
+                  "quantityMax": 100,
+                  "quantityMin": 100,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 508,
+                    "name": "Arnold Palmer",
+                    "image": "/img/items/ap.png"
+                  }
+                },
+                {
+                  "quantityMax": 7,
+                  "quantityMin": 7,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 635,
+                    "name": "Onion Soup",
+                    "image": "/img/items/onionsoup.png"
+                  }
+                },
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 644,
+                    "name": "Quandary Chowder",
+                    "image": "/img/items/corngreens.png"
+                  }
+                },
+                {
+                  "quantityMax": 250,
+                  "quantityMin": 250,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 84,
+                    "name": "Orange Juice",
+                    "image": "/img/items/orangejuice.png"
+                  }
+                },
+                {
+                  "quantityMax": 7,
+                  "quantityMin": 7,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 643,
+                    "name": "Cat's Meow",
+                    "image": "/img/items/fishessensestew.png"
+                  }
+                },
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 645,
+                    "name": "Sea Pincher Special",
+                    "image": "/img/items/crabclawsoup.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 887,
+                    "name": "Mini Time Egg",
+                    "image": "/img/items/minitimeegg.png"
+                  }
+                },
+                {
+                  "quantityMax": 7,
+                  "quantityMin": 7,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 661,
+                    "name": "Breakfast Boost",
+                    "image": "/img/items/eggsandwich.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1476,
+                    "name": "Garden Crate 01",
+                    "image": "/img/items/garden_crate.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 652,
+                  "quantity": 1,
+                  "templeReward": {
+                    "inputQuantity": 500,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 983,
+                      "name": "Piece 30",
+                      "image": "/img/items/piece30.png?1"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1448,
+        "name": "Picnic Basket 01"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

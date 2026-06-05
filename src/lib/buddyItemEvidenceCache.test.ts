@@ -147,6 +147,78 @@ Missing Thing,missing_thing,missing-thing,https://buddy.farm/i/missing-thing/,no
     expect(toBuddyItemEvidenceReviewCsv(result)).toContain('skip_fresh');
   });
 
+  it('keeps recent terminal failures visible without refetching them', async () => {
+    const badTarget = createTarget('Bad Target');
+    const movingTarget = createTarget('Moving Target');
+    const plan = buildBuddyItemEvidenceCachePlan(
+      [badTarget, movingTarget],
+      {
+        [getBuddyItemEvidenceCacheKey(badTarget)]: {
+          fetchedAt,
+          httpStatus: 404,
+          sourceStatus: 'uncertain',
+          reviewNotes: ['Expected a successful Buddy page-data fetch but received HTTP 404.'],
+        },
+      },
+      { dryRun: true, nowMs, delayMs: DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS, limit: 1, maxAgeDays: 30 },
+    );
+
+    expect(plan.summary.countsByAction).toEqual({
+      skip_terminal: 1,
+      would_fetch: 1,
+    });
+
+    const result = await cacheBuddyItemEvidenceTargets([badTarget, movingTarget], {
+      dryRun: true,
+      nowMs,
+      delayMs: DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS,
+      limit: 1,
+      existingEvidenceByCacheKey: {
+        [getBuddyItemEvidenceCacheKey(badTarget)]: {
+          fetchedAt,
+          httpStatus: 404,
+          sourceStatus: 'uncertain',
+          reviewNotes: ['Expected a successful Buddy page-data fetch but received HTTP 404.'],
+        },
+      },
+    });
+
+    expect(result.reviewResults).toHaveLength(1);
+    expect(toBuddyItemEvidenceReviewCsv(result)).toContain('skip_terminal');
+    expect(toBuddyItemEvidenceReviewCsv(result)).toContain('http_404');
+  });
+
+  it('records slow Buddy requests as timeout review evidence', async () => {
+    vi.useFakeTimers();
+    const fetchFn = vi.fn(
+      (_url, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => {
+            const error = new Error('aborted');
+            error.name = 'AbortError';
+            reject(error);
+          });
+        }),
+    );
+
+    const resultPromise = cacheBuddyItemEvidenceTargets([createTarget('Slow Target')], {
+      fetchFn,
+      nowMs,
+      nowIso: fetchedAt,
+      delayMs: DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS,
+      requestTimeoutMs: 5000,
+      limit: 1,
+    });
+
+    await vi.advanceTimersByTimeAsync(5000);
+    const result = await resultPromise;
+    vi.useRealTimers();
+
+    expect(result.summary.countsByStatus).toEqual({ fetch_error: 1 });
+    expect(result.reviewResults).toHaveLength(1);
+    expect(result.reviewResults[0].notes.join(' ')).toContain('timed out');
+  });
+
   it('does not fetch during dry runs', async () => {
     const fetchFn = vi.fn();
 

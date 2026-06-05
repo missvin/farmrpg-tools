@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:47:40.178Z",
+  "httpStatus": 200,
+  "itemName": "Mariya's Festive Eggnog",
+  "canonicalKey": "mariya's festive eggnog",
+  "buddyUrl": "https://buddy.farm/i/mariya-s-festive-eggnog/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/mariya-s-festive-eggnog/page-data.json",
+  "pageTitle": "Mariya's Festive Eggnog",
+  "buddyItemName": "Mariya's Festive Eggnog",
+  "buddyItemId": "1165",
+  "buddyItemImage": "/img/items/recipe.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "cookingRecipeCookable",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/mariya-s-festive-eggnog/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1165,
+              "name": "Mariya's Festive Eggnog",
+              "image": "/img/items/recipe.png",
+              "type": "item",
+              "description": "Mariya's Recipe. Allows you to cook Festive Eggnog",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7515509,
+                    "name": "Don't Nog It Until You Try It",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-01-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": {
+                "__typename": "FarmRPG_Item",
+                "id": 1157,
+                "name": "Festive Eggnog",
+                "image": "/img/items/eggnog.png"
+              },
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1165,
+        "name": "Mariya's Festive Eggnog"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

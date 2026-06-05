@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:07:14.734Z",
+  "httpStatus": 200,
+  "itemName": "Hummingbird Feeder",
+  "canonicalKey": "hummingbird feeder",
+  "buddyUrl": "https://buddy.farm/i/hummingbird-feeder/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/hummingbird-feeder/page-data.json",
+  "pageTitle": "Hummingbird Feeder",
+  "buddyItemName": "Hummingbird Feeder",
+  "buddyItemId": "1195",
+  "buddyItemImage": "/img/items/hummingbird_feeder.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "exchangeCenterInputs",
+    "locksmithOutputItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "wishingWellInputItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/hummingbird-feeder/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1195,
+              "name": "Hummingbird Feeder",
+              "image": "/img/items/hummingbird_feeder.png",
+              "type": "item",
+              "description": "Full of sweet nectar that<br/>hummingbirds love",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7521739,
+                    "name": "Humming Along Helps I",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2025-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7521740,
+                    "name": "Humming Along Helps II",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2025-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [
+                {
+                  "chance": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 861,
+                    "name": "Borgen Bag 01",
+                    "image": "/img/items/BagsAndBoxes_59_t.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1456,
+                    "name": "Spring Basket 03",
+                    "image": "/img/items/springbasket.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1194,
+                    "name": "Spring Basket 02",
+                    "image": "/img/items/springbasket.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [
+                {
+                  "lastSeen": "2026-06-03T17:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 1,
+                  "outputQuantity": 12,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1238,
+                    "name": "Pet Treat",
+                    "image": "/img/items/pettreat.png"
+                  }
+                }
+              ],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1195,
+        "name": "Hummingbird Feeder"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

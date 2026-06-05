@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T23:40:25.590Z",
+  "httpStatus": 200,
+  "itemName": "frank's Basket",
+  "canonicalKey": "frank's basket",
+  "buddyUrl": "https://buddy.farm/i/frank-s-basket/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/frank-s-basket/page-data.json",
+  "pageTitle": "frank's Basket",
+  "buddyItemName": "frank's Basket",
+  "buddyItemId": "519",
+  "buddyItemImage": "/img/items/fbasket.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithItems",
+    "locksmithOutputItems",
+    "rewardForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/frank-s-basket/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 519,
+              "name": "frank's Basket",
+              "image": "/img/items/fbasket.png",
+              "type": "item",
+              "description": "Smells bad, but has some nice things in it",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 25,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1286576,
+                    "name": "frank's pranks XX",
+                    "image": "/img/emblems/franklyFrightening96.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [
+                {
+                  "quantityMax": 25,
+                  "quantityMin": 25,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 44,
+                    "name": "Apple",
+                    "image": "/img/items/8297.png"
+                  }
+                },
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 5,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 171,
+                    "name": "Blue Feathers",
+                    "image": "/img/items/5963.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 520,
+                    "name": "Bunny Ears",
+                    "image": "/img/items/ears.png"
+                  }
+                },
+                {
+                  "quantityMax": 12,
+                  "quantityMin": 12,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 20,
+                    "name": "Carrot Seeds",
+                    "image": "/img/items/seeds_carrots.png"
+                  }
+                },
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 518,
+                    "name": "Egg 06",
+                    "image": "/img/items/egg06.png"
+                  }
+                },
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 53,
+                    "name": "Purple Flower",
+                    "image": "/img/items/flower.png"
+                  }
+                }
+              ],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1039,
+                    "name": "Birthday Surprise Box 03",
+                    "image": "/img/items/bsb01.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1233,
+                    "name": "Birthday Surprise Box 04",
+                    "image": "/img/items/bsb01.png"
+                  }
+                },
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1490,
+                    "name": "Birthday Surprise Box 05",
+                    "image": "/img/items/bsb01.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 519,
+        "name": "frank's Basket"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

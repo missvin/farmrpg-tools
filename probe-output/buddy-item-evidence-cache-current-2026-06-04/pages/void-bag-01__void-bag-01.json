@@ -1,0 +1,2142 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:55:58.863Z",
+  "httpStatus": 200,
+  "itemName": "Void Bag 01",
+  "canonicalKey": "void bag 01",
+  "buddyUrl": "https://buddy.farm/i/void-bag-01/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/void-bag-01/page-data.json",
+  "pageTitle": "Void Bag 01",
+  "buddyItemName": "Void Bag 01",
+  "buddyItemId": "884",
+  "buddyItemImage": "/img/items/voidbag.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "exchangeCenterOutputs",
+    "locksmithOutputItems",
+    "passwordItems",
+    "rewardForQuests",
+    "templeRewardItems",
+    "towerRewards"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/void-bag-01/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 884,
+              "name": "Void Bag 01",
+              "image": "/img/items/voidbag.png",
+              "type": "item",
+              "description": "Who put that in the void?",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523664,
+                    "name": "Bringing Egg-sy Back XXII",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 16458466,
+                    "name": "Red Diamond Royal Flush IV",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7558097,
+                    "name": "A Little Gardening I",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7509691,
+                    "name": "Candy Cure I",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7498732,
+                    "name": "More A-peeling I",
+                    "image": "/img/items/bear_01.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 13,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7515508,
+                    "name": "Bad Luck Tempering",
+                    "image": "/img/items/buddyl.png",
+                    "endDate": "2024-12-14T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13627071,
+                    "name": "Baited And Outsmarted I",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7504670,
+                    "name": "Pumpkins Spiced, Apples Tart II",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13430089,
+                    "name": "750,000 Farmers II",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2024-12-27T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7558515,
+                    "name": "Rumor Has It II",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7496542,
+                    "name": "Summer Lessons in Science II",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7558543,
+                    "name": "Rumor Has It III",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7476976,
+                    "name": "Sunblock V",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2025-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13668628,
+                    "name": "Baited And Outsmarted III",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-03-02T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13430093,
+                    "name": "750,000 Farmers III",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2024-12-27T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13430112,
+                    "name": "750,000 Farmers IV",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2024-12-27T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7701836,
+                    "name": "Emerald Walks Everyday II",
+                    "image": "/img/items/merchant.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7516520,
+                    "name": "Art Of Gaming I",
+                    "image": "/img/items/a_034.png",
+                    "endDate": "2025-02-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13430119,
+                    "name": "750,000 Farmers V",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2024-12-27T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7559222,
+                    "name": "Blue Diamond Fish V",
+                    "image": "/img/items/a_048.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7514986,
+                    "name": "Archeology Requires Knowhow VII",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512022,
+                    "name": "Distant Illusions VII",
+                    "image": "/img/items/buddy.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 500,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7545731,
+                    "name": "So Hot Right Now VI",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7512487,
+                    "name": "Pumpkins Spiced, Apples Tart VII",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7546959,
+                    "name": "Gratitude and Gravy I",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-12-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7083981,
+                    "name": "The Void and You IV",
+                    "image": "/img/items/a_098.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208134,
+                    "name": "Best Stored Frozen III",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208135,
+                    "name": "Best Stored Frozen IV",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208136,
+                    "name": "Best Stored Frozen V",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208137,
+                    "name": "Best Stored Frozen VI",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208138,
+                    "name": "Best Stored Frozen VII",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7524117,
+                    "name": "Air of Celebration I",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2025-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8550215,
+                    "name": "Uneggspected Consequences II",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7481846,
+                    "name": "What The Heart Wants VII",
+                    "image": "/img/items/npc_figure2.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8550216,
+                    "name": "Uneggspected Consequences III",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 200,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7514932,
+                    "name": "Reindeer Safety Program II",
+                    "image": "/img/items/lornsanta.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8819568,
+                    "name": "Red Diamond Ruined I",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2025-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 8683554,
+                    "name": "Uneggspected Consequences IV",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9058640,
+                    "name": "Red Diamond Runathon III",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7703453,
+                    "name": "Spirit of the Cards IV",
+                    "image": "/img/items/a_034.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7481847,
+                    "name": "What The Heart Wants VI",
+                    "image": "/img/items/npc_figure2.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208133,
+                    "name": "Best Stored Frozen II",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9460283,
+                    "name": "Beaches Are Like Deserts II",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2024-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7476977,
+                    "name": "Sunblock VI",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2025-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7476934,
+                    "name": "Sunblock II",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2025-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7478968,
+                    "name": "Explosively Grand Offer II",
+                    "image": "/img/items/a_027.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7492888,
+                    "name": "The Mystery Triangle II",
+                    "image": "/img/items/merchant.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7476975,
+                    "name": "Sunblock IV",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2025-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7208132,
+                    "name": "Best Stored Frozen I",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7515433,
+                    "name": "Another Lot Of Trees I",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7513641,
+                    "name": "A Game Of Thanks III",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2024-12-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7520423,
+                    "name": "Heart Of The Matter I",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7498745,
+                    "name": "More A-peeling II",
+                    "image": "/img/items/bear_01.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7463234,
+                    "name": "Archeology Requires Knowhow II",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7513642,
+                    "name": "A Game Of Thanks IV",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2024-12-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7521739,
+                    "name": "Humming Along Helps I",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2025-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523032,
+                    "name": "Shadow of Spring I",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7522715,
+                    "name": "Monster Hunter III",
+                    "image": "/img/items/npc_beast.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523702,
+                    "name": "A Difficult Option Requires Bravery Sometimes IV",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 9277987,
+                    "name": "Pirates Start Arriving XI",
+                    "image": "/img/items/missing.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523662,
+                    "name": "Bringing Egg-sy Back XX",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523663,
+                    "name": "Bringing Egg-sy Back XXI",
+                    "image": "/img/items/mummy_t_01.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7514624,
+                    "name": "Shipshape Decorations II",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2025-01-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7526138,
+                    "name": "Fun in the Sun I",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2025-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7527586,
+                    "name": "Lorn's Awakening VI",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2025-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7527942,
+                    "name": "Lorn's Awakening X",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2025-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7529845,
+                    "name": "Moon Shot II",
+                    "image": "/img/items/frankBoomed96.png",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 16394600,
+                    "name": "Red Diamond Full House I",
+                    "image": "/img/items/a_011.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7515440,
+                    "name": "Another Lot Of Trees V",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7534409,
+                    "name": "The Heat Makes It Hotter VIII",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7532369,
+                    "name": "Patiently Baking I",
+                    "image": "/img/items/mariya.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7536615,
+                    "name": "Watermelon Competitions Worldwide III",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7536890,
+                    "name": "The Hardest Apples To Reach I",
+                    "image": "/img/items/a_047.png",
+                    "endDate": "2025-10-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 13430126,
+                    "name": "750,000 Farmers VI",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2024-12-27T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7537650,
+                    "name": "Threads of Music III",
+                    "image": "/img/items/a_027.png",
+                    "endDate": "2025-09-12T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7538774,
+                    "name": "Zap of the Sting VIII",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": "2025-10-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539260,
+                    "name": "King of Apples IV",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7539264,
+                    "name": "King of Apples V",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-09-30T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7559017,
+                    "name": "Super Fun Fart Goo Substance I",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7538771,
+                    "name": "Zap of the Sting V",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": "2025-10-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7540644,
+                    "name": "Ghosts of Candies Past I",
+                    "image": "/img/items/merchant.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543024,
+                    "name": "Strange Currency II",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7523601,
+                    "name": "Bringing Egg-sy Back XIX",
+                    "image": "/img/items/a_088.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543035,
+                    "name": "Strange Currency IV",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 50,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7551521,
+                    "name": "1,000,000 Farmers IX",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7529177,
+                    "name": "Bug Exporter Enterprise IX",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": "2025-08-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7547089,
+                    "name": "Top Turkey",
+                    "image": "/img/items/geist_turkey.png",
+                    "endDate": "2025-12-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7551515,
+                    "name": "1,000,000 Farmers III",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 15,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7551516,
+                    "name": "1,000,000 Farmers IV",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 20,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7551517,
+                    "name": "1,000,000 Farmers V",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7551518,
+                    "name": "1,000,000 Farmers VI",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7538773,
+                    "name": "Zap of the Sting VII",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": "2025-10-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7551514,
+                    "name": "1,000,000 Farmers II",
+                    "image": "/img/items/a_098.png",
+                    "endDate": "2025-12-06T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7514623,
+                    "name": "Shipshape Decorations I",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2025-01-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7552818,
+                    "name": "12 Days of Sweet Treats V",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-01-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7552596,
+                    "name": "Ice Cleared Everywhere I",
+                    "image": "/img/items/a_024.png",
+                    "endDate": "2026-02-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7554043,
+                    "name": "Iced Crops Examination VII",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7555885,
+                    "name": "Happy Neigh Year II",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7555421,
+                    "name": "Iced Crops Extreme Examination VI",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7556549,
+                    "name": "Happy Neigh Year III",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7556694,
+                    "name": "Happy Neigh Year VII",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7556550,
+                    "name": "Happy Neigh Year IV",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7556695,
+                    "name": "Happy Neigh Year VIII",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7555597,
+                    "name": "Just As Sweet I",
+                    "image": "/img/items/captainlogan.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7556566,
+                    "name": "Happy Neigh Year V",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7556696,
+                    "name": "Happy Neigh Year IX",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7556624,
+                    "name": "Happy Neigh Year VI",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7556700,
+                    "name": "Happy Neigh Year X",
+                    "image": "/img/items/npc_horse.png",
+                    "endDate": "2026-03-01T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7462459,
+                    "name": "Belt out of Shape III",
+                    "image": "/img/items/a_028.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7557028,
+                    "name": "A Little Luckier I",
+                    "image": "/img/items/buddyl.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 5,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7557915,
+                    "name": "Green Eggs and Bacon III",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7538772,
+                    "name": "Zap of the Sting VI",
+                    "image": "/img/items/MustacheTom96.png",
+                    "endDate": "2025-10-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543034,
+                    "name": "Strange Currency III",
+                    "image": "/img/items/fairy.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7559189,
+                    "name": "A Pinata Trouble I",
+                    "image": "/img/items/npc_figure.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 25,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7559448,
+                    "name": "A Pinata Trouble IV",
+                    "image": "/img/items/robot_02.png",
+                    "endDate": "2026-06-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 10,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7560433,
+                    "name": "Relaxing Refreshment Required II",
+                    "image": "/img/items/npc_figure2.png",
+                    "endDate": "2026-07-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 236,
+                    "password": "vlad"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 215,
+                    "password": "interuniversal"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 25,
+                  "quantityMin": 25,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1456,
+                    "name": "Spring Basket 03",
+                    "image": "/img/items/springbasket.png"
+                  }
+                },
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1202,
+                    "name": "Magical Chest 02",
+                    "image": "/img/items/magicchest01.png"
+                  }
+                },
+                {
+                  "quantityMax": 25,
+                  "quantityMin": 25,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1476,
+                    "name": "Garden Crate 01",
+                    "image": "/img/items/garden_crate.png"
+                  }
+                },
+                {
+                  "quantityMax": 3,
+                  "quantityMin": 3,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1104,
+                    "name": "Baba's Snack Pack",
+                    "image": "/img/items/babasnack.png"
+                  }
+                },
+                {
+                  "quantityMax": 5,
+                  "quantityMin": 5,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1032,
+                    "name": "Magical Chest 01",
+                    "image": "/img/items/magicchest01.png"
+                  }
+                },
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1337,
+                    "name": "Holiday Cheer Bundle 01",
+                    "image": "/img/items/holidaycheerbundle.png"
+                  }
+                },
+                {
+                  "quantityMax": 10,
+                  "quantityMin": 10,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 972,
+                    "name": "Heart-shaped Box 01",
+                    "image": "/img/items/heartshapedbox1.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [
+                {
+                  "lastSeen": "2026-06-04T17:00:00+00:00",
+                  "oneshot": false,
+                  "inputQuantity": 200,
+                  "outputQuantity": 20,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 266,
+                    "name": "Skull Coin",
+                    "image": "/img/items/7286.png"
+                  }
+                }
+              ],
+              "cardsTrades": [],
+              "towerRewards": [
+                {
+                  "level": 314,
+                  "itemQuantity": 314
+                },
+                {
+                  "level": 267,
+                  "itemQuantity": 267
+                },
+                {
+                  "level": 250,
+                  "itemQuantity": 500
+                },
+                {
+                  "level": 200,
+                  "itemQuantity": 100
+                }
+              ],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2024-02-21",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 285,
+                    "name": "Caterpillar",
+                    "image": "/img/items/caterpillar.png"
+                  },
+                  "inputQuantity": 2532100,
+                  "progress": 1876604,
+                  "outputQuantity": 3
+                }
+              ],
+              "templeRewardItems": [
+                {
+                  "id": 348,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 11,
+                      "name": "Peppers",
+                      "image": "/img/items/8301.png"
+                    }
+                  }
+                },
+                {
+                  "id": 351,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 11,
+                      "name": "Peppers",
+                      "image": "/img/items/8301.png"
+                    }
+                  }
+                },
+                {
+                  "id": 316,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 13,
+                      "name": "Eggplant",
+                      "image": "/img/items/eggplant.png"
+                    }
+                  }
+                },
+                {
+                  "id": 319,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 13,
+                      "name": "Eggplant",
+                      "image": "/img/items/eggplant.png"
+                    }
+                  }
+                },
+                {
+                  "id": 398,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 15,
+                      "name": "Tomato",
+                      "image": "/img/items/8290.png"
+                    }
+                  }
+                },
+                {
+                  "id": 403,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 15,
+                      "name": "Tomato",
+                      "image": "/img/items/8290.png"
+                    }
+                  }
+                },
+                {
+                  "id": 290,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 19,
+                      "name": "Carrot",
+                      "image": "/img/items/8391.PNG"
+                    }
+                  }
+                },
+                {
+                  "id": 295,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 19,
+                      "name": "Carrot",
+                      "image": "/img/items/8391.PNG"
+                    }
+                  }
+                },
+                {
+                  "id": 342,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 27,
+                      "name": "Peas",
+                      "image": "/img/items/8259.PNG"
+                    }
+                  }
+                },
+                {
+                  "id": 345,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 27,
+                      "name": "Peas",
+                      "image": "/img/items/8259.PNG"
+                    }
+                  }
+                },
+                {
+                  "id": 310,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 29,
+                      "name": "Cucumber",
+                      "image": "/img/items/5805.png"
+                    }
+                  }
+                },
+                {
+                  "id": 313,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 29,
+                      "name": "Cucumber",
+                      "image": "/img/items/5805.png"
+                    }
+                  }
+                },
+                {
+                  "id": 374,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 31,
+                      "name": "Radish",
+                      "image": "/img/items/radish.png?1"
+                    }
+                  }
+                },
+                {
+                  "id": 379,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 31,
+                      "name": "Radish",
+                      "image": "/img/items/radish.png?1"
+                    }
+                  }
+                },
+                {
+                  "id": 336,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 33,
+                      "name": "Onion",
+                      "image": "/img/items/8317.png"
+                    }
+                  }
+                },
+                {
+                  "id": 339,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 33,
+                      "name": "Onion",
+                      "image": "/img/items/8317.png"
+                    }
+                  }
+                },
+                {
+                  "id": 322,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 46,
+                      "name": "Hops",
+                      "image": "/img/items/8248n.png"
+                    }
+                  }
+                },
+                {
+                  "id": 327,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 46,
+                      "name": "Hops",
+                      "image": "/img/items/8248n.png"
+                    }
+                  }
+                },
+                {
+                  "id": 360,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 363,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 48,
+                      "name": "Potato",
+                      "image": "/img/items/potato.png"
+                    }
+                  }
+                },
+                {
+                  "id": 330,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 50,
+                      "name": "Leek",
+                      "image": "/img/items/8291.png"
+                    }
+                  }
+                },
+                {
+                  "id": 333,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 50,
+                      "name": "Leek",
+                      "image": "/img/items/8291.png"
+                    }
+                  }
+                },
+                {
+                  "id": 406,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 411,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 59,
+                      "name": "Watermelon",
+                      "image": "/img/items/8293.png"
+                    }
+                  }
+                },
+                {
+                  "id": 298,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 65,
+                      "name": "Corn",
+                      "image": "/img/items/8288.png"
+                    }
+                  }
+                },
+                {
+                  "id": 301,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 65,
+                      "name": "Corn",
+                      "image": "/img/items/8288.png"
+                    }
+                  }
+                },
+                {
+                  "id": 282,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 67,
+                      "name": "Cabbage",
+                      "image": "/img/items/8319-3.png?1"
+                    }
+                  }
+                },
+                {
+                  "id": 287,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 67,
+                      "name": "Cabbage",
+                      "image": "/img/items/8319-3.png?1"
+                    }
+                  }
+                },
+                {
+                  "id": 366,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 69,
+                      "name": "Pumpkin",
+                      "image": "/img/items/8294.png"
+                    }
+                  }
+                },
+                {
+                  "id": 371,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 69,
+                      "name": "Pumpkin",
+                      "image": "/img/items/8294.png"
+                    }
+                  }
+                },
+                {
+                  "id": 414,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 71,
+                      "name": "Wheat",
+                      "image": "/img/items/8249.png"
+                    }
+                  }
+                },
+                {
+                  "id": 417,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 71,
+                      "name": "Wheat",
+                      "image": "/img/items/8249.png"
+                    }
+                  }
+                },
+                {
+                  "id": 304,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 254,
+                      "name": "Cotton",
+                      "image": "/img/items/8311.png"
+                    }
+                  }
+                },
+                {
+                  "id": 307,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 254,
+                      "name": "Cotton",
+                      "image": "/img/items/8311.png"
+                    }
+                  }
+                },
+                {
+                  "id": 274,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 256,
+                      "name": "Broccoli",
+                      "image": "/img/items/8757.png"
+                    }
+                  }
+                },
+                {
+                  "id": 279,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 256,
+                      "name": "Broccoli",
+                      "image": "/img/items/8757.png"
+                    }
+                  }
+                },
+                {
+                  "id": 390,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 373,
+                      "name": "Sunflower",
+                      "image": "/img/items/sunflower.png"
+                    }
+                  }
+                },
+                {
+                  "id": 395,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 373,
+                      "name": "Sunflower",
+                      "image": "/img/items/sunflower.png"
+                    }
+                  }
+                },
+                {
+                  "id": 451,
+                  "quantity": 10,
+                  "templeReward": {
+                    "inputQuantity": 50000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 378,
+                      "name": "Water Lily",
+                      "image": "/img/items/3258.png"
+                    }
+                  }
+                },
+                {
+                  "id": 354,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 409,
+                      "name": "Pine Tree",
+                      "image": "/img/items/cr_t_06.png"
+                    }
+                  }
+                },
+                {
+                  "id": 357,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 409,
+                      "name": "Pine Tree",
+                      "image": "/img/items/cr_t_06.png"
+                    }
+                  }
+                },
+                {
+                  "id": 266,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 450,
+                      "name": "Beet",
+                      "image": "/img/items/2850.png"
+                    }
+                  }
+                },
+                {
+                  "id": 269,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 450,
+                      "name": "Beet",
+                      "image": "/img/items/2850.png"
+                    }
+                  }
+                },
+                {
+                  "id": 160,
+                  "quantity": 10,
+                  "templeReward": {
+                    "inputQuantity": 2000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 505,
+                      "name": "Mug of Beer",
+                      "image": "/img/items/7264.png?1"
+                    }
+                  }
+                },
+                {
+                  "id": 382,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 630,
+                      "name": "Rice",
+                      "image": "/img/items/rice.png"
+                    }
+                  }
+                },
+                {
+                  "id": 387,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 630,
+                      "name": "Rice",
+                      "image": "/img/items/rice.png"
+                    }
+                  }
+                },
+                {
+                  "id": 705,
+                  "quantity": 5,
+                  "templeReward": {
+                    "inputQuantity": 200,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 647,
+                      "name": "Over The Moon",
+                      "image": "/img/items/leekmeatcorn.png"
+                    }
+                  }
+                },
+                {
+                  "id": 567,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 10000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 1276,
+                      "name": "Sugar Cane",
+                      "image": "/img/items/scane.png"
+                    }
+                  }
+                },
+                {
+                  "id": 570,
+                  "quantity": 50,
+                  "templeReward": {
+                    "inputQuantity": 70000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 1276,
+                      "name": "Sugar Cane",
+                      "image": "/img/items/scane.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 884,
+        "name": "Void Bag 01"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

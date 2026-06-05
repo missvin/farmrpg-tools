@@ -4,6 +4,8 @@ export const DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS = 5000;
 export const MIN_BUDDY_ITEM_EVIDENCE_DELAY_MS = 3000;
 export const DEFAULT_BUDDY_ITEM_EVIDENCE_LIMIT = 10;
 export const MAX_BUDDY_ITEM_EVIDENCE_LIMIT = 25;
+export const DEFAULT_BUDDY_ITEM_EVIDENCE_REQUEST_TIMEOUT_MS = 30000;
+export const MIN_BUDDY_ITEM_EVIDENCE_REQUEST_TIMEOUT_MS = 5000;
 
 const TARGET_COLUMNS = ['item_name', 'canonical_key', 'buddy_url', 'notes'];
 const PROBE_RESULT_COLUMNS = [
@@ -347,6 +349,7 @@ export function normalizeBuddyItemEvidenceOptions(options = {}) {
   const delayMs = options.delayMs ?? DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS;
   const limit = options.limit ?? DEFAULT_BUDDY_ITEM_EVIDENCE_LIMIT;
   const maxAgeDays = options.maxAgeDays ?? 30;
+  const requestTimeoutMs = options.requestTimeoutMs ?? DEFAULT_BUDDY_ITEM_EVIDENCE_REQUEST_TIMEOUT_MS;
 
   if (!Number.isFinite(delayMs) || delayMs < MIN_BUDDY_ITEM_EVIDENCE_DELAY_MS) {
     throw new Error(
@@ -364,14 +367,45 @@ export function normalizeBuddyItemEvidenceOptions(options = {}) {
     throw new Error('Use --max-age-days 1 or greater so fresh cache entries are not rechecked unnecessarily.');
   }
 
+  if (
+    !Number.isFinite(requestTimeoutMs) ||
+    requestTimeoutMs < MIN_BUDDY_ITEM_EVIDENCE_REQUEST_TIMEOUT_MS
+  ) {
+    throw new Error(
+      `Use --request-timeout-ms ${MIN_BUDDY_ITEM_EVIDENCE_REQUEST_TIMEOUT_MS.toLocaleString()} or greater so slow Buddy requests fail explicitly instead of hanging indefinitely.`,
+    );
+  }
+
   return {
     delayMs,
     limit,
     maxAgeDays,
+    requestTimeoutMs,
     dryRun: options.dryRun === true,
     force: options.force === true,
     nowMs: options.nowMs ?? Date.now(),
   };
+}
+
+function isRecentBuddyItemEvidence(evidence, options = {}) {
+  const nowMs = options.nowMs ?? Date.now();
+  const maxAgeDays = options.maxAgeDays ?? 30;
+  const fetchedAtMs = parseTimestamp(evidence?.fetchedAt);
+
+  if (!fetchedAtMs) {
+    return false;
+  }
+
+  const maxAgeMs = maxAgeDays * 24 * 60 * 60 * 1000;
+  return nowMs - fetchedAtMs <= maxAgeMs;
+}
+
+function isTerminalBuddyItemEvidence(evidence, options = {}) {
+  if (!isRecentBuddyItemEvidence(evidence, options)) {
+    return false;
+  }
+
+  return Boolean(evidence?.fetchError) || (evidence?.httpStatus !== undefined && evidence?.httpStatus !== 200);
 }
 
 export function buildBuddyItemEvidenceCachePlan(targets, existingEvidenceByCacheKey = {}, options = {}) {
@@ -395,6 +429,20 @@ export function buildBuddyItemEvidenceCachePlan(targets, existingEvidenceByCache
           pageDataUrl,
           action: 'skip_fresh',
           reason: `Cached evidence is newer than ${normalizedOptions.maxAgeDays.toLocaleString()} days.`,
+          existingEvidence,
+          existingFetchedAt: existingEvidence.fetchedAt,
+        };
+      }
+
+      if (!normalizedOptions.force && isTerminalBuddyItemEvidence(existingEvidence, normalizedOptions)) {
+        return {
+          index,
+          target,
+          cacheKey,
+          cacheFileName,
+          pageDataUrl,
+          action: 'skip_terminal',
+          reason: `Cached terminal evidence is newer than ${normalizedOptions.maxAgeDays.toLocaleString()} days.`,
           existingEvidence,
           existingFetchedAt: existingEvidence.fetchedAt,
         };
@@ -465,14 +513,14 @@ export function buildBuddyItemEvidenceCachePlan(targets, existingEvidenceByCache
 }
 
 function createResultFromPlanEntry(entry, fields = {}) {
-  const existingEvidence = entry.action === 'skip_fresh' ? entry.existingEvidence : null;
+  const existingEvidence = ['skip_fresh', 'skip_terminal'].includes(entry.action) ? entry.existingEvidence : null;
   const existingSourceStatus = existingEvidence?.sourceStatus ?? '';
-  const existingFlags =
-    existingSourceStatus === 'sources_blank'
-      ? ['sources_blank']
-      : existingSourceStatus === 'uncertain'
-        ? ['uncertain']
-        : [];
+  const existingFlags = [
+    existingSourceStatus === 'sources_blank' ? 'sources_blank' : '',
+    existingSourceStatus === 'uncertain' ? 'uncertain' : '',
+    existingEvidence?.fetchError ? 'fetch_error' : '',
+    existingEvidence?.httpStatus && existingEvidence.httpStatus !== 200 ? `http_${existingEvidence.httpStatus}` : '',
+  ].filter(Boolean);
 
   return {
     itemName: entry.target.itemName,
@@ -487,7 +535,7 @@ function createResultFromPlanEntry(entry, fields = {}) {
     sourceStatus: fields.sourceStatus ?? existingSourceStatus,
     fetchedAt: fields.fetchedAt ?? existingEvidence?.fetchedAt ?? '',
     flags: fields.flags ?? existingFlags,
-    notes: fields.notes ?? [...(existingEvidence?.reviewNotes ?? []), entry.reason].filter(Boolean),
+    notes: fields.notes ?? [...(existingEvidence?.reviewNotes ?? []), existingEvidence?.fetchError, entry.reason].filter(Boolean),
     evidence: fields.evidence ?? null,
   };
 }
@@ -508,13 +556,19 @@ export async function cacheBuddyItemEvidenceTargets(targets, options = {}) {
       continue;
     }
 
+    let timeoutId = null;
     try {
+      const abortController = new AbortController();
+      timeoutId = setTimeout(() => abortController.abort(), normalizedOptions.requestTimeoutMs);
       const response = await fetchFn(entry.pageDataUrl, {
         method: 'GET',
+        signal: abortController.signal,
         headers: {
           accept: 'application/json',
         },
       });
+      clearTimeout(timeoutId);
+      timeoutId = null;
 
       if (!response.ok) {
         const evidence = createBuddyItemEvidenceRecord(entry.target, {
@@ -557,11 +611,16 @@ export async function cacheBuddyItemEvidenceTargets(targets, options = {}) {
         );
       }
     } catch (error) {
+      const isAbortError = error instanceof Error && error.name === 'AbortError';
       const evidence = createBuddyItemEvidenceRecord(entry.target, {
         fetchedAt: nowIso,
         httpStatus: null,
         pageDataUrl: entry.pageDataUrl,
-        fetchError: error instanceof Error ? error.message : 'Unknown fetch failure.',
+        fetchError: isAbortError
+          ? `Buddy page-data request timed out after ${normalizedOptions.requestTimeoutMs.toLocaleString()}ms.`
+          : error instanceof Error
+            ? error.message
+            : 'Unknown fetch failure.',
       });
 
       results.push(
@@ -570,10 +629,14 @@ export async function cacheBuddyItemEvidenceTargets(targets, options = {}) {
           sourceStatus: evidence.sourceStatus,
           fetchedAt: nowIso,
           flags: ['fetch_error'],
-          notes: evidence.reviewNotes,
+          notes: [...evidence.reviewNotes, evidence.fetchError].filter(Boolean),
           evidence,
         }),
       );
+    } finally {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     }
 
     const fetchedCount = results.filter((result) => result.action === 'fetch').length;

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:44:26.229Z",
+  "httpStatus": 200,
+  "itemName": "Certificate of Sugar Cane Giving",
+  "canonicalKey": "certificate of sugar cane giving",
+  "buddyUrl": "https://buddy.farm/i/certificate-of-sugar-cane-giving/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/certificate-of-sugar-cane-giving/page-data.json",
+  "pageTitle": "Certificate of Sugar Cane Giving",
+  "buddyItemName": "Certificate of Sugar Cane Giving",
+  "buddyItemId": "1308",
+  "buddyItemImage": "/img/items/7896-yellow.png",
+  "sourceStatus": "sources_blank",
+  "blankSourceIndicators": [
+    "no_nonempty_known_source_sections"
+  ],
+  "detectedSections": [
+    "templeRewardItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/certificate-of-sugar-cane-giving/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1308,
+              "name": "Certificate of Sugar Cane Giving",
+              "image": "/img/items/7896-yellow.png",
+              "type": "item",
+              "description": "Stamp of Sugary Approval",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 572,
+                  "quantity": 1,
+                  "templeReward": {
+                    "inputQuantity": 100000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 1276,
+                      "name": "Sugar Cane",
+                      "image": "/img/items/scane.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1308,
+        "name": "Certificate of Sugar Cane Giving"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

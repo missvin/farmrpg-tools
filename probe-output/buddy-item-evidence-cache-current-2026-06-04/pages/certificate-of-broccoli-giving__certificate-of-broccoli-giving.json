@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-04T22:52:43.724Z",
+  "httpStatus": 200,
+  "itemName": "Certificate of Broccoli Giving",
+  "canonicalKey": "certificate of broccoli giving",
+  "buddyUrl": "https://buddy.farm/i/certificate-of-broccoli-giving/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/certificate-of-broccoli-giving/page-data.json",
+  "pageTitle": "Certificate of Broccoli Giving",
+  "buddyItemName": "Certificate of Broccoli Giving",
+  "buddyItemId": "1009",
+  "buddyItemImage": "/img/items/7896-green.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "requiredForQuests",
+    "rewardForQuests",
+    "templeRewardItems"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/certificate-of-broccoli-giving/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1009,
+              "name": "Certificate of Broccoli Giving",
+              "image": "/img/items/7896-green.png",
+              "type": "item",
+              "description": "Brooch of Broccoli Benefaction",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 1,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7535560,
+                    "name": "Book of Dewstar Mastery VI",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7535566,
+                    "name": "Book of Dewstar Mastery XII",
+                    "image": "/img/items/a_088.png",
+                    "endDate": null,
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": [
+                {
+                  "id": 281,
+                  "quantity": 1,
+                  "templeReward": {
+                    "inputQuantity": 100000,
+                    "inputItem": {
+                      "__typename": "FarmRPG_Item",
+                      "id": 256,
+                      "name": "Broccoli",
+                      "image": "/img/items/8757.png"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1009,
+        "name": "Certificate of Broccoli Giving"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

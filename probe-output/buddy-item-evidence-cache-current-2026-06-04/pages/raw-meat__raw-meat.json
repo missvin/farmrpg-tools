@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-06-05T02:22:43.879Z",
+  "httpStatus": 200,
+  "itemName": "Raw Meat",
+  "canonicalKey": "raw meat",
+  "buddyUrl": "https://buddy.farm/i/raw-meat/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/raw-meat/page-data.json",
+  "pageTitle": "Raw Meat",
+  "buddyItemName": "Raw Meat",
+  "buddyItemId": "1290",
+  "buddyItemImage": "/img/items/rawmeat.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "petItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-248 current museum universe item",
+    "refresh Buddy page evidence for parsing work."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/raw-meat/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1290,
+              "name": "Raw Meat",
+              "image": "/img/items/rawmeat.png",
+              "type": "item",
+              "description": "Best served cooked",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 52,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543747,
+                    "name": "Grill And Thrill I",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 52,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543748,
+                    "name": "Grill And Thrill II",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 52,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543749,
+                    "name": "Grill And Thrill III",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 52,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7543750,
+                    "name": "Grill And Thrill IV",
+                    "image": "/img/items/a_028h.png",
+                    "endDate": "2025-11-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [
+                {
+                  "level": 6,
+                  "pet": {
+                    "__typename": "FarmRPG_Pet",
+                    "name": "Wolf",
+                    "image": "/img/pets/pet_wolf2.png"
+                  }
+                }
+              ],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1290,
+        "name": "Raw Meat"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}

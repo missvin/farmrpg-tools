@@ -5,6 +5,7 @@ import {
   cacheBuddyItemEvidenceTargets,
   DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS,
   DEFAULT_BUDDY_ITEM_EVIDENCE_LIMIT,
+  DEFAULT_BUDDY_ITEM_EVIDENCE_REQUEST_TIMEOUT_MS,
   getBuddyItemEvidenceCacheKey,
   getBuddyItemEvidenceFileName,
   MAX_BUDDY_ITEM_EVIDENCE_LIMIT,
@@ -24,6 +25,7 @@ function parseArgs(argv) {
     delayMs: DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS,
     limit: DEFAULT_BUDDY_ITEM_EVIDENCE_LIMIT,
     maxAgeDays: 30,
+    requestTimeoutMs: DEFAULT_BUDDY_ITEM_EVIDENCE_REQUEST_TIMEOUT_MS,
     dryRun: false,
     force: false,
   };
@@ -55,6 +57,12 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (argument === '--request-timeout-ms') {
+      options.requestTimeoutMs = Number(argv[index + 1] ?? String(DEFAULT_BUDDY_ITEM_EVIDENCE_REQUEST_TIMEOUT_MS));
+      index += 1;
+      continue;
+    }
+
     if (argument === '--dry-run') {
       options.dryRun = true;
       continue;
@@ -76,13 +84,38 @@ function parseArgs(argv) {
 
 function printUsage() {
   console.log(
-    'Usage: node scripts/cacheBuddyItemPageEvidence.mjs <buddy_item_targets.csv|buddy_item_probe_results.csv> [--output-dir <dir>] [--delay-ms <ms>] [--limit <n>] [--max-age-days <n>] [--dry-run] [--force]',
+    'Usage: node scripts/cacheBuddyItemPageEvidence.mjs <buddy_item_targets.csv|buddy_item_probe_results.csv> [--output-dir <dir>] [--delay-ms <ms>] [--limit <n>] [--max-age-days <n>] [--request-timeout-ms <ms>] [--dry-run] [--force]',
   );
   console.log('Expected target CSV header: item_name,canonical_key,buddy_url,notes');
   console.log('Existing probe results CSVs from scripts/probeBuddyFarmCandidates.mjs are also accepted.');
   console.log(
     `Gentle defaults: --delay-ms ${DEFAULT_BUDDY_ITEM_EVIDENCE_DELAY_MS}, --limit ${DEFAULT_BUDDY_ITEM_EVIDENCE_LIMIT}, max limit ${MAX_BUDDY_ITEM_EVIDENCE_LIMIT}.`,
   );
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isTransientWriteError(error) {
+  return ['EBUSY', 'EPERM', 'UNKNOWN'].includes(error?.code);
+}
+
+async function writeFileWithRetry(filePath, data, encoding = 'utf8') {
+  const maxAttempts = 5;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      await writeFile(filePath, data, encoding);
+      return;
+    } catch (error) {
+      if (!isTransientWriteError(error) || attempt === maxAttempts) {
+        throw error;
+      }
+
+      await sleep(250 * attempt);
+    }
+  }
 }
 
 async function readExistingEvidence(targets, pagesDir) {
@@ -112,7 +145,7 @@ async function writeEvidenceFiles(cacheResult, pagesDir) {
       continue;
     }
 
-    await writeFile(path.join(pagesDir, result.cacheFileName), JSON.stringify(result.evidence, null, 2), 'utf8');
+    await writeFileWithRetry(path.join(pagesDir, result.cacheFileName), JSON.stringify(result.evidence, null, 2), 'utf8');
   }
 }
 
@@ -152,6 +185,7 @@ async function main() {
     maxAgeDays: args.maxAgeDays,
     dryRun: args.dryRun,
     force: args.force,
+    requestTimeoutMs: args.requestTimeoutMs,
   });
 
   if (args.dryRun) {
@@ -167,9 +201,9 @@ async function main() {
   const manifestCsvPath = path.join(resolvedOutputDir, 'buddy_item_evidence_manifest.csv');
   const reviewCsvPath = path.join(resolvedOutputDir, 'buddy_item_evidence_review.csv');
 
-  await writeFile(resultsJsonPath, toBuddyItemEvidenceResultJson(cacheResult), 'utf8');
-  await writeFile(manifestCsvPath, toBuddyItemEvidenceManifestCsv(cacheResult), 'utf8');
-  await writeFile(reviewCsvPath, toBuddyItemEvidenceReviewCsv(cacheResult), 'utf8');
+  await writeFileWithRetry(resultsJsonPath, toBuddyItemEvidenceResultJson(cacheResult), 'utf8');
+  await writeFileWithRetry(manifestCsvPath, toBuddyItemEvidenceManifestCsv(cacheResult), 'utf8');
+  await writeFileWithRetry(reviewCsvPath, toBuddyItemEvidenceReviewCsv(cacheResult), 'utf8');
 
   console.log(
     `Processed ${cacheResult.summary.targetsProcessed.toLocaleString()} Buddy item evidence targets with ${args.delayMs.toLocaleString()}ms delay and limit ${args.limit.toLocaleString()}.`,
