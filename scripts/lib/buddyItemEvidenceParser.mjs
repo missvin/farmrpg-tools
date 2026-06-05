@@ -43,6 +43,12 @@ function escapeCsvValue(value) {
   return stringValue;
 }
 
+function toReviewScalar(value) {
+  return String(value ?? '')
+    .replace(/\s+/gu, ' ')
+    .trim();
+}
+
 function normalizeBoolean(value) {
   if (value === true) {
     return true;
@@ -149,12 +155,14 @@ function itemRef(item) {
     };
   }
 
+  const itemName = toReviewScalar(item.name);
+
   return {
-    itemName: item.name,
-    canonicalKey: toCanonicalItemKey(item.name),
+    itemName,
+    canonicalKey: toCanonicalItemKey(itemName),
     farmrpgItemId: item.id === undefined || item.id === null ? null : String(item.id),
     image: item.image ?? null,
-    buddyUrl: getBuddyItemUrlFromName(item.name),
+    buddyUrl: getBuddyItemUrlFromName(itemName),
   };
 }
 
@@ -179,10 +187,12 @@ function recipeTypeForItem(item) {
 }
 
 function createBaseFact(evidence, item, factType, fields = {}) {
+  const itemName = toReviewScalar(item?.name ?? evidence.itemName);
+
   return {
     factType,
-    itemName: item?.name ?? evidence.itemName,
-    canonicalKey: toCanonicalItemKey(item?.name ?? evidence.itemName),
+    itemName,
+    canonicalKey: toCanonicalItemKey(itemName),
     buddyUrl: evidence.buddyUrl,
     pageDataUrl: evidence.pageDataUrl,
     cacheFileName: evidence.cacheFileName ?? '',
@@ -201,15 +211,16 @@ function extractItem(evidence) {
 function extractItemMetadata(evidence, item) {
   const iconFilename = getIconFilename(item?.image);
   const iconAssetKey = getIconAssetKey(iconFilename);
+  const itemName = toReviewScalar(item?.name ?? evidence.itemName);
 
   return {
-    itemName: item?.name ?? evidence.itemName,
-    canonicalKey: toCanonicalItemKey(item?.name ?? evidence.itemName),
+    itemName,
+    canonicalKey: toCanonicalItemKey(itemName),
     farmrpgItemId: item?.id === undefined || item?.id === null ? null : String(item.id),
     buddySlug: getBuddySlug(evidence.buddyUrl),
     buddyUrl: evidence.buddyUrl,
     pageDataUrl: evidence.pageDataUrl,
-    pageTitle: evidence.pageTitle ?? item?.name ?? evidence.itemName,
+    pageTitle: toReviewScalar(evidence.pageTitle ?? item?.name ?? evidence.itemName),
     itemType: item?.type ?? null,
     description: item?.description ?? null,
     canBuy: normalizeBoolean(item?.canBuy),
@@ -229,6 +240,7 @@ function extractItemMetadata(evidence, item) {
 
 function extractRecipeFacts(evidence, item) {
   const ingredients = item?.recipeItems ?? [];
+  const outputItemName = toReviewScalar(item?.name);
 
   if (ingredients.length === 0) {
     return [];
@@ -236,8 +248,8 @@ function extractRecipeFacts(evidence, item) {
 
   return [
     createBaseFact(evidence, item, 'recipe', {
-      outputItemName: item.name,
-      outputCanonicalKey: toCanonicalItemKey(item.name),
+      outputItemName,
+      outputCanonicalKey: toCanonicalItemKey(outputItemName),
       recipeType: recipeTypeForItem(item),
       recipeBookItemName: item.cookingRecipeItem?.name ?? '',
       recipeBookCanonicalKey: toCanonicalItemKey(item.cookingRecipeItem?.name ?? ''),
@@ -259,12 +271,14 @@ function extractRecipeFacts(evidence, item) {
 }
 
 function extractUsedInFacts(evidence, item) {
+  const inputItemName = toReviewScalar(item?.name);
+
   return (item?.recipeIngredientItems ?? []).map((entry) => {
     const output = itemRef(entry.item);
 
     return createBaseFact(evidence, item, 'used_in_recipe', {
-      inputItemName: item.name,
-      inputCanonicalKey: toCanonicalItemKey(item.name),
+      inputItemName,
+      inputCanonicalKey: toCanonicalItemKey(inputItemName),
       outputItemName: output.itemName,
       outputCanonicalKey: output.canonicalKey,
       outputFarmrpgItemId: output.farmrpgItemId,
@@ -277,6 +291,8 @@ function extractUsedInFacts(evidence, item) {
 }
 
 function extractDropRateFacts(evidence, item) {
+  const targetItemName = toReviewScalar(item?.name);
+
   return (item?.dropRatesItems ?? []).map((entry) => {
     const sourceLocation = entry.dropRates?.location ?? null;
     const sourceSeed = entry.dropRates?.seed ?? null;
@@ -295,8 +311,8 @@ function extractDropRateFacts(evidence, item) {
     }
 
     return createBaseFact(evidence, item, 'drop_rate', {
-      targetItemName: item.name,
-      targetCanonicalKey: toCanonicalItemKey(item.name),
+      targetItemName,
+      targetCanonicalKey: toCanonicalItemKey(targetItemName),
       targetFarmrpgItemId: item.id === undefined || item.id === null ? null : String(item.id),
       targetItemImage: item.image ?? null,
       sourceName: source?.name ?? '',
@@ -317,6 +333,8 @@ function extractDropRateFacts(evidence, item) {
 }
 
 function extractPetFacts(evidence, item) {
+  const itemName = toReviewScalar(item?.name);
+
   return (item?.petItems ?? []).map((entry) => {
     const pet = itemRef(entry.pet);
 
@@ -324,8 +342,8 @@ function extractPetFacts(evidence, item) {
       petName: pet.itemName,
       petCanonicalKey: pet.canonicalKey,
       petImage: pet.image,
-      itemName: item.name,
-      itemCanonicalKey: toCanonicalItemKey(item.name),
+      itemName,
+      itemCanonicalKey: toCanonicalItemKey(itemName),
       unlockLevel: entry.level ?? null,
       coverageStatus: 'candidate',
     });
@@ -333,13 +351,15 @@ function extractPetFacts(evidence, item) {
 }
 
 function extractOpenableContentFacts(evidence, item) {
+  const openableItemName = toReviewScalar(item?.name);
+
   return (item?.locksmithItems ?? []).map((entry) => {
     const output = itemRef(entry.outputItem);
 
     return createBaseFact(evidence, item, 'openable_content', {
       relationDirection: 'container_to_content',
-      openableItemName: item.name,
-      openableCanonicalKey: toCanonicalItemKey(item.name),
+      openableItemName,
+      openableCanonicalKey: toCanonicalItemKey(openableItemName),
       contentItemName: output.itemName,
       contentCanonicalKey: output.canonicalKey,
       contentFarmrpgItemId: output.farmrpgItemId,
@@ -352,6 +372,8 @@ function extractOpenableContentFacts(evidence, item) {
 }
 
 function extractOpenableSourceFacts(evidence, item) {
+  const contentItemName = toReviewScalar(item?.name);
+
   return (item?.locksmithOutputItems ?? []).map((entry) => {
     const openable = itemRef(entry.item);
 
@@ -361,8 +383,8 @@ function extractOpenableSourceFacts(evidence, item) {
       openableCanonicalKey: openable.canonicalKey,
       openableFarmrpgItemId: openable.farmrpgItemId,
       openableImage: openable.image,
-      contentItemName: item.name,
-      contentCanonicalKey: toCanonicalItemKey(item.name),
+      contentItemName,
+      contentCanonicalKey: toCanonicalItemKey(contentItemName),
       quantityMin: entry.quantityMin ?? null,
       quantityMax: entry.quantityMax ?? null,
       quantityKind: quantityKind(entry.quantityMin, entry.quantityMax),
@@ -371,13 +393,15 @@ function extractOpenableSourceFacts(evidence, item) {
 }
 
 function extractWishingWellOutputFacts(evidence, item) {
+  const thrownItemName = toReviewScalar(item?.name);
+
   return (item?.wishingWellInputItems ?? []).map((entry) => {
     const output = itemRef(entry.outputItem);
 
     return createBaseFact(evidence, item, 'wishing_well_output', {
       relationDirection: 'thrown_to_reward',
-      thrownItemName: item.name,
-      thrownCanonicalKey: toCanonicalItemKey(item.name),
+      thrownItemName,
+      thrownCanonicalKey: toCanonicalItemKey(thrownItemName),
       rewardItemName: output.itemName,
       rewardCanonicalKey: output.canonicalKey,
       rewardFarmrpgItemId: output.farmrpgItemId,
@@ -391,6 +415,8 @@ function extractWishingWellOutputFacts(evidence, item) {
 }
 
 function extractWishingWellInputFacts(evidence, item) {
+  const rewardItemName = toReviewScalar(item?.name);
+
   return (item?.wishingWellOutputItems ?? []).map((entry) => {
     const input = itemRef(entry.inputItem);
 
@@ -400,8 +426,8 @@ function extractWishingWellInputFacts(evidence, item) {
       thrownCanonicalKey: input.canonicalKey,
       thrownFarmrpgItemId: input.farmrpgItemId,
       thrownImage: input.image,
-      rewardItemName: item.name,
-      rewardCanonicalKey: toCanonicalItemKey(item.name),
+      rewardItemName,
+      rewardCanonicalKey: toCanonicalItemKey(rewardItemName),
       rewardChance: entry.chance ?? null,
       rewardQuantity: 1,
       flags: ['reverse_relation', 'reward_quantity_defaulted'],
@@ -411,10 +437,12 @@ function extractWishingWellInputFacts(evidence, item) {
 }
 
 function extractQuestFacts(evidence, item) {
+  const itemName = toReviewScalar(item?.name);
+  const canonicalKey = toCanonicalItemKey(itemName);
   const required = (item?.requiredForQuests ?? []).map((entry) =>
     createBaseFact(evidence, item, 'quest_requirement', {
-      itemName: item.name,
-      canonicalKey: toCanonicalItemKey(item.name),
+      itemName,
+      canonicalKey,
       quantity: entry.quantity ?? null,
       questId: entry.quest?.id === undefined || entry.quest?.id === null ? null : String(entry.quest.id),
       questName: entry.quest?.name ?? '',
@@ -425,8 +453,8 @@ function extractQuestFacts(evidence, item) {
   );
   const rewarded = (item?.rewardForQuests ?? []).map((entry) =>
     createBaseFact(evidence, item, 'quest_reward', {
-      itemName: item.name,
-      canonicalKey: toCanonicalItemKey(item.name),
+      itemName,
+      canonicalKey,
       quantity: entry.quantity ?? null,
       questId: entry.quest?.id === undefined || entry.quest?.id === null ? null : String(entry.quest.id),
       questName: entry.quest?.name ?? '',
@@ -445,13 +473,17 @@ function findUnknownDetectedSections(evidence) {
 
 export function parseBuddyItemEvidenceRecord(evidence, options = {}) {
   const cacheFileName = options.cacheFileName ?? evidence.cacheFileName ?? '';
-  const item = extractItem(evidence);
+  const evidenceWithCacheFile = {
+    ...evidence,
+    cacheFileName,
+  };
+  const item = extractItem(evidenceWithCacheFile);
   const warnings = [];
   const flags = [];
 
-  if (evidence.httpStatus !== 200) {
+  if (evidenceWithCacheFile.httpStatus !== 200) {
     flags.push('terminal_or_non_success_evidence');
-    warnings.push(`Evidence HTTP status is ${evidence.httpStatus ?? 'unknown'}; source facts were not parsed.`);
+    warnings.push(`Evidence HTTP status is ${evidenceWithCacheFile.httpStatus ?? 'unknown'}; source facts were not parsed.`);
   }
 
   if (!item) {
@@ -459,7 +491,7 @@ export function parseBuddyItemEvidenceRecord(evidence, options = {}) {
     warnings.push('No FarmRPG item payload was found in the cached Buddy page data.');
   }
 
-  const unknownDetectedSections = findUnknownDetectedSections(evidence);
+  const unknownDetectedSections = findUnknownDetectedSections(evidenceWithCacheFile);
   if (unknownDetectedSections.length > 0) {
     flags.push('unknown_detected_sections');
     warnings.push(`Detected non-empty page sections without parser handling: ${unknownDetectedSections.join(', ')}.`);
@@ -467,18 +499,18 @@ export function parseBuddyItemEvidenceRecord(evidence, options = {}) {
 
   const parsed = {
     parserVersion: BUDDY_ITEM_MULTI_SOURCE_PARSER_VERSION,
-    evidenceType: evidence.evidenceType ?? '',
-    evidenceExtractionVersion: evidence.extractionVersion ?? '',
+    evidenceType: evidenceWithCacheFile.evidenceType ?? '',
+    evidenceExtractionVersion: evidenceWithCacheFile.extractionVersion ?? '',
     cacheFileName,
-    fetchedAt: evidence.fetchedAt ?? '',
-    httpStatus: evidence.httpStatus ?? null,
-    sourceStatus: evidence.sourceStatus ?? '',
-    itemName: item?.name ?? evidence.itemName,
-    canonicalKey: toCanonicalItemKey(item?.name ?? evidence.itemName),
-    buddyUrl: evidence.buddyUrl,
-    pageDataUrl: evidence.pageDataUrl,
-    pageTitle: evidence.pageTitle ?? item?.name ?? evidence.itemName,
-    metadata: item ? extractItemMetadata(evidence, item) : null,
+    fetchedAt: evidenceWithCacheFile.fetchedAt ?? '',
+    httpStatus: evidenceWithCacheFile.httpStatus ?? null,
+    sourceStatus: evidenceWithCacheFile.sourceStatus ?? '',
+    itemName: toReviewScalar(item?.name ?? evidenceWithCacheFile.itemName),
+    canonicalKey: toCanonicalItemKey(item?.name ?? evidenceWithCacheFile.itemName),
+    buddyUrl: evidenceWithCacheFile.buddyUrl,
+    pageDataUrl: evidenceWithCacheFile.pageDataUrl,
+    pageTitle: toReviewScalar(evidenceWithCacheFile.pageTitle ?? item?.name ?? evidenceWithCacheFile.itemName),
+    metadata: item ? extractItemMetadata(evidenceWithCacheFile, item) : null,
     facts: {
       recipes: [],
       usedInRecipes: [],
@@ -495,19 +527,19 @@ export function parseBuddyItemEvidenceRecord(evidence, options = {}) {
     warnings,
   };
 
-  if (!item || evidence.httpStatus !== 200) {
+  if (!item || evidenceWithCacheFile.httpStatus !== 200) {
     return parsed;
   }
 
-  parsed.facts.recipes = extractRecipeFacts(evidence, item);
-  parsed.facts.usedInRecipes = extractUsedInFacts(evidence, item);
-  parsed.facts.dropRates = extractDropRateFacts(evidence, item);
-  parsed.facts.petSources = extractPetFacts(evidence, item);
-  parsed.facts.openableContents = extractOpenableContentFacts(evidence, item);
-  parsed.facts.openableSources = extractOpenableSourceFacts(evidence, item);
-  parsed.facts.wishingWellOutputs = extractWishingWellOutputFacts(evidence, item);
-  parsed.facts.wishingWellInputs = extractWishingWellInputFacts(evidence, item);
-  parsed.facts.questRequirementsAndRewards = extractQuestFacts(evidence, item);
+  parsed.facts.recipes = extractRecipeFacts(evidenceWithCacheFile, item);
+  parsed.facts.usedInRecipes = extractUsedInFacts(evidenceWithCacheFile, item);
+  parsed.facts.dropRates = extractDropRateFacts(evidenceWithCacheFile, item);
+  parsed.facts.petSources = extractPetFacts(evidenceWithCacheFile, item);
+  parsed.facts.openableContents = extractOpenableContentFacts(evidenceWithCacheFile, item);
+  parsed.facts.openableSources = extractOpenableSourceFacts(evidenceWithCacheFile, item);
+  parsed.facts.wishingWellOutputs = extractWishingWellOutputFacts(evidenceWithCacheFile, item);
+  parsed.facts.wishingWellInputs = extractWishingWellInputFacts(evidenceWithCacheFile, item);
+  parsed.facts.questRequirementsAndRewards = extractQuestFacts(evidenceWithCacheFile, item);
 
   return parsed;
 }
@@ -548,6 +580,54 @@ function csvFromRows(headers, rows) {
     headers.join(','),
     ...rows.map((row) => headers.map((header) => escapeCsvValue(row[header])).join(',')),
   ].join('\n');
+}
+
+const REQUIRED_CACHE_FILE_NAME_OUTPUTS = new Set([
+  'recipeCandidates',
+  'recipeInputCandidates',
+  'usedInCandidates',
+  'dropRateCandidates',
+  'petSourceCandidates',
+  'openableCandidates',
+  'wishingWellCandidates',
+  'sourceHintCandidates',
+]);
+
+export function validateBuddyEvidencePromotionFanout(fanoutResult) {
+  const issues = [];
+
+  for (const [outputName, rows] of Object.entries(fanoutResult.outputs ?? {})) {
+    const requiresCacheFileName = REQUIRED_CACHE_FILE_NAME_OUTPUTS.has(outputName);
+
+    rows.forEach((row, rowIndex) => {
+      for (const [fieldName, value] of Object.entries(row)) {
+        if (typeof value === 'string' && /[\r\n]/u.test(value)) {
+          issues.push({
+            outputName,
+            rowNumber: rowIndex + 1,
+            fieldName,
+            issue: 'embedded_newline',
+            message: `${outputName} row ${rowIndex + 1} field ${fieldName} contains an embedded newline.`,
+          });
+        }
+      }
+
+      if (requiresCacheFileName && !String(row.cache_file_name ?? '').trim()) {
+        issues.push({
+          outputName,
+          rowNumber: rowIndex + 1,
+          fieldName: 'cache_file_name',
+          issue: 'missing_cache_file_name',
+          message: `${outputName} row ${rowIndex + 1} is missing cache_file_name provenance.`,
+        });
+      }
+    });
+  }
+
+  return {
+    valid: issues.length === 0,
+    issues,
+  };
 }
 
 function provenance(fact) {

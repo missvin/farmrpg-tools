@@ -5,6 +5,7 @@ import {
   parseBuddyItemEvidenceRecord,
   parseBuddyItemEvidenceRecords,
   toBuddyEvidenceFanoutCsvs,
+  validateBuddyEvidencePromotionFanout,
 } from '../../scripts/lib/buddyItemEvidenceParser.mjs';
 
 function createEvidence() {
@@ -150,6 +151,12 @@ function createEvidence() {
   };
 }
 
+function createEvidenceWithWhitespaceName() {
+  const evidence = createEvidence();
+  evidence.pageData.result.data.farmrpg.items[0].petItems[0].pet.name = 'Lemur\n';
+  return evidence;
+}
+
 describe('buddyItemEvidenceParser', () => {
   it('extracts typed facts from cached Buddy item page-data evidence', () => {
     const parsed = parseBuddyItemEvidenceRecord(createEvidence(), { cacheFileName: 'salt__salt.json' });
@@ -181,6 +188,7 @@ describe('buddyItemEvidenceParser', () => {
         petName: 'Skunk',
         itemName: 'Salt',
         unlockLevel: 3,
+        cacheFileName: 'salt__salt.json',
       }),
     );
     expect(parsed.facts.openableSources[0]).toEqual(
@@ -188,6 +196,7 @@ describe('buddyItemEvidenceParser', () => {
         openableItemName: 'Large Chest 03',
         contentItemName: 'Salt',
         quantityKind: 'fixed',
+        cacheFileName: 'salt__salt.json',
       }),
     );
     expect(parsed.facts.wishingWellOutputs[0]).toEqual(
@@ -196,6 +205,7 @@ describe('buddyItemEvidenceParser', () => {
         rewardItemName: 'Spiked Shell',
         rewardChance: 0.5,
         flags: ['reward_quantity_defaulted'],
+        cacheFileName: 'salt__salt.json',
       }),
     );
     expect(parsed.facts.dropRates[0]).toEqual(
@@ -215,6 +225,27 @@ describe('buddyItemEvidenceParser', () => {
     );
     expect(parsed.unknownDetectedSections).toEqual(['newBuddyThing']);
     expect(parsed.warnings[0]).toContain('newBuddyThing');
+  });
+
+  it('normalizes review-facing names to one-line strings', () => {
+    const parsed = parseBuddyItemEvidenceRecord(createEvidenceWithWhitespaceName(), { cacheFileName: 'salt__salt.json' });
+    const parsedResult = parseBuddyItemEvidenceRecords([
+      {
+        cacheFileName: 'salt__salt.json',
+        evidence: createEvidenceWithWhitespaceName(),
+      },
+    ]);
+    const fanout = deriveBuddyEvidencePromotionFanout(parsedResult);
+    const csvs = toBuddyEvidenceFanoutCsvs(fanout);
+
+    expect(parsed.facts.petSources[0]).toEqual(
+      expect.objectContaining({
+        petName: 'Lemur',
+        petCanonicalKey: 'lemur',
+      }),
+    );
+    expect(csvs['pet_source_reference_candidates.csv']).toContain('Lemur,lemur,Salt');
+    expect(csvs['pet_source_reference_candidates.csv']).not.toContain('Lemur\n');
   });
 
   it('turns parsed facts into destination-specific review CSVs without mastery output', () => {
@@ -241,9 +272,65 @@ describe('buddyItemEvidenceParser', () => {
       }),
     );
     expect(csvs['pet_source_reference_candidates.csv']).toContain('Skunk');
+    expect(csvs['pet_source_reference_candidates.csv']).toContain('salt__salt.json');
     expect(csvs['source_hint_candidates.csv']).toContain('Large Chest 03');
     expect(csvs['wishing_well_reference_candidates.csv']).toContain('Spiked Shell');
     expect(Object.keys(csvs)).not.toContain('mastery_difficulty_candidates.csv');
+  });
+
+  it('validates fan-out CSV-safe scalar fields and source provenance', () => {
+    const parsedResult = parseBuddyItemEvidenceRecords([
+      {
+        cacheFileName: 'salt__salt.json',
+        evidence: createEvidence(),
+      },
+    ]);
+    const fanout = deriveBuddyEvidencePromotionFanout(parsedResult);
+
+    expect(validateBuddyEvidencePromotionFanout(fanout)).toEqual({
+      valid: true,
+      issues: [],
+    });
+
+    fanout.outputs.petSourceCandidates[0].pet_name = 'Lemur\n';
+    fanout.outputs.openableCandidates[0].cache_file_name = '';
+    const validation = validateBuddyEvidencePromotionFanout(fanout);
+
+    expect(validation.valid).toBe(false);
+    expect(validation.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          outputName: 'petSourceCandidates',
+          fieldName: 'pet_name',
+          issue: 'embedded_newline',
+        }),
+        expect.objectContaining({
+          outputName: 'openableCandidates',
+          fieldName: 'cache_file_name',
+          issue: 'missing_cache_file_name',
+        }),
+      ]),
+    );
+  });
+
+  it('keeps Wishing Well quantities visibly defaulted instead of confirmed', () => {
+    const parsedResult = parseBuddyItemEvidenceRecords([
+      {
+        cacheFileName: 'salt__salt.json',
+        evidence: createEvidence(),
+      },
+    ]);
+    const fanout = deriveBuddyEvidencePromotionFanout(parsedResult);
+
+    expect(fanout.outputs.wishingWellCandidates[0]).toEqual(
+      expect.objectContaining({
+        thrown_item_name: 'Salt',
+        reward_item_name: 'Spiked Shell',
+        reward_chance: 0.5,
+        reward_quantity: 1,
+        flags: 'reward_quantity_defaulted',
+      }),
+    );
   });
 
   it('keeps terminal evidence visible for review instead of parsing source facts', () => {

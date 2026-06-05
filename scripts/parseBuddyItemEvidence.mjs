@@ -7,6 +7,7 @@ import {
   toBuddyEvidenceFanoutCsvs,
   toBuddyItemParserReviewCsv,
   toBuddyItemParserSummaryCsv,
+  validateBuddyEvidencePromotionFanout,
 } from './lib/buddyItemEvidenceParser.mjs';
 
 function parseArgs(argv) {
@@ -77,6 +78,18 @@ async function main() {
 
   const parsedResult = parseBuddyItemEvidenceRecords(evidenceRecords);
   const fanoutResult = deriveBuddyEvidencePromotionFanout(parsedResult);
+  const fanoutValidation = validateBuddyEvidencePromotionFanout(fanoutResult);
+
+  if (!fanoutValidation.valid) {
+    const issueSummary = fanoutValidation.issues
+      .slice(0, 20)
+      .map((issue) => `- ${issue.message}`)
+      .join('\n');
+    const remainingIssueCount = fanoutValidation.issues.length - Math.min(20, fanoutValidation.issues.length);
+    const suffix = remainingIssueCount > 0 ? `\n- ...and ${remainingIssueCount.toLocaleString()} more issue(s).` : '';
+    throw new Error(`Buddy evidence fan-out validation failed:\n${issueSummary}${suffix}`);
+  }
+
   const fanoutCsvs = toBuddyEvidenceFanoutCsvs(fanoutResult);
 
   await mkdir(outputDir, { recursive: true });
