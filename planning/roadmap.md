@@ -86,7 +86,7 @@ The target-output planner becomes easier to feed with real inventory data and ea
   - reviewed openable contents as optional sources (`BL-236`, shipped)
   - recursive passive-source modeling for pets, Crunchy Omelette collection, and Tower-artifact recurring inputs (`BL-237`, shipped)
   - Wishing Well expected-value source modeling (`BL-238`, shipped)
-  - cache-first Buddy item-page evidence workflow (`BL-243`, shipped), initial reviewed seed cache (`BL-247`, shipped), current 1,461-item museum universe refresh (`BL-248`, shipped), full current-universe Buddy cache population (`BL-249`, shipped), and freshness/recheck controls (`BL-244`, planned)
+  - cache-first Buddy item-page evidence workflow (`BL-243`, shipped), initial reviewed seed cache (`BL-247`, shipped), current 1,461-item museum universe refresh (`BL-248`, shipped), initial full current-universe Buddy cache population (`BL-249`, shipped), artifact-completeness repair/readiness validation (`BL-253`, planned), and freshness/recheck controls (`BL-244`, planned)
   - multi-source Buddy item-page parser and reviewed promotion fan-out (`BL-245`, `BL-246`, shipped), followed by current-universe icon refresh and source promotion (`BL-250`, `BL-251`, planned)
   - full reviewed pet-source coverage for normal and seasonal pets (`BL-242`, planned)
   - item-page mastery and quantity goal calculator foundation (`BL-239`, shipped)
