@@ -2,24 +2,162 @@
   "schemaVersion": 1,
   "evidenceType": "buddy_item_page_data",
   "extractionVersion": "buddy-item-evidence-cache-v1",
-  "fetchedAt": "2026-06-04T23:40:25.590Z",
-  "httpStatus": 404,
+  "fetchedAt": "2026-06-06T00:58:15.498Z",
+  "httpStatus": 200,
   "itemName": "Pot of Gold (Large)",
   "canonicalKey": "pot of gold (large)",
-  "buddyUrl": "https://buddy.farm/i/pot-of-gold-large/",
-  "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-large/page-data.json",
-  "pageTitle": null,
-  "buddyItemName": null,
-  "buddyItemId": null,
-  "buddyItemImage": null,
-  "sourceStatus": "uncertain",
+  "buddyUrl": "https://buddy.farm/i/pot-of-gold-large-/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-large-/page-data.json",
+  "pageTitle": "Pot of Gold (Large)",
+  "buddyItemName": "Pot of Gold (Large)",
+  "buddyItemId": "501",
+  "buddyItemImage": "/img/items/potogold.png",
+  "sourceStatus": "sources_present",
   "blankSourceIndicators": [],
-  "detectedSections": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "locksmithOutputItems",
+    "rewardForQuests"
+  ],
   "reviewNotes": [
     "BL-248 current museum universe item",
-    "refresh Buddy page evidence for parsing work.",
-    "Expected a successful Buddy page-data fetch but received HTTP 404."
+    "refresh Buddy page evidence for parsing work."
   ],
   "fetchError": null,
-  "pageData": null
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/pot-of-gold-large-/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 501,
+              "name": "Pot of Gold (Large)",
+              "image": "/img/items/potogold.png",
+              "type": "item",
+              "description": "Open at Locksmith for 50 Gold",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": true,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 50,
+              "requiredForQuests": [],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 816,
+                    "name": "Ends Of The Rainbow",
+                    "image": "/img/items/buddyl.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 854,
+                    "name": "Buddy Rabbit IX",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7721625,
+                    "name": "Green Alchemy XXI",
+                    "image": "/img/items/buddyl.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 815,
+                    "name": "Green Initiative X",
+                    "image": "/img/items/npc_bunny1.png",
+                    "endDate": "2026-04-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 1,
+                  "quantityMin": 1,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 987,
+                    "name": "Green Backpack",
+                    "image": "/img/items/luckybag.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2022-03-17",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 188,
+                    "name": "4-leaf Clover",
+                    "image": "/img/items/fourleaf.png"
+                  },
+                  "inputQuantity": 1500000,
+                  "progress": 1582050,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 501,
+        "name": "Pot of Gold (Large)"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
 }

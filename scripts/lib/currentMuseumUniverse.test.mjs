@@ -65,4 +65,17 @@ describe('current museum universe generation', () => {
     expect(toBuddyEvidenceTargetsCsv(result)).toContain('Lucky Bacon,lucky bacon,https://buddy.farm/i/lucky-bacon/');
     expect(toNewItemReviewCsv(result)).toContain('Lucky Bacon,lucky bacon,https://buddy.farm/i/lucky-bacon/');
   });
+
+  it('preserves reviewed Buddy slug edge punctuation in current-universe targets', () => {
+    const rawText = ['Every single item (2):', 'Pot of Gold (Small)R.O.A.S.', 'Consume a meal'].join('\n');
+    const result = buildCurrentMuseumUniverse({
+      rawText,
+      canonCsvText: canonCsv,
+      reviewedAdditions: ['Pot of Gold (Small)', 'R.O.A.S.'],
+    });
+    const targetCsv = toBuddyEvidenceTargetsCsv(result);
+
+    expect(targetCsv).toContain('Pot of Gold (Small),pot of gold small,https://buddy.farm/i/pot-of-gold-small-/');
+    expect(targetCsv).toContain('R.O.A.S.,r o a s,https://buddy.farm/i/r-o-a-s-/');
+  });
 });

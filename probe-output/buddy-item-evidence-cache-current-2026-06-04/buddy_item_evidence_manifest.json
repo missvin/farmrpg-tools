@@ -200734,7 +200734,7 @@
         "target": {
           "itemName": "Pot of Gold (Medium)",
           "canonicalKey": "pot of gold (medium)",
-          "buddyUrl": "https://buddy.farm/i/pot-of-gold-medium/",
+          "buddyUrl": "https://buddy.farm/i/pot-of-gold-medium-/",
           "sourceSchema": "target",
           "sourceProbeStatus": null,
           "notes": [
@@ -200744,35 +200744,159 @@
         },
         "cacheKey": "pot-of-gold-medium__pot-of-gold-medium",
         "cacheFileName": "pot-of-gold-medium__pot-of-gold-medium.json",
-        "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-medium/page-data.json",
-        "action": "skip_terminal",
-        "reason": "Cached terminal evidence is newer than 30 days.",
+        "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-medium-/page-data.json",
+        "action": "skip_fresh",
+        "reason": "Cached evidence is newer than 30 days.",
         "existingEvidence": {
           "schemaVersion": 1,
           "evidenceType": "buddy_item_page_data",
           "extractionVersion": "buddy-item-evidence-cache-v1",
-          "fetchedAt": "2026-06-04T23:40:25.590Z",
-          "httpStatus": 404,
+          "fetchedAt": "2026-06-06T00:58:15.498Z",
+          "httpStatus": 200,
           "itemName": "Pot of Gold (Medium)",
           "canonicalKey": "pot of gold (medium)",
-          "buddyUrl": "https://buddy.farm/i/pot-of-gold-medium/",
-          "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-medium/page-data.json",
-          "pageTitle": null,
-          "buddyItemName": null,
-          "buddyItemId": null,
-          "buddyItemImage": null,
-          "sourceStatus": "uncertain",
+          "buddyUrl": "https://buddy.farm/i/pot-of-gold-medium-/",
+          "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-medium-/page-data.json",
+          "pageTitle": "Pot of Gold (Medium)",
+          "buddyItemName": "Pot of Gold (Medium)",
+          "buddyItemId": "502",
+          "buddyItemImage": "/img/items/pog2.png",
+          "sourceStatus": "sources_present",
           "blankSourceIndicators": [],
-          "detectedSections": [],
+          "detectedSections": [
+            "locksmithOutputItems",
+            "rewardForQuests"
+          ],
           "reviewNotes": [
             "BL-248 current museum universe item",
-            "refresh Buddy page evidence for parsing work.",
-            "Expected a successful Buddy page-data fetch but received HTTP 404."
+            "refresh Buddy page evidence for parsing work."
           ],
           "fetchError": null,
-          "pageData": null
+          "pageData": {
+            "componentChunkName": "component---src-templates-item-tsx",
+            "path": "/i/pot-of-gold-medium-/",
+            "result": {
+              "data": {
+                "farmrpg": {
+                  "items": [
+                    {
+                      "__typename": "FarmRPG_Item",
+                      "id": 502,
+                      "name": "Pot of Gold (Medium)",
+                      "image": "/img/items/pog2.png",
+                      "type": "item",
+                      "description": "Open at Locksmith for 25 Gold",
+                      "manualFishingOnly": false,
+                      "canBuy": false,
+                      "canMail": true,
+                      "canCraft": false,
+                      "canCook": false,
+                      "canFleaMarket": false,
+                      "craftingLevel": 0,
+                      "cookingLevel": 1,
+                      "buyPrice": 0,
+                      "fleaMarketPrice": 0,
+                      "fleaMarketRotate": false,
+                      "baseYieldMinutes": 0,
+                      "locksmithGrabBag": false,
+                      "locksmithGold": 25,
+                      "requiredForQuests": [],
+                      "rewardForQuests": [
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 7721610,
+                            "name": "Green Alchemy VI",
+                            "image": "/img/items/bear_01.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 813,
+                            "name": "Green Initiative VIII",
+                            "image": "/img/emblems/franklyFrightening96.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 810,
+                            "name": "Green Initiative V",
+                            "image": "/img/items/npc_bunny1.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 812,
+                            "name": "Green Initiative VII",
+                            "image": "/img/items/npc_bunny1.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        }
+                      ],
+                      "petItems": [],
+                      "dropRates": [],
+                      "dropRatesItems": [],
+                      "quizRewards": [],
+                      "npcItems": [],
+                      "npcRewards": [],
+                      "passwordItems": [],
+                      "wishingWellInputItems": [],
+                      "wishingWellOutputItems": [],
+                      "recipeItems": [],
+                      "recipeIngredientItems": [],
+                      "locksmithItems": [],
+                      "locksmithOutputItems": [
+                        {
+                          "quantityMax": 1,
+                          "quantityMin": 1,
+                          "item": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 987,
+                            "name": "Green Backpack",
+                            "image": "/img/items/luckybag.png"
+                          }
+                        }
+                      ],
+                      "cookingRecipeItem": null,
+                      "cookingRecipeCookable": null,
+                      "locksmithKey": null,
+                      "locksmithKeyItems": [],
+                      "manualProductions": [],
+                      "exchangeCenterInputs": [],
+                      "exchangeCenterOutputs": [],
+                      "cardsTrades": [],
+                      "towerRewards": [],
+                      "skillLevelRewards": [],
+                      "communityCenterOutputs": [],
+                      "templeRewardItems": []
+                    }
+                  ]
+                }
+              },
+              "pageContext": {
+                "id": 502,
+                "name": "Pot of Gold (Medium)"
+              }
+            },
+            "staticQueryHashes": [],
+            "slicesMap": {}
+          }
         },
-        "existingFetchedAt": "2026-06-04T23:40:25.590Z"
+        "existingFetchedAt": "2026-06-06T00:58:15.498Z"
       },
       {
         "index": 661,
@@ -233648,7 +233772,7 @@
         "target": {
           "itemName": "Pot of Gold (Large)",
           "canonicalKey": "pot of gold (large)",
-          "buddyUrl": "https://buddy.farm/i/pot-of-gold-large/",
+          "buddyUrl": "https://buddy.farm/i/pot-of-gold-large-/",
           "sourceSchema": "target",
           "sourceProbeStatus": null,
           "notes": [
@@ -233658,35 +233782,173 @@
         },
         "cacheKey": "pot-of-gold-large__pot-of-gold-large",
         "cacheFileName": "pot-of-gold-large__pot-of-gold-large.json",
-        "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-large/page-data.json",
-        "action": "skip_terminal",
-        "reason": "Cached terminal evidence is newer than 30 days.",
+        "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-large-/page-data.json",
+        "action": "skip_fresh",
+        "reason": "Cached evidence is newer than 30 days.",
         "existingEvidence": {
           "schemaVersion": 1,
           "evidenceType": "buddy_item_page_data",
           "extractionVersion": "buddy-item-evidence-cache-v1",
-          "fetchedAt": "2026-06-04T23:40:25.590Z",
-          "httpStatus": 404,
+          "fetchedAt": "2026-06-06T00:58:15.498Z",
+          "httpStatus": 200,
           "itemName": "Pot of Gold (Large)",
           "canonicalKey": "pot of gold (large)",
-          "buddyUrl": "https://buddy.farm/i/pot-of-gold-large/",
-          "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-large/page-data.json",
-          "pageTitle": null,
-          "buddyItemName": null,
-          "buddyItemId": null,
-          "buddyItemImage": null,
-          "sourceStatus": "uncertain",
+          "buddyUrl": "https://buddy.farm/i/pot-of-gold-large-/",
+          "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-large-/page-data.json",
+          "pageTitle": "Pot of Gold (Large)",
+          "buddyItemName": "Pot of Gold (Large)",
+          "buddyItemId": "501",
+          "buddyItemImage": "/img/items/potogold.png",
+          "sourceStatus": "sources_present",
           "blankSourceIndicators": [],
-          "detectedSections": [],
+          "detectedSections": [
+            "communityCenterOutputs",
+            "locksmithOutputItems",
+            "rewardForQuests"
+          ],
           "reviewNotes": [
             "BL-248 current museum universe item",
-            "refresh Buddy page evidence for parsing work.",
-            "Expected a successful Buddy page-data fetch but received HTTP 404."
+            "refresh Buddy page evidence for parsing work."
           ],
           "fetchError": null,
-          "pageData": null
+          "pageData": {
+            "componentChunkName": "component---src-templates-item-tsx",
+            "path": "/i/pot-of-gold-large-/",
+            "result": {
+              "data": {
+                "farmrpg": {
+                  "items": [
+                    {
+                      "__typename": "FarmRPG_Item",
+                      "id": 501,
+                      "name": "Pot of Gold (Large)",
+                      "image": "/img/items/potogold.png",
+                      "type": "item",
+                      "description": "Open at Locksmith for 50 Gold",
+                      "manualFishingOnly": false,
+                      "canBuy": false,
+                      "canMail": true,
+                      "canCraft": false,
+                      "canCook": false,
+                      "canFleaMarket": false,
+                      "craftingLevel": 0,
+                      "cookingLevel": 1,
+                      "buyPrice": 0,
+                      "fleaMarketPrice": 0,
+                      "fleaMarketRotate": false,
+                      "baseYieldMinutes": 0,
+                      "locksmithGrabBag": false,
+                      "locksmithGold": 50,
+                      "requiredForQuests": [],
+                      "rewardForQuests": [
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 816,
+                            "name": "Ends Of The Rainbow",
+                            "image": "/img/items/buddyl.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 854,
+                            "name": "Buddy Rabbit IX",
+                            "image": "/img/items/buddy.png",
+                            "endDate": "2026-05-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 7721625,
+                            "name": "Green Alchemy XXI",
+                            "image": "/img/items/buddyl.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 815,
+                            "name": "Green Initiative X",
+                            "image": "/img/items/npc_bunny1.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        }
+                      ],
+                      "petItems": [],
+                      "dropRates": [],
+                      "dropRatesItems": [],
+                      "quizRewards": [],
+                      "npcItems": [],
+                      "npcRewards": [],
+                      "passwordItems": [],
+                      "wishingWellInputItems": [],
+                      "wishingWellOutputItems": [],
+                      "recipeItems": [],
+                      "recipeIngredientItems": [],
+                      "locksmithItems": [],
+                      "locksmithOutputItems": [
+                        {
+                          "quantityMax": 1,
+                          "quantityMin": 1,
+                          "item": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 987,
+                            "name": "Green Backpack",
+                            "image": "/img/items/luckybag.png"
+                          }
+                        }
+                      ],
+                      "cookingRecipeItem": null,
+                      "cookingRecipeCookable": null,
+                      "locksmithKey": null,
+                      "locksmithKeyItems": [],
+                      "manualProductions": [],
+                      "exchangeCenterInputs": [],
+                      "exchangeCenterOutputs": [],
+                      "cardsTrades": [],
+                      "towerRewards": [],
+                      "skillLevelRewards": [],
+                      "communityCenterOutputs": [
+                        {
+                          "date": "2022-03-17",
+                          "inputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 188,
+                            "name": "4-leaf Clover",
+                            "image": "/img/items/fourleaf.png"
+                          },
+                          "inputQuantity": 1500000,
+                          "progress": 1582050,
+                          "outputQuantity": 1
+                        }
+                      ],
+                      "templeRewardItems": []
+                    }
+                  ]
+                }
+              },
+              "pageContext": {
+                "id": 501,
+                "name": "Pot of Gold (Large)"
+              }
+            },
+            "staticQueryHashes": [],
+            "slicesMap": {}
+          }
         },
-        "existingFetchedAt": "2026-06-04T23:40:25.590Z"
+        "existingFetchedAt": "2026-06-06T00:58:15.498Z"
       },
       {
         "index": 778,
@@ -276646,7 +276908,7 @@
         "target": {
           "itemName": "Pot of Gold (Small)",
           "canonicalKey": "pot of gold (small)",
-          "buddyUrl": "https://buddy.farm/i/pot-of-gold-small/",
+          "buddyUrl": "https://buddy.farm/i/pot-of-gold-small-/",
           "sourceSchema": "target",
           "sourceProbeStatus": null,
           "notes": [
@@ -276656,35 +276918,198 @@
         },
         "cacheKey": "pot-of-gold-small__pot-of-gold-small",
         "cacheFileName": "pot-of-gold-small__pot-of-gold-small.json",
-        "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-small/page-data.json",
-        "action": "skip_terminal",
-        "reason": "Cached terminal evidence is newer than 30 days.",
+        "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-small-/page-data.json",
+        "action": "skip_fresh",
+        "reason": "Cached evidence is newer than 30 days.",
         "existingEvidence": {
           "schemaVersion": 1,
           "evidenceType": "buddy_item_page_data",
           "extractionVersion": "buddy-item-evidence-cache-v1",
-          "fetchedAt": "2026-06-04T23:40:25.590Z",
-          "httpStatus": 404,
+          "fetchedAt": "2026-06-06T00:58:15.498Z",
+          "httpStatus": 200,
           "itemName": "Pot of Gold (Small)",
           "canonicalKey": "pot of gold (small)",
-          "buddyUrl": "https://buddy.farm/i/pot-of-gold-small/",
-          "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-small/page-data.json",
-          "pageTitle": null,
-          "buddyItemName": null,
-          "buddyItemId": null,
-          "buddyItemImage": null,
-          "sourceStatus": "uncertain",
+          "buddyUrl": "https://buddy.farm/i/pot-of-gold-small-/",
+          "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-small-/page-data.json",
+          "pageTitle": "Pot of Gold (Small)",
+          "buddyItemName": "Pot of Gold (Small)",
+          "buddyItemId": "503",
+          "buddyItemImage": "/img/items/pog3.png",
+          "sourceStatus": "sources_present",
           "blankSourceIndicators": [],
-          "detectedSections": [],
+          "detectedSections": [
+            "communityCenterOutputs",
+            "locksmithOutputItems",
+            "rewardForQuests"
+          ],
           "reviewNotes": [
             "BL-248 current museum universe item",
-            "refresh Buddy page evidence for parsing work.",
-            "Expected a successful Buddy page-data fetch but received HTTP 404."
+            "refresh Buddy page evidence for parsing work."
           ],
           "fetchError": null,
-          "pageData": null
+          "pageData": {
+            "componentChunkName": "component---src-templates-item-tsx",
+            "path": "/i/pot-of-gold-small-/",
+            "result": {
+              "data": {
+                "farmrpg": {
+                  "items": [
+                    {
+                      "__typename": "FarmRPG_Item",
+                      "id": 503,
+                      "name": "Pot of Gold (Small)",
+                      "image": "/img/items/pog3.png",
+                      "type": "item",
+                      "description": "Open at Locksmith for 10 Gold",
+                      "manualFishingOnly": false,
+                      "canBuy": false,
+                      "canMail": true,
+                      "canCraft": false,
+                      "canCook": false,
+                      "canFleaMarket": false,
+                      "craftingLevel": 0,
+                      "cookingLevel": 1,
+                      "buyPrice": 0,
+                      "fleaMarketPrice": 0,
+                      "fleaMarketRotate": false,
+                      "baseYieldMinutes": 0,
+                      "locksmithGrabBag": false,
+                      "locksmithGold": 10,
+                      "requiredForQuests": [],
+                      "rewardForQuests": [
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 807,
+                            "name": "Green Initiative II",
+                            "image": "/img/items/npc_bunny1.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 811,
+                            "name": "Green Initiative VI",
+                            "image": "/img/items/npc_bunny1.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 7557916,
+                            "name": "Green Eggs and Bacon IV",
+                            "image": "/img/items/a_028h.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        }
+                      ],
+                      "petItems": [],
+                      "dropRates": [],
+                      "dropRatesItems": [],
+                      "quizRewards": [],
+                      "npcItems": [],
+                      "npcRewards": [],
+                      "passwordItems": [],
+                      "wishingWellInputItems": [],
+                      "wishingWellOutputItems": [],
+                      "recipeItems": [],
+                      "recipeIngredientItems": [],
+                      "locksmithItems": [],
+                      "locksmithOutputItems": [
+                        {
+                          "quantityMax": 1,
+                          "quantityMin": 1,
+                          "item": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 987,
+                            "name": "Green Backpack",
+                            "image": "/img/items/luckybag.png"
+                          }
+                        }
+                      ],
+                      "cookingRecipeItem": null,
+                      "cookingRecipeCookable": null,
+                      "locksmithKey": null,
+                      "locksmithKeyItems": [],
+                      "manualProductions": [],
+                      "exchangeCenterInputs": [],
+                      "exchangeCenterOutputs": [],
+                      "cardsTrades": [],
+                      "towerRewards": [],
+                      "skillLevelRewards": [],
+                      "communityCenterOutputs": [
+                        {
+                          "date": "2026-03-17",
+                          "inputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 242,
+                            "name": "Bacon",
+                            "image": "/img/items/bacon.png"
+                          },
+                          "inputQuantity": 707700,
+                          "progress": 823547,
+                          "outputQuantity": 1
+                        },
+                        {
+                          "date": "2025-03-17",
+                          "inputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 188,
+                            "name": "4-leaf Clover",
+                            "image": "/img/items/fourleaf.png"
+                          },
+                          "inputQuantity": 7500000,
+                          "progress": 8899500,
+                          "outputQuantity": 1
+                        },
+                        {
+                          "date": "2024-03-17",
+                          "inputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 188,
+                            "name": "4-leaf Clover",
+                            "image": "/img/items/fourleaf.png"
+                          },
+                          "inputQuantity": 7500000,
+                          "progress": 7880036,
+                          "outputQuantity": 1
+                        },
+                        {
+                          "date": "2023-03-17",
+                          "inputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 188,
+                            "name": "4-leaf Clover",
+                            "image": "/img/items/fourleaf.png"
+                          },
+                          "inputQuantity": 7500000,
+                          "progress": 7848410,
+                          "outputQuantity": 1
+                        }
+                      ],
+                      "templeRewardItems": []
+                    }
+                  ]
+                }
+              },
+              "pageContext": {
+                "id": 503,
+                "name": "Pot of Gold (Small)"
+              }
+            },
+            "staticQueryHashes": [],
+            "slicesMap": {}
+          }
         },
-        "existingFetchedAt": "2026-06-04T23:40:25.590Z"
+        "existingFetchedAt": "2026-06-06T00:58:15.498Z"
       },
       {
         "index": 915,
@@ -284866,35 +285291,369 @@
         "cacheKey": "green-shield__green-shield",
         "cacheFileName": "green-shield__green-shield.json",
         "pageDataUrl": "https://buddy.farm/page-data/i/green-shield/page-data.json",
-        "action": "skip_terminal",
-        "reason": "Cached terminal evidence is newer than 30 days.",
+        "action": "skip_fresh",
+        "reason": "Cached evidence is newer than 30 days.",
         "existingEvidence": {
           "schemaVersion": 1,
           "evidenceType": "buddy_item_page_data",
           "extractionVersion": "buddy-item-evidence-cache-v1",
-          "fetchedAt": "2026-06-04T23:40:25.590Z",
-          "httpStatus": null,
+          "fetchedAt": "2026-06-06T00:58:15.498Z",
+          "httpStatus": 200,
           "itemName": "Green Shield",
           "canonicalKey": "green shield",
           "buddyUrl": "https://buddy.farm/i/green-shield/",
           "pageDataUrl": "https://buddy.farm/page-data/i/green-shield/page-data.json",
-          "pageTitle": null,
-          "buddyItemName": null,
-          "buddyItemId": null,
-          "buddyItemImage": null,
-          "sourceStatus": "uncertain",
-          "blankSourceIndicators": [
-            "fetch_error"
+          "pageTitle": "Green Shield",
+          "buddyItemName": "Green Shield",
+          "buddyItemId": "204",
+          "buddyItemImage": "/img/items/greenshield.png",
+          "sourceStatus": "sources_present",
+          "blankSourceIndicators": [],
+          "detectedSections": [
+            "npcRewards",
+            "passwordItems",
+            "petItems",
+            "recipeItems",
+            "requiredForQuests",
+            "towerRewards"
           ],
-          "detectedSections": [],
           "reviewNotes": [
             "BL-248 current museum universe item",
             "refresh Buddy page evidence for parsing work."
           ],
-          "fetchError": "fetch failed",
-          "pageData": null
+          "fetchError": null,
+          "pageData": {
+            "componentChunkName": "component---src-templates-item-tsx",
+            "path": "/i/green-shield/",
+            "result": {
+              "data": {
+                "farmrpg": {
+                  "items": [
+                    {
+                      "__typename": "FarmRPG_Item",
+                      "id": 204,
+                      "name": "Green Shield",
+                      "image": "/img/items/greenshield.png",
+                      "type": "item",
+                      "description": "Enemies fear green",
+                      "manualFishingOnly": false,
+                      "canBuy": false,
+                      "canMail": false,
+                      "canCraft": true,
+                      "canCook": false,
+                      "canFleaMarket": false,
+                      "craftingLevel": 30,
+                      "cookingLevel": 1,
+                      "buyPrice": 0,
+                      "fleaMarketPrice": 0,
+                      "fleaMarketRotate": false,
+                      "baseYieldMinutes": 0,
+                      "locksmithGrabBag": false,
+                      "locksmithGold": 0,
+                      "requiredForQuests": [
+                        {
+                          "quantity": 2000,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 6815343,
+                            "name": "It’s Beginning To Look A Lot Like Warfare XI",
+                            "image": "/img/items/npc_bunny1.png",
+                            "endDate": "2026-02-01T05:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 2000,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 6815344,
+                            "name": "It’s Beginning To Look A Lot Like Warfare XII",
+                            "image": "/img/items/npc_bunny1.png",
+                            "endDate": "2026-02-01T05:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 5,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 261,
+                            "name": "Consequences and Defenses IX",
+                            "image": "/img/items/a_088.png",
+                            "endDate": null,
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 20,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 256,
+                            "name": "Defenses and Consequences VI",
+                            "image": "/img/items/npc_figure2.png",
+                            "endDate": null,
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 2,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 876,
+                            "name": "A Way Back XXIX",
+                            "image": "/img/items/a_048.png",
+                            "endDate": null,
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 2000,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 6395924,
+                            "name": "It’s Beginning To Look A Lot Like Warfare IV",
+                            "image": "/img/items/bear_01.png",
+                            "endDate": "2026-02-01T05:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 2000,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 6395925,
+                            "name": "It’s Beginning To Look A Lot Like Warfare V",
+                            "image": "/img/items/bear_01.png",
+                            "endDate": "2026-02-01T05:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 2000,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 6395926,
+                            "name": "It’s Beginning To Look A Lot Like Warfare VI",
+                            "image": "/img/items/bear_01.png",
+                            "endDate": "2026-02-01T05:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 1500,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 2882055,
+                            "name": "A Study of Color XVI",
+                            "image": "/img/items/a_034.png",
+                            "endDate": null,
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 500,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 7721616,
+                            "name": "Green Alchemy XII",
+                            "image": "/img/items/bear_01.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 3000,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 7721620,
+                            "name": "Green Alchemy XVI",
+                            "image": "/img/items/npc_figure.png",
+                            "endDate": "2026-04-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 800,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 5887008,
+                            "name": "Peculiar Endings VII",
+                            "image": "/img/items/a_098.png",
+                            "endDate": null,
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 2000,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 6815342,
+                            "name": "It’s Beginning To Look A Lot Like Warfare X",
+                            "image": "/img/items/npc_bunny1.png",
+                            "endDate": "2026-02-01T05:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 8000,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 9277997,
+                            "name": "Problems Start Arising V",
+                            "image": "/img/items/buddy.png",
+                            "endDate": null,
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 100,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 160510,
+                            "name": "Unlikely Pair XIV",
+                            "image": "/img/items/cornmonster.png",
+                            "endDate": null,
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 50,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 227,
+                            "name": "A Tower Redecorated",
+                            "image": "/img/items/npc_figure.png",
+                            "endDate": null,
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 200,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 851,
+                            "name": "Buddy Rabbit VII",
+                            "image": "/img/items/buddy.png",
+                            "endDate": "2026-05-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 5000,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 7522716,
+                            "name": "Monster Hunter IV",
+                            "image": "/img/items/npc_beast.png",
+                            "endDate": null,
+                            "isHidden": false
+                          }
+                        }
+                      ],
+                      "rewardForQuests": [],
+                      "petItems": [
+                        {
+                          "level": 6,
+                          "pet": {
+                            "__typename": "FarmRPG_Pet",
+                            "name": "Hedgehog",
+                            "image": "/img/pets/pet_hedgehog.png"
+                          }
+                        }
+                      ],
+                      "dropRates": [],
+                      "dropRatesItems": [],
+                      "quizRewards": [],
+                      "npcItems": [],
+                      "npcRewards": [
+                        {
+                          "level": 30,
+                          "quantity": 10,
+                          "npc": {
+                            "__typename": "FarmRPG_NPC",
+                            "name": "George",
+                            "image": "/img/items/a_034.png"
+                          }
+                        }
+                      ],
+                      "passwordItems": [
+                        {
+                          "quantity": 1,
+                          "password": {
+                            "id": 46,
+                            "password": "defense"
+                          }
+                        }
+                      ],
+                      "wishingWellInputItems": [],
+                      "wishingWellOutputItems": [],
+                      "recipeItems": [
+                        {
+                          "quantity": 1,
+                          "item": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 203,
+                            "name": "Green Dye",
+                            "image": "/img/items/greendye.png"
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "item": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 127,
+                            "name": "Wooden Shield",
+                            "image": "/img/items/5822.PNG"
+                          }
+                        },
+                        {
+                          "quantity": 3,
+                          "item": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 22,
+                            "name": "Iron",
+                            "image": "/img/items/5779.PNG"
+                          }
+                        }
+                      ],
+                      "recipeIngredientItems": [],
+                      "locksmithItems": [],
+                      "locksmithOutputItems": [],
+                      "cookingRecipeItem": null,
+                      "cookingRecipeCookable": null,
+                      "locksmithKey": null,
+                      "locksmithKeyItems": [],
+                      "manualProductions": [],
+                      "exchangeCenterInputs": [],
+                      "exchangeCenterOutputs": [],
+                      "cardsTrades": [],
+                      "towerRewards": [
+                        {
+                          "level": 158,
+                          "itemQuantity": 1500
+                        },
+                        {
+                          "level": 58,
+                          "itemQuantity": 150
+                        }
+                      ],
+                      "skillLevelRewards": [],
+                      "communityCenterOutputs": [],
+                      "templeRewardItems": []
+                    }
+                  ]
+                }
+              },
+              "pageContext": {
+                "id": 204,
+                "name": "Green Shield"
+              }
+            },
+            "staticQueryHashes": [],
+            "slicesMap": {}
+          }
         },
-        "existingFetchedAt": "2026-06-04T23:40:25.590Z"
+        "existingFetchedAt": "2026-06-06T00:58:15.498Z"
       },
       {
         "index": 945,
@@ -329348,7 +330107,7 @@
         "target": {
           "itemName": "R.O.A.S.",
           "canonicalKey": "r.o.a.s.",
-          "buddyUrl": "https://buddy.farm/i/r-o-a-s/",
+          "buddyUrl": "https://buddy.farm/i/r-o-a-s-/",
           "sourceSchema": "target",
           "sourceProbeStatus": null,
           "notes": [
@@ -329358,35 +330117,249 @@
         },
         "cacheKey": "r-o-a-s__r-o-a-s",
         "cacheFileName": "r-o-a-s__r-o-a-s.json",
-        "pageDataUrl": "https://buddy.farm/page-data/i/r-o-a-s/page-data.json",
-        "action": "skip_terminal",
-        "reason": "Cached terminal evidence is newer than 30 days.",
+        "pageDataUrl": "https://buddy.farm/page-data/i/r-o-a-s-/page-data.json",
+        "action": "skip_fresh",
+        "reason": "Cached evidence is newer than 30 days.",
         "existingEvidence": {
           "schemaVersion": 1,
           "evidenceType": "buddy_item_page_data",
           "extractionVersion": "buddy-item-evidence-cache-v1",
-          "fetchedAt": "2026-06-05T02:26:53.643Z",
-          "httpStatus": 404,
+          "fetchedAt": "2026-06-06T00:58:15.498Z",
+          "httpStatus": 200,
           "itemName": "R.O.A.S.",
           "canonicalKey": "r.o.a.s.",
-          "buddyUrl": "https://buddy.farm/i/r-o-a-s/",
-          "pageDataUrl": "https://buddy.farm/page-data/i/r-o-a-s/page-data.json",
-          "pageTitle": null,
-          "buddyItemName": null,
-          "buddyItemId": null,
-          "buddyItemImage": null,
-          "sourceStatus": "uncertain",
+          "buddyUrl": "https://buddy.farm/i/r-o-a-s-/",
+          "pageDataUrl": "https://buddy.farm/page-data/i/r-o-a-s-/page-data.json",
+          "pageTitle": "R.O.A.S.",
+          "buddyItemName": "R.O.A.S.",
+          "buddyItemId": "369",
+          "buddyItemImage": "/img/items/rat_t_01.png",
+          "sourceStatus": "sources_present",
           "blankSourceIndicators": [],
-          "detectedSections": [],
+          "detectedSections": [
+            "communityCenterOutputs",
+            "exchangeCenterOutputs",
+            "passwordItems",
+            "requiredForQuests",
+            "rewardForQuests",
+            "wishingWellInputItems",
+            "wishingWellOutputItems"
+          ],
           "reviewNotes": [
             "BL-248 current museum universe item",
-            "refresh Buddy page evidence for parsing work.",
-            "Expected a successful Buddy page-data fetch but received HTTP 404."
+            "refresh Buddy page evidence for parsing work."
           ],
           "fetchError": null,
-          "pageData": null
+          "pageData": {
+            "componentChunkName": "component---src-templates-item-tsx",
+            "path": "/i/r-o-a-s-/",
+            "result": {
+              "data": {
+                "farmrpg": {
+                  "items": [
+                    {
+                      "__typename": "FarmRPG_Item",
+                      "id": 369,
+                      "name": "R.O.A.S.",
+                      "image": "/img/items/rat_t_01.png",
+                      "type": "item",
+                      "description": "Rodent On A Stick",
+                      "manualFishingOnly": false,
+                      "canBuy": false,
+                      "canMail": false,
+                      "canCraft": false,
+                      "canCook": false,
+                      "canFleaMarket": false,
+                      "craftingLevel": 0,
+                      "cookingLevel": 1,
+                      "buyPrice": 0,
+                      "fleaMarketPrice": 0,
+                      "fleaMarketRotate": false,
+                      "baseYieldMinutes": 0,
+                      "locksmithGrabBag": false,
+                      "locksmithGold": 0,
+                      "requiredForQuests": [
+                        {
+                          "quantity": 100,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 1265710,
+                            "name": "ribbetribbetribbetribbet ribbet ribbetcroakribbetribbet<br>ibbetcroakcroakribbet croakcroak ribbet<br>ribbetribbet ribbetribbet ribbetribbet",
+                            "image": "/img/items/frog_t_01.png",
+                            "endDate": "2025-11-04T05:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 100,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 1265731,
+                            "name": "Treat or Fear III",
+                            "image": "/img/items/ghost.png",
+                            "endDate": "2025-11-04T05:59:59+00:00",
+                            "isHidden": false
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 333,
+                            "name": "Limerick or Treat III",
+                            "image": "/img/items/ghost.png",
+                            "endDate": "2025-11-04T05:59:59+00:00",
+                            "isHidden": false
+                          }
+                        }
+                      ],
+                      "rewardForQuests": [
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 824,
+                            "name": "Fooled III",
+                            "image": "/img/items/buddy.png",
+                            "endDate": "2026-05-01T04:59:59+00:00",
+                            "isHidden": false
+                          }
+                        }
+                      ],
+                      "petItems": [],
+                      "dropRates": [],
+                      "dropRatesItems": [],
+                      "quizRewards": [],
+                      "npcItems": [],
+                      "npcRewards": [],
+                      "passwordItems": [
+                        {
+                          "quantity": 100,
+                          "password": {
+                            "id": 163,
+                            "password": "thomas is scared of worms"
+                          }
+                        },
+                        {
+                          "quantity": 100,
+                          "password": {
+                            "id": 162,
+                            "password": "rosalie rosalie rosalie"
+                          }
+                        },
+                        {
+                          "quantity": 1,
+                          "password": {
+                            "id": 97,
+                            "password": "thoma"
+                          }
+                        }
+                      ],
+                      "wishingWellInputItems": [
+                        {
+                          "chance": 0.3333333333333333,
+                          "outputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 335,
+                            "name": "Square Key",
+                            "image": "/img/items/7179.png"
+                          }
+                        },
+                        {
+                          "chance": 0.3333333333333333,
+                          "outputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 370,
+                            "name": "Taffy",
+                            "image": "/img/items/candy_t_11.png"
+                          }
+                        },
+                        {
+                          "chance": 0.3333333333333333,
+                          "outputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 361,
+                            "name": "Candy Corn",
+                            "image": "/img/items/candycorn.png"
+                          }
+                        }
+                      ],
+                      "wishingWellOutputItems": [
+                        {
+                          "chance": 0.3333333333333333,
+                          "inputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 361,
+                            "name": "Candy Corn",
+                            "image": "/img/items/candycorn.png"
+                          }
+                        },
+                        {
+                          "chance": 0.3333333333333333,
+                          "inputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 354,
+                            "name": "Wax Candle",
+                            "image": "/img/items/candle.png"
+                          }
+                        }
+                      ],
+                      "recipeItems": [],
+                      "recipeIngredientItems": [],
+                      "locksmithItems": [],
+                      "locksmithOutputItems": [],
+                      "cookingRecipeItem": null,
+                      "cookingRecipeCookable": null,
+                      "locksmithKey": null,
+                      "locksmithKeyItems": [],
+                      "manualProductions": [],
+                      "exchangeCenterInputs": [],
+                      "exchangeCenterOutputs": [
+                        {
+                          "lastSeen": "2024-08-05T17:00:00+00:00",
+                          "oneshot": true,
+                          "inputQuantity": 500,
+                          "outputQuantity": 1,
+                          "inputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 358,
+                            "name": "Candy",
+                            "image": "/img/items/candy_t_09.png"
+                          }
+                        }
+                      ],
+                      "cardsTrades": [],
+                      "towerRewards": [],
+                      "skillLevelRewards": [],
+                      "communityCenterOutputs": [
+                        {
+                          "date": "2023-10-27",
+                          "inputItem": {
+                            "__typename": "FarmRPG_Item",
+                            "id": 74,
+                            "name": "Green Parchment",
+                            "image": "/img/items/greenparchment.png"
+                          },
+                          "inputQuantity": 1429700,
+                          "progress": 2039371,
+                          "outputQuantity": 1
+                        }
+                      ],
+                      "templeRewardItems": []
+                    }
+                  ]
+                }
+              },
+              "pageContext": {
+                "id": 369,
+                "name": "R.O.A.S."
+              }
+            },
+            "staticQueryHashes": [],
+            "slicesMap": {}
+          }
         },
-        "existingFetchedAt": "2026-06-05T02:26:53.643Z"
+        "existingFetchedAt": "2026-06-06T00:58:15.498Z"
       },
       {
         "index": 1090,
@@ -442445,8 +443418,7 @@
       "fetchCandidatesAvailable": 0,
       "limitApplied": false,
       "countsByAction": {
-        "skip_fresh": 1456,
-        "skip_terminal": 5
+        "skip_fresh": 1461
       },
       "warnings": []
     }
@@ -455889,24 +456861,20 @@
     {
       "itemName": "Pot of Gold (Medium)",
       "canonicalKey": "pot of gold (medium)",
-      "buddyUrl": "https://buddy.farm/i/pot-of-gold-medium/",
-      "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-medium/page-data.json",
+      "buddyUrl": "https://buddy.farm/i/pot-of-gold-medium-/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-medium-/page-data.json",
       "cacheKey": "pot-of-gold-medium__pot-of-gold-medium",
       "cacheFileName": "pot-of-gold-medium__pot-of-gold-medium.json",
-      "action": "skip_terminal",
-      "status": "skip_terminal",
-      "httpStatus": 404,
-      "sourceStatus": "uncertain",
-      "fetchedAt": "2026-06-04T23:40:25.590Z",
-      "flags": [
-        "uncertain",
-        "http_404"
-      ],
+      "action": "skip_fresh",
+      "status": "skip_fresh",
+      "httpStatus": 200,
+      "sourceStatus": "sources_present",
+      "fetchedAt": "2026-06-06T00:58:15.498Z",
+      "flags": [],
       "notes": [
         "BL-248 current museum universe item",
         "refresh Buddy page evidence for parsing work.",
-        "Expected a successful Buddy page-data fetch but received HTTP 404.",
-        "Cached terminal evidence is newer than 30 days."
+        "Cached evidence is newer than 30 days."
       ],
       "evidence": null
     },
@@ -458273,24 +459241,20 @@
     {
       "itemName": "Pot of Gold (Large)",
       "canonicalKey": "pot of gold (large)",
-      "buddyUrl": "https://buddy.farm/i/pot-of-gold-large/",
-      "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-large/page-data.json",
+      "buddyUrl": "https://buddy.farm/i/pot-of-gold-large-/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-large-/page-data.json",
       "cacheKey": "pot-of-gold-large__pot-of-gold-large",
       "cacheFileName": "pot-of-gold-large__pot-of-gold-large.json",
-      "action": "skip_terminal",
-      "status": "skip_terminal",
-      "httpStatus": 404,
-      "sourceStatus": "uncertain",
-      "fetchedAt": "2026-06-04T23:40:25.590Z",
-      "flags": [
-        "uncertain",
-        "http_404"
-      ],
+      "action": "skip_fresh",
+      "status": "skip_fresh",
+      "httpStatus": 200,
+      "sourceStatus": "sources_present",
+      "fetchedAt": "2026-06-06T00:58:15.498Z",
+      "flags": [],
       "notes": [
         "BL-248 current museum universe item",
         "refresh Buddy page evidence for parsing work.",
-        "Expected a successful Buddy page-data fetch but received HTTP 404.",
-        "Cached terminal evidence is newer than 30 days."
+        "Cached evidence is newer than 30 days."
       ],
       "evidence": null
     },
@@ -461063,24 +462027,20 @@
     {
       "itemName": "Pot of Gold (Small)",
       "canonicalKey": "pot of gold (small)",
-      "buddyUrl": "https://buddy.farm/i/pot-of-gold-small/",
-      "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-small/page-data.json",
+      "buddyUrl": "https://buddy.farm/i/pot-of-gold-small-/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-small-/page-data.json",
       "cacheKey": "pot-of-gold-small__pot-of-gold-small",
       "cacheFileName": "pot-of-gold-small__pot-of-gold-small.json",
-      "action": "skip_terminal",
-      "status": "skip_terminal",
-      "httpStatus": 404,
-      "sourceStatus": "uncertain",
-      "fetchedAt": "2026-06-04T23:40:25.590Z",
-      "flags": [
-        "uncertain",
-        "http_404"
-      ],
+      "action": "skip_fresh",
+      "status": "skip_fresh",
+      "httpStatus": 200,
+      "sourceStatus": "sources_present",
+      "fetchedAt": "2026-06-06T00:58:15.498Z",
+      "flags": [],
       "notes": [
         "BL-248 current museum universe item",
         "refresh Buddy page evidence for parsing work.",
-        "Expected a successful Buddy page-data fetch but received HTTP 404.",
-        "Cached terminal evidence is newer than 30 days."
+        "Cached evidence is newer than 30 days."
       ],
       "evidence": null
     },
@@ -461683,20 +462643,16 @@
       "pageDataUrl": "https://buddy.farm/page-data/i/green-shield/page-data.json",
       "cacheKey": "green-shield__green-shield",
       "cacheFileName": "green-shield__green-shield.json",
-      "action": "skip_terminal",
-      "status": "skip_terminal",
-      "httpStatus": null,
-      "sourceStatus": "uncertain",
-      "fetchedAt": "2026-06-04T23:40:25.590Z",
-      "flags": [
-        "uncertain",
-        "fetch_error"
-      ],
+      "action": "skip_fresh",
+      "status": "skip_fresh",
+      "httpStatus": 200,
+      "sourceStatus": "sources_present",
+      "fetchedAt": "2026-06-06T00:58:15.498Z",
+      "flags": [],
       "notes": [
         "BL-248 current museum universe item",
         "refresh Buddy page evidence for parsing work.",
-        "fetch failed",
-        "Cached terminal evidence is newer than 30 days."
+        "Cached evidence is newer than 30 days."
       ],
       "evidence": null
     },
@@ -464633,24 +465589,20 @@
     {
       "itemName": "R.O.A.S.",
       "canonicalKey": "r.o.a.s.",
-      "buddyUrl": "https://buddy.farm/i/r-o-a-s/",
-      "pageDataUrl": "https://buddy.farm/page-data/i/r-o-a-s/page-data.json",
+      "buddyUrl": "https://buddy.farm/i/r-o-a-s-/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/r-o-a-s-/page-data.json",
       "cacheKey": "r-o-a-s__r-o-a-s",
       "cacheFileName": "r-o-a-s__r-o-a-s.json",
-      "action": "skip_terminal",
-      "status": "skip_terminal",
-      "httpStatus": 404,
-      "sourceStatus": "uncertain",
-      "fetchedAt": "2026-06-05T02:26:53.643Z",
-      "flags": [
-        "uncertain",
-        "http_404"
-      ],
+      "action": "skip_fresh",
+      "status": "skip_fresh",
+      "httpStatus": 200,
+      "sourceStatus": "sources_present",
+      "fetchedAt": "2026-06-06T00:58:15.498Z",
+      "flags": [],
       "notes": [
         "BL-248 current museum universe item",
         "refresh Buddy page evidence for parsing work.",
-        "Expected a successful Buddy page-data fetch but received HTTP 404.",
-        "Cached terminal evidence is newer than 30 days."
+        "Cached evidence is newer than 30 days."
       ],
       "evidence": null
     },
@@ -474805,30 +475757,6 @@
       "evidence": null
     },
     {
-      "itemName": "Pot of Gold (Medium)",
-      "canonicalKey": "pot of gold (medium)",
-      "buddyUrl": "https://buddy.farm/i/pot-of-gold-medium/",
-      "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-medium/page-data.json",
-      "cacheKey": "pot-of-gold-medium__pot-of-gold-medium",
-      "cacheFileName": "pot-of-gold-medium__pot-of-gold-medium.json",
-      "action": "skip_terminal",
-      "status": "skip_terminal",
-      "httpStatus": 404,
-      "sourceStatus": "uncertain",
-      "fetchedAt": "2026-06-04T23:40:25.590Z",
-      "flags": [
-        "uncertain",
-        "http_404"
-      ],
-      "notes": [
-        "BL-248 current museum universe item",
-        "refresh Buddy page evidence for parsing work.",
-        "Expected a successful Buddy page-data fetch but received HTTP 404.",
-        "Cached terminal evidence is newer than 30 days."
-      ],
-      "evidence": null
-    },
-    {
       "itemName": "Ship Wheel",
       "canonicalKey": "ship wheel",
       "buddyUrl": "https://buddy.farm/i/ship-wheel/",
@@ -475265,30 +476193,6 @@
         "BL-248 current museum universe item",
         "refresh Buddy page evidence for parsing work.",
         "Cached evidence is newer than 30 days."
-      ],
-      "evidence": null
-    },
-    {
-      "itemName": "Pot of Gold (Large)",
-      "canonicalKey": "pot of gold (large)",
-      "buddyUrl": "https://buddy.farm/i/pot-of-gold-large/",
-      "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-large/page-data.json",
-      "cacheKey": "pot-of-gold-large__pot-of-gold-large",
-      "cacheFileName": "pot-of-gold-large__pot-of-gold-large.json",
-      "action": "skip_terminal",
-      "status": "skip_terminal",
-      "httpStatus": 404,
-      "sourceStatus": "uncertain",
-      "fetchedAt": "2026-06-04T23:40:25.590Z",
-      "flags": [
-        "uncertain",
-        "http_404"
-      ],
-      "notes": [
-        "BL-248 current museum universe item",
-        "refresh Buddy page evidence for parsing work.",
-        "Expected a successful Buddy page-data fetch but received HTTP 404.",
-        "Cached terminal evidence is newer than 30 days."
       ],
       "evidence": null
     },
@@ -475799,30 +476703,6 @@
       "evidence": null
     },
     {
-      "itemName": "Pot of Gold (Small)",
-      "canonicalKey": "pot of gold (small)",
-      "buddyUrl": "https://buddy.farm/i/pot-of-gold-small/",
-      "pageDataUrl": "https://buddy.farm/page-data/i/pot-of-gold-small/page-data.json",
-      "cacheKey": "pot-of-gold-small__pot-of-gold-small",
-      "cacheFileName": "pot-of-gold-small__pot-of-gold-small.json",
-      "action": "skip_terminal",
-      "status": "skip_terminal",
-      "httpStatus": 404,
-      "sourceStatus": "uncertain",
-      "fetchedAt": "2026-06-04T23:40:25.590Z",
-      "flags": [
-        "uncertain",
-        "http_404"
-      ],
-      "notes": [
-        "BL-248 current museum universe item",
-        "refresh Buddy page evidence for parsing work.",
-        "Expected a successful Buddy page-data fetch but received HTTP 404.",
-        "Cached terminal evidence is newer than 30 days."
-      ],
-      "evidence": null
-    },
-    {
       "itemName": "Magic Mirror",
       "canonicalKey": "magic mirror",
       "buddyUrl": "https://buddy.farm/i/magic-mirror/",
@@ -475951,30 +476831,6 @@
         "BL-248 current museum universe item",
         "refresh Buddy page evidence for parsing work.",
         "Cached evidence is newer than 30 days."
-      ],
-      "evidence": null
-    },
-    {
-      "itemName": "Green Shield",
-      "canonicalKey": "green shield",
-      "buddyUrl": "https://buddy.farm/i/green-shield/",
-      "pageDataUrl": "https://buddy.farm/page-data/i/green-shield/page-data.json",
-      "cacheKey": "green-shield__green-shield",
-      "cacheFileName": "green-shield__green-shield.json",
-      "action": "skip_terminal",
-      "status": "skip_terminal",
-      "httpStatus": null,
-      "sourceStatus": "uncertain",
-      "fetchedAt": "2026-06-04T23:40:25.590Z",
-      "flags": [
-        "uncertain",
-        "fetch_error"
-      ],
-      "notes": [
-        "BL-248 current museum universe item",
-        "refresh Buddy page evidence for parsing work.",
-        "fetch failed",
-        "Cached terminal evidence is newer than 30 days."
       ],
       "evidence": null
     },
@@ -476525,30 +477381,6 @@
         "BL-248 current museum universe item",
         "refresh Buddy page evidence for parsing work.",
         "Cached evidence is newer than 30 days."
-      ],
-      "evidence": null
-    },
-    {
-      "itemName": "R.O.A.S.",
-      "canonicalKey": "r.o.a.s.",
-      "buddyUrl": "https://buddy.farm/i/r-o-a-s/",
-      "pageDataUrl": "https://buddy.farm/page-data/i/r-o-a-s/page-data.json",
-      "cacheKey": "r-o-a-s__r-o-a-s",
-      "cacheFileName": "r-o-a-s__r-o-a-s.json",
-      "action": "skip_terminal",
-      "status": "skip_terminal",
-      "httpStatus": 404,
-      "sourceStatus": "uncertain",
-      "fetchedAt": "2026-06-05T02:26:53.643Z",
-      "flags": [
-        "uncertain",
-        "http_404"
-      ],
-      "notes": [
-        "BL-248 current museum universe item",
-        "refresh Buddy page evidence for parsing work.",
-        "Expected a successful Buddy page-data fetch but received HTTP 404.",
-        "Cached terminal evidence is newer than 30 days."
       ],
       "evidence": null
     },
@@ -478250,13 +479082,12 @@
   "summary": {
     "targetsProcessed": 1461,
     "evidenceCached": 0,
-    "reviewCount": 273,
+    "reviewCount": 268,
     "countsByStatus": {
-      "skip_fresh": 1456,
-      "skip_terminal": 5
+      "skip_fresh": 1461
     },
     "warnings": [
-      "273 evidence results need review before parser promotion."
+      "268 evidence results need review before parser promotion."
     ]
   }
 }

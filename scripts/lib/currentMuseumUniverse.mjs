@@ -110,7 +110,6 @@ function toBuddySlug(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/gu, '-')
     .replace(/^-+/gu, '')
-    .replace(/-+$/gu, '')
     .replace(/-+/gu, '-');
 }
 

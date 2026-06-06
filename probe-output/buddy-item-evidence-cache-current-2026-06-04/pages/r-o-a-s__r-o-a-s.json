@@ -2,24 +2,238 @@
   "schemaVersion": 1,
   "evidenceType": "buddy_item_page_data",
   "extractionVersion": "buddy-item-evidence-cache-v1",
-  "fetchedAt": "2026-06-05T02:26:53.643Z",
-  "httpStatus": 404,
+  "fetchedAt": "2026-06-06T00:58:15.498Z",
+  "httpStatus": 200,
   "itemName": "R.O.A.S.",
   "canonicalKey": "r.o.a.s.",
-  "buddyUrl": "https://buddy.farm/i/r-o-a-s/",
-  "pageDataUrl": "https://buddy.farm/page-data/i/r-o-a-s/page-data.json",
-  "pageTitle": null,
-  "buddyItemName": null,
-  "buddyItemId": null,
-  "buddyItemImage": null,
-  "sourceStatus": "uncertain",
+  "buddyUrl": "https://buddy.farm/i/r-o-a-s-/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/r-o-a-s-/page-data.json",
+  "pageTitle": "R.O.A.S.",
+  "buddyItemName": "R.O.A.S.",
+  "buddyItemId": "369",
+  "buddyItemImage": "/img/items/rat_t_01.png",
+  "sourceStatus": "sources_present",
   "blankSourceIndicators": [],
-  "detectedSections": [],
+  "detectedSections": [
+    "communityCenterOutputs",
+    "exchangeCenterOutputs",
+    "passwordItems",
+    "requiredForQuests",
+    "rewardForQuests",
+    "wishingWellInputItems",
+    "wishingWellOutputItems"
+  ],
   "reviewNotes": [
     "BL-248 current museum universe item",
-    "refresh Buddy page evidence for parsing work.",
-    "Expected a successful Buddy page-data fetch but received HTTP 404."
+    "refresh Buddy page evidence for parsing work."
   ],
   "fetchError": null,
-  "pageData": null
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/r-o-a-s-/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 369,
+              "name": "R.O.A.S.",
+              "image": "/img/items/rat_t_01.png",
+              "type": "item",
+              "description": "Rodent On A Stick",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 1,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1265710,
+                    "name": "ribbetribbetribbetribbet ribbet ribbetcroakribbetribbet<br>ibbetcroakcroakribbet croakcroak ribbet<br>ribbetribbet ribbetribbet ribbetribbet",
+                    "image": "/img/items/frog_t_01.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 1265731,
+                    "name": "Treat or Fear III",
+                    "image": "/img/items/ghost.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 333,
+                    "name": "Limerick or Treat III",
+                    "image": "/img/items/ghost.png",
+                    "endDate": "2025-11-04T05:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 824,
+                    "name": "Fooled III",
+                    "image": "/img/items/buddy.png",
+                    "endDate": "2026-05-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [
+                {
+                  "quantity": 100,
+                  "password": {
+                    "id": 163,
+                    "password": "thomas is scared of worms"
+                  }
+                },
+                {
+                  "quantity": 100,
+                  "password": {
+                    "id": 162,
+                    "password": "rosalie rosalie rosalie"
+                  }
+                },
+                {
+                  "quantity": 1,
+                  "password": {
+                    "id": 97,
+                    "password": "thoma"
+                  }
+                }
+              ],
+              "wishingWellInputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 335,
+                    "name": "Square Key",
+                    "image": "/img/items/7179.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 370,
+                    "name": "Taffy",
+                    "image": "/img/items/candy_t_11.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "outputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 361,
+                    "name": "Candy Corn",
+                    "image": "/img/items/candycorn.png"
+                  }
+                }
+              ],
+              "wishingWellOutputItems": [
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 361,
+                    "name": "Candy Corn",
+                    "image": "/img/items/candycorn.png"
+                  }
+                },
+                {
+                  "chance": 0.3333333333333333,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 354,
+                    "name": "Wax Candle",
+                    "image": "/img/items/candle.png"
+                  }
+                }
+              ],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [
+                {
+                  "lastSeen": "2024-08-05T17:00:00+00:00",
+                  "oneshot": true,
+                  "inputQuantity": 500,
+                  "outputQuantity": 1,
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 358,
+                    "name": "Candy",
+                    "image": "/img/items/candy_t_09.png"
+                  }
+                }
+              ],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [
+                {
+                  "date": "2023-10-27",
+                  "inputItem": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 74,
+                    "name": "Green Parchment",
+                    "image": "/img/items/greenparchment.png"
+                  },
+                  "inputQuantity": 1429700,
+                  "progress": 2039371,
+                  "outputQuantity": 1
+                }
+              ],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 369,
+        "name": "R.O.A.S."
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
 }
