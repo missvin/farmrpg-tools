@@ -69,15 +69,35 @@ Glass Orb,glass orb,yes,,,,,`),
   it('parses the checked-in local item catalog', () => {
     const result = parseItemCatalogCsv(readFileSync(join(process.cwd(), 'data', 'item_catalog.csv'), 'utf8'));
 
-    expect(result.entries.length).toBeGreaterThan(0);
+    expect(result.entries.length).toBe(1461);
     expect(result.byCanonicalKey['acorn butter']).toMatchObject({
       itemName: 'Acorn Butter',
       masteryPossible: 'yes',
+      sourceDatasets: ['buddy_item_evidence_cache', 'mastery_difficulty', 'recipes.output', 'tower_requirements'],
     });
     expect(result.byCanonicalKey.acorn).toMatchObject({
       itemName: 'Acorn',
       masteryPossible: 'unknown',
-      sourceDatasets: ['recipe_inputs.input'],
+      buddySlug: 'acorn',
+      sourceDatasets: ['buddy_item_evidence_cache', 'recipe_inputs.input'],
+    });
+    expect(result.byCanonicalKey['ancient coin']).toMatchObject({
+      itemName: 'Ancient Coin',
+      masteryPossible: 'unknown',
+      buddySlug: 'ancient-coin',
+      sourceDatasets: ['buddy_item_evidence_cache'],
+    });
+    expect(result.byCanonicalKey['green shield']).toMatchObject({
+      itemName: 'Green Shield',
+      masteryPossible: 'yes',
+      buddySlug: 'green-shield',
+      sourceDatasets: ['buddy_item_evidence_cache', 'mastery_difficulty', 'recipes.output', 'tower_requirements'],
+    });
+    expect(result.byCanonicalKey['large chest 01']).toMatchObject({
+      itemName: 'Large Chest 01',
+      masteryPossible: 'unknown',
+      buddySlug: 'large-chest-01',
+      sourceDatasets: ['buddy_item_evidence_cache'],
     });
   });
 });

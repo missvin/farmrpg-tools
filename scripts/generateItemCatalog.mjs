@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -13,6 +13,15 @@ const ITEM_CATALOG_COLUMNS = [
   'source_datasets',
   'notes',
 ];
+
+const BUDDY_ITEM_CATALOG_CANDIDATES_PATH = join(
+  repoRoot,
+  'probe-output',
+  'buddy-item-evidence-cache-current-2026-06-04',
+  'parsed-multi-source',
+  'fanout',
+  'item_catalog_candidates.csv',
+);
 
 function parseCsvRow(line) {
   const values = [];
@@ -204,6 +213,18 @@ for (const row of readDataCsv('recipe_inputs.csv')) {
     masteryPossible: 'unknown',
     sourceDataset: 'recipe_inputs.input',
   });
+}
+
+if (existsSync(BUDDY_ITEM_CATALOG_CANDIDATES_PATH)) {
+  for (const row of parseCsv(readFileSync(BUDDY_ITEM_CATALOG_CANDIDATES_PATH, 'utf8'))) {
+    addItem(catalogByKey, {
+      itemName: row.get('item_name'),
+      masteryPossible: 'unknown',
+      farmrpgItemId: row.get('farmrpg_item_id'),
+      buddySlug: row.get('buddy_slug'),
+      sourceDataset: 'buddy_item_evidence_cache',
+    });
+  }
 }
 
 const entries = [...catalogByKey.values()].sort((left, right) => left.itemName.localeCompare(right.itemName));
