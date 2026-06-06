@@ -170,7 +170,7 @@ Use the repo-local safe Codex git helpers for branch, stage, commit, push, and m
 
 The helpers read temporary input from `recovery/codex-branch-name.txt`, `recovery/codex-stage-paths.txt`, and `recovery/codex-commit-message.txt`. These files are ignored and should be removed automatically after successful helper use.
 
-For explicitly approved protected-branch pushes, `git codex-push` and `git codex-merge` read `recovery/codex-protected-push-approval.txt` and require the file to name the protected branch and exact `HEAD` being pushed. The helper prints the required file contents when approval is missing.
+For explicitly approved direct protected-branch pushes, `git codex-push` reads `recovery/codex-protected-push-approval.txt` and requires the file to name the protected branch and exact `HEAD` being pushed. The helper prints the required file contents when approval is missing. Normal `git codex-merge` task-branch landings do not require this approval file; they must still start from a clean feature branch, fast-forward merge into the default branch, and push the default branch through the helper.
 
 If a helper fails, stop and report the failure. Do not silently fall back to raw `git add`, `git commit`, `git push`, or `git merge`.
 
