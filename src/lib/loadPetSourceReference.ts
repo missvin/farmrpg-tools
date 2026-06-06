@@ -3,6 +3,7 @@ import { resolveLocalItemReference } from './localItemReferenceLookup';
 import { toCanonicalItemKey } from './normalizeItemKey';
 
 export type PetSourceCoverageStatus = 'partial' | 'reviewed';
+export type PetSourceAvailability = 'normal' | 'seasonal';
 
 export type PetSourceReferenceEntry = {
   petName: string;
@@ -12,6 +13,7 @@ export type PetSourceReferenceEntry = {
   unlockLevel: number;
   sourceUrl: string;
   pageDataUrl: string;
+  petAvailability: PetSourceAvailability;
   coverageStatus: PetSourceCoverageStatus;
   notes: string[];
 };
@@ -39,6 +41,7 @@ export const PET_SOURCE_REFERENCE_COLUMNS = [
   'unlock_level',
   'source_url',
   'page_data_url',
+  'pet_availability',
   'coverage_status',
   'notes',
 ] as const;
@@ -136,6 +139,14 @@ function parseCoverageStatus(value: string, itemName: string): PetSourceCoverage
   throw new Error(`Invalid coverage_status "${value}" for pet-source item "${itemName}".`);
 }
 
+function parsePetAvailability(value: string, itemName: string): PetSourceAvailability {
+  if (value === 'normal' || value === 'seasonal') {
+    return value;
+  }
+
+  throw new Error(`Invalid pet_availability "${value}" for pet-source item "${itemName}".`);
+}
+
 function parseList(value: string): string[] {
   return value
     .split(';')
@@ -212,6 +223,7 @@ export function parsePetSourceReferenceCsv(csvText: string): PetSourceReferenceD
         'page_data_url',
         `pet-source item "${itemName}"`,
       ),
+      petAvailability: parsePetAvailability(readField(values, headerIndex, 'pet_availability'), itemName),
       coverageStatus: parseCoverageStatus(readField(values, headerIndex, 'coverage_status'), itemName),
       notes: parseList(readField(values, headerIndex, 'notes')),
     };

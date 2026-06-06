@@ -161,6 +161,13 @@ Identity compatibility rules:
 - The checked-in file may be header-only until probe output is reviewed and intentionally added
 - Loader validation keeps missing item/source recognition non-fatal so acquisition planning can surface reference gaps without blocking the app
 
+### `pet_source_reference.csv`
+
+- Reviewed local source-coverage dataset for Buddy-derived pet production rows
+- Preserves normalized pet/item names, unlock levels, source URLs, page-data URLs, review status, and normal versus seasonal pet availability without making Buddy IDs canonical
+- Item-level source planning consumes reviewed rows when present and keeps missing local item-catalog recognition non-fatal
+- Future pet production forecasts use unlock levels and pet availability metadata as reference inputs, while user-owned pet levels and collection modifiers remain local planning assumptions
+
 ## UI/View Architecture
 
 Normal user-facing pages should explain player status, attention, and next useful action. Repo maintenance, reference-data upkeep, and debug details belong in explicit internal/dev tooling or secondary detail surfaces unless a warning must stay visible to preserve trust.
@@ -210,6 +217,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `src/lib/loadMuseumLookupCoverage.ts`
 - `src/lib/localItemReferenceLookup.ts`
 - `src/lib/loadDropRateReference.ts`
+- `src/lib/loadPetSourceReference.ts`
 - `src/lib/deriveMasteryDifficultyStats.ts`
 - `src/lib/deriveTowerRequirements.ts`
 - `src/pages/ImportPage.tsx`
@@ -222,6 +230,7 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - `data/item_aliases.csv`
 - `data/museum_lookup_coverage.csv`
 - `data/drop_rate_reference.csv`
+- `data/pet_source_reference.csv`
 
 ## Change Guidance
 

@@ -14,7 +14,7 @@ import {
 import { createLocalItemReferenceLookup } from './localItemReferenceLookup';
 
 const HEADER =
-  'pet_name,pet_canonical_key,item_name,item_canonical_key,unlock_level,source_url,page_data_url,coverage_status,notes';
+  'pet_name,pet_canonical_key,item_name,item_canonical_key,unlock_level,source_url,page_data_url,pet_availability,coverage_status,notes';
 
 function createLookup() {
   return createLocalItemReferenceLookup({
@@ -32,7 +32,7 @@ Frost Snapper Shell,frost snapper shell,unknown,,frost-snapper-shell,manual_seed
 describe('parsePetSourceReferenceCsv', () => {
   it('parses reviewed pet-source availability rows', () => {
     const result = parsePetSourceReferenceCsv(`${HEADER}
-Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,reviewed,seed row`);
+Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,normal,reviewed,seed row`);
 
     expect(result.entries).toHaveLength(1);
     expect(result.byItemCanonicalKey['frost snapper shell']).toHaveLength(1);
@@ -41,6 +41,7 @@ Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-s
       petName: 'Seal',
       itemName: 'Frost Snapper Shell',
       unlockLevel: 6,
+      petAvailability: 'normal',
       coverageStatus: 'reviewed',
       notes: ['seed row'],
     });
@@ -53,24 +54,24 @@ Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-s
 
     expect(() =>
       parsePetSourceReferenceCsv(`${HEADER}
-Seal,wrong,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,reviewed,`),
+Seal,wrong,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,normal,reviewed,`),
     ).toThrow('Pet canonical key mismatch');
 
     expect(() =>
       parsePetSourceReferenceCsv(`${HEADER}
-Seal,seal,Frost Snapper Shell,wrong,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,reviewed,`),
+Seal,seal,Frost Snapper Shell,wrong,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,normal,reviewed,`),
     ).toThrow('Item canonical key mismatch');
 
     expect(() =>
       parsePetSourceReferenceCsv(`${HEADER}
-Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,reviewed,
-Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,reviewed,`),
+Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,normal,reviewed,
+Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,normal,reviewed,`),
     ).toThrow('Duplicate pet-source row');
   });
 
   it('returns non-fatal lookup issues for unrecognized item coverage', () => {
     const result = parsePetSourceReferenceCsv(`${HEADER}
-Seal,seal,Unknown Shell,unknown shell,6,https://buddy.farm/i/unknown-shell/,https://buddy.farm/page-data/i/unknown-shell/page-data.json,partial,`);
+Seal,seal,Unknown Shell,unknown shell,6,https://buddy.farm/i/unknown-shell/,https://buddy.farm/page-data/i/unknown-shell/page-data.json,normal,partial,`);
 
     expect(validatePetSourceReferenceAgainstLookup(result, createLookup())).toEqual([
       expect.objectContaining({
@@ -85,12 +86,38 @@ Seal,seal,Unknown Shell,unknown shell,6,https://buddy.farm/i/unknown-shell/,http
       readFileSync(join(process.cwd(), 'data', 'pet_source_reference.csv'), 'utf8'),
     );
 
-    expect(result.entries).toEqual([
-      expect.objectContaining({
-        petName: 'Seal',
-        itemName: 'Frost Snapper Shell',
-        unlockLevel: 6,
-      }),
-    ]);
+    expect(result.entries).toHaveLength(336);
+    expect(result.byPetCanonicalKey.hedgehog).toHaveLength(12);
+    expect(findPetSourceReference(result, 'Skunk', 'salt')).toMatchObject({
+      petName: 'Skunk',
+      itemName: 'Salt',
+      unlockLevel: 3,
+      petAvailability: 'normal',
+      coverageStatus: 'reviewed',
+    });
+    expect(findPetSourceReference(result, 'Red Dragon', 'salt')).toMatchObject({
+      petName: 'Red Dragon',
+      itemName: 'Salt',
+      unlockLevel: 6,
+      petAvailability: 'normal',
+      coverageStatus: 'reviewed',
+    });
+    expect(findPetSourceReference(result, 'Seal', 'frost snapper shell')).toMatchObject({
+      petName: 'Seal',
+      itemName: 'Frost Snapper Shell',
+      unlockLevel: 6,
+      petAvailability: 'normal',
+      coverageStatus: 'reviewed',
+    });
+    expect(findPetSourceReference(result, 'Dog', 'antler')).toMatchObject({
+      petName: 'Dog',
+      itemName: 'Antler',
+      unlockLevel: 3,
+      petAvailability: 'normal',
+      coverageStatus: 'reviewed',
+    });
+    expect(findPetSourceReference(result, 'Hummingbird', 'honeysuckle')).toMatchObject({
+      petAvailability: 'seasonal',
+    });
   });
 });

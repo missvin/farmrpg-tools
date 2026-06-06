@@ -12,13 +12,13 @@ import {
 import { parsePetSourceReferenceCsv } from './loadPetSourceReference';
 
 const PET_SOURCE_HEADER =
-  'pet_name,pet_canonical_key,item_name,item_canonical_key,unlock_level,source_url,page_data_url,coverage_status,notes';
+  'pet_name,pet_canonical_key,item_name,item_canonical_key,unlock_level,source_url,page_data_url,pet_availability,coverage_status,notes';
 
 function createPetSourceReference() {
   return parsePetSourceReferenceCsv(`${PET_SOURCE_HEADER}
-Owl,owl,Honey,honey,1,https://buddy.farm/i/honey/,https://buddy.farm/page-data/i/honey/page-data.json,reviewed,
-Snake,snake,Steel,steel,3,https://buddy.farm/i/steel/,https://buddy.farm/page-data/i/steel/page-data.json,reviewed,
-Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,reviewed,`);
+Owl,owl,Honey,honey,1,https://buddy.farm/i/honey/,https://buddy.farm/page-data/i/honey/page-data.json,normal,reviewed,
+Snake,snake,Steel,steel,3,https://buddy.farm/i/steel/,https://buddy.farm/page-data/i/steel/page-data.json,normal,reviewed,
+Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,normal,reviewed,`);
 }
 
 describe('deriveFuturePetProductionForecast', () => {
