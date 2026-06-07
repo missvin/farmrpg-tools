@@ -336,6 +336,10 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
       continue;
     }
 
+    if (metrics.networkAttempts > 0) {
+      await sleepFn(getInterRequestDelayMs(interRequestDelayMs, interRequestJitterMs, randomFn));
+    }
+
     try {
       metrics.networkAttempts += 1;
       const response = await fetchFn(row.iconUrl);
@@ -383,10 +387,6 @@ export async function downloadBuddyItemIcons(iconRows, options = {}) {
     }
 
     guardStopReason = evaluateStopCondition(metrics, stopOptions);
-
-    if (index < downloadableRows.length - 1) {
-      await sleepFn(getInterRequestDelayMs(interRequestDelayMs, interRequestJitterMs, randomFn));
-    }
   }
 
   const countsByStatus = results.reduce((counts, result) => {

@@ -175,6 +175,79 @@ describe('downloadBuddyItemIcons', () => {
     expect(secondResult.results[0]?.cacheStatus).toBe('existing');
   });
 
+  it('does not pace cache hits before downloading a later missing icon', async () => {
+    const cacheDir = await createTempDir();
+    const sleepCalls = [];
+    let fetchCount = 0;
+    const cachedIconRow = {
+      itemName: 'Board',
+      canonicalKey: 'board',
+      generatedBuddySlug: 'board',
+      candidateBuddyUrl: 'https://buddy.farm/i/board/',
+      extractionStatus: 'icon_found',
+      observationStatus: 'observed',
+      iconUrl: 'https://farmrpg.com/img/items/5885.png',
+      iconPathname: '/img/items/5885.png',
+      iconFilename: '5885.png',
+      iconAssetKey: '5885',
+      farmrpgItemIdCandidate: '5885',
+      flags: [],
+      notes: [],
+    };
+    const missingIconRow = {
+      itemName: 'Fancy Pipe',
+      canonicalKey: 'fancy pipe',
+      generatedBuddySlug: 'fancy-pipe',
+      candidateBuddyUrl: 'https://buddy.farm/i/fancy-pipe/',
+      extractionStatus: 'icon_found',
+      observationStatus: 'observed',
+      iconUrl: 'https://farmrpg.com/img/items/7275.png?1',
+      iconPathname: '/img/items/7275.png',
+      iconFilename: '7275.png',
+      iconAssetKey: '7275',
+      farmrpgItemIdCandidate: '7275',
+      flags: [],
+      notes: [],
+    };
+
+    await downloadBuddyItemIcons([cachedIconRow], {
+      cacheDir,
+      interRequestDelayMs: 0,
+      fetchFn: async () => ({
+        ok: true,
+        status: 200,
+        arrayBuffer: async () => new TextEncoder().encode('cached-bytes').buffer,
+      }),
+      randomFn: () => 0,
+    });
+
+    const result = await downloadBuddyItemIcons([cachedIconRow, missingIconRow], {
+      cacheDir,
+      interRequestDelayMs: 3000,
+      interRequestJitterMs: 500,
+      randomFn: () => 0.5,
+      sleepFn: async (ms) => {
+        sleepCalls.push(ms);
+      },
+      fetchFn: async () => {
+        fetchCount += 1;
+
+        return {
+          ok: true,
+          status: 200,
+          arrayBuffer: async () => new TextEncoder().encode('missing-bytes').buffer,
+        };
+      },
+    });
+
+    expect(fetchCount).toBe(1);
+    expect(sleepCalls).toEqual([]);
+    expect(result.summary.countsByStatus).toEqual({
+      existing: 1,
+      downloaded: 1,
+    });
+  });
+
   it('stops conservatively when repeated failures suggest a structural problem and flags remaining rows for review', async () => {
     const cacheDir = await createTempDir();
     let fetchCount = 0;
