@@ -2,15 +2,22 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { downloadTextFile } from '../lib/appBackupExport';
+import { MEMORY_GAME_OBSERVATION_STORAGE_KEY } from '../lib/memoryGameObservationState';
 import { MEMORY_HELPER_STORAGE_KEY } from '../lib/memoryHelperState';
 import { MemoryHelperPage } from './MemoryHelperPage';
 
 const getItemIconMock = vi.fn();
 const loadLocalItemReferenceLookupMock = vi.fn();
 const loadMemoryGameAllowedItemsMock = vi.fn();
+const downloadTextFileMock = vi.mocked(downloadTextFile);
 
 vi.mock('../lib/itemIconManifest', () => ({
   getItemIcon: (...args: unknown[]) => getItemIconMock(...args),
+}));
+
+vi.mock('../lib/appBackupExport', () => ({
+  downloadTextFile: vi.fn(),
 }));
 
 vi.mock('../lib/localItemReferenceLookup', async () => {
@@ -171,6 +178,7 @@ describe('MemoryHelperPage', () => {
     getItemIconMock.mockReset();
     loadLocalItemReferenceLookupMock.mockReset();
     loadMemoryGameAllowedItemsMock.mockReset();
+    downloadTextFileMock.mockReset();
   });
 
   it('records revealed items, detects a pair, marks it matched, and persists the board', async () => {
@@ -245,6 +253,50 @@ describe('MemoryHelperPage', () => {
     await user.click(within(observedSection as HTMLElement).getByRole('button', { name: 'Use observed Mug of Beer' }));
 
     expect(screen.getByRole('button', { name: 'Slot row 1 column 1 Mug of Beer' })).toBeInTheDocument();
+  });
+
+  it('captures locally observed items and prioritizes them after reset', async () => {
+    const user = userEvent.setup();
+    mockLookup();
+
+    render(<MemoryHelperPage />);
+
+    await screen.findByRole('heading', { name: "Borgen's Lost and Found" });
+    await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
+    await user.type(screen.getByLabelText('Item'), 'Gold Cucumber');
+    await user.click(screen.getByRole('button', { name: 'Save Slot' }));
+
+    expect(window.localStorage.getItem(MEMORY_GAME_OBSERVATION_STORAGE_KEY)).toContain('Gold Cucumber');
+    expect(screen.getByText('locally observed Lost and Found items')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'New Game' }));
+    await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
+
+    const observedSection = screen.getByRole('heading', { name: 'Observed Items' }).closest('section');
+    expect(observedSection).not.toBeNull();
+    expect(
+      within(observedSection as HTMLElement).getByRole('button', { name: 'Use observed Gold Cucumber' }),
+    ).toBeInTheDocument();
+    expect(within(observedSection as HTMLElement).getByText('Observed locally once')).toBeInTheDocument();
+  });
+
+  it('exports local observation evidence as a review CSV', async () => {
+    const user = userEvent.setup();
+    mockLookup();
+
+    render(<MemoryHelperPage />);
+
+    await screen.findByRole('heading', { name: "Borgen's Lost and Found" });
+    await user.click(screen.getByRole('button', { name: 'Slot row 1 column 1 empty' }));
+    await user.type(screen.getByLabelText('Item'), 'Board');
+    await user.click(screen.getByRole('button', { name: 'Save Slot' }));
+    await user.click(screen.getByRole('button', { name: 'Export Observations' }));
+
+    expect(downloadTextFileMock).toHaveBeenCalledTimes(1);
+    expect(downloadTextFileMock.mock.calls[0]?.[0]).toMatch(/^borgen-lost-and-found-observations-/);
+    expect(downloadTextFileMock.mock.calls[0]?.[1]).toContain('Board,board,4,1');
+    expect(downloadTextFileMock.mock.calls[0]?.[1]).toContain('review before promoting');
+    expect(screen.getByText('Exported 1 observed item rows for review.')).toBeInTheDocument();
   });
 
   it('keeps seen-once items out of observed quick picks', async () => {

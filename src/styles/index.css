@@ -1117,6 +1117,14 @@ a {
   grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
 }
 
+.memory-helper-observation-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .memory-helper-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.75fr);

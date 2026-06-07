@@ -2,12 +2,23 @@ import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type Keybo
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
+import { downloadTextFile } from '../lib/appBackupExport';
 import { getItemIcon } from '../lib/itemIconManifest';
 import {
   loadMemoryGameAllowedItems,
   type MemoryGameAllowedItemEntry,
   type MemoryGameAllowedItemsData,
 } from '../lib/loadMemoryGameAllowedItems';
+import {
+  createMemoryGameObservationExportFilename,
+  loadMemoryGameObservationState,
+  MEMORY_GAME_OBSERVATION_EXPORT_MIME_TYPE,
+  recordMemoryGameObservation,
+  saveMemoryGameObservationState,
+  toMemoryGameObservationCsv,
+  type MemoryGameObservationRecord,
+  type MemoryGameObservationState,
+} from '../lib/memoryGameObservationState';
 import {
   loadLocalItemReferenceLookup,
   resolveLocalItemReference,
@@ -141,6 +152,25 @@ function buildMemoryGameItemOptions(memoryGameItems: MemoryGameAllowedItemsData)
     }));
 }
 
+function buildPersonalObservationItemOptions(observationState: MemoryGameObservationState): ItemOption[] {
+  return [...observationState.records]
+    .sort(
+      (left, right) =>
+        right.observationCount - left.observationCount ||
+        right.lastSeenAt.localeCompare(left.lastSeenAt) ||
+        left.itemName.localeCompare(right.itemName) ||
+        left.canonicalKey.localeCompare(right.canonicalKey),
+    )
+    .map((entry) => ({
+      canonicalKey: entry.canonicalKey,
+      itemName: entry.itemName,
+      sourceLabel:
+        entry.observationCount === 1
+          ? 'Observed locally once'
+          : `Observed locally ${entry.observationCount} times`,
+    }));
+}
+
 function getMemoryGameItemMeta(entry: MemoryGameAllowedItemEntry | undefined): string {
   if (!entry) {
     return BORGENS_LOST_AND_FOUND_LABEL;
@@ -260,9 +290,13 @@ export function MemoryHelperPage() {
   const itemSuggestionListId = useId();
   const itemInputRef = useRef<HTMLInputElement | null>(null);
   const [memoryState, setMemoryState] = useState<MemoryHelperState>(() => loadMemoryHelperState());
+  const [observationState, setObservationState] = useState<MemoryGameObservationState>(() =>
+    loadMemoryGameObservationState(),
+  );
   const [activeSlotId, setActiveSlotId] = useState<string | null>(null);
   const [itemQuery, setItemQuery] = useState('');
   const [entryWarnings, setEntryWarnings] = useState<string[]>([]);
+  const [exportStatus, setExportStatus] = useState<string | null>(null);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [resourceState, setResourceState] = useState<ResourceState>({
     isLoading: true,
@@ -309,6 +343,10 @@ export function MemoryHelperPage() {
     saveMemoryHelperState(memoryState);
   }, [memoryState]);
 
+  useEffect(() => {
+    saveMemoryGameObservationState(observationState);
+  }, [observationState]);
+
   const derivation = useMemo(() => deriveMemoryHelperBoard(memoryState), [memoryState]);
   const activeSlot = activeSlotId ? memoryState.slots.find((slot) => slot.slotId === activeSlotId) ?? null : null;
   const itemOptions = useMemo(
@@ -319,6 +357,19 @@ export function MemoryHelperPage() {
     () => (resourceState.memoryGameItems ? buildMemoryGameItemOptions(resourceState.memoryGameItems) : []),
     [resourceState.memoryGameItems],
   );
+  const personalObservationItemOptions = useMemo(
+    () => buildPersonalObservationItemOptions(observationState),
+    [observationState],
+  );
+  const personalObservationRecordsByCanonicalKey = useMemo(() => {
+    const recordsByCanonicalKey = new Map<string, MemoryGameObservationRecord>();
+
+    for (const record of observationState.records) {
+      recordsByCanonicalKey.set(record.canonicalKey, record);
+    }
+
+    return recordsByCanonicalKey;
+  }, [observationState.records]);
   const memoryGameEntriesByCanonicalKey = resourceState.memoryGameItems?.byCanonicalKey ?? {};
   const seenOnceItemOptions = useMemo<SeenOnceItemOption[]>(() => {
     const optionsByCanonicalKey = new Map<string, { itemName: string; canonicalKey: string; slotIds: string[] }>();
@@ -360,23 +411,48 @@ export function MemoryHelperPage() {
     [seenOnceItemOptions],
   );
   const filteredItemOptions = useMemo(
-    () => filterItemOptions(itemOptions, itemQuery, [...seenOnceItemOptions, ...memoryGameItemOptions]),
-    [itemOptions, itemQuery, memoryGameItemOptions, seenOnceItemOptions],
+    () =>
+      filterItemOptions(itemOptions, itemQuery, [
+        ...seenOnceItemOptions,
+        ...personalObservationItemOptions,
+        ...memoryGameItemOptions,
+      ]),
+    [itemOptions, itemQuery, memoryGameItemOptions, personalObservationItemOptions, seenOnceItemOptions],
   );
   const memoryGameQuickPickOptions = useMemo(() => {
     const activeCanonicalKey = activeSlot?.item?.canonicalKey ?? null;
+    const quickPickOptionsByCanonicalKey = new Map<string, ItemOption>();
+
+    for (const option of [...personalObservationItemOptions, ...memoryGameItemOptions]) {
+      if (quickPickOptionsByCanonicalKey.has(option.canonicalKey)) {
+        continue;
+      }
+
+      quickPickOptionsByCanonicalKey.set(option.canonicalKey, option);
+    }
+
     const candidates =
       itemQuery.trim().length >= 2
-        ? rankMatchingItemOptions(memoryGameItemOptions, itemQuery)
-        : memoryGameItemOptions;
+        ? rankMatchingItemOptions([...quickPickOptionsByCanonicalKey.values()], itemQuery)
+        : [...quickPickOptionsByCanonicalKey.values()];
 
     return candidates
       .filter((option) => option.canonicalKey !== activeCanonicalKey && !seenOnceOptionKeys.has(option.canonicalKey))
       .slice(0, 12);
-  }, [activeSlot?.item?.canonicalKey, itemQuery, memoryGameItemOptions, seenOnceOptionKeys]);
+  }, [
+    activeSlot?.item?.canonicalKey,
+    itemQuery,
+    memoryGameItemOptions,
+    personalObservationItemOptions,
+    seenOnceOptionKeys,
+  ]);
   const memoryGameOptionKeys = useMemo(
     () => new Set(memoryGameItemOptions.map((option) => option.canonicalKey)),
     [memoryGameItemOptions],
+  );
+  const personalObservationOptionKeys = useMemo(
+    () => new Set(personalObservationItemOptions.map((option) => option.canonicalKey)),
+    [personalObservationItemOptions],
   );
   const shouldShowItemSuggestions = Boolean(activeSlot) && itemQuery.trim().length >= 2 && !resourceState.isLoading;
   const activeSuggestionId =
@@ -415,6 +491,7 @@ export function MemoryHelperPage() {
     }
 
     const result = resolveLocalItemReference(inputName, resourceState.lookup);
+    const shownWarnings = getMemoryHelperEntryWarnings(result.warnings);
 
     if (!result.recognized) {
       const evidenceRecord = createUnknownItemEvidenceRecord({
@@ -428,6 +505,17 @@ export function MemoryHelperPage() {
       recordUnknownItemEvidence(evidenceRecord ? [evidenceRecord] : []);
     }
 
+    setObservationState((currentState) =>
+      recordMemoryGameObservation(currentState, {
+        itemName: result.displayName,
+        canonicalKey: result.canonicalKey,
+        observedTier: '4',
+        sessionId: memoryState.updatedAt,
+        slotSummary: formatSlotPosition(activeSlot?.row ?? 0, activeSlot?.column ?? 0),
+        warningTexts: result.recognized ? [] : shownWarnings,
+      }),
+    );
+
     setMemoryState((currentState) =>
       setMemoryHelperSlotItem(currentState, {
         slotId: activeSlotId,
@@ -437,7 +525,8 @@ export function MemoryHelperPage() {
     );
     setActiveSlotId(null);
     setItemQuery('');
-    setEntryWarnings(getMemoryHelperEntryWarnings(result.warnings));
+    setExportStatus(null);
+    setEntryWarnings(shownWarnings);
   }
 
   function handleSubmitSlot(event: FormEvent<HTMLFormElement>): void {
@@ -466,6 +555,21 @@ export function MemoryHelperPage() {
 
   function handleSelectItemOption(option: ItemOption): void {
     saveItemToActiveSlot(option.itemName);
+  }
+
+  function handleExportObservations(): void {
+    if (observationState.records.length === 0) {
+      setExportStatus('No local Lost and Found observations to export yet.');
+      return;
+    }
+
+    const exportedAt = new Date().toISOString();
+    downloadTextFile(
+      createMemoryGameObservationExportFilename(exportedAt),
+      toMemoryGameObservationCsv(observationState),
+      MEMORY_GAME_OBSERVATION_EXPORT_MIME_TYPE,
+    );
+    setExportStatus(`Exported ${observationState.records.length} observed item rows for review.`);
   }
 
   function handleItemInputKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
@@ -586,6 +690,22 @@ export function MemoryHelperPage() {
           </div>
         </dl>
 
+        <div className="memory-helper-observation-summary">
+          <div>
+            <strong>{observationState.records.length}</strong>{' '}
+            <span className="subtle-text">locally observed Lost and Found items</span>
+          </div>
+          <button
+            className="button button--secondary"
+            type="button"
+            onClick={handleExportObservations}
+            disabled={observationState.records.length === 0}
+          >
+            Export Observations
+          </button>
+        </div>
+        {exportStatus ? <p className="supporting-text">{exportStatus}</p> : null}
+
         {resourceState.error ? <p className="status-message status-message--error">{resourceState.error}</p> : null}
         {derivation.warnings.length > 0 || entryWarnings.length > 0 ? (
           <div className="status-alert status-alert--warning page-stack" role="alert">
@@ -705,6 +825,8 @@ export function MemoryHelperPage() {
                                 <span className="memory-helper-suggestion__meta">
                                   {option.sourceLabel.startsWith('Seen ')
                                     ? option.sourceLabel
+                                    : personalObservationOptionKeys.has(option.canonicalKey)
+                                      ? option.sourceLabel
                                     : memoryGameOptionKeys.has(option.canonicalKey)
                                       ? BORGENS_LOST_AND_FOUND_LABEL
                                       : option.sourceLabel}
@@ -776,6 +898,9 @@ export function MemoryHelperPage() {
                       {memoryGameQuickPickOptions.map((option) => {
                         const iconSrc = getItemIconSrc(option.canonicalKey);
                         const memoryGameEntry = memoryGameEntriesByCanonicalKey[option.canonicalKey];
+                        const personalObservationRecord = personalObservationRecordsByCanonicalKey.get(
+                          option.canonicalKey,
+                        );
 
                         return (
                           <li key={option.canonicalKey}>
@@ -799,7 +924,7 @@ export function MemoryHelperPage() {
                                 <span className="memory-helper-suggestion__name">{option.itemName}</span>
                               </span>
                               <span className="memory-helper-suggestion__meta">
-                                {getMemoryGameItemMeta(memoryGameEntry)}
+                                {personalObservationRecord ? option.sourceLabel : getMemoryGameItemMeta(memoryGameEntry)}
                               </span>
                             </button>
                           </li>
