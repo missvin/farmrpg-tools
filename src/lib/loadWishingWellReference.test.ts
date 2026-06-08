@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 import { parseWishingWellReferenceCsv } from './loadWishingWellReference';
 
@@ -27,5 +29,19 @@ describe('parseWishingWellReferenceCsv', () => {
         'Salt,salt,Spiked Shell,spiked shell,50,1,user_confirmed,reviewed row',
       ].join('\n'),
     )).toThrow(/chance must be between 0 and 1/);
+  });
+
+  it('parses the checked-in Wishing Well reference data', () => {
+    const data = parseWishingWellReferenceCsv(
+      readFileSync(join(process.cwd(), 'data', 'wishing_well_reference.csv'), 'utf8'),
+    );
+    const saltRewards = data.byThrownCanonicalKey.salt ?? [];
+
+    expect(data.entries).toHaveLength(361);
+    expect(saltRewards.map((entry) => entry.rewardItemName).sort()).toEqual(['Broccoli', 'Spiked Shell']);
+    expect(saltRewards.every((entry) => entry.rewardQuantity === 1)).toBe(true);
+    expect(
+      saltRewards.every((entry) => entry.notes.some((note) => note.includes('Reward quantity defaults to 1'))),
+    ).toBe(true);
   });
 });
