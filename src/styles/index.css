@@ -809,6 +809,13 @@ a {
   background: var(--color-surface-muted);
 }
 
+.table-heading-with-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
 .warning-list {
   margin: 1rem 0 0;
   color: var(--color-warning-border);

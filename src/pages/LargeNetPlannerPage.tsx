@@ -84,6 +84,8 @@ function getItemIconSrc(canonicalKey: string): string | null {
   return getItemIcon(canonicalKey)?.src ?? null;
 }
 
+const DAYS_COLUMN_HELP_TEXT = 'Days estimates this target by itself: target minus regular inventory and effective stored pet inventory, divided by expected daily progress from Large Nets, catch multiplier, and pet/day output. Shared-budget and allocation planning are separate.';
+
 function findCatalogEntry(itemCatalog: ItemCatalogData | null, itemName: string) {
   const normalizedItemName = itemName.trim().toLowerCase();
 
@@ -669,7 +671,19 @@ export function LargeNetPlannerPage() {
                   <th scope="col">Remaining</th>
                   <th scope="col">LN/drop</th>
                   <th scope="col">LN needed now</th>
-                  <th scope="col">Solo days</th>
+                  <th scope="col">
+                    <span className="table-heading-with-help">
+                      Days
+                      <span
+                        className="progress-list__tooltip"
+                        role="note"
+                        title={DAYS_COLUMN_HELP_TEXT}
+                        aria-label={DAYS_COLUMN_HELP_TEXT}
+                      >
+                        ?
+                      </span>
+                    </span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
