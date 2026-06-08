@@ -15,12 +15,14 @@ describe('snapshotVelocityPreferences', () => {
         hiddenDefaultCanonicalKeys: ['carrot'],
         chartMode: 'nope',
         rangeMode: 'recent',
+        showMegaMasteredItems: true,
       }),
     ).toEqual({
       selectedCanonicalKeys: ['apple'],
       hiddenDefaultCanonicalKeys: ['carrot'],
       chartMode: 'mastery',
       rangeMode: 'recent',
+      showMegaMasteredItems: true,
     });
   });
 
@@ -34,6 +36,7 @@ describe('snapshotVelocityPreferences', () => {
         hiddenDefaultCanonicalKeys: ['carrot'],
         chartMode: 'gain',
         rangeMode: 'recent',
+        showMegaMasteredItems: true,
       },
       storage,
     );
@@ -43,6 +46,7 @@ describe('snapshotVelocityPreferences', () => {
       hiddenDefaultCanonicalKeys: ['carrot'],
       chartMode: 'gain',
       rangeMode: 'recent',
+      showMegaMasteredItems: true,
     });
   });
 

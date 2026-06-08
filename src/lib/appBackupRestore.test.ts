@@ -394,6 +394,7 @@ function createSnapshotVelocityPreferencesFixture() {
     hiddenDefaultCanonicalKeys: ['twine'],
     chartMode: 'gain' as const,
     rangeMode: 'recent' as const,
+    showMegaMasteredItems: true,
   };
 }
 

@@ -4,6 +4,7 @@ import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import {
   deriveSnapshotHistoryAnalytics,
+  filterSnapshotHistoryAnalyticsItems,
   type SnapshotHistoryAnalytics,
   type SnapshotHistoryItemRow,
   type SnapshotHistoryTimelinePoint,
@@ -411,32 +412,43 @@ export function HistoryPage() {
   }
 
   const analytics = historyState.analytics;
+  const itemAnalytics = useMemo(() => {
+    if (!analytics) {
+      return null;
+    }
+
+    return filterSnapshotHistoryAnalyticsItems(analytics, {
+      showMegaMasteredItems: preferences.showMegaMasteredItems,
+    });
+  }, [analytics, preferences.showMegaMasteredItems]);
+  const hiddenMegaMasteredCount =
+    analytics && itemAnalytics ? analytics.itemRows.length - itemAnalytics.itemRows.length : 0;
   const normalizedQuery = query.trim().toLowerCase();
   const selectedKeys = useMemo(() => {
-    if (!analytics) {
+    if (!itemAnalytics) {
       return [];
     }
 
-    const defaultKeys = analytics.defaultSelectedCanonicalKeys.filter(
+    const defaultKeys = itemAnalytics.defaultSelectedCanonicalKeys.filter(
       (canonicalKey) => !preferences.hiddenDefaultCanonicalKeys.includes(canonicalKey),
     );
 
     return [...new Set([...defaultKeys, ...preferences.selectedCanonicalKeys])];
-  }, [analytics, preferences.hiddenDefaultCanonicalKeys, preferences.selectedCanonicalKeys]);
+  }, [itemAnalytics, preferences.hiddenDefaultCanonicalKeys, preferences.selectedCanonicalKeys]);
   const selectedRows = useMemo(() => {
-    if (!analytics) {
+    if (!itemAnalytics) {
       return [];
     }
 
-    const rowsByKey = new Map(analytics.itemRows.map((row) => [row.canonicalKey, row]));
+    const rowsByKey = new Map(itemAnalytics.itemRows.map((row) => [row.canonicalKey, row]));
     return selectedKeys.map((canonicalKey) => rowsByKey.get(canonicalKey)).filter((row): row is SnapshotHistoryItemRow => Boolean(row));
-  }, [analytics, selectedKeys]);
+  }, [itemAnalytics, selectedKeys]);
   const candidateRows = useMemo(() => {
-    if (!analytics) {
+    if (!itemAnalytics) {
       return [];
     }
 
-    const filteredRows = analytics.itemRows.filter(
+    const filteredRows = itemAnalytics.itemRows.filter(
       (row) =>
         !normalizedQuery ||
         row.itemName.toLowerCase().includes(normalizedQuery) ||
@@ -444,7 +456,7 @@ export function HistoryPage() {
     );
 
     return sortCandidateRows(filteredRows, sortMode).slice(0, 50);
-  }, [analytics, normalizedQuery, sortMode]);
+  }, [itemAnalytics, normalizedQuery, sortMode]);
   const visibleSnapshotPoints = analytics
     ? getVisibleSnapshotPoints(analytics.snapshotPoints, preferences.rangeMode)
     : [];
@@ -462,7 +474,7 @@ export function HistoryPage() {
   }
 
   function removeItem(canonicalKey: string): void {
-    const isDefaultItem = analytics?.defaultSelectedCanonicalKeys.includes(canonicalKey) ?? false;
+    const isDefaultItem = itemAnalytics?.defaultSelectedCanonicalKeys.includes(canonicalKey) ?? false;
 
     savePreferences({
       ...preferences,
@@ -536,11 +548,11 @@ export function HistoryPage() {
             </dl>
           </section>
 
-          {analytics.milestoneCallouts.length > 0 ? (
+          {itemAnalytics && itemAnalytics.milestoneCallouts.length > 0 ? (
             <section className="page-card page-stack" aria-labelledby="history-callouts-title">
               <h2 id="history-callouts-title">Interesting Movement</h2>
               <ul className="history-callout-list">
-                {analytics.milestoneCallouts.map((callout) => (
+                {itemAnalytics.milestoneCallouts.map((callout) => (
                   <li key={`${callout.title}-${callout.value}`} className="history-callout-card">
                     <span className="history-callout-card__title">{callout.title}</span>
                     <strong>{callout.value}</strong>
@@ -573,6 +585,21 @@ export function HistoryPage() {
             </div>
 
             <div className="inline-control-row">
+              <label className="checkbox-field" htmlFor="history-show-mm-items">
+                <input
+                  id="history-show-mm-items"
+                  type="checkbox"
+                  checked={preferences.showMegaMasteredItems}
+                  onChange={(event) =>
+                    savePreferences({
+                      ...preferences,
+                      showMegaMasteredItems: event.target.checked,
+                    })
+                  }
+                />
+                Show MM'd items
+              </label>
+
               <label className="field-label" htmlFor="history-chart-mode">
                 Chart mode
               </label>
@@ -610,6 +637,13 @@ export function HistoryPage() {
                 <option value="recent">Latest interval</option>
               </select>
             </div>
+
+            {!preferences.showMegaMasteredItems && hiddenMegaMasteredCount > 0 ? (
+              <p className="supporting-text">
+                {hiddenMegaMasteredCount.toLocaleString()} MM'd item
+                {hiddenMegaMasteredCount === 1 ? ' is' : 's are'} hidden from item-level views.
+              </p>
+            ) : null}
 
             <ItemVelocityChart rows={selectedRows} chartMode={preferences.chartMode} rangeMode={preferences.rangeMode} />
 
@@ -677,7 +711,7 @@ export function HistoryPage() {
             </div>
 
             <div className="history-suggestion-buckets">
-              {analytics.suggestionBuckets
+              {(itemAnalytics?.suggestionBuckets ?? [])
                 .filter((bucket) => bucket.itemKeys.length > 0)
                 .map((bucket) => (
                   <button

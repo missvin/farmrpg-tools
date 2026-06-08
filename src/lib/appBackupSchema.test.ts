@@ -143,6 +143,7 @@ describe('appBackupSchema', () => {
       hiddenDefaultCanonicalKeys: ['twine'],
       chartMode: 'gain' as const,
       rangeMode: 'recent' as const,
+      showMegaMasteredItems: true,
     };
 
     const payload = createAppBackupPayload({
@@ -557,6 +558,7 @@ describe('appBackupSchema', () => {
               hiddenDefaultCanonicalKeys: ['twine'],
               chartMode: 'sparkles',
               rangeMode: 'recent',
+              showMegaMasteredItems: false,
             },
             themePreference: 'dark',
           },

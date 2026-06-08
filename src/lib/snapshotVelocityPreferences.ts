@@ -6,6 +6,7 @@ export type SnapshotVelocityPreferences = {
   hiddenDefaultCanonicalKeys: string[];
   chartMode: SnapshotVelocityChartMode;
   rangeMode: SnapshotVelocityRangeMode;
+  showMegaMasteredItems: boolean;
 };
 
 const STORAGE_KEY = 'farmrpg-tools.snapshotVelocityPreferences.v1';
@@ -17,6 +18,7 @@ export const DEFAULT_SNAPSHOT_VELOCITY_PREFERENCES: SnapshotVelocityPreferences 
   hiddenDefaultCanonicalKeys: [],
   chartMode: 'mastery',
   rangeMode: 'all',
+  showMegaMasteredItems: false,
 };
 
 function getStorage(storage?: Storage): Storage | null {
@@ -55,6 +57,10 @@ export function normalizeSnapshotVelocityPreferences(value: unknown): SnapshotVe
     rangeMode: RANGE_MODES.has(record.rangeMode as SnapshotVelocityRangeMode)
       ? (record.rangeMode as SnapshotVelocityRangeMode)
       : DEFAULT_SNAPSHOT_VELOCITY_PREFERENCES.rangeMode,
+    showMegaMasteredItems:
+      typeof record.showMegaMasteredItems === 'boolean'
+        ? record.showMegaMasteredItems
+        : DEFAULT_SNAPSHOT_VELOCITY_PREFERENCES.showMegaMasteredItems,
   };
 }
 

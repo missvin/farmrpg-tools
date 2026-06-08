@@ -499,7 +499,8 @@ function isValidSnapshotVelocityPreferences(value: unknown): value is SnapshotVe
     isStringArray(value.selectedCanonicalKeys) &&
     isStringArray(value.hiddenDefaultCanonicalKeys) &&
     (value.chartMode === 'mastery' || value.chartMode === 'gain' || value.chartMode === 'threshold') &&
-    (value.rangeMode === 'all' || value.rangeMode === 'recent')
+    (value.rangeMode === 'all' || value.rangeMode === 'recent') &&
+    (value.showMegaMasteredItems === undefined || isBoolean(value.showMegaMasteredItems))
   );
 }
 

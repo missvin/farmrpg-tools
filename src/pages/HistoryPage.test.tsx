@@ -75,6 +75,8 @@ function createManyItemSnapshots() {
   newItems['tiny item'] = 2;
   oldItems['threshold item'] = 9_990;
   newItems['threshold item'] = 10_010;
+  oldItems['mega item'] = 1_000_000;
+  newItems['mega item'] = 1_000_500;
 
   return [
     createSnapshot('snapshot-new', '2026-03-19T12:00:00.000Z', newItems),
@@ -112,6 +114,9 @@ describe('HistoryPage', () => {
     expect(screen.getByText('Fastest recent gainers')).toBeInTheDocument();
     expect(screen.getByText('New threshold')).toBeInTheDocument();
     expect(screen.getByText('Tower')).toBeInTheDocument();
+    expect(screen.getByLabelText("Show MM'd items")).not.toBeChecked();
+    expect(screen.getByText("1 MM'd item is hidden from item-level views.")).toBeInTheDocument();
+    expect(screen.queryByText('Mega Item')).not.toBeInTheDocument();
 
     await user.selectOptions(screen.getByLabelText('Chart mode'), 'gain');
     expect(screen.getByLabelText('Chart mode')).toHaveValue('gain');
@@ -122,6 +127,12 @@ describe('HistoryPage', () => {
 
     expect(within(tinyCard).getByRole('button', { name: 'Remove' })).toBeInTheDocument();
     expect(window.localStorage.getItem('farmrpg-tools.snapshotVelocityPreferences.v1')).toContain('tiny item');
+
+    await user.click(screen.getByLabelText("Show MM'd items"));
+    expect((await screen.findAllByText('Mega Item')).length).toBeGreaterThan(0);
+    expect(window.localStorage.getItem('farmrpg-tools.snapshotVelocityPreferences.v1')).toContain(
+      '"showMegaMasteredItems":true',
+    );
   });
 
   it('restores persisted chart preferences', async () => {

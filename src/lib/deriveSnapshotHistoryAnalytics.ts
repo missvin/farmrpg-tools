@@ -92,10 +92,11 @@ type ItemSeed = {
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_ITEM_LIMIT = 10;
+export const MEGA_MASTERED_THRESHOLD = 1_000_000;
 const THRESHOLDS: ThresholdDefinition[] = [
   { threshold: 10_000, label: 'Mastered' },
   { threshold: 100_000, label: 'GM' },
-  { threshold: 1_000_000, label: 'MM' },
+  { threshold: MEGA_MASTERED_THRESHOLD, label: 'MM' },
 ];
 
 const LEGACY_MOJIBAKE_REPLACEMENTS: Record<string, string> = {
@@ -490,6 +491,35 @@ function buildCallouts(
   }
 
   return callouts;
+}
+
+export function isSnapshotHistoryMegaMastered(row: SnapshotHistoryItemRow): boolean {
+  return row.latestValue >= MEGA_MASTERED_THRESHOLD;
+}
+
+export function filterSnapshotHistoryAnalyticsItems(
+  analytics: SnapshotHistoryAnalytics,
+  options: { showMegaMasteredItems: boolean },
+): SnapshotHistoryAnalytics {
+  if (options.showMegaMasteredItems) {
+    return analytics;
+  }
+
+  const itemRows = analytics.itemRows.filter((row) => !isSnapshotHistoryMegaMastered(row));
+  const includedKeys = new Set(itemRows.map((row) => row.canonicalKey));
+
+  return {
+    ...analytics,
+    itemRows,
+    defaultSelectedCanonicalKeys: analytics.defaultSelectedCanonicalKeys.filter((canonicalKey) =>
+      includedKeys.has(canonicalKey),
+    ),
+    suggestionBuckets: analytics.suggestionBuckets.map((bucket) => ({
+      ...bucket,
+      itemKeys: bucket.itemKeys.filter((canonicalKey) => includedKeys.has(canonicalKey)),
+    })),
+    milestoneCallouts: buildCallouts(analytics.snapshotPoints, itemRows),
+  };
 }
 
 export function deriveSnapshotHistoryAnalytics(

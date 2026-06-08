@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { deriveSnapshotHistoryAnalytics } from './deriveSnapshotHistoryAnalytics';
+import {
+  deriveSnapshotHistoryAnalytics,
+  filterSnapshotHistoryAnalyticsItems,
+} from './deriveSnapshotHistoryAnalytics';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 
 function createSnapshot(
@@ -83,5 +86,29 @@ describe('deriveSnapshotHistoryAnalytics', () => {
     expect(analytics.snapshotPoints[1]?.masteryPerDay).toBeNull();
     expect(analytics.snapshotPoints[1]?.percentGainPerDay).toBeNull();
     expect(analytics.itemRows[0]?.percentGain).toBeNull();
+  });
+
+  it('filters Mega Mastered items from item-level analytics when requested', () => {
+    const analytics = deriveSnapshotHistoryAnalytics([
+      createSnapshot('snapshot-old', '2026-03-17T12:00:00.000Z', {
+        apple: 100,
+        'mega item': 1_000_000,
+      }),
+      createSnapshot('snapshot-new', '2026-03-19T12:00:00.000Z', {
+        apple: 450,
+        'mega item': 1_000_500,
+      }),
+    ]);
+
+    const filteredAnalytics = filterSnapshotHistoryAnalyticsItems(analytics, {
+      showMegaMasteredItems: false,
+    });
+
+    expect(filteredAnalytics.itemRows.map((row) => row.canonicalKey)).toEqual(['apple']);
+    expect(filteredAnalytics.defaultSelectedCanonicalKeys).not.toContain('mega item');
+    expect(
+      filteredAnalytics.suggestionBuckets.flatMap((bucket) => bucket.itemKeys),
+    ).not.toContain('mega item');
+    expect(filteredAnalytics.milestoneCallouts.map((callout) => callout.value)).not.toContain('Mega Item');
   });
 });
