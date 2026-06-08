@@ -168,6 +168,14 @@ Identity compatibility rules:
 - Item-level source planning consumes reviewed rows when present and keeps missing local item-catalog recognition non-fatal
 - Future pet production forecasts use unlock levels and pet availability metadata as reference inputs, while user-owned pet levels and collection modifiers remain local planning assumptions
 
+### `openable_contents.csv`
+
+- Reviewed local openable-content dataset for containers that can be counted as optional item sources
+- Uses `fixed` only for exact whole-number contents reviewed as received every open
+- Uses `expected` only for reviewed random outcome pools with visible range, outcome-count, outcome-model, and expected-value formula notes
+- Buddy openable candidate rows are review inputs, not canonical rows; candidate `quantity_kind=fixed` only means `quantity_min=quantity_max` for that candidate outcome
+- Detailed promotion semantics live in [`planning/openable-contents-semantics.md`](openable-contents-semantics.md)
+
 ## UI/View Architecture
 
 Normal user-facing pages should explain player status, attention, and next useful action. Repo maintenance, reference-data upkeep, and debug details belong in explicit internal/dev tooling or secondary detail surfaces unless a warning must stay visible to preserve trust.

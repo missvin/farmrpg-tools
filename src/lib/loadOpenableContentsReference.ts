@@ -127,6 +127,10 @@ function parseQuantityKind(value: string, rowLabel: string): OpenableContentsQua
   throw new Error(`Invalid quantity_kind "${value}" in ${rowLabel}.`);
 }
 
+function hasNoteWithPrefix(notes: string[], prefix: string): boolean {
+  return notes.some((note) => note.toLowerCase().startsWith(prefix));
+}
+
 function parseList(value: string): string[] {
   return value
     .split(';')
@@ -140,6 +144,38 @@ function validateCanonicalNameMatch(itemName: string, canonicalKey: string, labe
   if (expectedCanonicalKey !== canonicalKey) {
     throw new Error(
       `Canonical key mismatch for ${label}: expected "${expectedCanonicalKey}" from "${itemName}" but found "${canonicalKey}".`,
+    );
+  }
+}
+
+function validateReviewedEvidence(evidence: string, rowLabel: string): void {
+  if (evidence === 'container_to_content') {
+    throw new Error(
+      `Invalid evidence "${evidence}" in ${rowLabel}; promote reviewed openable semantics instead of copying raw Buddy candidate rows.`,
+    );
+  }
+}
+
+function validateQuantitySemantics(entry: OpenableContentsReferenceEntry, rowLabel: string): void {
+  if (entry.quantityKind === 'fixed') {
+    if (!Number.isInteger(entry.quantityPerOpen)) {
+      throw new Error(`Fixed openable quantity must be a whole number in ${rowLabel}.`);
+    }
+
+    return;
+  }
+
+  const requiredExpectedNotes = [
+    'quantity_range=',
+    'outcome_count=',
+    'outcome_model=',
+    'ev_formula=',
+  ];
+  const missingExpectedNotes = requiredExpectedNotes.filter((prefix) => !hasNoteWithPrefix(entry.notes, prefix));
+
+  if (missingExpectedNotes.length > 0) {
+    throw new Error(
+      `Expected-value openable row in ${rowLabel} is missing review notes: ${missingExpectedNotes.join(', ')}.`,
     );
   }
 }
@@ -190,6 +226,12 @@ export function parseOpenableContentsReferenceCsv(csvText: string): OpenableCont
     validateCanonicalNameMatch(openableItemName, openableCanonicalKey, `openable "${openableItemName}"`);
     validateCanonicalNameMatch(contentItemName, contentCanonicalKey, `openable content "${contentItemName}"`);
 
+    const rowLabel = `openable row "${openableItemName}" -> "${contentItemName}"`;
+    const evidence = parseRequiredText(
+      readField(values, headerIndex, 'evidence'),
+      'evidence',
+      rowLabel,
+    );
     const entry: OpenableContentsReferenceEntry = {
       openableItemName,
       openableCanonicalKey,
@@ -202,15 +244,14 @@ export function parseOpenableContentsReferenceCsv(csvText: string): OpenableCont
       ),
       quantityKind: parseQuantityKind(
         readField(values, headerIndex, 'quantity_kind'),
-        `openable row "${openableItemName}" -> "${contentItemName}"`,
+        rowLabel,
       ),
-      evidence: parseRequiredText(
-        readField(values, headerIndex, 'evidence'),
-        'evidence',
-        `openable row "${openableItemName}" -> "${contentItemName}"`,
-      ),
+      evidence,
       notes: parseList(readField(values, headerIndex, 'notes')),
     };
+
+    validateReviewedEvidence(entry.evidence, rowLabel);
+    validateQuantitySemantics(entry, rowLabel);
 
     entries.push(entry);
     byOpenableCanonicalKey[entry.openableCanonicalKey] = [
