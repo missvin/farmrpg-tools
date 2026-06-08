@@ -384,4 +384,164 @@ describe('buildItemGoalCalculatorResult', () => {
     expect(result.plannerResult.rowsByCanonicalKey.antler.availableQuantity).toBe(10);
     expect(result.plannerResult.rowsByCanonicalKey.antler.remainingQuantity).toBe(15);
   });
+
+  it('uses wait days as the local future pet forecast horizon', () => {
+    const acquisitionState: AcquisitionPlannerInputState = {
+      ...createBaseAcquisitionState(),
+      pets: {
+        ...createBaseAcquisitionState().pets,
+        futureProduction: {
+          ...createBaseAcquisitionState().pets.futureProduction,
+          enabled: true,
+          horizonDays: 1,
+          offlineHoursCap: 240,
+          entries: [
+            {
+              canonicalItemKey: 'salt',
+              itemName: 'Salt',
+              petName: 'Skunk',
+              petLevel: 6,
+              seasonalActive: true,
+            },
+          ],
+        },
+      },
+    };
+
+    const result = buildItemGoalCalculatorResult({
+      itemName: 'Salt',
+      canonicalKey: 'salt',
+      currentMastery: 0,
+      acquisitionState,
+      modifierState: createDefaultCraftingModifierState(),
+      recipeGraph: EMPTY_RECIPE_GRAPH,
+      petSourceReference: null,
+      openableContentsReference: { entries: [], byOpenableCanonicalKey: {}, byContentCanonicalKey: {} },
+      wishingWellReference: { entries: [], byThrownCanonicalKey: {}, byRewardCanonicalKey: {} },
+      settings: {
+        goalMode: 'quantity',
+        targetQuantity: 100,
+        waitDays: 5,
+      },
+    });
+
+    expect(result.totalAvailableQuantity).toBe(60);
+    expect(result.remainingQuantity).toBe(40);
+    expect(result.waitProjection.futurePetQuantity).toBe(60);
+    expect(result.waitProjection.projectedRemainingQuantity).toBe(40);
+  });
+
+  it('multiplies daily Tower Antlers by wait days for recursive demand', () => {
+    const largeNetRecipe: RecipeNode = {
+      outputItemName: 'Large Net',
+      outputCanonicalKey: 'large net',
+      recipeType: 'craft',
+      recipeBookItemName: null,
+      recipeBookCanonicalKey: null,
+      cookingLevel: null,
+      baseTime: null,
+      sourceBuddyUrl: 'https://buddy.farm/i/large-net/',
+      inputs: [
+        {
+          inputOrder: 1,
+          itemName: 'Antler',
+          canonicalKey: 'antler',
+          quantity: 25,
+        },
+      ],
+    };
+    const recipeGraph: RecipeGraph = {
+      recipes: [largeNetRecipe],
+      byOutputCanonicalKey: {
+        'large net': largeNetRecipe,
+      },
+      byInputCanonicalKey: {
+        antler: [largeNetRecipe],
+      },
+      craftRecipes: [largeNetRecipe],
+      cookingRecipes: [],
+    };
+
+    const result = buildItemGoalCalculatorResult({
+      itemName: 'Large Net',
+      canonicalKey: 'large net',
+      currentMastery: 0,
+      acquisitionState: createBaseAcquisitionState(),
+      modifierState: createDefaultCraftingModifierState(),
+      recipeGraph,
+      openableContentsReference: { entries: [], byOpenableCanonicalKey: {}, byContentCanonicalKey: {} },
+      wishingWellReference: { entries: [], byThrownCanonicalKey: {}, byRewardCanonicalKey: {} },
+      settings: {
+        goalMode: 'quantity',
+        targetQuantity: 1,
+        towerAntlersPerDay: 10,
+        waitDays: 3,
+      },
+    });
+
+    expect(result.plannerResult.rowsByCanonicalKey.antler.availableQuantity).toBe(30);
+    expect(result.plannerResult.rowsByCanonicalKey.antler.remainingQuantity).toBe(0);
+    expect(result.waitProjection.towerAntlerQuantity).toBe(30);
+    expect(result.waitProjection.activeRemainingRows.map((row) => row.canonicalKey)).not.toContain('antler');
+  });
+
+  it('projects Wishing Well expected value over wait days and warns when throws exceed counted supply', () => {
+    const acquisitionState: AcquisitionPlannerInputState = {
+      ...createBaseAcquisitionState(),
+      inventory: {
+        entries: [
+          {
+            canonicalItemKey: 'salt',
+            itemName: 'Salt',
+            inventoryCount: 10,
+          },
+        ],
+      },
+    };
+    const wishingWellReference: WishingWellReferenceData = {
+      entries: [],
+      byThrownCanonicalKey: {},
+      byRewardCanonicalKey: {
+        'spiked shell': [
+          {
+            thrownItemName: 'Salt',
+            thrownCanonicalKey: 'salt',
+            rewardItemName: 'Spiked Shell',
+            rewardCanonicalKey: 'spiked shell',
+            rewardChance: 0.5,
+            rewardQuantity: 1,
+            evidence: 'user_confirmed',
+            notes: [],
+          },
+        ],
+      },
+    };
+
+    const result = buildItemGoalCalculatorResult({
+      itemName: 'Spiked Shell',
+      canonicalKey: 'spiked shell',
+      currentMastery: 0,
+      acquisitionState,
+      modifierState: createDefaultCraftingModifierState(),
+      recipeGraph: EMPTY_RECIPE_GRAPH,
+      openableContentsReference: { entries: [], byOpenableCanonicalKey: {}, byContentCanonicalKey: {} },
+      wishingWellReference,
+      settings: {
+        goalMode: 'quantity',
+        targetQuantity: 100,
+        waitDays: 3,
+        wishingWellThrowsPerDay: 10,
+        wishingWellRewardMultiplier: 2,
+      },
+    });
+
+    expect(result.waitProjection.expectedWishingWellQuantity).toBe(30);
+    expect(result.waitProjection.projectedRemainingQuantity).toBe(70);
+    expect(result.waitProjection.activeRemainingRows[0]).toMatchObject({
+      canonicalKey: 'spiked shell',
+      remainingQuantity: 70,
+    });
+    expect(result.waitProjection.warnings[0]).toContain('needs 30 throws');
+    expect(result.waitProjection.warnings[0]).toContain('only 10 are counted as available');
+  });
 });

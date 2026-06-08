@@ -24,6 +24,7 @@ export type ItemGoalCalculatorSettings = {
   goalMode: ItemGoalMode;
   targetMastery: number;
   targetQuantity: number;
+  waitDays: number | null;
   includeOpenableContents: boolean;
   crunchyOmeletteActive: boolean;
   towerAntlersPerDay: number;
@@ -54,6 +55,24 @@ export type ItemGoalPetSource = {
   forecast: FuturePetProductionForecastItem;
 };
 
+export type ItemGoalActiveRemainingRow = {
+  canonicalKey: string;
+  itemName: string;
+  remainingQuantity: number;
+  grossRequiredQuantity: number;
+  sourceSummary: string;
+};
+
+export type ItemGoalWaitProjection = {
+  waitDays: number;
+  futurePetQuantity: number;
+  towerAntlerQuantity: number;
+  expectedWishingWellQuantity: number;
+  projectedRemainingQuantity: number;
+  activeRemainingRows: ItemGoalActiveRemainingRow[];
+  warnings: string[];
+};
+
 export type ItemGoalCalculatorResult = {
   goalMode: ItemGoalMode;
   desiredQuantity: number;
@@ -67,6 +86,7 @@ export type ItemGoalCalculatorResult = {
   openableSources: ItemGoalOpenableSource[];
   wishingWellSources: ItemGoalWishingWellSource[];
   petSources: ItemGoalPetSource[];
+  waitProjection: ItemGoalWaitProjection;
   warnings: string[];
 };
 
@@ -74,6 +94,7 @@ export const DEFAULT_ITEM_GOAL_CALCULATOR_SETTINGS: ItemGoalCalculatorSettings =
   goalMode: 'mastery',
   targetMastery: 100_000,
   targetQuantity: 10_000,
+  waitDays: null,
   includeOpenableContents: true,
   crunchyOmeletteActive: false,
   towerAntlersPerDay: 0,
@@ -85,17 +106,28 @@ function clampNonNegative(value: number): number {
   return Number.isFinite(value) && value > 0 ? value : 0;
 }
 
-function cloneAcquisitionStateWithCrunchySetting(
+function clampOptionalWaitDays(value: number | null): number | null {
+  if (value === null) {
+    return null;
+  }
+
+  return clampNonNegative(value);
+}
+
+function cloneAcquisitionStateWithGoalSettings(
   acquisitionState: AcquisitionPlannerInputState,
-  crunchyOmeletteActive: boolean,
+  settings: ItemGoalCalculatorSettings,
 ): AcquisitionPlannerInputState {
+  const waitDays = clampOptionalWaitDays(settings.waitDays);
+
   return {
     ...acquisitionState,
     pets: {
       ...acquisitionState.pets,
       futureProduction: {
         ...acquisitionState.pets.futureProduction,
-        crunchyOmeletteActive,
+        horizonDays: waitDays === null ? acquisitionState.pets.futureProduction.horizonDays : waitDays,
+        crunchyOmeletteActive: settings.crunchyOmeletteActive,
       },
     },
   };
@@ -178,8 +210,12 @@ function buildCrunchyStoredPetBonusBreakdowns(input: {
     .filter((entry) => entry.quantity > 0);
 }
 
-function buildTowerAntlerBreakdown(towerAntlersPerDay: number): AvailableSupplyExtraBreakdownInput[] {
-  const quantity = clampNonNegative(towerAntlersPerDay);
+function buildTowerAntlerBreakdown(input: {
+  towerAntlersPerDay: number;
+  waitDays: number | null;
+}): AvailableSupplyExtraBreakdownInput[] {
+  const dayMultiplier = input.waitDays === null ? 1 : input.waitDays;
+  const quantity = clampNonNegative(input.towerAntlersPerDay) * dayMultiplier;
 
   if (quantity <= 0) {
     return [];
@@ -192,7 +228,12 @@ function buildTowerAntlerBreakdown(towerAntlersPerDay: number): AvailableSupplyE
       sourceKey: 'recurring_antlers',
       timing: 'future',
       quantity,
-      notes: ['Tower artifact recurring Antlers entered as a daily amount.'],
+      notes: [
+        input.waitDays === null
+          ? 'Tower artifact recurring Antlers entered as a daily amount.'
+          : `${input.towerAntlersPerDay.toLocaleString()} Tower artifact Antlers/day for ` +
+            `${input.waitDays.toLocaleString()} day${input.waitDays === 1 ? '' : 's'}.`,
+      ],
     },
   ];
 }
@@ -276,6 +317,82 @@ function sumBreakdowns(
   }, 0);
 }
 
+function summarizeRowSource(row: {
+  supply: { breakdowns: AvailableSupplyBreakdownEntry[] } | null;
+}): string {
+  const labels = [...new Set((row.supply?.breakdowns ?? []).map((breakdown) => breakdown.label))];
+
+  return labels.length === 0 ? 'No counted supply' : labels.slice(0, 3).join(', ');
+}
+
+function buildWaitProjection(input: {
+  settings: ItemGoalCalculatorSettings;
+  plannerResult: TargetOutputPlannerResult;
+  targetCanonicalKey: string;
+  remainingQuantity: number;
+  wishingWellSources: ItemGoalWishingWellSource[];
+}): ItemGoalWaitProjection {
+  const waitDays = clampOptionalWaitDays(input.settings.waitDays) ?? 0;
+  const expectedWishingWellQuantity = input.wishingWellSources.reduce((total, source) => {
+    return total + (source.expectedDailyQuantity * waitDays);
+  }, 0);
+  const projectedRemainingQuantity = Math.max(0, input.remainingQuantity - expectedWishingWellQuantity);
+  const warnings: string[] = [];
+
+  for (const source of input.wishingWellSources) {
+    const neededThrows = source.throwsPerDay * waitDays;
+
+    if (neededThrows > 0 && source.thrownItemAvailableQuantity < neededThrows) {
+      warnings.push(
+        `${source.entry.thrownItemName} Wishing Well plan needs ${neededThrows.toLocaleString()} throws over ` +
+          `${waitDays.toLocaleString()} day${waitDays === 1 ? '' : 's'}, but only ` +
+          `${source.thrownItemAvailableQuantity.toLocaleString()} are counted as available.`,
+      );
+    }
+  }
+
+  const activeRemainingRows = input.plannerResult.rows
+    .map((row): ItemGoalActiveRemainingRow => {
+      const remainingQuantity = row.canonicalKey === input.targetCanonicalKey
+        ? Math.max(0, row.remainingQuantity - expectedWishingWellQuantity)
+        : row.remainingQuantity;
+
+      return {
+        canonicalKey: row.canonicalKey,
+        itemName: row.itemName,
+        remainingQuantity,
+        grossRequiredQuantity: row.grossRequiredQuantity,
+        sourceSummary: summarizeRowSource(row),
+      };
+    })
+    .filter((row) => row.remainingQuantity > 0)
+    .sort((left, right) => {
+      if (left.canonicalKey === input.targetCanonicalKey && right.canonicalKey !== input.targetCanonicalKey) {
+        return -1;
+      }
+
+      if (right.canonicalKey === input.targetCanonicalKey && left.canonicalKey !== input.targetCanonicalKey) {
+        return 1;
+      }
+
+      return right.remainingQuantity - left.remainingQuantity || left.itemName.localeCompare(right.itemName);
+    });
+
+  return {
+    waitDays,
+    futurePetQuantity: input.plannerResult.rows.reduce((total, row) => {
+      return total + sumBreakdowns(row.supply?.breakdowns, (entry) => entry.sourceKey === 'future_pet_production');
+    }, 0),
+    towerAntlerQuantity: input.plannerResult.rows.reduce((total, row) => {
+      return total + sumBreakdowns(row.supply?.breakdowns, (entry) => entry.sourceKey === 'recurring_antlers');
+    }, 0),
+    expectedWishingWellQuantity,
+    projectedRemainingQuantity,
+    activeRemainingRows,
+    warnings,
+  };
+}
+
 export function buildItemGoalCalculatorResult(input: {
   itemName: string;
   canonicalKey: string;
@@ -293,10 +410,11 @@ export function buildItemGoalCalculatorResult(input: {
     ...input.settings,
   };
   const canonicalKey = toCanonicalItemKey(input.canonicalKey);
-  const acquisitionState = cloneAcquisitionStateWithCrunchySetting(
+  const acquisitionState = cloneAcquisitionStateWithGoalSettings(
     input.acquisitionState,
-    settings.crunchyOmeletteActive,
+    settings,
   );
+  const waitDays = clampOptionalWaitDays(settings.waitDays);
   const desiredQuantity = getDesiredQuantity({
     currentMastery: input.currentMastery,
     settings,
@@ -312,7 +430,10 @@ export function buildItemGoalCalculatorResult(input: {
       acquisitionState,
       crunchyOmeletteActive: settings.crunchyOmeletteActive,
     }),
-    ...buildTowerAntlerBreakdown(settings.towerAntlersPerDay),
+    ...buildTowerAntlerBreakdown({
+      towerAntlersPerDay: settings.towerAntlersPerDay,
+      waitDays,
+    }),
   ];
   const supplyPool = deriveAvailableSupplyPool({
     acquisitionState,
@@ -356,6 +477,13 @@ export function buildItemGoalCalculatorResult(input: {
     plannerResult,
     targetCanonicalKey: canonicalKey,
   });
+  const waitProjection = buildWaitProjection({
+    settings,
+    plannerResult,
+    targetCanonicalKey: canonicalKey,
+    remainingQuantity: targetRow?.remainingQuantity ?? desiredQuantity,
+    wishingWellSources,
+  });
   const warnings = [...plannerResult.warnings];
 
   if (input.openableContentsReference === null || input.openableContentsReference === undefined) {
@@ -379,6 +507,7 @@ export function buildItemGoalCalculatorResult(input: {
     openableSources,
     wishingWellSources,
     petSources,
+    waitProjection,
     warnings,
   };
 }

@@ -90,7 +90,7 @@ The target-output planner becomes easier to feed with real inventory data and ea
   - multi-source Buddy item-page parser and reviewed promotion fan-out (`BL-245`, `BL-246`, shipped), current-universe icon refresh (`BL-250`, shipped), and source promotion (`BL-251`, in progress)
   - full reviewed pet-source coverage for normal and seasonal pets (`BL-242`, shipped)
   - item-page mastery and quantity goal calculator foundation (`BL-239`, shipped)
-  - wait-days and remaining source-budget mode (`BL-240`, planned)
+  - wait-days and remaining source-budget mode (`BL-240`, shipped)
   - item goal calculator UI and explainability (`BL-241`, shipped)
 
 User-facing story:

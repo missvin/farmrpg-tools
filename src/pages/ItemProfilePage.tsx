@@ -588,6 +588,36 @@ function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
   );
 }
 
+function ItemGoalWaitProjectionRows({ result }: { result: ItemGoalCalculatorResult }) {
+  const rows = result.waitProjection.activeRemainingRows.slice(0, 8);
+
+  if (rows.length === 0) {
+    return <p className="empty-state">No active remainder is projected after these wait-day assumptions.</p>;
+  }
+
+  return (
+    <ul className="data-list data-list--clickable">
+      {rows.map((row) => {
+        const icon = getItemIcon(row.canonicalKey);
+
+        return (
+          <li key={row.canonicalKey}>
+            <div className="recipe-link-row">
+              <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} iconSrc={icon?.src} />
+              <span>
+                <strong>{formatPlannerQuantity(row.remainingQuantity)} left</strong>
+                <span className="subtle-text">
+                  {formatPlannerQuantity(row.grossRequiredQuantity)} needed before counted supply; {row.sourceSummary}
+                </span>
+              </span>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 function ItemGoalCalculatorSection({
   profile,
   acquisitionState,
@@ -609,6 +639,7 @@ function ItemGoalCalculatorSection({
   const [goalMode, setGoalMode] = useState<ItemGoalMode>('mastery');
   const [targetMastery, setTargetMastery] = useState(defaultMasteryTarget);
   const [targetQuantity, setTargetQuantity] = useState(10_000);
+  const [waitDays, setWaitDays] = useState(acquisitionState.pets.futureProduction.horizonDays);
   const [includeOpenables, setIncludeOpenables] = useState(true);
   const [crunchyOmeletteActive, setCrunchyOmeletteActive] = useState(false);
   const [towerAntlersPerDay, setTowerAntlersPerDay] = useState(0);
@@ -634,6 +665,7 @@ function ItemGoalCalculatorSection({
         goalMode,
         targetMastery,
         targetQuantity,
+        waitDays,
         includeOpenableContents: includeOpenables,
         crunchyOmeletteActive,
         towerAntlersPerDay,
@@ -656,11 +688,13 @@ function ItemGoalCalculatorSection({
     targetMastery,
     targetQuantity,
     towerAntlersPerDay,
+    waitDays,
     wishingWellReference,
     wishingWellRewardMultiplier,
     wishingWellThrowsPerDay,
   ]);
   const goalLabel = goalMode === 'mastery' ? 'Mastery remaining' : 'Quantity target';
+  const allWarnings = [...result.warnings, ...result.waitProjection.warnings];
 
   return (
     <section className="page-card page-stack" aria-labelledby="item-goal-calculator-title">
@@ -693,6 +727,13 @@ function ItemGoalCalculatorSection({
         <div className="summary-grid__item">
           <dt>Remaining</dt>
           <dd>{formatPlannerQuantity(result.remainingQuantity)}</dd>
+        </div>
+        <div className="summary-grid__item">
+          <dt>After waiting</dt>
+          <dd>{formatPlannerQuantity(result.waitProjection.projectedRemainingQuantity)}</dd>
+          <p className="subtle-text">
+            {result.waitProjection.waitDays.toLocaleString()} day{result.waitProjection.waitDays === 1 ? '' : 's'}
+          </p>
         </div>
         <div className="summary-grid__item">
           <dt>Wishing Well EV</dt>
@@ -739,6 +780,17 @@ function ItemGoalCalculatorSection({
               />
             </label>
           )}
+          <label>
+            Wait days
+            <input
+              className="text-input"
+              type="number"
+              min="0"
+              step="1"
+              value={waitDays}
+              onChange={(event) => setWaitDays(Number(event.target.value))}
+            />
+          </label>
           <label>
             Tower Antlers / day
             <input
@@ -791,13 +843,32 @@ function ItemGoalCalculatorSection({
         </div>
       </details>
 
-      {result.warnings.length > 0 ? (
+      {allWarnings.length > 0 ? (
         <ul className="status-message">
-          {result.warnings.map((warning) => (
+          {allWarnings.map((warning) => (
             <li key={warning}>{warning}</li>
           ))}
         </ul>
       ) : null}
+
+      <details className="advanced-details">
+        <summary>Show wait-day plan</summary>
+        <dl className="summary-grid">
+          <div className="summary-grid__item">
+            <dt>Future pets counted</dt>
+            <dd>{formatPlannerQuantity(result.waitProjection.futurePetQuantity)}</dd>
+          </div>
+          <div className="summary-grid__item">
+            <dt>Tower Antlers counted</dt>
+            <dd>{formatPlannerQuantity(result.waitProjection.towerAntlerQuantity)}</dd>
+          </div>
+          <div className="summary-grid__item">
+            <dt>Wishing Well expected</dt>
+            <dd>{formatPlannerQuantity(result.waitProjection.expectedWishingWellQuantity)}</dd>
+          </div>
+        </dl>
+        <ItemGoalWaitProjectionRows result={result} />
+      </details>
 
       <details className="advanced-details">
         <summary>Show counted supply</summary>

@@ -266,6 +266,8 @@ describe('ItemProfilePage', () => {
     const goalSection = screen.getByRole('heading', { name: 'Goal Calculator' }).closest('section');
     expect(goalSection).not.toBeNull();
     expect(within(goalSection as HTMLElement).getByText('Mastery remaining')).toBeInTheDocument();
+    expect(within(goalSection as HTMLElement).getByText('After waiting')).toBeInTheDocument();
+    expect(within(goalSection as HTMLElement).getByLabelText('Wait days')).toHaveValue(7);
     expect(within(goalSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);
   });
 
