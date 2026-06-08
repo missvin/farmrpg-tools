@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { parseOpenableContentsReferenceCsv } from './loadOpenableContentsReference';
@@ -71,5 +73,17 @@ describe('parseOpenableContentsReferenceCsv', () => {
         'Borgen Bag 01,borgen bag 01,Borgen Buck,borgen buck,0.46,fixed,reviewed_expected_value,reviewed row',
       ].join('\n'),
     )).toThrow(/Fixed openable quantity must be a whole number/);
+  });
+
+  it('parses checked-in openable contents data with promoted Salt sources', () => {
+    const data = parseOpenableContentsReferenceCsv(
+      readFileSync(join(process.cwd(), 'data', 'openable_contents.csv'), 'utf8'),
+    );
+    const saltOpenables = data.byContentCanonicalKey.salt.map((entry) => entry.openableItemName);
+
+    expect(data.entries.length).toBeGreaterThan(600);
+    expect(saltOpenables).toEqual(expect.arrayContaining(['Corn Prize Bag', 'Large Chest 03']));
+    expect(data.entries.some((entry) => entry.evidence === 'container_to_content')).toBe(false);
+    expect(data.entries.every((entry) => entry.quantityKind === 'fixed')).toBe(true);
   });
 });

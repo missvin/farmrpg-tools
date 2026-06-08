@@ -87,7 +87,7 @@ The target-output planner becomes easier to feed with real inventory data and ea
   - recursive passive-source modeling for pets, Crunchy Omelette collection, and Tower-artifact recurring inputs (`BL-237`, shipped)
   - Wishing Well expected-value source modeling (`BL-238`, shipped)
   - cache-first Buddy item-page evidence workflow (`BL-243`, shipped), initial reviewed seed cache (`BL-247`, shipped), current 1,461-item museum universe refresh (`BL-248`, shipped), initial full current-universe Buddy cache population (`BL-249`, shipped), artifact-completeness repair/readiness validation (`BL-253`, shipped), and freshness/recheck controls (`BL-244`, shipped)
-  - multi-source Buddy item-page parser and reviewed promotion fan-out (`BL-245`, `BL-246`, shipped), current-universe icon refresh (`BL-250`, shipped), and source promotion umbrella (`BL-251`, in progress) split into recipe (`BL-259`), drop-rate (`BL-260`), shipped openable guardrail (`BL-261`), openable promotion (`BL-262`), source-hint (`BL-263`), alias (`BL-264`), and completion-audit (`BL-265`) child rows
+  - multi-source Buddy item-page parser and reviewed promotion fan-out (`BL-245`, `BL-246`, shipped), current-universe icon refresh (`BL-250`, shipped), and source promotion umbrella (`BL-251`, in progress) split into recipe (`BL-259`), drop-rate (`BL-260`), shipped openable guardrail and fixed-content promotion (`BL-261`, `BL-262`), source-hint (`BL-263`), alias (`BL-264`), and completion-audit (`BL-265`) child rows
   - full reviewed pet-source coverage for normal and seasonal pets (`BL-242`, shipped)
   - item-page mastery and quantity goal calculator foundation (`BL-239`, shipped)
   - wait-days and remaining source-budget mode (`BL-240`, shipped)
