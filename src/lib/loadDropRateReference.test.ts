@@ -97,10 +97,22 @@ Pumpkin,pumpkin,Unknown Seeds,unknown seeds,farming,seed,seed_output,1,1,item,Un
       readFileSync(join(process.cwd(), 'data', 'drop_rate_reference.csv'), 'utf8'),
     );
 
-    expect(result.entries.length).toBeGreaterThan(0);
+    expect(result.entries.length).toBeGreaterThan(1000);
     expect(result.byTargetCanonicalKey['frost snapper shell']).toEqual(expect.arrayContaining([
       expect.objectContaining({
         sourceName: 'Glacier Lake',
+        sourceType: 'fishing',
+      }),
+    ]));
+    expect(result.byTargetCanonicalKey['spiked shell']).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        sourceName: 'Emerald Beach',
+        sourceType: 'fishing',
+      }),
+    ]));
+    expect(result.byTargetCanonicalKey['strange ring']).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        sourceName: 'Lake Minerva',
         sourceType: 'fishing',
       }),
     ]));

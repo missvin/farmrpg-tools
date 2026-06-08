@@ -6,12 +6,12 @@ import { buildRecipeGraph, parseRecipeInputsCsv, parseRecipesCsv } from './loadR
 import { buildTargetOutputPlannerResult } from './targetOutputPlannerEngine';
 import { buildTargetOutputPlanningGraph } from './targetOutputPlanningGraph';
 
-const RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url
+const RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
 Board,board,craft,,,,,https://buddy.farm/i/board/
 Fancy Pipe,fancy pipe,craft,,,,,https://buddy.farm/i/fancy-pipe/
 Wooden Shield,wooden shield,craft,,,,,https://buddy.farm/i/wooden-shield/`;
 
-const RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
+const RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
 board,Board,1,Wood,wood,5
 fancy pipe,Fancy Pipe,1,Board,board,2
 fancy pipe,Fancy Pipe,2,Iron,iron,1

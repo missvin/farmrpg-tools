@@ -6,13 +6,13 @@ import { parseTowerRequirementsCsv } from './loadTowerRequirements';
 import { calculateRecursiveIngredientBurden } from './recursiveIngredientBurden';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 
-const RECURSIVE_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url
+const RECURSIVE_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
 Twine,twine,craft,,,,,https://buddy.farm/i/twine/
 Rope,rope,craft,,,,,https://buddy.farm/i/rope/
 Fishing Net,fishing net,craft,,,,,https://buddy.farm/i/fishing-net/
 Large Net,large net,craft,,,,,https://buddy.farm/i/large-net/`;
 
-const RECURSIVE_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
+const RECURSIVE_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
 twine,Twine,1,Fiber,fiber,3
 rope,Rope,1,Twine,twine,2
 fishing net,Fishing Net,1,Rope,rope,2
@@ -20,28 +20,28 @@ fishing net,Fishing Net,2,Twine,twine,1
 large net,Large Net,1,Fishing Net,fishing net,2
 large net,Large Net,2,Rope,rope,1`;
 
-const SHIMMER_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url
+const SHIMMER_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
 Unpolished Shimmer Stone,unpolished shimmer stone,craft,,,,,https://buddy.farm/i/unpolished-shimmer-stone/
 Shimmer Stone,shimmer stone,craft,,,,,https://buddy.farm/i/shimmer-stone/`;
 
-const SHIMMER_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
+const SHIMMER_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
 unpolished shimmer stone,Unpolished Shimmer Stone,1,Emberstone,emberstone,1
 unpolished shimmer stone,Unpolished Shimmer Stone,2,Sandstone,sandstone,1
 shimmer stone,Shimmer Stone,1,Unpolished Shimmer Stone,unpolished shimmer stone,2`;
 
-const MAGNA_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url
+const MAGNA_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
 Magna Core,magna core,craft,,,,,https://buddy.farm/i/magna-core/
 Void Globe,void globe,craft,,,,,https://buddy.farm/i/void-globe/`;
 
-const MAGNA_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
+const MAGNA_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
 magna core,Magna Core,1,Seeing Stone,seeing stone,1
 magna core,Magna Core,2,Wishing Well,wishing well,10
 void globe,Void Globe,1,Magna Core,magna core,2`;
 
-const IRON_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url
+const IRON_RECIPES_CSV = `output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
 Fancy Pipe,fancy pipe,craft,,,,,https://buddy.farm/i/fancy-pipe/`;
 
-const IRON_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity
+const IRON_RECIPE_INPUTS_CSV = `output_canonical_key,output_item_name,input_order,input_item_name,input_canonical_key,quantity,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
 fancy pipe,Fancy Pipe,1,Wood,wood,10
 fancy pipe,Fancy Pipe,2,Iron,iron,1`;
 
