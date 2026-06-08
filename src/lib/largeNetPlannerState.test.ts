@@ -12,6 +12,7 @@ describe('largeNetPlannerState', () => {
   it('creates default planner state with the requested Crunchy assumption', () => {
     expect(createDefaultLargeNetPlannerState({ crunchyOmeletteActive: true })).toMatchObject({
       directLargeNetsPerDay: '2000',
+      waitDays: '7',
       craftOutputMultiplier: '1.45',
       catchMultiplier: '1.1',
       crunchyOmeletteActive: true,
@@ -23,6 +24,7 @@ describe('largeNetPlannerState', () => {
       schemaVersion: 1,
       dailyAntlers: '123',
       directLargeNetsPerDay: '',
+      waitDays: '14',
       craftOutputMultiplier: '1.45',
       catchMultiplier: '1.1',
       crunchyOmeletteActive: true,
@@ -41,6 +43,7 @@ describe('largeNetPlannerState', () => {
     });
 
     expect(state.targets[0]?.manualLargeNetsPerDrop).toBe('39.46');
+    expect(state.waitDays).toBe('14');
     expect(state.targets[0]?.regularInventoryOverride).toBe('515');
     expect(state.targets[0]?.storedPetInventoryOverride).toBe('5730');
     expect(state.targets[0]?.petNameOverride).toBe('Seal');
@@ -58,12 +61,36 @@ describe('largeNetPlannerState', () => {
       storedPetInventoryOverride: '5730',
       petLevelOverride: '9',
     };
+    state.waitDays = '30';
 
     saveLargeNetPlannerState(state, storage);
 
+    expect(storage.getItem(LARGE_NET_PLANNER_STATE_STORAGE_KEY)).toContain('30');
     expect(storage.getItem(LARGE_NET_PLANNER_STATE_STORAGE_KEY)).toContain('39.46');
+    expect(loadLargeNetPlannerState(storage)?.waitDays).toBe('30');
     expect(loadLargeNetPlannerState(storage)?.targets[0]?.manualLargeNetsPerDrop).toBe('39.46');
     expect(loadLargeNetPlannerState(storage)?.targets[0]?.storedPetInventoryOverride).toBe('5730');
     expect(loadLargeNetPlannerState(storage)?.targets[0]?.petLevelOverride).toBe('9');
+  });
+
+  it('defaults old saved state without wait days to the current wait horizon default', () => {
+    const state = normalizeLargeNetPlannerState({
+      schemaVersion: 1,
+      dailyAntlers: '',
+      directLargeNetsPerDay: '2000',
+      craftOutputMultiplier: '1.45',
+      catchMultiplier: '1.1',
+      crunchyOmeletteActive: false,
+      targets: [
+        {
+          id: 'spiked',
+          itemName: 'Spiked Shell',
+          targetQuantity: '10000',
+          manualLargeNetsPerDrop: '6.1',
+        },
+      ],
+    });
+
+    expect(state.waitDays).toBe('7');
   });
 });

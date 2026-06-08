@@ -71,4 +71,21 @@ describe('LargeNetPlannerPage', () => {
       expect.stringContaining('target minus regular inventory and effective stored pet inventory'),
     );
   });
+
+  it('shows the wait-days control and after-wait result columns', async () => {
+    mockResources();
+
+    render(
+      <MemoryRouter>
+        <LargeNetPlannerPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole('heading', { name: 'Large Net Planner' });
+    await waitFor(() => expect(loadDropRateReferenceMock).toHaveBeenCalled());
+
+    expect(screen.getByLabelText('Wait days')).toHaveValue(7);
+    expect(screen.getByText('Remaining after wait')).toBeInTheDocument();
+    expect(screen.getByText('LN after wait')).toBeInTheDocument();
+  });
 });

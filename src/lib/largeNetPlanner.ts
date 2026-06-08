@@ -48,6 +48,10 @@ export type LargeNetPlannerTargetResult = {
   totalItemsPerDay: number;
   soloDays: number | null;
   largeNetsNeededNow: number | null;
+  projectedFishingQuantityDuringWait: number;
+  projectedPetQuantityDuringWait: number;
+  remainingAfterWaitQuantity: number;
+  largeNetsNeededAfterWait: number | null;
   warnings: string[];
 };
 
@@ -55,6 +59,7 @@ export type LargeNetPlannerResult = {
   dailyLargeNetsFromAntlers: number;
   dailyLargeNets: number;
   dailyLargeNetSource: 'direct_override' | 'antlers';
+  waitDays: number;
   craftOutputMultiplier: number;
   catchMultiplier: number;
   petCollectionMultiplier: number;
@@ -74,6 +79,7 @@ export type BuildLargeNetPlannerInput = {
   directLargeNetsPerDay?: number;
   craftOutputMultiplier?: number;
   catchMultiplier?: number;
+  waitDays?: number;
   petCollectionMultiplier?: number;
   crunchyOmeletteActive?: boolean;
 };
@@ -355,6 +361,7 @@ export function buildLargeNetPlanner(input: BuildLargeNetPlannerInput): LargeNet
     DEFAULT_LARGE_NET_CRAFT_OUTPUT_MULTIPLIER,
   );
   const catchMultiplier = clampPositive(input.catchMultiplier, DEFAULT_LARGE_NET_CATCH_MULTIPLIER);
+  const waitDays = clampNonNegative(input.waitDays);
   const crunchyOmeletteActive = input.crunchyOmeletteActive ?? input.acquisitionState.pets.futureProduction.crunchyOmeletteActive;
   const petCollectionMultiplier = clampPositive(
     input.petCollectionMultiplier,
@@ -440,6 +447,17 @@ export function buildLargeNetPlanner(input: BuildLargeNetPlannerInput): LargeNet
         ? (dailyLargeNets * catchMultiplier) / largeNetsPerDrop
         : 0;
       const totalItemsPerDay = fishingItemsPerDay + dailyPetQuantity;
+      const projectedFishingQuantityDuringWait = fishingItemsPerDay * waitDays;
+      const projectedPetQuantityDuringWait = dailyPetQuantity * waitDays;
+      const remainingAfterWaitQuantity = Math.max(
+        0,
+        remainingAfterImmediateQuantity - projectedFishingQuantityDuringWait - projectedPetQuantityDuringWait,
+      );
+      const largeNetsNeededAfterWait = largeNetsPerDrop > 0
+        ? (remainingAfterWaitQuantity * largeNetsPerDrop) / catchMultiplier
+        : remainingAfterWaitQuantity <= 0
+          ? 0
+          : null;
 
       return {
         itemName,
@@ -464,6 +482,10 @@ export function buildLargeNetPlanner(input: BuildLargeNetPlannerInput): LargeNet
         largeNetsNeededNow: largeNetsPerDrop > 0
           ? (remainingAfterImmediateQuantity * largeNetsPerDrop) / catchMultiplier
           : null,
+        projectedFishingQuantityDuringWait,
+        projectedPetQuantityDuringWait,
+        remainingAfterWaitQuantity,
+        largeNetsNeededAfterWait,
         warnings: targetWarnings,
       };
     })
@@ -483,6 +505,7 @@ export function buildLargeNetPlanner(input: BuildLargeNetPlannerInput): LargeNet
     dailyLargeNetsFromAntlers,
     dailyLargeNets,
     dailyLargeNetSource,
+    waitDays,
     craftOutputMultiplier,
     catchMultiplier,
     petCollectionMultiplier,

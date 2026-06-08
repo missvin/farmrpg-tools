@@ -20,6 +20,7 @@ export type LargeNetPlannerState = {
   schemaVersion: 1;
   dailyAntlers: string;
   directLargeNetsPerDay: string;
+  waitDays: string;
   craftOutputMultiplier: string;
   catchMultiplier: string;
   crunchyOmeletteActive: boolean;
@@ -100,6 +101,7 @@ export function createDefaultLargeNetPlannerState(
     schemaVersion: 1,
     dailyAntlers: '',
     directLargeNetsPerDay: '2000',
+    waitDays: '7',
     craftOutputMultiplier: DEFAULT_LARGE_NET_CRAFT_OUTPUT_MULTIPLIER.toString(),
     catchMultiplier: DEFAULT_LARGE_NET_CATCH_MULTIPLIER.toString(),
     crunchyOmeletteActive: Boolean(options.crunchyOmeletteActive),
@@ -126,6 +128,7 @@ export function normalizeLargeNetPlannerState(
     schemaVersion: 1,
     dailyAntlers: normalizeText(record.dailyAntlers),
     directLargeNetsPerDay: normalizeText(record.directLargeNetsPerDay),
+    waitDays: normalizeText(record.waitDays) || fallback.waitDays,
     craftOutputMultiplier: normalizeText(record.craftOutputMultiplier) ||
       DEFAULT_LARGE_NET_CRAFT_OUTPUT_MULTIPLIER.toString(),
     catchMultiplier: normalizeText(record.catchMultiplier) || DEFAULT_LARGE_NET_CATCH_MULTIPLIER.toString(),

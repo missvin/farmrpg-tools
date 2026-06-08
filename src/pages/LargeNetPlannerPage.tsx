@@ -180,6 +180,7 @@ export function LargeNetPlannerPage() {
   const [initialPlannerState] = useState(() => loadInitialPlannerState(acquisitionState));
   const [dailyAntlers, setDailyAntlers] = useState(initialPlannerState.dailyAntlers);
   const [directLargeNetsPerDay, setDirectLargeNetsPerDay] = useState(initialPlannerState.directLargeNetsPerDay);
+  const [waitDays, setWaitDays] = useState(initialPlannerState.waitDays);
   const [craftOutputMultiplier, setCraftOutputMultiplier] = useState(initialPlannerState.craftOutputMultiplier);
   const [catchMultiplier, setCatchMultiplier] = useState(initialPlannerState.catchMultiplier);
   const [crunchyOmeletteActive, setCrunchyOmeletteActive] = useState(initialPlannerState.crunchyOmeletteActive);
@@ -237,6 +238,7 @@ export function LargeNetPlannerPage() {
         schemaVersion: 1,
         dailyAntlers,
         directLargeNetsPerDay,
+        waitDays,
         craftOutputMultiplier,
         catchMultiplier,
         crunchyOmeletteActive,
@@ -252,6 +254,7 @@ export function LargeNetPlannerPage() {
     dailyAntlers,
     directLargeNetsPerDay,
     targets,
+    waitDays,
   ]);
 
   const plannerResult: LargeNetPlannerResult = useMemo(() => (
@@ -285,6 +288,7 @@ export function LargeNetPlannerPage() {
       }),
       dailyAntlers: parsePositiveInput(dailyAntlers),
       directLargeNetsPerDay: parsePositiveInput(directLargeNetsPerDay),
+      waitDays: parseOptionalNonNegativeInput(waitDays),
       craftOutputMultiplier: parsePositiveInput(craftOutputMultiplier),
       catchMultiplier: parsePositiveInput(catchMultiplier),
       crunchyOmeletteActive,
@@ -301,6 +305,7 @@ export function LargeNetPlannerPage() {
     resourceState.itemCatalog,
     resourceState.petSourceReference,
     targets,
+    waitDays,
   ]);
 
   const warnings = [
@@ -373,6 +378,10 @@ export function LargeNetPlannerPage() {
             <dd>{formatCount(totalRemaining)}</dd>
           </div>
           <div className="summary-grid__item">
+            <dt>Wait projection</dt>
+            <dd>{formatEstimate(plannerResult.waitDays, ' days')}</dd>
+          </div>
+          <div className="summary-grid__item">
             <dt>Immediate supply</dt>
             <dd>{formatCount(totalImmediateSupply)}</dd>
           </div>
@@ -436,6 +445,19 @@ export function LargeNetPlannerPage() {
             />
           </label>
 
+          <label className="field-label" htmlFor="large-net-wait-days">
+            Wait days
+            <input
+              id="large-net-wait-days"
+              className="text-input"
+              type="number"
+              min="0"
+              step="1"
+              value={waitDays}
+              onChange={(event) => setWaitDays(event.target.value)}
+            />
+          </label>
+
           <label className="field-label" htmlFor="large-net-catch-multiplier">
             Catch multiplier
             <input
@@ -469,6 +491,10 @@ export function LargeNetPlannerPage() {
         <p className="subtle-text">
           Crunchy Omelette is applied at collection time. When checked, stored pet inventory and future pet/day are both
           credited as if collected while Crunchy is active.
+        </p>
+        <p className="subtle-text">
+          Wait projection is target-by-target: it applies that target's expected Large Net drops plus pet/day progress
+          over the wait period. Splitting one Large Net budget across multiple goals is tracked separately.
         </p>
       </details>
 
@@ -671,6 +697,8 @@ export function LargeNetPlannerPage() {
                   <th scope="col">Remaining</th>
                   <th scope="col">LN/drop</th>
                   <th scope="col">LN needed now</th>
+                  <th scope="col">Remaining after wait</th>
+                  <th scope="col">LN after wait</th>
                   <th scope="col">
                     <span className="table-heading-with-help">
                       Days
@@ -740,6 +768,15 @@ export function LargeNetPlannerPage() {
                       </span>
                     </td>
                     <td>{formatEstimate(target.largeNetsNeededNow)}</td>
+                    <td>
+                      {formatCount(target.remainingAfterWaitQuantity)}
+                      <br />
+                      <span className="subtle-text">
+                        {formatDecimal(target.projectedFishingQuantityDuringWait, 1)} from nets +{' '}
+                        {formatDecimal(target.projectedPetQuantityDuringWait, 1)} from pets
+                      </span>
+                    </td>
+                    <td>{formatEstimate(target.largeNetsNeededAfterWait)}</td>
                     <td>{formatEstimate(target.soloDays, ' days')}</td>
                   </tr>
                 ))}

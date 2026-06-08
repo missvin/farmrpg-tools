@@ -226,6 +226,42 @@ describe('buildLargeNetPlanner', () => {
     });
   });
 
+  it('projects remaining quantity and Large Nets needed after a wait horizon', () => {
+    const result = buildLargeNetPlanner({
+      acquisitionState: createDefaultAcquisitionPlannerInputState(),
+      dropRateReference: null,
+      dropRateSettings: createDefaultDropRateAcquisitionSettings(),
+      petSourceReference: null,
+      targets: [
+        {
+          itemName: 'Frost Snapper Shell',
+          targetQuantity: 1000,
+          regularInventoryOverride: 100,
+          storedPetInventoryOverride: 100,
+          petForecastOverride: {
+            petName: 'Seal',
+            petLevel: 9,
+          },
+          manualLargeNetsPerDrop: 10,
+        },
+      ],
+      dailyAntlers: 0,
+      directLargeNetsPerDay: 100,
+      catchMultiplier: 1,
+      waitDays: 3,
+      crunchyOmeletteActive: true,
+    });
+
+    expect(result.waitDays).toBe(3);
+    expect(result.targets[0]).toMatchObject({
+      remainingAfterImmediateQuantity: 750,
+      projectedFishingQuantityDuringWait: 30,
+      projectedPetQuantityDuringWait: 81,
+      remainingAfterWaitQuantity: 639,
+      largeNetsNeededAfterWait: 6390,
+    });
+  });
+
   it('separates competing target time from incidental drop time', () => {
     const acquisitionState = createDefaultAcquisitionPlannerInputState();
     const result = buildLargeNetPlanner({
