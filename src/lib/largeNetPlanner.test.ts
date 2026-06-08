@@ -289,6 +289,76 @@ describe('buildLargeNetPlanner', () => {
     expect(result.competingDays).toBeCloseTo(26, 6);
   });
 
+  it('projects a wait horizon with explicit Large Net allocation shares', () => {
+    const result = buildLargeNetPlanner({
+      acquisitionState: createDefaultAcquisitionPlannerInputState(),
+      dropRateReference: null,
+      dropRateSettings: createDefaultDropRateAcquisitionSettings(),
+      targets: [
+        {
+          itemName: 'Frost Snapper Shell',
+          targetQuantity: 100,
+          allocationShare: 30,
+          manualLargeNetsPerDrop: 1,
+        },
+        {
+          itemName: 'Strange Ring',
+          targetQuantity: 100,
+          allocationShare: 70,
+          manualLargeNetsPerDrop: 1,
+        },
+      ],
+      dailyAntlers: 0,
+      directLargeNetsPerDay: 100,
+      catchMultiplier: 1,
+      waitDays: 1,
+    });
+
+    expect(result.targets[0]).toMatchObject({
+      allocationPercent: 0.3,
+      allocatedLargeNetsPerDay: 30,
+      allocationProjectedFishingQuantityDuringWait: 30,
+      allocationRemainingAfterWaitQuantity: 70,
+      allocationLargeNetsNeededAfterWait: 70,
+    });
+    expect(result.targets[1]).toMatchObject({
+      allocationPercent: 0.7,
+      allocatedLargeNetsPerDay: 70,
+      allocationProjectedFishingQuantityDuringWait: 70,
+      allocationRemainingAfterWaitQuantity: 30,
+      allocationLargeNetsNeededAfterWait: 30,
+    });
+  });
+
+  it('splits allocation evenly across unfinished targets when no shares are entered', () => {
+    const result = buildLargeNetPlanner({
+      acquisitionState: createDefaultAcquisitionPlannerInputState(),
+      dropRateReference: null,
+      dropRateSettings: createDefaultDropRateAcquisitionSettings(),
+      targets: [
+        {
+          itemName: 'Frost Snapper Shell',
+          targetQuantity: 100,
+          manualLargeNetsPerDrop: 1,
+        },
+        {
+          itemName: 'Strange Ring',
+          targetQuantity: 100,
+          manualLargeNetsPerDrop: 1,
+        },
+      ],
+      dailyAntlers: 0,
+      directLargeNetsPerDay: 100,
+      catchMultiplier: 1,
+      waitDays: 1,
+    });
+
+    expect(result.targets[0]?.allocationPercent).toBe(0.5);
+    expect(result.targets[1]?.allocationPercent).toBe(0.5);
+    expect(result.targets[0]?.allocationRemainingAfterWaitQuantity).toBe(50);
+    expect(result.targets[1]?.allocationRemainingAfterWaitQuantity).toBe(50);
+  });
+
   it('uses fishing drop-rate reference rows when a manual rate is not entered', () => {
     const result = buildLargeNetPlanner({
       acquisitionState: createDefaultAcquisitionPlannerInputState(),

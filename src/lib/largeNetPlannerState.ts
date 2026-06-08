@@ -9,6 +9,7 @@ export type LargeNetPlannerTargetState = {
   id: string;
   itemName: string;
   targetQuantity: string;
+  allocationShare: string;
   regularInventoryOverride: string;
   storedPetInventoryOverride: string;
   petNameOverride: string;
@@ -32,6 +33,7 @@ export const DEFAULT_LARGE_NET_PLANNER_TARGETS: LargeNetPlannerTargetState[] = [
     id: 'frost-snapper-shell',
     itemName: 'Frost Snapper Shell',
     targetQuantity: '15000',
+    allocationShare: '',
     regularInventoryOverride: '',
     storedPetInventoryOverride: '',
     petNameOverride: 'Seal',
@@ -42,6 +44,7 @@ export const DEFAULT_LARGE_NET_PLANNER_TARGETS: LargeNetPlannerTargetState[] = [
     id: 'spiked-shell',
     itemName: 'Spiked Shell',
     targetQuantity: '10000',
+    allocationShare: '',
     regularInventoryOverride: '',
     storedPetInventoryOverride: '',
     petNameOverride: '',
@@ -86,6 +89,7 @@ function normalizeTarget(value: unknown, index: number): LargeNetPlannerTargetSt
     id: normalizeText(record.id) || `target-${index + 1}`,
     itemName,
     targetQuantity: normalizeText(record.targetQuantity),
+    allocationShare: normalizeText(record.allocationShare),
     regularInventoryOverride: normalizeText(record.regularInventoryOverride),
     storedPetInventoryOverride: normalizeText(record.storedPetInventoryOverride),
     petNameOverride: normalizeText(record.petNameOverride),

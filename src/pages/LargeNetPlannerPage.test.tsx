@@ -85,7 +85,29 @@ describe('LargeNetPlannerPage', () => {
     await waitFor(() => expect(loadDropRateReferenceMock).toHaveBeenCalled());
 
     expect(screen.getByLabelText('Wait days')).toHaveValue(7);
-    expect(screen.getByText('Remaining after wait')).toBeInTheDocument();
+    expect(screen.getAllByText('Remaining after wait')).toHaveLength(2);
     expect(screen.getByText('LN after wait')).toBeInTheDocument();
+  });
+
+  it('shows the scenario sandbox and allocation share inputs', async () => {
+    mockResources();
+
+    render(
+      <MemoryRouter>
+        <LargeNetPlannerPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole('heading', { name: 'Large Net Planner' });
+    await waitFor(() => expect(loadDropRateReferenceMock).toHaveBeenCalled());
+
+    expect(screen.getByRole('heading', { name: 'Scenario Sandbox' })).toBeInTheDocument();
+    expect(screen.getByText('Large Nets/day')).toBeInTheDocument();
+    expect(screen.getByText('Items from nets')).toBeInTheDocument();
+    expect(screen.getByText('Days at share')).toBeInTheDocument();
+    expect(screen.getByLabelText('Allocation share for Frost Snapper Shell')).toHaveAttribute(
+      'placeholder',
+      'Even',
+    );
   });
 });

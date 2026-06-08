@@ -104,6 +104,7 @@ function createNewTargetRow(): LargeNetPlannerTargetState {
     id: crypto.randomUUID(),
     itemName: '',
     targetQuantity: '',
+    allocationShare: '',
     regularInventoryOverride: '',
     storedPetInventoryOverride: '',
     petNameOverride: '',
@@ -270,6 +271,7 @@ export function LargeNetPlannerPage() {
           itemName: catalogEntry?.itemName ?? target.itemName,
           canonicalKey: catalogEntry?.canonicalKey,
           targetQuantity: parsePositiveInput(target.targetQuantity),
+          allocationShare: parseOptionalNonNegativeInput(target.allocationShare),
           regularInventoryOverride: parseOptionalNonNegativeInput(target.regularInventoryOverride),
           storedPetInventoryOverride: parseOptionalNonNegativeInput(target.storedPetInventoryOverride),
           petForecastOverride: parsePositiveInput(target.petLevelOverride) > 0
@@ -400,6 +402,57 @@ export function LargeNetPlannerPage() {
         ) : null}
       </section>
 
+      <section className="page-card page-stack" aria-labelledby="large-net-scenario-title">
+        <div>
+          <h2 id="large-net-scenario-title">Scenario Sandbox</h2>
+          <p className="supporting-text">
+            Split the daily Large Net budget across targets, then see what remains after the selected wait period.
+            If all allocation fields are blank, unfinished targets split the budget evenly.
+          </p>
+        </div>
+
+        {plannerResult.targets.length === 0 ? (
+          <p className="empty-state">Add target items to try an allocation scenario.</p>
+        ) : (
+          <div className="table-scroll">
+            <table className="summary-table">
+              <thead>
+                <tr>
+                  <th scope="col">Item</th>
+                  <th scope="col">Share</th>
+                  <th scope="col">Large Nets/day</th>
+                  <th scope="col">Items from nets</th>
+                  <th scope="col">Items from pets</th>
+                  <th scope="col">Remaining after wait</th>
+                  <th scope="col">Large Nets left</th>
+                  <th scope="col">Days at share</th>
+                </tr>
+              </thead>
+              <tbody>
+                {plannerResult.targets.map((target) => (
+                  <tr key={target.canonicalKey}>
+                    <td>
+                      <ItemProfileLink
+                        canonicalKey={target.canonicalKey}
+                        itemName={target.itemName}
+                        iconSrc={getItemIconSrc(target.canonicalKey)}
+                      />
+                    </td>
+                    <td>{formatDecimal(target.allocationPercent * 100, 1)}%</td>
+                    <td>{formatDecimal(target.allocatedLargeNetsPerDay, 1)}</td>
+                    <td>{formatDecimal(target.allocationProjectedFishingQuantityDuringWait, 1)}</td>
+                    <td>{formatDecimal(target.allocationProjectedPetQuantityDuringWait, 1)}</td>
+                    <td>{formatCount(target.allocationRemainingAfterWaitQuantity)}</td>
+                    <td>{formatEstimate(target.allocationLargeNetsNeededAfterWait)}</td>
+                    <td>{formatEstimate(target.allocationDays, ' days')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
       <details className="page-card page-stack" open>
         <summary>
           <strong>Large Net Budget</strong>
@@ -514,6 +567,7 @@ export function LargeNetPlannerPage() {
               <tr>
                 <th scope="col">Item</th>
                 <th scope="col">Target</th>
+                <th scope="col">Allocation share</th>
                 <th scope="col">Regular inv.</th>
                 <th scope="col">Stored pet</th>
                 <th scope="col">Pet</th>
@@ -551,6 +605,21 @@ export function LargeNetPlannerPage() {
                       step="1"
                       value={target.targetQuantity}
                       onChange={(event) => updateTargetRow(target.id, { targetQuantity: event.target.value })}
+                    />
+                  </td>
+                  <td>
+                    <label className="sr-only" htmlFor={`large-net-target-allocation-${target.id}`}>
+                      Allocation share for {target.itemName || `target ${index + 1}`}
+                    </label>
+                    <input
+                      id={`large-net-target-allocation-${target.id}`}
+                      className="text-input"
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={target.allocationShare}
+                      onChange={(event) => updateTargetRow(target.id, { allocationShare: event.target.value })}
+                      placeholder="Even"
                     />
                   </td>
                   <td>

@@ -17,6 +17,7 @@ export type LargeNetPlannerTargetInput = {
   itemName: string;
   canonicalKey?: string;
   targetQuantity: number;
+  allocationShare?: number;
   regularInventoryOverride?: number;
   storedPetInventoryOverride?: number;
   petForecastOverride?: {
@@ -52,6 +53,15 @@ export type LargeNetPlannerTargetResult = {
   projectedPetQuantityDuringWait: number;
   remainingAfterWaitQuantity: number;
   largeNetsNeededAfterWait: number | null;
+  allocationShare: number;
+  allocationPercent: number;
+  allocatedLargeNetsPerDay: number;
+  allocationFishingItemsPerDay: number;
+  allocationProjectedFishingQuantityDuringWait: number;
+  allocationProjectedPetQuantityDuringWait: number;
+  allocationRemainingAfterWaitQuantity: number;
+  allocationLargeNetsNeededAfterWait: number | null;
+  allocationDays: number | null;
   warnings: string[];
 };
 
@@ -355,6 +365,58 @@ function calculateCompetingDays(
   return high;
 }
 
+function applyAllocationScenario(input: {
+  targets: LargeNetPlannerTargetResult[];
+  dailyLargeNets: number;
+  catchMultiplier: number;
+  waitDays: number;
+}): LargeNetPlannerTargetResult[] {
+  const positiveShareTotal = input.targets.reduce((total, target) => total + target.allocationShare, 0);
+  const remainingTargetCount = input.targets.filter((target) => target.remainingAfterImmediateQuantity > 0).length;
+  const equalRemainingShare = remainingTargetCount > 0 ? 1 / remainingTargetCount : 0;
+
+  return input.targets.map((target) => {
+    const allocationPercent = positiveShareTotal > 0
+      ? target.allocationShare / positiveShareTotal
+      : target.remainingAfterImmediateQuantity > 0
+        ? equalRemainingShare
+        : 0;
+    const allocatedLargeNetsPerDay = input.dailyLargeNets * allocationPercent;
+    const allocationFishingItemsPerDay = target.largeNetsPerDrop > 0
+      ? (allocatedLargeNetsPerDay * input.catchMultiplier) / target.largeNetsPerDrop
+      : 0;
+    const allocationProjectedFishingQuantityDuringWait = allocationFishingItemsPerDay * input.waitDays;
+    const allocationProjectedPetQuantityDuringWait = target.dailyPetQuantity * input.waitDays;
+    const allocationRemainingAfterWaitQuantity = Math.max(
+      0,
+      target.remainingAfterImmediateQuantity -
+        allocationProjectedFishingQuantityDuringWait -
+        allocationProjectedPetQuantityDuringWait,
+    );
+    const allocationLargeNetsNeededAfterWait = target.largeNetsPerDrop > 0
+      ? (allocationRemainingAfterWaitQuantity * target.largeNetsPerDrop) / input.catchMultiplier
+      : allocationRemainingAfterWaitQuantity <= 0
+        ? 0
+        : null;
+    const allocationDays = calculateSoloDays(
+      target.remainingAfterImmediateQuantity,
+      allocationFishingItemsPerDay + target.dailyPetQuantity,
+    );
+
+    return {
+      ...target,
+      allocationPercent,
+      allocatedLargeNetsPerDay,
+      allocationFishingItemsPerDay,
+      allocationProjectedFishingQuantityDuringWait,
+      allocationProjectedPetQuantityDuringWait,
+      allocationRemainingAfterWaitQuantity,
+      allocationLargeNetsNeededAfterWait,
+      allocationDays,
+    };
+  });
+}
+
 export function buildLargeNetPlanner(input: BuildLargeNetPlannerInput): LargeNetPlannerResult {
   const craftOutputMultiplier = clampPositive(
     input.craftOutputMultiplier,
@@ -385,6 +447,7 @@ export function buildLargeNetPlanner(input: BuildLargeNetPlannerInput): LargeNet
       const itemName = target.itemName.trim();
       const canonicalKey = toCanonicalItemKey(target.canonicalKey || itemName);
       const targetQuantity = clampNonNegative(target.targetQuantity);
+      const allocationShare = clampNonNegative(target.allocationShare);
 
       if (!canonicalKey || !itemName) {
         return null;
@@ -486,10 +549,29 @@ export function buildLargeNetPlanner(input: BuildLargeNetPlannerInput): LargeNet
         projectedPetQuantityDuringWait,
         remainingAfterWaitQuantity,
         largeNetsNeededAfterWait,
+        allocationShare,
+        allocationPercent: 0,
+        allocatedLargeNetsPerDay: 0,
+        allocationFishingItemsPerDay: 0,
+        allocationProjectedFishingQuantityDuringWait: 0,
+        allocationProjectedPetQuantityDuringWait: 0,
+        allocationRemainingAfterWaitQuantity: remainingAfterImmediateQuantity,
+        allocationLargeNetsNeededAfterWait: largeNetsPerDrop > 0
+          ? (remainingAfterImmediateQuantity * largeNetsPerDrop) / catchMultiplier
+          : remainingAfterImmediateQuantity <= 0
+            ? 0
+            : null,
+        allocationDays: null,
         warnings: targetWarnings,
       };
     })
     .filter((target): target is LargeNetPlannerTargetResult => Boolean(target));
+  const allocatedTargets = applyAllocationScenario({
+    targets,
+    dailyLargeNets,
+    catchMultiplier,
+    waitDays,
+  });
   const soloDays = targets
     .map((target) => target.soloDays)
     .filter((days): days is number => days !== null);
@@ -509,7 +591,7 @@ export function buildLargeNetPlanner(input: BuildLargeNetPlannerInput): LargeNet
     craftOutputMultiplier,
     catchMultiplier,
     petCollectionMultiplier,
-    targets,
+    targets: allocatedTargets,
     competingDays,
     incidentalDays,
     warnings,
