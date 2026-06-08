@@ -58,6 +58,10 @@ export const RECIPE_COLUMNS = [
   'cooking_level',
   'base_time',
   'source_buddy_url',
+  'source_page_data_url',
+  'cache_file_name',
+  'parser_version',
+  'notes',
 ] as const;
 
 export const RECIPE_INPUT_COLUMNS = [
@@ -67,6 +71,11 @@ export const RECIPE_INPUT_COLUMNS = [
   'input_item_name',
   'input_canonical_key',
   'quantity',
+  'source_buddy_url',
+  'source_page_data_url',
+  'cache_file_name',
+  'parser_version',
+  'notes',
 ] as const;
 
 function validateHeaders(headers: string[], expectedColumns: readonly string[], label: string): void {
