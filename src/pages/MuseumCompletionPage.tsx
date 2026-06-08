@@ -295,7 +295,7 @@ export function MuseumCompletionPage() {
         <div>
           <h2 id="museum-manual-review-title">Reviewed Missing Items</h2>
           <p className="supporting-text">
-            The app includes Rebecca-reviewed missing names when available. Add local names only after you have
+            The app includes reviewed missing names when available. Add local names only after you have
             confirmed what an unnamed museum slot represents.
           </p>
         </div>

@@ -449,7 +449,7 @@ function ItemGoalSupplyBreakdownList({ result }: { result: ItemGoalCalculatorRes
           <div className="recipe-link-row">
             <span>
               <strong>{entry.label}</strong>
-              {entry.notes.length > 0 ? <span className="subtle-text">{entry.notes.join(' ')}</span> : null}
+              {entry.notes.length > 0 ? <span className="subtle-text"> {entry.notes.join(' ')}</span> : null}
             </span>
             <strong>{formatPlannerQuantity(entry.quantity)}</strong>
           </div>
@@ -487,6 +487,7 @@ function ItemGoalDemandList({
               <span>
                 <strong>{formatPlannerQuantity(row.remainingQuantity)} left</strong>
                 <span className="subtle-text">
+                  {' '}
                   {formatPlannerQuantity(row.grossRequiredQuantity)} needed before saved supply
                 </span>
               </span>
@@ -607,6 +608,7 @@ function ItemGoalWaitProjectionRows({ result }: { result: ItemGoalCalculatorResu
               <span>
                 <strong>{formatPlannerQuantity(row.remainingQuantity)} left</strong>
                 <span className="subtle-text">
+                  {' '}
                   {formatPlannerQuantity(row.grossRequiredQuantity)} needed before counted supply; {row.sourceSummary}
                 </span>
               </span>
