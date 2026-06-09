@@ -89,6 +89,7 @@ function assertEqual(label, actual, expected, errors) {
 const fanoutSummaryPath = join(fanoutRoot, 'buddy_evidence_promotion_fanout_summary.json');
 const fanoutSummary = JSON.parse(readFileSync(fanoutSummaryPath, 'utf8'));
 const openableCandidateRows = readCsvRecords(join(fanoutRoot, 'openable_contents_candidates.csv'));
+const openableRows = readCsvRecords(join(repoRoot, 'data', 'openable_contents.csv'));
 
 const counts = {
   evidenceManifest: countCsv(join(evidenceRoot, 'buddy_item_evidence_manifest.csv')),
@@ -107,7 +108,9 @@ const counts = {
   petSources: countCsv(join(repoRoot, 'data', 'pet_source_reference.csv')),
   openableCandidates: openableCandidateRows.length,
   openableCandidateFixed: byQuantityKind(openableCandidateRows, 'fixed'),
-  openables: countCsv(join(repoRoot, 'data', 'openable_contents.csv')),
+  openables: openableRows.length,
+  openableFixed: byQuantityKind(openableRows, 'fixed'),
+  openableExpected: byQuantityKind(openableRows, 'expected'),
   wishingWellCandidates: countCsv(join(fanoutRoot, 'wishing_well_reference_candidates.csv')),
   wishingWell: countCsv(join(repoRoot, 'data', 'wishing_well_reference.csv')),
   sourceHintCandidates: countCsv(join(fanoutRoot, 'source_hint_candidates.csv')),
@@ -137,11 +140,13 @@ assertEqual('recipes.csv rows', counts.recipes, 273, errors);
 assertEqual('recipe_inputs.csv rows', counts.recipeInputs, 998, errors);
 assertEqual('drop_rate_reference.csv rows', counts.dropRates, 1244, errors);
 assertEqual('pet_source_reference.csv rows', counts.petSources, 336, errors);
-assertEqual('openable_contents.csv rows', counts.openables, 634, errors);
+assertEqual('openable_contents.csv rows', counts.openables, 897, errors);
+assertEqual('openable_contents.csv fixed rows', counts.openableFixed, 634, errors);
+assertEqual('openable_contents.csv expected rows', counts.openableExpected, 263, errors);
 assertEqual('wishing_well_reference.csv rows', counts.wishingWell, 361, errors);
 assertEqual('quest_item_source_hints.csv rows', counts.sourceHints, 1262, errors);
 assertEqual('item_aliases.csv rows', counts.aliases, 89, errors);
-assertEqual('openable rows skipped for EV review', counts.openableSkippedForEvReview, 263, errors);
+assertEqual('openable rows skipped for EV review', counts.openableSkippedForEvReview, 0, errors);
 assertEqual('source hint preserved seed rows', counts.sourceHintPreservedSeeds, 4, errors);
 
 const report = {

@@ -80,10 +80,27 @@ describe('parseOpenableContentsReferenceCsv', () => {
       readFileSync(join(process.cwd(), 'data', 'openable_contents.csv'), 'utf8'),
     );
     const saltOpenables = data.byContentCanonicalKey.salt.map((entry) => entry.openableItemName);
+    const fixedRows = data.entries.filter((entry) => entry.quantityKind === 'fixed');
+    const expectedRows = data.entries.filter((entry) => entry.quantityKind === 'expected');
+    const borgenBuckFromBag = data.byContentCanonicalKey['borgen buck'].find(
+      (entry) => entry.openableCanonicalKey === 'borgen bag 01',
+    );
 
-    expect(data.entries.length).toBeGreaterThan(600);
+    expect(data.entries).toHaveLength(897);
+    expect(fixedRows).toHaveLength(634);
+    expect(expectedRows).toHaveLength(263);
     expect(saltOpenables).toEqual(expect.arrayContaining(['Corn Prize Bag', 'Large Chest 03']));
     expect(data.entries.some((entry) => entry.evidence === 'container_to_content')).toBe(false);
-    expect(data.entries.every((entry) => entry.quantityKind === 'fixed')).toBe(true);
+    expect(borgenBuckFromBag).toMatchObject({
+      quantityKind: 'expected',
+      evidence: 'reviewed_expected_value',
+      quantityPerOpen: 0.458333,
+    });
+    expect(borgenBuckFromBag?.notes).toEqual(expect.arrayContaining([
+      'quantity_range=1-10',
+      'outcome_count=12',
+      'outcome_model=equal_outcome_pool',
+      'ev_formula=((max-min)/2+min)/outcome_count',
+    ]));
   });
 });

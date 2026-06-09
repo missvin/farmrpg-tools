@@ -34,8 +34,8 @@ Result on 2026-06-08: pass.
 
 ## Confirmed Remaining Work
 
-- `263` random/grab-bag openable outcome candidates remain intentionally unpromoted as exact supply. This is correct: the openable guardrails define those as expected-value work, not fixed contents.
-- A follow-up row, `BL-269`, tracks reviewing and promoting random openable expected-value rows when that source type becomes useful enough to support.
+- At the time of the `BL-265` audit, `263` random/grab-bag openable outcome candidates remained intentionally unpromoted as exact supply. This was correct: the openable guardrails define those as expected-value work, not fixed contents.
+- Follow-up row `BL-269` tracked reviewing and promoting random openable expected-value rows when that source type became useful enough to support. That follow-up has since shipped; see the update below.
 - Sparse or blank Buddy pages remain handled by the existing freshness/recheck flow from `BL-244`; they are not hidden inside `BL-251`.
 - Wishing Well reward quantity remains an explicit defaulted assumption where the local evidence only proves chance, not quantity.
 
@@ -44,3 +44,7 @@ Result on 2026-06-08: pass.
 `BL-251` can be marked shipped because its scoped current-universe source-promotion child batches are complete and the remaining source-shape gap is explicitly tracked as follow-up work instead of being left inside an unclear umbrella.
 
 This closure does not mean every possible Buddy-derived source type is now canonical. It means the current reviewed promotion batches for catalog recognition, recipes, recipe inputs, drop rates, fixed openables, Wishing Well, source hints, aliases, and pet-source coverage have landed, and known exclusions are documented.
+
+## Follow-Up Update
+
+`BL-269` later promoted the 263 random/grab-bag openable outcomes as reviewed expected-value rows. Current `data/openable_contents.csv` coverage is 897 reviewed rows: 634 fixed rows and 263 expected-value rows across 21 grab-bag openables.

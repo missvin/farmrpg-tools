@@ -112,7 +112,7 @@ function readRequired(row, fieldName, rowLabel) {
   return value;
 }
 
-function readWholeNumber(row, fieldName, rowLabel) {
+function readPositiveWholeNumber(row, fieldName, rowLabel) {
   const rawValue = readRequired(row, fieldName, rowLabel);
   const value = Number(rawValue);
 
@@ -120,7 +120,11 @@ function readWholeNumber(row, fieldName, rowLabel) {
     throw new Error(`Invalid ${fieldName} "${rawValue}" in ${rowLabel}; expected a positive whole number.`);
   }
 
-  return rawValue;
+  return value;
+}
+
+function readWholeNumber(row, fieldName, rowLabel) {
+  return String(readPositiveWholeNumber(row, fieldName, rowLabel));
 }
 
 function loadPageMetadata() {
@@ -153,11 +157,22 @@ function loadPageMetadata() {
   return { metadataByCandidateKey, metadataByItemName };
 }
 
-function buildNotes(row) {
+function buildProvenanceNotes(row) {
   const sourceUrl = readRequired(row, 'source_url', 'openable candidate row');
   const pageDataUrl = readRequired(row, 'page_data_url', `openable candidate row from ${sourceUrl}`);
   const cacheFileName = readRequired(row, 'cache_file_name', `openable candidate row from ${sourceUrl}`);
   const parserVersion = readRequired(row, 'parser_version', `openable candidate row from ${sourceUrl}`);
+
+  return {
+    sourceUrl,
+    pageDataUrl,
+    cacheFileName,
+    parserVersion,
+  };
+}
+
+function buildFixedNotes(row) {
+  const { sourceUrl, pageDataUrl, cacheFileName, parserVersion } = buildProvenanceNotes(row);
 
   return [
     'Promoted from complete cached Buddy page-data fan-out for BL-262.',
@@ -169,11 +184,46 @@ function buildNotes(row) {
   ].join('; ');
 }
 
+function formatExpectedValue(value) {
+  return Number(value.toFixed(6)).toString();
+}
+
+function buildExpectedNotes(row, quantityMin, quantityMax, outcomeCount) {
+  const { sourceUrl, pageDataUrl, cacheFileName, parserVersion } = buildProvenanceNotes(row);
+
+  return [
+    'Promoted from complete cached Buddy page-data fan-out for BL-269.',
+    'locksmith_grab_bag=true',
+    `quantity_range=${quantityMin}-${quantityMax}`,
+    `outcome_count=${outcomeCount}`,
+    'outcome_model=equal_outcome_pool',
+    'ev_formula=((max-min)/2+min)/outcome_count',
+    `Source: ${sourceUrl}`,
+    `Page data: ${pageDataUrl}`,
+    `Cache: ${cacheFileName}`,
+    `Parser: ${parserVersion}`,
+  ].join('; ');
+}
+
 const candidateRows = parseCsv(readFileSync(candidatePath, 'utf8'));
 const { metadataByCandidateKey, metadataByItemName } = loadPageMetadata();
+const outcomeCountByOpenableKey = new Map();
 const entriesByKey = new Map();
-let skippedGrabBagRows = 0;
 let skippedRangeRows = 0;
+
+for (const row of candidateRows) {
+  const openableCanonicalKey = row.get('openable_canonical_key').trim();
+  const metadata = metadataByCandidateKey.get(openableCanonicalKey);
+
+  if (!metadata?.locksmithGrabBag) {
+    continue;
+  }
+
+  outcomeCountByOpenableKey.set(
+    openableCanonicalKey,
+    (outcomeCountByOpenableKey.get(openableCanonicalKey) ?? 0) + 1,
+  );
+}
 
 for (const row of candidateRows) {
   const openableItemName = readRequired(row, 'openable_item_name', 'openable candidate row');
@@ -188,7 +238,37 @@ for (const row of candidateRows) {
   }
 
   if (metadata.locksmithGrabBag) {
-    skippedGrabBagRows += 1;
+    const quantityMin = readPositiveWholeNumber(row, 'quantity_min', rowLabel);
+    const quantityMax = readPositiveWholeNumber(row, 'quantity_max', rowLabel);
+    const outcomeCount = outcomeCountByOpenableKey.get(row.get('openable_canonical_key').trim()) ?? 0;
+
+    if (quantityMax < quantityMin) {
+      throw new Error(`Invalid quantity range ${quantityMin}-${quantityMax} in ${rowLabel}.`);
+    }
+
+    if (outcomeCount <= 1) {
+      throw new Error(`Invalid outcome count ${outcomeCount} for grab-bag openable "${openableItemName}".`);
+    }
+
+    const expectedQuantity = (((quantityMax - quantityMin) / 2) + quantityMin) / outcomeCount;
+    const entry = {
+      openableItemName,
+      openableCanonicalKey: toCanonicalItemKey(openableItemName),
+      contentItemName,
+      contentCanonicalKey: toCanonicalItemKey(contentItemName),
+      quantityPerOpen: formatExpectedValue(expectedQuantity),
+      quantityKind: 'expected',
+      evidence: 'reviewed_expected_value',
+      notes: buildExpectedNotes(row, quantityMin, quantityMax, outcomeCount),
+    };
+
+    const key = `${entry.openableCanonicalKey}\t${entry.contentCanonicalKey}`;
+
+    if (entriesByKey.has(key)) {
+      throw new Error(`Duplicate openable-content candidate for ${rowLabel}.`);
+    }
+
+    entriesByKey.set(key, entry);
     continue;
   }
 
@@ -205,7 +285,7 @@ for (const row of candidateRows) {
     quantityPerOpen: readWholeNumber(row, 'quantity_per_open', rowLabel),
     quantityKind: 'fixed',
     evidence: 'reviewed_fixed_content',
-    notes: buildNotes(row),
+    notes: buildFixedNotes(row),
   };
 
   const key = `${entry.openableCanonicalKey}\t${entry.contentCanonicalKey}`;
@@ -246,6 +326,11 @@ const csvRows = [
 
 writeFileSync(outputPath, `${csvRows.join('\n')}\n`, 'utf8');
 
-console.log(`Wrote data/openable_contents.csv with ${entries.length.toLocaleString()} reviewed fixed rows.`);
-console.log(`Skipped ${skippedGrabBagRows.toLocaleString()} grab-bag outcome rows for expected-value review.`);
+const fixedEntryCount = entries.filter((entry) => entry.quantityKind === 'fixed').length;
+const expectedEntryCount = entries.filter((entry) => entry.quantityKind === 'expected').length;
+
+console.log(`Wrote data/openable_contents.csv with ${entries.length.toLocaleString()} reviewed rows.`);
+console.log(`Included ${fixedEntryCount.toLocaleString()} fixed rows.`);
+console.log(`Included ${expectedEntryCount.toLocaleString()} expected-value rows.`);
+console.log(`Included ${outcomeCountByOpenableKey.size.toLocaleString()} grab-bag openables as expected-value rows.`);
 console.log(`Skipped ${skippedRangeRows.toLocaleString()} non-fixed rows.`);

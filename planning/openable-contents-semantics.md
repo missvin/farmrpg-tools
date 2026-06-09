@@ -26,6 +26,8 @@ For equal outcome pools, use:
 
 Example: if Borgen Bag 01 has 12 possible outcomes and Borgen Buck can appear as 1-10, the expected value is `((10 - 1) / 2 + 1) / 12`, or about `0.46` Borgen Buck per bag.
 
+Current random openable promotion uses cached Buddy pages marked `locksmithGrabBag=true` and treats each listed outcome as equally likely. Rows without that reviewed grab-bag marker should not be promoted as expected-value rows without separate review.
+
 ## Promotion Guardrails
 
 - Do not promote `quantity_kind=range` directly into canonical data.
