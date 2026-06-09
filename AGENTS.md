@@ -76,6 +76,8 @@ Do not create backlog entries for tiny incidental edits.
 
 Use `$farmrpg-backlog-intake` when casual ideas or future-feature notes should be converted into backlog rows.
 
+Use `planning/subagent-review-workflow.md` when delegating bounded review, audit, or parallel investigation work to subagents. Close or archive completed subagents after their findings are preserved.
+
 ---
 
 ## How to work

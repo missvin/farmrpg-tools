@@ -50,6 +50,8 @@ Default behavior:
 
 ## Reconciliation Workflow
 
+When reconciliation would benefit from parallel subagent review, follow `planning/subagent-review-workflow.md`. Use subagents only for bounded, evidence-based review scopes, and synthesize their findings before editing planning files.
+
 1. Define the reviewed scope: files, rows, dependencies, parent/child clusters, and roadmap sections.
 2. Classify findings:
    - stale umbrella rows

@@ -54,6 +54,7 @@ Backlog-first implementation gate:
 - If the selected row was just created during the same turn, pause after the backlog edit long enough for the user to redirect before starting product-code changes.
 - Do not start implementation from an unbacklogged plan, even when the user provides a detailed product plan.
 - If dependency validity, artifact sufficiency, claimed shipped status, or verification trust is undermined during the slice, stop forward implementation and follow `planning/failure-recovery-protocol.md`.
+- If using subagents for parallel review or implementation support, follow `planning/subagent-review-workflow.md`: keep assignments bounded, keep write scopes disjoint, synthesize findings in the lead thread, and close or archive completed subagents after useful output is preserved.
 
 Proceed unless the user pauses, redirects, or asked for planning-only/review-only.
 
