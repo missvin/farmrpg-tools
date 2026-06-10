@@ -35,6 +35,16 @@ import {
   savePumpkinJuicePlannerState,
 } from './pumpkinJuicePlannerState';
 import {
+  clearQuestHistoryState,
+  loadQuestHistoryState,
+  saveQuestHistoryState,
+} from './questHistoryState';
+import {
+  clearQuestPlannerState,
+  loadQuestPlannerState,
+  saveQuestPlannerState,
+} from './questPlannerState';
+import {
   clearSnapshotVelocityPreferences,
   loadSnapshotVelocityPreferences,
   saveSnapshotVelocityPreferences,
@@ -88,6 +98,8 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   const currentMasteryRaceCountsState = loadMasteryRaceCountsState();
   const currentMuseumCompletionState = loadMuseumCompletionState();
   const currentTargetOutputPlannerState = loadTargetOutputPlannerState();
+  const currentQuestPlannerState = loadQuestPlannerState();
+  const currentQuestHistoryState = loadQuestHistoryState();
   const currentUnknownItemEvidenceState = loadUnknownItemEvidenceState();
   const currentSnapshotVelocityPreferences = loadSnapshotVelocityPreferences();
   const currentThemePreference = readStoredAppTheme();
@@ -143,6 +155,18 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       clearTargetOutputPlannerState();
     }
 
+    if (payload.state.preferences.questPlannerState) {
+      saveQuestPlannerState(payload.state.preferences.questPlannerState);
+    } else {
+      clearQuestPlannerState();
+    }
+
+    if (payload.state.preferences.questHistoryState) {
+      saveQuestHistoryState(payload.state.preferences.questHistoryState);
+    } else {
+      clearQuestHistoryState();
+    }
+
     if (payload.state.preferences.unknownItemEvidenceState) {
       saveUnknownItemEvidenceState(payload.state.preferences.unknownItemEvidenceState);
     } else {
@@ -170,6 +194,8 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     saveMasteryRaceCountsState(currentMasteryRaceCountsState);
     saveMuseumCompletionState(currentMuseumCompletionState);
     saveTargetOutputPlannerState(currentTargetOutputPlannerState);
+    saveQuestPlannerState(currentQuestPlannerState);
+    saveQuestHistoryState(currentQuestHistoryState);
     saveUnknownItemEvidenceState(currentUnknownItemEvidenceState);
     saveSnapshotVelocityPreferences(currentSnapshotVelocityPreferences);
 

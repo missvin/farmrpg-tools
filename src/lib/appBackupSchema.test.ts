@@ -63,6 +63,54 @@ function createAcquisitionPlannerStateFixture() {
   };
 }
 
+function createQuestPlannerStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    questStates: [
+      {
+        questKey: 'distant illusions xii',
+        status: 'completed' as const,
+        hidden: false,
+        observedNpc: 'Buddy',
+        observedCompletionPercent: 94.14,
+        lastObservedAt: '2026-06-09T12:00:00.000Z',
+      },
+    ],
+  };
+}
+
+function createQuestHistoryStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    imports: [
+      {
+        importId: 'quest-history-1',
+        importedAt: '2026-06-09T12:00:00.000Z',
+        activeRequests: [],
+        warnings: [],
+        summary: {
+          reportedCompletedCount: 1,
+          completedRowsCount: 1,
+          activeRowsCount: 0,
+          warningCount: 0,
+        },
+        completedRequests: [
+          {
+            questKey: 'distant illusions xii',
+            questName: 'Distant Illusions XII',
+            npc: 'Buddy',
+            requestKind: null,
+            completedAt: '2026-05-29T20:54:26',
+            completedAtRaw: '2026-05-29 20:54:26',
+            playerCount: 902,
+            completionPercent: 0.08,
+          },
+        ],
+      },
+    ],
+  };
+}
+
 describe('appBackupSchema', () => {
   it('creates a versioned full-app backup payload with the current v1 state categories', () => {
     const snapshots = [createSnapshot('snapshot-1'), createSnapshot('snapshot-2')];
@@ -138,6 +186,8 @@ describe('appBackupSchema', () => {
         },
       ],
     };
+    const questPlannerState = createQuestPlannerStateFixture();
+    const questHistoryState = createQuestHistoryStateFixture();
     const snapshotVelocityPreferences = {
       selectedCanonicalKeys: ['board'],
       hiddenDefaultCanonicalKeys: ['twine'],
@@ -158,6 +208,8 @@ describe('appBackupSchema', () => {
       masteryRaceCountsState,
       museumCompletionState,
       targetOutputPlannerState,
+      questPlannerState,
+      questHistoryState,
       snapshotVelocityPreferences,
       themePreference: 'dark',
     });
@@ -180,6 +232,8 @@ describe('appBackupSchema', () => {
           masteryRaceCountsState,
           museumCompletionState,
           targetOutputPlannerState,
+          questPlannerState,
+          questHistoryState,
           unknownItemEvidenceState: null,
           snapshotVelocityPreferences,
           themePreference: 'dark',
@@ -538,6 +592,78 @@ describe('appBackupSchema', () => {
       ok: false,
       code: 'invalid_target_output_planner_state',
       message: 'The backup file contains malformed target-output planner state.',
+    });
+
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: APP_BACKUP_SCHEMA_VERSION,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [],
+          preferences: {
+            craftingModifierState: null,
+            acquisitionPlannerState: null,
+            questPlannerState: {
+              schemaVersion: 1,
+              questStates: [
+                {
+                  questKey: '',
+                  status: 'active',
+                  hidden: false,
+                  observedNpc: null,
+                  observedCompletionPercent: null,
+                  lastObservedAt: null,
+                },
+              ],
+            },
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'invalid_quest_planner_state',
+      message: 'The backup file contains malformed quest planner state.',
+    });
+
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: APP_BACKUP_SCHEMA_VERSION,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [],
+          preferences: {
+            craftingModifierState: null,
+            acquisitionPlannerState: null,
+            questHistoryState: {
+              schemaVersion: 1,
+              imports: [
+                {
+                  importId: '',
+                  importedAt: '2026-06-09T12:00:00.000Z',
+                  completedRequests: [],
+                  activeRequests: [],
+                  summary: {},
+                  warnings: [],
+                },
+              ],
+            },
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'invalid_quest_history_state',
+      message: 'The backup file contains malformed quest history state.',
     });
 
     expect(

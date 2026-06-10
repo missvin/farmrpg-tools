@@ -27,6 +27,12 @@ const {
   mockSaveTargetOutputPlannerState,
   mockLoadTargetOutputPlannerState,
   mockClearTargetOutputPlannerState,
+  mockSaveQuestPlannerState,
+  mockLoadQuestPlannerState,
+  mockClearQuestPlannerState,
+  mockSaveQuestHistoryState,
+  mockLoadQuestHistoryState,
+  mockClearQuestHistoryState,
   mockSaveSnapshotVelocityPreferences,
   mockLoadSnapshotVelocityPreferences,
   mockClearSnapshotVelocityPreferences,
@@ -60,6 +66,12 @@ const {
   mockSaveTargetOutputPlannerState: vi.fn(),
   mockLoadTargetOutputPlannerState: vi.fn(),
   mockClearTargetOutputPlannerState: vi.fn(),
+  mockSaveQuestPlannerState: vi.fn(),
+  mockLoadQuestPlannerState: vi.fn(),
+  mockClearQuestPlannerState: vi.fn(),
+  mockSaveQuestHistoryState: vi.fn(),
+  mockLoadQuestHistoryState: vi.fn(),
+  mockClearQuestHistoryState: vi.fn(),
   mockSaveSnapshotVelocityPreferences: vi.fn(),
   mockLoadSnapshotVelocityPreferences: vi.fn(),
   mockClearSnapshotVelocityPreferences: vi.fn(),
@@ -119,6 +131,20 @@ vi.mock('./targetOutputPlannerState', () => ({
   loadTargetOutputPlannerState: mockLoadTargetOutputPlannerState,
   saveTargetOutputPlannerState: mockSaveTargetOutputPlannerState,
   clearTargetOutputPlannerState: mockClearTargetOutputPlannerState,
+}));
+
+vi.mock('./questPlannerState', () => ({
+  loadQuestPlannerState: mockLoadQuestPlannerState,
+  saveQuestPlannerState: mockSaveQuestPlannerState,
+  clearQuestPlannerState: mockClearQuestPlannerState,
+  isValidQuestPlannerState: vi.fn(() => true),
+}));
+
+vi.mock('./questHistoryState', () => ({
+  loadQuestHistoryState: mockLoadQuestHistoryState,
+  saveQuestHistoryState: mockSaveQuestHistoryState,
+  clearQuestHistoryState: mockClearQuestHistoryState,
+  isValidQuestHistoryState: vi.fn(() => true),
 }));
 
 vi.mock('./snapshotVelocityPreferences', () => ({
@@ -192,6 +218,8 @@ function createBackupPayload() {
     masteryRaceCountsState: createMasteryRaceCountsStateFixture(),
     museumCompletionState: createMuseumCompletionStateFixture(),
     targetOutputPlannerState: createTargetOutputPlannerStateFixture(),
+    questPlannerState: createQuestPlannerStateFixture(),
+    questHistoryState: createQuestHistoryStateFixture(),
     snapshotVelocityPreferences: createSnapshotVelocityPreferencesFixture(),
     themePreference: 'dark',
   });
@@ -388,6 +416,54 @@ function createTargetOutputPlannerStateFixture() {
   };
 }
 
+function createQuestPlannerStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    questStates: [
+      {
+        questKey: 'distant illusions xii',
+        status: 'completed' as const,
+        hidden: false,
+        observedNpc: 'Buddy',
+        observedCompletionPercent: 94.14,
+        lastObservedAt: '2026-06-09T12:00:00.000Z',
+      },
+    ],
+  };
+}
+
+function createQuestHistoryStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    imports: [
+      {
+        importId: 'quest-history-1',
+        importedAt: '2026-06-09T12:00:00.000Z',
+        activeRequests: [],
+        warnings: [],
+        summary: {
+          reportedCompletedCount: 1,
+          completedRowsCount: 1,
+          activeRowsCount: 0,
+          warningCount: 0,
+        },
+        completedRequests: [
+          {
+            questKey: 'distant illusions xii',
+            questName: 'Distant Illusions XII',
+            npc: 'Buddy',
+            requestKind: null,
+            completedAt: '2026-05-29T20:54:26',
+            completedAtRaw: '2026-05-29 20:54:26',
+            playerCount: 902,
+            completionPercent: 0.08,
+          },
+        ],
+      },
+    ],
+  };
+}
+
 function createSnapshotVelocityPreferencesFixture() {
   return {
     selectedCanonicalKeys: ['board'],
@@ -426,6 +502,12 @@ describe('appBackupRestore', () => {
     mockSaveTargetOutputPlannerState.mockReset();
     mockLoadTargetOutputPlannerState.mockReset();
     mockClearTargetOutputPlannerState.mockReset();
+    mockSaveQuestPlannerState.mockReset();
+    mockLoadQuestPlannerState.mockReset();
+    mockClearQuestPlannerState.mockReset();
+    mockSaveQuestHistoryState.mockReset();
+    mockLoadQuestHistoryState.mockReset();
+    mockClearQuestHistoryState.mockReset();
     mockSaveSnapshotVelocityPreferences.mockReset();
     mockLoadSnapshotVelocityPreferences.mockReset();
     mockClearSnapshotVelocityPreferences.mockReset();
@@ -441,6 +523,8 @@ describe('appBackupRestore', () => {
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
     mockLoadMuseumCompletionState.mockReturnValue(createMuseumCompletionStateFixture());
     mockLoadTargetOutputPlannerState.mockReturnValue(createTargetOutputPlannerStateFixture());
+    mockLoadQuestPlannerState.mockReturnValue(createQuestPlannerStateFixture());
+    mockLoadQuestHistoryState.mockReturnValue(createQuestHistoryStateFixture());
     mockLoadSnapshotVelocityPreferences.mockReturnValue(createSnapshotVelocityPreferencesFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
   });
@@ -506,6 +590,12 @@ describe('appBackupRestore', () => {
     expect(mockSaveTargetOutputPlannerState).toHaveBeenCalledWith(
       payload.state.preferences.targetOutputPlannerState,
     );
+    expect(mockSaveQuestPlannerState).toHaveBeenCalledWith(
+      payload.state.preferences.questPlannerState,
+    );
+    expect(mockSaveQuestHistoryState).toHaveBeenCalledWith(
+      payload.state.preferences.questHistoryState,
+    );
     expect(mockSaveSnapshotVelocityPreferences).toHaveBeenCalledWith(
       payload.state.preferences.snapshotVelocityPreferences,
     );
@@ -518,6 +608,8 @@ describe('appBackupRestore', () => {
     expect(mockClearMasteryRaceCountsState).not.toHaveBeenCalled();
     expect(mockClearMuseumCompletionState).not.toHaveBeenCalled();
     expect(mockClearTargetOutputPlannerState).not.toHaveBeenCalled();
+    expect(mockClearQuestPlannerState).not.toHaveBeenCalled();
+    expect(mockClearQuestHistoryState).not.toHaveBeenCalled();
     expect(mockClearSnapshotVelocityPreferences).not.toHaveBeenCalled();
     expect(mockClearStoredAppTheme).not.toHaveBeenCalled();
   });
@@ -535,6 +627,8 @@ describe('appBackupRestore', () => {
       masteryRaceCountsState: null,
       museumCompletionState: null,
       targetOutputPlannerState: null,
+      questPlannerState: null,
+      questHistoryState: null,
       snapshotVelocityPreferences: null,
       themePreference: null,
     });
@@ -550,6 +644,8 @@ describe('appBackupRestore', () => {
     expect(mockClearMasteryRaceCountsState).toHaveBeenCalledTimes(1);
     expect(mockClearMuseumCompletionState).toHaveBeenCalledTimes(1);
     expect(mockClearTargetOutputPlannerState).toHaveBeenCalledTimes(1);
+    expect(mockClearQuestPlannerState).toHaveBeenCalledTimes(1);
+    expect(mockClearQuestHistoryState).toHaveBeenCalledTimes(1);
     expect(mockClearSnapshotVelocityPreferences).toHaveBeenCalledTimes(1);
     expect(mockClearStoredAppTheme).toHaveBeenCalledTimes(1);
   });
@@ -645,6 +741,8 @@ describe('appBackupRestore', () => {
     const previousMasteryRaceCountsState = createMasteryRaceCountsStateFixture();
     const previousMuseumCompletionState = createMuseumCompletionStateFixture();
     const previousTargetOutputPlannerState = createTargetOutputPlannerStateFixture();
+    const previousQuestPlannerState = createQuestPlannerStateFixture();
+    const previousQuestHistoryState = createQuestHistoryStateFixture();
     const previousSnapshotVelocityPreferences = createSnapshotVelocityPreferencesFixture();
 
     mockListSnapshots.mockResolvedValue(previousSnapshots);
@@ -656,6 +754,8 @@ describe('appBackupRestore', () => {
     mockLoadMasteryRaceCountsState.mockReturnValue(previousMasteryRaceCountsState);
     mockLoadMuseumCompletionState.mockReturnValue(previousMuseumCompletionState);
     mockLoadTargetOutputPlannerState.mockReturnValue(previousTargetOutputPlannerState);
+    mockLoadQuestPlannerState.mockReturnValue(previousQuestPlannerState);
+    mockLoadQuestHistoryState.mockReturnValue(previousQuestHistoryState);
     mockLoadSnapshotVelocityPreferences.mockReturnValue(previousSnapshotVelocityPreferences);
     mockReadStoredAppTheme.mockReturnValue('dark');
     mockSaveCraftingModifierState
@@ -678,6 +778,8 @@ describe('appBackupRestore', () => {
     expect(mockSaveMasteryRaceCountsState).toHaveBeenLastCalledWith(previousMasteryRaceCountsState);
     expect(mockSaveMuseumCompletionState).toHaveBeenLastCalledWith(previousMuseumCompletionState);
     expect(mockSaveTargetOutputPlannerState).toHaveBeenLastCalledWith(previousTargetOutputPlannerState);
+    expect(mockSaveQuestPlannerState).toHaveBeenLastCalledWith(previousQuestPlannerState);
+    expect(mockSaveQuestHistoryState).toHaveBeenLastCalledWith(previousQuestHistoryState);
     expect(mockSaveSnapshotVelocityPreferences).toHaveBeenLastCalledWith(previousSnapshotVelocityPreferences);
     expect(mockPersistAppTheme).toHaveBeenLastCalledWith('dark');
   });

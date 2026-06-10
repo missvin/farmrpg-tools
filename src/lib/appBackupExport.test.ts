@@ -12,6 +12,8 @@ const {
   mockLoadMasteryRaceCountsState,
   mockLoadMuseumCompletionState,
   mockLoadTargetOutputPlannerState,
+  mockLoadQuestPlannerState,
+  mockLoadQuestHistoryState,
   mockLoadSnapshotVelocityPreferences,
   mockReadStoredAppTheme,
 } = vi.hoisted(() => ({
@@ -24,6 +26,8 @@ const {
   mockLoadMasteryRaceCountsState: vi.fn(),
   mockLoadMuseumCompletionState: vi.fn(),
   mockLoadTargetOutputPlannerState: vi.fn(),
+  mockLoadQuestPlannerState: vi.fn(),
+  mockLoadQuestHistoryState: vi.fn(),
   mockLoadSnapshotVelocityPreferences: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
 }));
@@ -62,6 +66,14 @@ vi.mock('./museumCompletionState', () => ({
 
 vi.mock('./targetOutputPlannerState', () => ({
   loadTargetOutputPlannerState: mockLoadTargetOutputPlannerState,
+}));
+
+vi.mock('./questPlannerState', () => ({
+  loadQuestPlannerState: mockLoadQuestPlannerState,
+}));
+
+vi.mock('./questHistoryState', () => ({
+  loadQuestHistoryState: mockLoadQuestHistoryState,
 }));
 
 vi.mock('./snapshotVelocityPreferences', () => ({
@@ -324,6 +336,54 @@ function createSnapshotVelocityPreferencesFixture() {
   };
 }
 
+function createQuestPlannerStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    questStates: [
+      {
+        questKey: 'distant illusions xii',
+        status: 'completed' as const,
+        hidden: false,
+        observedNpc: 'Buddy',
+        observedCompletionPercent: 94.14,
+        lastObservedAt: '2026-06-09T12:00:00.000Z',
+      },
+    ],
+  };
+}
+
+function createQuestHistoryStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    imports: [
+      {
+        importId: 'quest-history-1',
+        importedAt: '2026-06-09T12:00:00.000Z',
+        activeRequests: [],
+        warnings: [],
+        summary: {
+          reportedCompletedCount: 1,
+          completedRowsCount: 1,
+          activeRowsCount: 0,
+          warningCount: 0,
+        },
+        completedRequests: [
+          {
+            questKey: 'distant illusions xii',
+            questName: 'Distant Illusions XII',
+            npc: 'Buddy',
+            requestKind: null,
+            completedAt: '2026-05-29T20:54:26',
+            completedAtRaw: '2026-05-29 20:54:26',
+            playerCount: 902,
+            completionPercent: 0.08,
+          },
+        ],
+      },
+    ],
+  };
+}
+
 describe('appBackupExport', () => {
   beforeEach(() => {
     mockListSnapshots.mockReset();
@@ -335,6 +395,8 @@ describe('appBackupExport', () => {
     mockLoadMasteryRaceCountsState.mockReset();
     mockLoadMuseumCompletionState.mockReset();
     mockLoadTargetOutputPlannerState.mockReset();
+    mockLoadQuestPlannerState.mockReset();
+    mockLoadQuestHistoryState.mockReset();
     mockLoadSnapshotVelocityPreferences.mockReset();
     mockReadStoredAppTheme.mockReset();
   });
@@ -360,6 +422,8 @@ describe('appBackupExport', () => {
     const masteryRaceCountsState = createMasteryRaceCountsStateFixture();
     const museumCompletionState = createMuseumCompletionStateFixture();
     const targetOutputPlannerState = createTargetOutputPlannerStateFixture();
+    const questPlannerState = createQuestPlannerStateFixture();
+    const questHistoryState = createQuestHistoryStateFixture();
     const snapshotVelocityPreferences = createSnapshotVelocityPreferencesFixture();
 
     mockListSnapshots.mockResolvedValue(snapshots);
@@ -371,6 +435,8 @@ describe('appBackupExport', () => {
     mockLoadMasteryRaceCountsState.mockReturnValue(masteryRaceCountsState);
     mockLoadMuseumCompletionState.mockReturnValue(museumCompletionState);
     mockLoadTargetOutputPlannerState.mockReturnValue(targetOutputPlannerState);
+    mockLoadQuestPlannerState.mockReturnValue(questPlannerState);
+    mockLoadQuestHistoryState.mockReturnValue(questHistoryState);
     mockLoadSnapshotVelocityPreferences.mockReturnValue(snapshotVelocityPreferences);
     mockReadStoredAppTheme.mockReturnValue('dark');
 
@@ -392,6 +458,8 @@ describe('appBackupExport', () => {
     expect(payload.state.preferences.masteryRaceCountsState).toEqual(masteryRaceCountsState);
     expect(payload.state.preferences.museumCompletionState).toEqual(museumCompletionState);
     expect(payload.state.preferences.targetOutputPlannerState).toEqual(targetOutputPlannerState);
+    expect(payload.state.preferences.questPlannerState).toEqual(questPlannerState);
+    expect(payload.state.preferences.questHistoryState).toEqual(questHistoryState);
     expect(payload.state.preferences.snapshotVelocityPreferences).toEqual(snapshotVelocityPreferences);
     expect(payload.state.preferences.themePreference).toBe('dark');
   });
@@ -406,6 +474,8 @@ describe('appBackupExport', () => {
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
     mockLoadMuseumCompletionState.mockReturnValue(createMuseumCompletionStateFixture());
     mockLoadTargetOutputPlannerState.mockReturnValue(createTargetOutputPlannerStateFixture());
+    mockLoadQuestPlannerState.mockReturnValue(createQuestPlannerStateFixture());
+    mockLoadQuestHistoryState.mockReturnValue(createQuestHistoryStateFixture());
     mockLoadSnapshotVelocityPreferences.mockReturnValue(createSnapshotVelocityPreferencesFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
 
@@ -438,6 +508,8 @@ describe('appBackupExport', () => {
     mockLoadMasteryRaceCountsState.mockReturnValue(createMasteryRaceCountsStateFixture());
     mockLoadMuseumCompletionState.mockReturnValue(createMuseumCompletionStateFixture());
     mockLoadTargetOutputPlannerState.mockReturnValue(createTargetOutputPlannerStateFixture());
+    mockLoadQuestPlannerState.mockReturnValue(createQuestPlannerStateFixture());
+    mockLoadQuestHistoryState.mockReturnValue(createQuestHistoryStateFixture());
     mockLoadSnapshotVelocityPreferences.mockReturnValue(createSnapshotVelocityPreferencesFixture());
     mockReadStoredAppTheme.mockReturnValue(null);
 

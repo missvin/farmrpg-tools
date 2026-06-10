@@ -96,6 +96,16 @@ export function normalizeQuestPlannerState(value: unknown): QuestPlannerState {
   };
 }
 
+export function isValidQuestPlannerState(value: unknown): value is QuestPlannerState {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const record = value as Record<string, unknown>;
+  return record.schemaVersion === 1 && Array.isArray(record.questStates) &&
+    record.questStates.every((questStateInput) => normalizeQuestState(questStateInput) !== null);
+}
+
 export function getQuestState(
   state: QuestPlannerState,
   questKey: string,
@@ -141,25 +151,30 @@ export function upsertQuestState(
   };
 }
 
-export function loadQuestPlannerState(): QuestPlannerState {
-  if (!('localStorage' in globalThis)) {
+export function loadQuestPlannerState(storage: Storage | undefined = globalThis.localStorage): QuestPlannerState {
+  if (!storage) {
     return DEFAULT_QUEST_PLANNER_STATE;
   }
 
   try {
-    const rawValue = globalThis.localStorage.getItem(QUEST_PLANNER_STATE_STORAGE_KEY);
+    const rawValue = storage.getItem(QUEST_PLANNER_STATE_STORAGE_KEY);
     return normalizeQuestPlannerState(rawValue ? JSON.parse(rawValue) : null);
   } catch {
     return DEFAULT_QUEST_PLANNER_STATE;
   }
 }
 
-export function saveQuestPlannerState(state: QuestPlannerState): QuestPlannerState {
+export function saveQuestPlannerState(
+  state: QuestPlannerState,
+  storage: Storage | undefined = globalThis.localStorage,
+): QuestPlannerState {
   const normalizedState = normalizeQuestPlannerState(state);
 
-  if ('localStorage' in globalThis) {
-    globalThis.localStorage.setItem(QUEST_PLANNER_STATE_STORAGE_KEY, JSON.stringify(normalizedState));
-  }
+  storage?.setItem(QUEST_PLANNER_STATE_STORAGE_KEY, JSON.stringify(normalizedState));
 
   return normalizedState;
+}
+
+export function clearQuestPlannerState(storage: Storage | undefined = globalThis.localStorage): void {
+  storage?.removeItem(QUEST_PLANNER_STATE_STORAGE_KEY);
 }

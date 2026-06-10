@@ -20,6 +20,7 @@ export type HelpNeededPlayerGates = {
 export type HelpNeededPasteParseResult = {
   activeRequests: HelpNeededActiveRequest[];
   gates: HelpNeededPlayerGates;
+  reportedActiveRequestCount: number | null;
   warnings: string[];
 };
 
@@ -38,6 +39,10 @@ const META_LINES = new Set([
   'Active Requests',
   'Sort: Comp%, NPC, Title, Default',
 ]);
+
+function cleanLine(line: string): string {
+  return line.replace(/\s+/g, ' ').trim();
+}
 
 function parsePercent(value: string): number | null {
   const match = /^(\d+(?:\.\d+)?)%$/.exec(value.trim());
@@ -62,21 +67,40 @@ function parseLevelLine(value: string): number | null {
 }
 
 function isRequestBoundary(line: string): boolean {
-  return /^(Personal Requests|Request Totals|Consume a meal|Community Center)$/i.test(line);
+  return /^(Completed Requests|Personal Requests|Request Totals|Consume a meal|Community Center|Favorite Library Pages|Most Recent Update|Other Stuff)\b/i.test(line);
 }
 
 function findSectionIndex(lines: string[], pattern: RegExp): number {
   return lines.findIndex((line) => pattern.test(line));
 }
 
-function parseActiveRequests(lines: string[]): { activeRequests: HelpNeededActiveRequest[]; warnings: string[] } {
+function parseReportedActiveRequestCount(line: string): number | null {
+  const match = /^Active Requests\s*\(([\d,]+)\)/i.exec(line);
+
+  if (!match) {
+    return null;
+  }
+
+  const parsedCount = Number(match[1].replace(/,/g, ''));
+  return Number.isFinite(parsedCount) && parsedCount >= 0 ? parsedCount : null;
+}
+
+function parseActiveRequests(lines: string[]): {
+  activeRequests: HelpNeededActiveRequest[];
+  reportedActiveRequestCount: number | null;
+  warnings: string[];
+} {
   const warnings: string[] = [];
   const activeRequests: HelpNeededActiveRequest[] = [];
   const startIndex = findSectionIndex(lines, /^Active Requests\b/i);
+  const reportedActiveRequestCount = startIndex >= 0
+    ? parseReportedActiveRequestCount(lines[startIndex])
+    : null;
 
   if (startIndex < 0) {
     return {
       activeRequests,
+      reportedActiveRequestCount,
       warnings: ['No Active Requests section was found in the pasted text.'],
     };
   }
@@ -108,8 +132,22 @@ function parseActiveRequests(lines: string[]): { activeRequests: HelpNeededActiv
     });
   }
 
+  if (
+    reportedActiveRequestCount !== null &&
+    reportedActiveRequestCount !== activeRequests.length
+  ) {
+    warnings.push(
+      `Active Requests reported ${reportedActiveRequestCount.toLocaleString()} quest${
+        reportedActiveRequestCount === 1 ? '' : 's'
+      }, but ${activeRequests.length.toLocaleString()} quest${
+        activeRequests.length === 1 ? '' : 's'
+      } could be parsed.`,
+    );
+  }
+
   return {
     activeRequests,
+    reportedActiveRequestCount,
     warnings,
   };
 }
@@ -164,13 +202,14 @@ function parsePlayerGates(lines: string[]): HelpNeededPlayerGates {
 export function parseHelpNeededPaste(rawText: string): HelpNeededPasteParseResult {
   const lines = rawText
     .split(/\r?\n/)
-    .map((line) => line.trim())
+    .map(cleanLine)
     .filter(Boolean);
   const activeRequestResult = parseActiveRequests(lines);
 
   return {
     activeRequests: activeRequestResult.activeRequests,
     gates: parsePlayerGates(lines),
+    reportedActiveRequestCount: activeRequestResult.reportedActiveRequestCount,
     warnings: activeRequestResult.warnings,
   };
 }

@@ -5,6 +5,14 @@ import type { MasteryRaceCountsState } from './masteryRaceCounts';
 import type { MuseumCompletionState } from './museumCompletionState';
 import type { PersonalMasteryGoalsState } from './personalMasteryGoals';
 import type { PumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
+import {
+  isValidQuestHistoryState,
+  type QuestHistoryState,
+} from './questHistoryState';
+import {
+  isValidQuestPlannerState,
+  type QuestPlannerState,
+} from './questPlannerState';
 import type { SnapshotVelocityPreferences } from './snapshotVelocityPreferences';
 import type { AppTheme } from './themePreference';
 import type { MasterySnapshot } from './storage/masterySnapshots';
@@ -33,6 +41,8 @@ export type AppBackupStateV1 = {
     masteryRaceCountsState?: MasteryRaceCountsState | null;
     museumCompletionState?: MuseumCompletionState | null;
     targetOutputPlannerState?: TargetOutputPlannerState | null;
+    questPlannerState?: QuestPlannerState | null;
+    questHistoryState?: QuestHistoryState | null;
     unknownItemEvidenceState?: UnknownItemEvidenceState | null;
     snapshotVelocityPreferences?: SnapshotVelocityPreferences | null;
     themePreference: AppTheme | null;
@@ -61,6 +71,8 @@ export type CreateAppBackupPayloadInput = {
   masteryRaceCountsState?: MasteryRaceCountsState | null;
   museumCompletionState?: MuseumCompletionState | null;
   targetOutputPlannerState?: TargetOutputPlannerState | null;
+  questPlannerState?: QuestPlannerState | null;
+  questHistoryState?: QuestHistoryState | null;
   unknownItemEvidenceState?: UnknownItemEvidenceState | null;
   snapshotVelocityPreferences?: SnapshotVelocityPreferences | null;
   themePreference: AppTheme | null;
@@ -93,6 +105,8 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_mastery_race_counts_state'
   | 'invalid_museum_completion_state'
   | 'invalid_target_output_planner_state'
+  | 'invalid_quest_planner_state'
+  | 'invalid_quest_history_state'
   | 'invalid_unknown_item_evidence_state'
   | 'invalid_snapshot_velocity_preferences';
 
@@ -625,6 +639,8 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
           masteryRaceCountsState: input.masteryRaceCountsState ?? null,
           museumCompletionState: input.museumCompletionState ?? null,
           targetOutputPlannerState: input.targetOutputPlannerState ?? null,
+          questPlannerState: input.questPlannerState ?? null,
+          questHistoryState: input.questHistoryState ?? null,
           unknownItemEvidenceState: input.unknownItemEvidenceState ?? null,
           snapshotVelocityPreferences: input.snapshotVelocityPreferences ?? null,
           themePreference: input.themePreference,
@@ -851,6 +867,32 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       ok: false,
       code: 'invalid_target_output_planner_state',
       message: 'The backup file contains malformed target-output planner state.',
+    };
+  }
+
+  const questPlannerState = value.state.preferences.questPlannerState;
+  if (
+    questPlannerState !== undefined &&
+    questPlannerState !== null &&
+    !isValidQuestPlannerState(questPlannerState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_quest_planner_state',
+      message: 'The backup file contains malformed quest planner state.',
+    };
+  }
+
+  const questHistoryState = value.state.preferences.questHistoryState;
+  if (
+    questHistoryState !== undefined &&
+    questHistoryState !== null &&
+    !isValidQuestHistoryState(questHistoryState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_quest_history_state',
+      message: 'The backup file contains malformed quest history state.',
     };
   }
 
