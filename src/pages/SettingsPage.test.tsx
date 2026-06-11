@@ -11,6 +11,10 @@ import {
   DROP_RATE_ACQUISITION_SETTINGS_STORAGE_KEY,
   loadDropRateAcquisitionSettings,
 } from '../lib/dropRateAcquisitionSettings';
+import {
+  SOURCE_RATE_ASSUMPTIONS_STORAGE_KEY,
+  loadSourceRateAssumptionsState,
+} from '../lib/sourceRateAssumptions';
 
 const {
   mockExportCurrentAppBackupFile,
@@ -162,6 +166,7 @@ describe('SettingsPage', () => {
     });
     window.localStorage.removeItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY);
     window.localStorage.removeItem(DROP_RATE_ACQUISITION_SETTINGS_STORAGE_KEY);
+    window.localStorage.removeItem(SOURCE_RATE_ASSUMPTIONS_STORAGE_KEY);
   });
 
   it('exports the full local backup file from the settings page', async () => {
@@ -215,6 +220,7 @@ describe('SettingsPage', () => {
     expect(await screen.findByText('backup.json')).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: 'Confirm Restore Backup' })).toBeInTheDocument();
     expect(screen.getByText('Acquisition planner')).toBeInTheDocument();
+    expect(screen.getByText('Source rates')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Confirm Restore Backup' }));
 
@@ -295,6 +301,64 @@ describe('SettingsPage', () => {
         farming: 'harvest_alls',
       },
     });
+  });
+
+  it('saves shared daily source rate assumptions', async () => {
+    const user = userEvent.setup();
+
+    render(<SettingsPage />);
+
+    await user.clear(screen.getByLabelText('Arnold Palmers/day'));
+    await user.type(screen.getByLabelText('Arnold Palmers/day'), '200');
+    await user.clear(screen.getByLabelText('Large Nets/day'));
+    await user.type(screen.getByLabelText('Large Nets/day'), '2000');
+    await user.click(screen.getByRole('button', { name: 'Save Source Rates' }));
+
+    expect(await screen.findByText('Saved source rate assumptions.')).toBeInTheDocument();
+    expect(loadSourceRateAssumptionsState().rates).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          sourceKey: 'arnold_palmers',
+          dailyQuantity: 200,
+        }),
+        expect.objectContaining({
+          sourceKey: 'large_nets',
+          dailyQuantity: 2000,
+        }),
+      ]),
+    );
+  });
+
+  it('saves and removes custom daily source rate assumptions', async () => {
+    const user = userEvent.setup();
+
+    render(<SettingsPage />);
+
+    await user.click(screen.getByText('Add custom source rate'));
+    await user.type(screen.getByLabelText('Source name'), 'Salt Rock');
+    await user.type(screen.getByLabelText('Unit label'), 'Salt Rock/day');
+    await user.clear(screen.getByLabelText('Daily quantity'));
+    await user.type(screen.getByLabelText('Daily quantity'), '44');
+    await user.click(screen.getByRole('button', { name: 'Save Custom Source Rate' }));
+
+    expect(await screen.findByText('Saved Salt Rock as a custom daily source rate.')).toBeInTheDocument();
+    expect(loadSourceRateAssumptionsState().rates).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          sourceKey: 'salt_rock',
+          label: 'Salt Rock',
+          dailyQuantity: 44,
+          custom: true,
+        }),
+      ]),
+    );
+
+    const customRateRow = screen.getByText('Salt Rock').closest('tr');
+    expect(customRateRow).not.toBeNull();
+
+    await user.click(within(customRateRow as HTMLElement).getByRole('button', { name: 'Remove' }));
+
+    expect(loadSourceRateAssumptionsState().rates.find((rate) => rate.sourceKey === 'salt_rock')).toBeUndefined();
   });
 
   it('saves and imports current inventory as its own available-supply source', async () => {

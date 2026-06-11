@@ -15,6 +15,7 @@ const {
   mockLoadQuestPlannerState,
   mockLoadQuestHistoryState,
   mockLoadSnapshotVelocityPreferences,
+  mockLoadSourceRateAssumptionsState,
   mockReadStoredAppTheme,
 } = vi.hoisted(() => ({
   mockListSnapshots: vi.fn<() => Promise<MasterySnapshot[]>>(),
@@ -29,6 +30,7 @@ const {
   mockLoadQuestPlannerState: vi.fn(),
   mockLoadQuestHistoryState: vi.fn(),
   mockLoadSnapshotVelocityPreferences: vi.fn(),
+  mockLoadSourceRateAssumptionsState: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
 }));
 
@@ -78,6 +80,10 @@ vi.mock('./questHistoryState', () => ({
 
 vi.mock('./snapshotVelocityPreferences', () => ({
   loadSnapshotVelocityPreferences: mockLoadSnapshotVelocityPreferences,
+}));
+
+vi.mock('./sourceRateAssumptions', () => ({
+  loadSourceRateAssumptionsState: mockLoadSourceRateAssumptionsState,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -336,6 +342,21 @@ function createSnapshotVelocityPreferencesFixture() {
   };
 }
 
+function createSourceRateAssumptionsFixture() {
+  return {
+    schemaVersion: 1 as const,
+    rates: [
+      {
+        sourceKey: 'arnold_palmers',
+        label: 'Arnold Palmers',
+        unitLabel: 'Arnold Palmers/day',
+        dailyQuantity: 200,
+        custom: false,
+      },
+    ],
+  };
+}
+
 function createQuestPlannerStateFixture() {
   return {
     schemaVersion: 1 as const,
@@ -398,6 +419,7 @@ describe('appBackupExport', () => {
     mockLoadQuestPlannerState.mockReset();
     mockLoadQuestHistoryState.mockReset();
     mockLoadSnapshotVelocityPreferences.mockReset();
+    mockLoadSourceRateAssumptionsState.mockReset();
     mockReadStoredAppTheme.mockReset();
   });
 
@@ -425,6 +447,7 @@ describe('appBackupExport', () => {
     const questPlannerState = createQuestPlannerStateFixture();
     const questHistoryState = createQuestHistoryStateFixture();
     const snapshotVelocityPreferences = createSnapshotVelocityPreferencesFixture();
+    const sourceRateAssumptionsState = createSourceRateAssumptionsFixture();
 
     mockListSnapshots.mockResolvedValue(snapshots);
     mockLoadCraftingModifierState.mockReturnValue(craftingModifierState);
@@ -438,6 +461,7 @@ describe('appBackupExport', () => {
     mockLoadQuestPlannerState.mockReturnValue(questPlannerState);
     mockLoadQuestHistoryState.mockReturnValue(questHistoryState);
     mockLoadSnapshotVelocityPreferences.mockReturnValue(snapshotVelocityPreferences);
+    mockLoadSourceRateAssumptionsState.mockReturnValue(sourceRateAssumptionsState);
     mockReadStoredAppTheme.mockReturnValue('dark');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -461,6 +485,7 @@ describe('appBackupExport', () => {
     expect(payload.state.preferences.questPlannerState).toEqual(questPlannerState);
     expect(payload.state.preferences.questHistoryState).toEqual(questHistoryState);
     expect(payload.state.preferences.snapshotVelocityPreferences).toEqual(snapshotVelocityPreferences);
+    expect(payload.state.preferences.sourceRateAssumptionsState).toEqual(sourceRateAssumptionsState);
     expect(payload.state.preferences.themePreference).toBe('dark');
   });
 
@@ -477,6 +502,7 @@ describe('appBackupExport', () => {
     mockLoadQuestPlannerState.mockReturnValue(createQuestPlannerStateFixture());
     mockLoadQuestHistoryState.mockReturnValue(createQuestHistoryStateFixture());
     mockLoadSnapshotVelocityPreferences.mockReturnValue(createSnapshotVelocityPreferencesFixture());
+    mockLoadSourceRateAssumptionsState.mockReturnValue(createSourceRateAssumptionsFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -511,6 +537,7 @@ describe('appBackupExport', () => {
     mockLoadQuestPlannerState.mockReturnValue(createQuestPlannerStateFixture());
     mockLoadQuestHistoryState.mockReturnValue(createQuestHistoryStateFixture());
     mockLoadSnapshotVelocityPreferences.mockReturnValue(createSnapshotVelocityPreferencesFixture());
+    mockLoadSourceRateAssumptionsState.mockReturnValue(createSourceRateAssumptionsFixture());
     mockReadStoredAppTheme.mockReturnValue(null);
 
     Object.defineProperty(URL, 'createObjectURL', {

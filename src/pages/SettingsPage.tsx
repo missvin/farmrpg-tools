@@ -35,6 +35,12 @@ import {
   loadPetSourceReference,
   type PetSourceReferenceData,
 } from '../lib/loadPetSourceReference';
+import {
+  loadSourceRateAssumptionsState,
+  removeCustomSourceRateAssumption,
+  saveSourceRateAssumptionsState,
+  upsertSourceRateAssumption,
+} from '../lib/sourceRateAssumptions';
 import { useImportReferenceLookup } from '../lib/useImportReferenceLookup';
 
 function formatForecastQuantity(value: number): string {
@@ -51,6 +57,12 @@ export function SettingsPage() {
   const [dropRateSettings, setDropRateSettings] = useState(() => loadDropRateAcquisitionSettings());
   const [dropRateSettingsMessage, setDropRateSettingsMessage] = useState<string | null>(null);
   const [dropRateSettingsError, setDropRateSettingsError] = useState<string | null>(null);
+  const [sourceRateAssumptions, setSourceRateAssumptions] = useState(() => loadSourceRateAssumptionsState());
+  const [sourceRateMessage, setSourceRateMessage] = useState<string | null>(null);
+  const [sourceRateError, setSourceRateError] = useState<string | null>(null);
+  const [customSourceRateLabel, setCustomSourceRateLabel] = useState('');
+  const [customSourceRateUnitLabel, setCustomSourceRateUnitLabel] = useState('');
+  const [customSourceRateDailyQuantity, setCustomSourceRateDailyQuantity] = useState('0');
   const [ownedItemName, setOwnedItemName] = useState('');
   const [ownedItemCount, setOwnedItemCount] = useState('1');
   const [ownedItemSourceCategory, setOwnedItemSourceCategory] =
@@ -327,6 +339,93 @@ export function SettingsPage() {
     }
   }
 
+  function handleUpdateSourceRate(sourceKey: string, label: string, unitLabel: string, rawValue: string): void {
+    const dailyQuantity = Number(rawValue);
+
+    if (!Number.isFinite(dailyQuantity) || dailyQuantity < 0) {
+      setSourceRateMessage(null);
+      setSourceRateError('Enter non-negative daily source rates.');
+      return;
+    }
+
+    setSourceRateError(null);
+    setSourceRateAssumptions((currentState) => upsertSourceRateAssumption(currentState, {
+      sourceKey,
+      label,
+      unitLabel,
+      dailyQuantity,
+    }));
+  }
+
+  function handleSaveSourceRateAssumptions(): void {
+    try {
+      const savedState = saveSourceRateAssumptionsState(sourceRateAssumptions);
+
+      setSourceRateAssumptions(savedState);
+      setSourceRateError(null);
+      setSourceRateMessage('Saved source rate assumptions.');
+    } catch (error) {
+      setSourceRateMessage(null);
+      setSourceRateError(
+        error instanceof Error ? error.message : 'Unable to save source rate assumptions.',
+      );
+    }
+  }
+
+  function handleSaveCustomSourceRate(): void {
+    const dailyQuantity = Number(customSourceRateDailyQuantity);
+
+    if (customSourceRateLabel.trim().length === 0) {
+      setSourceRateMessage(null);
+      setSourceRateError('Enter a source name before saving a custom rate.');
+      return;
+    }
+
+    if (!Number.isFinite(dailyQuantity) || dailyQuantity < 0) {
+      setSourceRateMessage(null);
+      setSourceRateError('Enter a non-negative custom daily quantity.');
+      return;
+    }
+
+    try {
+      const nextState = upsertSourceRateAssumption(sourceRateAssumptions, {
+        label: customSourceRateLabel,
+        unitLabel: customSourceRateUnitLabel,
+        dailyQuantity,
+        custom: true,
+      });
+      const savedState = saveSourceRateAssumptionsState(nextState);
+
+      setSourceRateAssumptions(savedState);
+      setSourceRateError(null);
+      setSourceRateMessage(`Saved ${customSourceRateLabel.trim()} as a custom daily source rate.`);
+      setCustomSourceRateLabel('');
+      setCustomSourceRateUnitLabel('');
+      setCustomSourceRateDailyQuantity('0');
+    } catch (error) {
+      setSourceRateMessage(null);
+      setSourceRateError(
+        error instanceof Error ? error.message : 'Unable to save the custom source rate.',
+      );
+    }
+  }
+
+  function handleRemoveCustomSourceRate(sourceKey: string): void {
+    try {
+      const nextState = removeCustomSourceRateAssumption(sourceRateAssumptions, sourceKey);
+      const savedState = saveSourceRateAssumptionsState(nextState);
+
+      setSourceRateAssumptions(savedState);
+      setSourceRateError(null);
+      setSourceRateMessage('Removed custom source rate.');
+    } catch (error) {
+      setSourceRateMessage(null);
+      setSourceRateError(
+        error instanceof Error ? error.message : 'Unable to remove the custom source rate.',
+      );
+    }
+  }
+
   async function handleExportBackup(): Promise<void> {
     setIsExporting(true);
     setExportMessage(null);
@@ -399,7 +498,8 @@ export function SettingsPage() {
           <p className="supporting-text">
             Export one versioned backup file for this local profile. The backup currently includes snapshot history,
             crafting and planner modifier settings, acquisition planner inputs, Pumpkin Juice planning, personal
-            mastery goals, race-count context, Target Planner state, and your saved theme preference.
+            mastery goals, race-count context, Target Planner state, daily source rates, and your saved theme
+            preference.
           </p>
         </div>
 
@@ -674,6 +774,150 @@ export function SettingsPage() {
 
         {dropRateSettingsMessage ? <p className="status-message status-message--success">{dropRateSettingsMessage}</p> : null}
         {dropRateSettingsError ? <p className="status-message status-message--error">{dropRateSettingsError}</p> : null}
+      </section>
+
+      <section className="page-card page-stack" aria-labelledby="settings-source-rate-title">
+        <div>
+          <h2 id="settings-source-rate-title">Daily Source Rates</h2>
+          <p className="supporting-text">
+            Save daily source budgets for prep-time planning. Future quest burden views can reuse these rates to turn
+            item demand into days.
+          </p>
+        </div>
+
+        <div className="summary-grid">
+          {sourceRateAssumptions.rates.filter((rate) => !rate.custom).map((rate) => (
+            <div key={rate.sourceKey} className="page-stack page-stack--tight">
+              <label className="field-label" htmlFor={`source-rate-${rate.sourceKey}`}>
+                {rate.unitLabel}
+              </label>
+              <input
+                id={`source-rate-${rate.sourceKey}`}
+                className="text-input"
+                type="number"
+                min="0"
+                step="any"
+                value={rate.dailyQuantity}
+                onChange={(event) => {
+                  handleUpdateSourceRate(
+                    rate.sourceKey,
+                    rate.label,
+                    rate.unitLabel,
+                    event.target.value,
+                  );
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="button-row">
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={handleSaveSourceRateAssumptions}
+          >
+            Save Source Rates
+          </button>
+        </div>
+
+        <details>
+          <summary>Add custom source rate</summary>
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="custom-source-rate-label">
+              Source name
+            </label>
+            <input
+              id="custom-source-rate-label"
+              className="text-input"
+              type="text"
+              value={customSourceRateLabel}
+              onChange={(event) => {
+                setCustomSourceRateLabel(event.target.value);
+              }}
+              placeholder="Salt Rock"
+            />
+          </div>
+
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="custom-source-rate-unit">
+              Unit label
+            </label>
+            <input
+              id="custom-source-rate-unit"
+              className="text-input"
+              type="text"
+              value={customSourceRateUnitLabel}
+              onChange={(event) => {
+                setCustomSourceRateUnitLabel(event.target.value);
+              }}
+              placeholder="Salt Rock/day"
+            />
+          </div>
+
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="custom-source-rate-daily-quantity">
+              Daily quantity
+            </label>
+            <input
+              id="custom-source-rate-daily-quantity"
+              className="text-input"
+              type="number"
+              min="0"
+              step="any"
+              value={customSourceRateDailyQuantity}
+              onChange={(event) => {
+                setCustomSourceRateDailyQuantity(event.target.value);
+              }}
+            />
+          </div>
+
+          <div className="button-row">
+            <button
+              type="button"
+              className="button"
+              onClick={handleSaveCustomSourceRate}
+            >
+              Save Custom Source Rate
+            </button>
+          </div>
+        </details>
+
+        {sourceRateAssumptions.rates.some((rate) => rate.custom) ? (
+          <table className="summary-table">
+            <thead>
+              <tr>
+                <th scope="col">Source</th>
+                <th scope="col">Rate</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sourceRateAssumptions.rates.filter((rate) => rate.custom).map((rate) => (
+                <tr key={rate.sourceKey}>
+                  <td>{rate.label}</td>
+                  <td>{`${rate.dailyQuantity.toLocaleString()} ${rate.unitLabel}`}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="button"
+                      onClick={() => {
+                        handleRemoveCustomSourceRate(rate.sourceKey);
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="supporting-text">No custom source rates saved yet.</p>
+        )}
+
+        {sourceRateMessage ? <p className="status-message status-message--success">{sourceRateMessage}</p> : null}
+        {sourceRateError ? <p className="status-message status-message--error">{sourceRateError}</p> : null}
       </section>
 
       <section className="page-card page-stack" aria-labelledby="settings-owned-stockpiles-title">
@@ -1127,6 +1371,10 @@ export function SettingsPage() {
               <div className="summary-grid__item">
                 <dt>History chart preferences</dt>
                 <dd>{restorePreview.payload.state.preferences.snapshotVelocityPreferences ? 'Included' : 'Not included'}</dd>
+              </div>
+              <div className="summary-grid__item">
+                <dt>Source rates</dt>
+                <dd>{restorePreview.payload.state.preferences.sourceRateAssumptionsState ? 'Included' : 'Not included'}</dd>
               </div>
             </dl>
 

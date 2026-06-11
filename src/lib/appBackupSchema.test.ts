@@ -4,6 +4,7 @@ import { createDefaultAcquisitionPlannerInputState } from './acquisitionPlannerS
 import { createDefaultCraftingModifierState } from './craftingModifierState';
 import { createDefaultDropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import { createDefaultPumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
+import { createDefaultSourceRateAssumptionsState } from './sourceRateAssumptions';
 import { createDefaultTargetOutputPlannerState } from './targetOutputPlannerState';
 import {
   APP_BACKUP_PAYLOAD_KIND,
@@ -195,6 +196,18 @@ describe('appBackupSchema', () => {
       rangeMode: 'recent' as const,
       showMegaMasteredItems: true,
     };
+    const sourceRateAssumptionsState = {
+      ...createDefaultSourceRateAssumptionsState(),
+      rates: [
+        {
+          sourceKey: 'arnold_palmers',
+          label: 'Arnold Palmers',
+          unitLabel: 'Arnold Palmers/day',
+          dailyQuantity: 200,
+          custom: false,
+        },
+      ],
+    };
 
     const payload = createAppBackupPayload({
       appVersion: '1.1.0',
@@ -211,6 +224,7 @@ describe('appBackupSchema', () => {
       questPlannerState,
       questHistoryState,
       snapshotVelocityPreferences,
+      sourceRateAssumptionsState,
       themePreference: 'dark',
     });
 
@@ -236,6 +250,7 @@ describe('appBackupSchema', () => {
           questHistoryState,
           unknownItemEvidenceState: null,
           snapshotVelocityPreferences,
+          sourceRateAssumptionsState,
           themePreference: 'dark',
         },
       },
@@ -694,6 +709,41 @@ describe('appBackupSchema', () => {
       ok: false,
       code: 'invalid_snapshot_velocity_preferences',
       message: 'The backup file contains malformed snapshot velocity chart preferences.',
+    });
+
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: APP_BACKUP_SCHEMA_VERSION,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [],
+          preferences: {
+            craftingModifierState: null,
+            acquisitionPlannerState: null,
+            sourceRateAssumptionsState: {
+              schemaVersion: 1,
+              rates: [
+                {
+                  sourceKey: 'arnold_palmers',
+                  label: 'Arnold Palmers',
+                  unitLabel: 'Arnold Palmers/day',
+                  dailyQuantity: -1,
+                  custom: false,
+                },
+              ],
+            },
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'invalid_source_rate_assumptions_state',
+      message: 'The backup file contains malformed source-rate assumptions.',
     });
   });
 });

@@ -49,6 +49,11 @@ import {
   loadSnapshotVelocityPreferences,
   saveSnapshotVelocityPreferences,
 } from './snapshotVelocityPreferences';
+import {
+  clearSourceRateAssumptionsState,
+  loadSourceRateAssumptionsState,
+  saveSourceRateAssumptionsState,
+} from './sourceRateAssumptions';
 import { listSnapshots, replaceSnapshots } from './storage/masterySnapshots';
 import {
   clearTargetOutputPlannerState,
@@ -102,6 +107,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   const currentQuestHistoryState = loadQuestHistoryState();
   const currentUnknownItemEvidenceState = loadUnknownItemEvidenceState();
   const currentSnapshotVelocityPreferences = loadSnapshotVelocityPreferences();
+  const currentSourceRateAssumptionsState = loadSourceRateAssumptionsState();
   const currentThemePreference = readStoredAppTheme();
 
   try {
@@ -179,6 +185,12 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       clearSnapshotVelocityPreferences();
     }
 
+    if (payload.state.preferences.sourceRateAssumptionsState) {
+      saveSourceRateAssumptionsState(payload.state.preferences.sourceRateAssumptionsState);
+    } else {
+      clearSourceRateAssumptionsState();
+    }
+
     if (payload.state.preferences.themePreference) {
       persistAppTheme(payload.state.preferences.themePreference);
     } else {
@@ -198,6 +210,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     saveQuestHistoryState(currentQuestHistoryState);
     saveUnknownItemEvidenceState(currentUnknownItemEvidenceState);
     saveSnapshotVelocityPreferences(currentSnapshotVelocityPreferences);
+    saveSourceRateAssumptionsState(currentSourceRateAssumptionsState);
 
     if (currentThemePreference) {
       persistAppTheme(currentThemePreference);

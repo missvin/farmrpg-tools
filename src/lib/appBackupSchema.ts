@@ -14,6 +14,10 @@ import {
   type QuestPlannerState,
 } from './questPlannerState';
 import type { SnapshotVelocityPreferences } from './snapshotVelocityPreferences';
+import {
+  isValidSourceRateAssumptionsState,
+  type SourceRateAssumptionsState,
+} from './sourceRateAssumptions';
 import type { AppTheme } from './themePreference';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 import type { TargetOutputPlannerState } from './targetOutputPlannerState';
@@ -45,6 +49,7 @@ export type AppBackupStateV1 = {
     questHistoryState?: QuestHistoryState | null;
     unknownItemEvidenceState?: UnknownItemEvidenceState | null;
     snapshotVelocityPreferences?: SnapshotVelocityPreferences | null;
+    sourceRateAssumptionsState?: SourceRateAssumptionsState | null;
     themePreference: AppTheme | null;
   };
 };
@@ -75,6 +80,7 @@ export type CreateAppBackupPayloadInput = {
   questHistoryState?: QuestHistoryState | null;
   unknownItemEvidenceState?: UnknownItemEvidenceState | null;
   snapshotVelocityPreferences?: SnapshotVelocityPreferences | null;
+  sourceRateAssumptionsState?: SourceRateAssumptionsState | null;
   themePreference: AppTheme | null;
 };
 
@@ -108,7 +114,8 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_quest_planner_state'
   | 'invalid_quest_history_state'
   | 'invalid_unknown_item_evidence_state'
-  | 'invalid_snapshot_velocity_preferences';
+  | 'invalid_snapshot_velocity_preferences'
+  | 'invalid_source_rate_assumptions_state';
 
 export type AppBackupPayloadValidationResult =
   | { ok: true; payload: AppBackupPayloadV1 }
@@ -643,6 +650,7 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
           questHistoryState: input.questHistoryState ?? null,
           unknownItemEvidenceState: input.unknownItemEvidenceState ?? null,
           snapshotVelocityPreferences: input.snapshotVelocityPreferences ?? null,
+          sourceRateAssumptionsState: input.sourceRateAssumptionsState ?? null,
           themePreference: input.themePreference,
         },
       },
@@ -919,6 +927,19 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       ok: false,
       code: 'invalid_snapshot_velocity_preferences',
       message: 'The backup file contains malformed snapshot velocity chart preferences.',
+    };
+  }
+
+  const sourceRateAssumptionsState = value.state.preferences.sourceRateAssumptionsState;
+  if (
+    sourceRateAssumptionsState !== undefined &&
+    sourceRateAssumptionsState !== null &&
+    !isValidSourceRateAssumptionsState(sourceRateAssumptionsState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_source_rate_assumptions_state',
+      message: 'The backup file contains malformed source-rate assumptions.',
     };
   }
 

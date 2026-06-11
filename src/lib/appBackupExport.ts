@@ -11,6 +11,7 @@ import { loadPumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
 import { loadQuestHistoryState } from './questHistoryState';
 import { loadQuestPlannerState } from './questPlannerState';
 import { loadSnapshotVelocityPreferences } from './snapshotVelocityPreferences';
+import { loadSourceRateAssumptionsState } from './sourceRateAssumptions';
 import { listSnapshots } from './storage/masterySnapshots';
 import { loadTargetOutputPlannerState } from './targetOutputPlannerState';
 import { readStoredAppTheme } from './themePreference';
@@ -60,6 +61,7 @@ export async function buildCurrentAppBackupPayload(
     questHistoryState: loadQuestHistoryState(),
     unknownItemEvidenceState: loadUnknownItemEvidenceState(),
     snapshotVelocityPreferences: loadSnapshotVelocityPreferences(),
+    sourceRateAssumptionsState: loadSourceRateAssumptionsState(),
     themePreference: readStoredAppTheme(),
   });
 }
