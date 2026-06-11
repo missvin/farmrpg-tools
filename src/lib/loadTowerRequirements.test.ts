@@ -86,11 +86,12 @@ describe('parseTowerRequirementsCsv', () => {
     ).toThrow('Duplicate tower requirement slot detected for tower level 201 slot 1 in range 201-210.');
   });
 
-  it('includes the known 311-330 ranges in the canonical tower data file', () => {
+  it('includes the known 311-340 ranges in the canonical tower data file', () => {
     const csvText = readFileSync(resolve(process.cwd(), 'data/tower_requirements.csv'), 'utf8');
     const result = parseTowerRequirementsCsv(csvText);
     const rows311to320 = result.entries.filter((entry) => entry.towerLevel >= 311 && entry.towerLevel <= 320);
     const rows321to330 = result.entries.filter((entry) => entry.towerLevel >= 321 && entry.towerLevel <= 330);
+    const rows331to340 = result.entries.filter((entry) => entry.towerLevel >= 331 && entry.towerLevel <= 340);
     const byLevel = rows311to320.reduce<Record<number, string[]>>((accumulator, entry) => {
       accumulator[entry.towerLevel] = [...(accumulator[entry.towerLevel] ?? []), entry.itemName];
       return accumulator;
@@ -99,11 +100,17 @@ describe('parseTowerRequirementsCsv', () => {
       accumulator[entry.towerLevel] = [...(accumulator[entry.towerLevel] ?? []), entry.itemName];
       return accumulator;
     }, {});
+    const byLevel331to340 = rows331to340.reduce<Record<number, string[]>>((accumulator, entry) => {
+      accumulator[entry.towerLevel] = [...(accumulator[entry.towerLevel] ?? []), entry.itemName];
+      return accumulator;
+    }, {});
 
     expect(rows311to320).toHaveLength(22);
     expect(rows321to330).toHaveLength(22);
+    expect(rows331to340).toHaveLength(26);
     expect(Object.keys(byLevel).map(Number)).toEqual([311, 312, 313, 314, 315, 316, 317, 318, 319, 320]);
     expect(Object.keys(byLevel321to330).map(Number)).toEqual([321, 322, 323, 324, 325, 326, 327, 328, 329, 330]);
+    expect(Object.keys(byLevel331to340).map(Number)).toEqual([331, 332, 333, 334, 335, 336, 337, 338, 339, 340]);
     expect(byLevel[311]).toEqual(['Bamboo Chair', 'Barbed Wire']);
     expect(byLevel[312]).toEqual(['Yellow Scarf', 'Fire Ant Farm']);
     expect(byLevel[313]).toEqual(['Step Ladder', 'Orange Shirt']);
@@ -124,5 +131,15 @@ describe('parseTowerRequirementsCsv', () => {
     expect(byLevel321to330[328]).toEqual(['Wine', 'Sunflower']);
     expect(byLevel321to330[329]).toEqual(['Pair of Boots', 'Black Twine']);
     expect(byLevel321to330[330]).toEqual(['Red Diary', 'White Twine', 'Magus Hat']);
+    expect(byLevel331to340[331]).toEqual(['Runestone 04', 'Orange Twine']);
+    expect(byLevel331to340[332]).toEqual(['Kill Switch', 'Linked Lantern']);
+    expect(byLevel331to340[333]).toEqual(['Brown Cloak', 'Glowing Lantern']);
+    expect(byLevel331to340[334]).toEqual(['Grand Piano', 'Oak Table']);
+    expect(byLevel331to340[335]).toEqual(['Red Brick', 'Iced Tea', 'Leather Belt']);
+    expect(byLevel331to340[336]).toEqual(['Yellow Twine', 'Black Bag', 'Seaweed']);
+    expect(byLevel331to340[337]).toEqual(['White Scarf', 'Orange Dye', 'Purple Twine']);
+    expect(byLevel331to340[338]).toEqual(['Frost Shield', 'Mayonnaise', 'Orange Scarf']);
+    expect(byLevel331to340[339]).toEqual(['Black Purse', 'Fancy Violin', 'Brown Bag']);
+    expect(byLevel331to340[340]).toEqual(['White Purse', 'Yellow Dye', 'Purple Diary']);
   });
 });
