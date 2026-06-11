@@ -45,6 +45,7 @@ Then use targeted retrieval:
 Default behavior:
 
 - If the user asks generally to reconcile backlog/roadmap, inspect first, then make only small, justified planning updates.
+- Land completed planning updates by default with the repo-local `git codex-*` helper flow unless the user explicitly asks for audit-only, planning-only, propose-only, review-only, no-commit, or says not to push.
 - If the user asks audit-only, do not edit files.
 - If the user names rows or milestones, focus there and do not broaden unless needed to avoid a misleading result.
 
@@ -95,9 +96,22 @@ Return a concise readout with these sections:
 - `Changes made`: exact rows/files changed and why, if edits were made.
 - `Changes deliberately not made`: rows or sections left alone and why.
 - `Remaining mismatch / risk`: anything still unresolved.
-- `Final readout`: files changed, planning rows updated, verification, suggested commit command if not committing directly, field-note status, and next reasonable backlog item with a short justification.
+- `Final readout`: files changed, planning rows updated, verification, commit hash and branch/push status when landed, field-note status, and next reasonable backlog item with a short justification.
 
 Do not run app tests/lint/build unless product code was touched. For planning-only changes, validate with CSV import, targeted file inspection, and diffs.
+
+## Git And Landing
+
+Use `AGENTS.md` as the source of truth for the repo-local safe git workflow.
+
+- For reconcile runs that make edits, commit, merge, and push completed planning changes by default unless the user explicitly asks not to land them, asks for audit-only/review-only/propose-only/no-commit, or the work is not safe to land.
+- Use the `git codex-*` helpers described in `AGENTS.md` for branch, stage, commit, push, and merge work.
+- If the reconcile starts on `master`, create a short-lived `codex/...` task branch before staging so `git codex-merge` can land the work through the normal fast-forward path.
+- Stage exact planning/workflow files only. Do not sweep unrelated dirty files into a reconcile commit.
+- If unrelated files are dirty before reconcile edits, report them and choose a clear path: defer reconcile, isolate it in another worktree, land the existing work first, or explicitly include only related planning files.
+- If a helper fails, stop and report it instead of silently falling back to raw `git add`, `git commit`, `git push`, or `git merge`.
+- After landing work, verify the final branch/upstream status and report whether `master` is up to date with `origin/master`.
+- If work is not landed, say why and include the exact suggested commit command or helper action.
 
 Only include these sections when actually needed:
 
