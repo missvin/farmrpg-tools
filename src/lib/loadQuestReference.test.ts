@@ -3,7 +3,13 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { parseQuestSourceHintsCsv } from './loadQuestReference';
+import {
+  buildQuestReferenceData,
+  parseQuestCatalogCsv,
+  parseQuestRequirementsCsv,
+  parseQuestRewardsCsv,
+  parseQuestSourceHintsCsv,
+} from './loadQuestReference';
 
 describe('parseQuestSourceHintsCsv', () => {
   it('parses the checked-in local source-hint reference file', () => {
@@ -34,5 +40,49 @@ describe('parseQuestSourceHintsCsv', () => {
         preferredUnit: 'Wishing Well throw',
       }),
     ]));
+  });
+});
+
+describe('quest reference data', () => {
+  it('parses the expanded checked-in quest universe coverage', () => {
+    const referenceData = buildQuestReferenceData({
+      quests: parseQuestCatalogCsv(readFileSync(join(process.cwd(), 'data', 'quest_catalog.csv'), 'utf8')),
+      requirements: parseQuestRequirementsCsv(
+        readFileSync(join(process.cwd(), 'data', 'quest_requirements.csv'), 'utf8'),
+      ),
+      rewards: parseQuestRewardsCsv(readFileSync(join(process.cwd(), 'data', 'quest_rewards.csv'), 'utf8')),
+      sourceHints: [],
+    });
+
+    expect(referenceData.quests.length).toBeGreaterThan(2300);
+    expect(referenceData.requirementsByQuestKey['distant illusions xiii']).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        itemName: 'Frost Snapper Shell',
+        quantity: 15000,
+      }),
+      expect.objectContaining({
+        itemName: 'Frost Shield',
+        quantity: 15000,
+      }),
+    ]));
+    expect(referenceData.requirementsByQuestKey['problems start arising iii']).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        itemName: 'Lima Bean',
+        quantity: 1250,
+      }),
+    ]));
+    expect(referenceData.requirementsByQuestKey['pirate stealth arrival xxvii']).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        itemName: 'Spades',
+        quantity: 100,
+      }),
+    ]));
+    expect(referenceData.questsByKey['pirate stealth arrival xxvii']).toEqual(expect.objectContaining({
+      questlineAliases: expect.arrayContaining(['PSA', 'Pirates']),
+      nextQuestKeys: ['pirate stealth arrival xxviii'],
+    }));
+    expect(referenceData.questsByKey['pirates start arriving xvii']).toEqual(expect.objectContaining({
+      nextQuestKeys: ['the masonry requires attention xviii'],
+    }));
   });
 });

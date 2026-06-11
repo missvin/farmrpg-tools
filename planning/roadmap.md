@@ -100,7 +100,7 @@ Item pages should answer practical questions like how long Salt, Large Nets, Fro
 
 - Quest history, future-demand, and questline planning
   - completed-request parser, local quest-history snapshots, and first rarity/population analytics (`BL-271`, `BL-272`, `BL-273`, shipped)
-  - broader reviewed quest-universe coverage for reliable history matching (`BL-274`, planned)
+  - broader reviewed quest-universe coverage for reliable history matching (`BL-274`, shipped)
   - questline and seasonal progress model (`BL-275`, planned)
   - item-page future quest demand adapter for known unfinished requirements (`BL-276`, planned)
   - Quest History import review and dashboard UI (`BL-277`, planned)
