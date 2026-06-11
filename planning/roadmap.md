@@ -2,7 +2,7 @@
 
 This file is for milestone-level planning; use [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for the detailed backlog and dependencies.
 
-## Completed Through v2.0
+## Completed Through v2.2
 
 - `v1.5` established the core local tracker and Tower workflow
   - Tower requirements loading and read-only Tower view
@@ -79,10 +79,10 @@ You can choose one or more target outputs and see what is still required after p
 User-facing story:
 The target-output planner becomes easier to feed with real inventory data and easier to understand when plans become large or overlapping.
 
-## v2.2 (Planned)
+## v2.2 (Complete)
 
 - Item-level goal and source planning
-  - item profile goal calculator workstream (`BL-235`, in progress)
+  - item profile goal calculator workstream (`BL-235`, in progress as an umbrella; v2.2 calculator scope shipped)
   - reviewed openable contents as optional sources (`BL-236`, shipped)
   - recursive passive-source modeling for pets, Crunchy Omelette collection, and Tower-artifact recurring inputs (`BL-237`, shipped)
   - Wishing Well expected-value source modeling (`BL-238`, shipped)
@@ -95,6 +95,19 @@ The target-output planner becomes easier to feed with real inventory data and ea
 
 User-facing story:
 Item pages should answer practical questions like how long Salt, Large Nets, Frost Snapper Shells, or Spiked Shells will take when current inventory, stored pets, future pets, openables, Wishing Well throws, recursive recipes, and active gathering sources all matter.
+
+## v2.3 (Planned)
+
+- Quest history, future-demand, and questline planning
+  - completed-request parser, local quest-history snapshots, and first rarity/population analytics (`BL-271`, `BL-272`, `BL-273`, shipped)
+  - broader reviewed quest-universe coverage for reliable history matching (`BL-274`, planned)
+  - questline and seasonal progress model (`BL-275`, planned)
+  - item-page future quest demand adapter for known unfinished requirements (`BL-276`, planned)
+  - Quest History import review and dashboard UI (`BL-277`, planned)
+  - questline heatmap and bottleneck explorer (`BL-278`, planned)
+
+User-facing story:
+Completed quest exports become useful planning data: you can review imports, see rare completions and community movement, understand questline progress, and connect future quest requirements back to item pages and hoard-worthy bottlenecks.
 
 ## Later
 
