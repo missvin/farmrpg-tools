@@ -7,6 +7,11 @@ import {
   type CraftMaterialMatrixPathType,
   type CraftMaterialMatrixRow,
 } from '../lib/craftMaterialMatrix';
+import {
+  CRAFT_MATERIAL_MATRIX_FAMILIES,
+  classifyCraftMaterialMatrixRow,
+  type CraftMaterialMatrixFamilyId,
+} from '../lib/craftMaterialMatrixFamilies';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { loadRecipeGraph, type RecipeGraph } from '../lib/loadRecipeGraph';
 import { loadTowerRequirements, type TowerMasteryLevelNeeded, type TowerRequirementsData } from '../lib/loadTowerRequirements';
@@ -29,32 +34,69 @@ type SeedOption = {
 
 type TowerFilter = 'all' | 'tower' | 'unfinishedTower';
 type PathFilter = 'all' | CraftMaterialMatrixPathType;
+type FamilyFilter = 'all' | CraftMaterialMatrixFamilyId;
 type TargetFilter = 'all' | TowerMasteryLevelNeeded;
 type AchievedFilter = 'all' | 'achieved' | 'unachieved';
-type SortField = 'towerLevel' | 'remainingMastery' | 'seedQuantity' | 'itemName';
+type SortField = 'towerLevel' | 'remainingMastery' | 'seedQuantity' | 'family' | 'itemName';
 
-const PRESETS = [
+type DisplayMatrixRow = CraftMaterialMatrixRow & {
+  familyId: CraftMaterialMatrixFamilyId;
+  familyLabel: string;
+};
+
+const DYE_SEEDS = [
+  'Black Dye',
+  'Blue Dye',
+  'Brown Dye',
+  'Green Dye',
+  'Orange Dye',
+  'Purple Dye',
+  'Red Dye',
+  'White Dye',
+  'Yellow Dye',
+];
+
+const COLORED_TWINE_SEEDS = [
+  'Black Twine',
+  'Blue Twine',
+  'Brown Twine',
+  'Green Twine',
+  'Orange Twine',
+  'Purple Twine',
+  'Red Twine',
+  'White Twine',
+  'Yellow Twine',
+];
+
+const PRESETS: Array<{ label: string; seeds: string[] }> = [
   {
-    label: 'Dyes',
-    seeds: ['Black Dye', 'Blue Dye', 'Green Dye', 'Orange Dye', 'Purple Dye', 'Red Dye', 'White Dye', 'Yellow Dye'],
-  },
-  {
-    label: 'Colored twine',
+    label: 'Tower color crafts',
     seeds: [
+      ...DYE_SEEDS,
       'Twine',
-      'Black Twine',
-      'Blue Twine',
-      'Green Twine',
-      'Orange Twine',
-      'Purple Twine',
-      'Red Twine',
-      'White Twine',
-      'Yellow Twine',
+      ...COLORED_TWINE_SEEDS,
+      'Leather',
+      'Leather Bag',
+      'Black Bag',
+      'Brown Bag',
+      'White Bag',
+      'Coin Purse',
+      'Black Purse',
+      'White Purse',
+      'Brown Purse',
     ],
   },
   {
-    label: 'Bags and cloaks',
-    seeds: ['Leather', 'Leather Bag', 'Black Bag', 'Brown Bag', 'Coin Purse', 'Black Twine', 'Brown Dye'],
+    label: 'Dyes',
+    seeds: DYE_SEEDS,
+  },
+  {
+    label: 'Colored twine',
+    seeds: ['Twine', ...COLORED_TWINE_SEEDS],
+  },
+  {
+    label: 'Bags, purses, and cloaks',
+    seeds: ['Leather', 'Leather Bag', 'Black Bag', 'Brown Bag', 'White Bag', 'Coin Purse', 'Black Twine', 'Brown Dye'],
   },
   {
     label: 'Frequent materials',
@@ -121,10 +163,18 @@ function matchesAchievedFilter(row: CraftMaterialMatrixRow, achievedFilter: Achi
   return achievedFilter === 'achieved' ? allAchieved : !allAchieved;
 }
 
-function sortRows(rows: CraftMaterialMatrixRow[], sortField: SortField): CraftMaterialMatrixRow[] {
+function sortRows(rows: DisplayMatrixRow[], sortField: SortField): DisplayMatrixRow[] {
   return [...rows].sort((left, right) => {
     if (sortField === 'itemName') {
       return left.outputItemName.localeCompare(right.outputItemName) || left.seedItemName.localeCompare(right.seedItemName);
+    }
+
+    if (sortField === 'family') {
+      return (
+        left.familyLabel.localeCompare(right.familyLabel) ||
+        left.outputItemName.localeCompare(right.outputItemName) ||
+        left.seedItemName.localeCompare(right.seedItemName)
+      );
     }
 
     if (sortField === 'seedQuantity') {
@@ -145,6 +195,15 @@ function sortRows(rows: CraftMaterialMatrixRow[], sortField: SortField): CraftMa
 
 function describePathType(pathType: CraftMaterialMatrixPathType): string {
   return pathType === 'direct' ? 'Direct use' : 'One-step downstream';
+}
+
+function withFamily(row: CraftMaterialMatrixRow): DisplayMatrixRow {
+  const family = classifyCraftMaterialMatrixRow(row);
+  return {
+    ...row,
+    familyId: family.id,
+    familyLabel: family.label,
+  };
 }
 
 function TowerTargets({ row }: { row: CraftMaterialMatrixRow }) {
@@ -206,6 +265,7 @@ export function CraftMaterialMatrixPage() {
   const [searchText, setSearchText] = useState('');
   const [towerFilter, setTowerFilter] = useState<TowerFilter>('unfinishedTower');
   const [pathFilter, setPathFilter] = useState<PathFilter>('all');
+  const [familyFilter, setFamilyFilter] = useState<FamilyFilter>('all');
   const [targetFilter, setTargetFilter] = useState<TargetFilter>('all');
   const [achievedFilter, setAchievedFilter] = useState<AchievedFilter>('all');
   const [sortField, setSortField] = useState<SortField>('towerLevel');
@@ -297,7 +357,7 @@ export function CraftMaterialMatrixPage() {
   ]);
 
   const visibleRows = useMemo(() => {
-    const rows = matrixResult?.rows ?? [];
+    const rows = (matrixResult?.rows ?? []).map(withFamily);
 
     return sortRows(
       rows.filter((row) => {
@@ -313,11 +373,15 @@ export function CraftMaterialMatrixPage() {
           return false;
         }
 
+        if (familyFilter !== 'all' && row.familyId !== familyFilter) {
+          return false;
+        }
+
         return matchesTargetFilter(row, targetFilter) && matchesAchievedFilter(row, achievedFilter);
       }),
       sortField,
     );
-  }, [achievedFilter, matrixResult?.rows, pathFilter, sortField, targetFilter, towerFilter]);
+  }, [achievedFilter, familyFilter, matrixResult?.rows, pathFilter, sortField, targetFilter, towerFilter]);
 
   function addSeed(canonicalKey: string): void {
     if (!canonicalKey || selectedSeedKeys.includes(canonicalKey)) {
@@ -470,6 +534,17 @@ export function CraftMaterialMatrixPage() {
             </select>
           </label>
           <label>
+            Family
+            <select value={familyFilter} onChange={(event) => setFamilyFilter(event.target.value as FamilyFilter)}>
+              <option value="all">All families</option>
+              {CRAFT_MATERIAL_MATRIX_FAMILIES.map((family) => (
+                <option key={family.id} value={family.id}>
+                  {family.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
             Target
             <select value={targetFilter} onChange={(event) => setTargetFilter(event.target.value as TargetFilter)}>
               <option value="all">M, GM, and MM</option>
@@ -492,6 +567,7 @@ export function CraftMaterialMatrixPage() {
               <option value="towerLevel">Next Tower level</option>
               <option value="remainingMastery">Remaining mastery</option>
               <option value="seedQuantity">Seed quantity</option>
+              <option value="family">Family</option>
               <option value="itemName">Item name</option>
             </select>
           </label>
@@ -527,6 +603,7 @@ export function CraftMaterialMatrixPage() {
                   iconSrc={getIconSrc(row.outputCanonicalKey)}
                 />
                 <div className="material-matrix__row-meta">
+                  <span>{row.familyLabel}</span>
                   <span>{describePathType(row.pathType)}</span>
                   <span>{row.recipeType}</span>
                   <span>{formatAmount(row.consumedSeedQuantity)} {row.seedItemName} per output</span>

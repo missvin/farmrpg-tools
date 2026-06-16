@@ -174,9 +174,11 @@ describe('CraftMaterialMatrixPage', () => {
     await screen.findByRole('heading', { name: 'Craft Material Matrix' });
 
     expect(await screen.findByRole('link', { name: 'Red Shirt' })).toHaveAttribute('href', '/items/red%20shirt');
-    expect(screen.getByRole('link', { name: 'Red Cloak' })).toHaveAttribute('href', '/items/red%20cloak');
+    expect(screen.getAllByRole('link', { name: 'Red Cloak' })[0]).toHaveAttribute('href', '/items/red%20cloak');
     expect(screen.getByText('GM L120 · 5,000 left')).toBeInTheDocument();
-    expect(screen.getByText('MM L330 · 100,000 left')).toBeInTheDocument();
+    expect(screen.getAllByText('MM L330 · 100,000 left')).toHaveLength(2);
+    expect(screen.getAllByText('Shirts').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Cloaks').length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Red Dye x2 -> Red Shirt/)).toHaveLength(2);
     expect(screen.getByText(/Red Shirt x1 -> Red Cloak/)).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Rope' })).not.toBeInTheDocument();
@@ -203,5 +205,22 @@ describe('CraftMaterialMatrixPage', () => {
     expect(row).toBeTruthy();
     expect(within(row as HTMLElement).getByText('No Tower target')).toBeInTheDocument();
     expect(within(row as HTMLElement).getByText(/Twine x4 -> Rope/)).toBeInTheDocument();
+  });
+
+  it('filters Tower color crafts by family', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <CraftMaterialMatrixPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole('heading', { name: 'Craft Material Matrix' });
+
+    await user.selectOptions(screen.getByLabelText('Family'), 'cloak');
+
+    expect(screen.queryByRole('link', { name: 'Red Shirt' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'Red Cloak' })).toHaveLength(2);
   });
 });
