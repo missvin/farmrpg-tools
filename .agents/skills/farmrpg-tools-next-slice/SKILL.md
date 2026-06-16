@@ -28,6 +28,23 @@ Then keep context targeted:
 - Read additional planning or spec docs only when the selected item needs them.
 - Use `planning/positioning.md` only as a secondary tie-breaker when multiple backlog options are otherwise reasonable.
 
+## Low-Usage Defaults
+
+Default to low-usage implementation. Implement only the selected backlog row or approved selected path item; do not expand into adjacent cleanup unless approved.
+
+- Read only the minimum context needed: selected backlog row, direct dependency rows, files being edited, and directly relevant tests.
+- Do not inspect `dist/`, `generated/`, `probe-output/`, `node_modules/`, large CSV/JSON files, cache artifacts, generated manifests, or old probe outputs unless explicitly needed and approved.
+- Use metadata, file names, headers, row counts, and targeted searches instead of opening full data or generated files.
+- Before broad investigation, repo-wide searches, generated/cache inspection, large-file reads, subagent fan-out, full build, full test suite, broad lint, package installs, or broad validation, explain why it is necessary and ask for approval unless repo policy clearly requires it for the touched files.
+- If the task starts expanding beyond the selected row or approved path item, stop and report options instead of continuing.
+
+Known failing command guardrail:
+
+- Do not repeatedly try command patterns that have already failed in the session.
+- If a cheap metadata/read-only command fails with a known sandbox/environment error such as `CryptUnprotectData failed`, stop and report the failure instead of retrying multiple variants.
+- Before rerunning with escalation or an alternate command, explain why the rerun is necessary and ask for approval unless the user already explicitly authorized it.
+- Prefer direct reads of small known files over broad shell commands, and prefer targeted checks over recursive commands.
+
 ## Slice Selection
 
 Choose one backlog row from `planning/backlog.csv` using the repo's current schema: `backlog_id`, `parent_id`, `title`, `type`, `status`, `priority`, `effort`, `area`, `dependencies`, `target_version`, and `notes`.
@@ -54,7 +71,7 @@ Backlog-first implementation gate:
 - If the selected row was just created during the same turn, pause after the backlog edit long enough for the user to redirect before starting product-code changes.
 - Do not start implementation from an unbacklogged plan, even when the user provides a detailed product plan.
 - If dependency validity, artifact sufficiency, claimed shipped status, or verification trust is undermined during the slice, stop forward implementation and follow `planning/failure-recovery-protocol.md`.
-- If using subagents for parallel review or implementation support, follow `planning/subagent-review-workflow.md`: keep assignments bounded, keep write scopes disjoint, synthesize findings in the lead thread, and close or archive completed subagents after useful output is preserved.
+- Ask for approval before using subagents for parallel review or implementation support. If approved, follow `planning/subagent-review-workflow.md`: keep assignments bounded, keep write scopes disjoint, synthesize findings in the lead thread, and close or archive completed subagents after useful output is preserved.
 
 Proceed unless the user pauses, redirects, or asked for planning-only/review-only.
 
@@ -71,6 +88,7 @@ If the user provides a named path, screenshot/list of path items, or ordered bac
 - Update `planning/backlog.csv` status and notes as each row advances or completes.
 - Run proportional verification after each meaningful slice, or at clearly justified checkpoints when a path consists of several small tightly related rows.
 - Keep readouts clear about which path item or items were completed and which remain.
+- Do not fold adjacent cleanup or opportunistic refactors into a path item unless the user approves the broader scope.
 
 If the provided path includes an item blocked by unshipped dependencies outside the path, explain the blocker and pause unless the dependency is already included and can be implemented first.
 
@@ -112,12 +130,14 @@ Update planning files only when appropriate:
 
 ## Verification
 
-Run checks proportional to the files touched:
+Use the lowest sufficient validation tier for the files touched:
 
-- Behavior changes: relevant `npm.cmd run test` target, or `npm.cmd run test` when no narrower target exists.
-- Code changes: `npm.cmd run lint`.
-- UI/runtime changes: `npm.cmd run build`.
-- Planning/docs/skill-only changes: validate the changed artifact when tooling exists; app tests/lint/build are not required unless product code changed.
+- Tier 0: docs/planning/skill-only changes. Validate the changed artifact when cheap tooling exists; app tests/lint/build are not required unless product code changed.
+- Tier 1: focused helper/unit tests for changed business logic, parsers, storage helpers, or adapters.
+- Tier 2: targeted domain/app tests for changed user flows, import/export behavior, routing, or page behavior.
+- Tier 3: full build, full test suite, or broad lint only with explicit approval or clear repo-policy necessity for the touched files.
+
+Build should not run by default for docs, planning, data-only, or test-only changes. If skipping lint/build, report why and what residual risk remains.
 
 Do not claim success without saying what was run or why a check was skipped.
 

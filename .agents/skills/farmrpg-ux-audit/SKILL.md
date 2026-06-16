@@ -33,6 +33,24 @@ Stay audit-first and implementation-light:
 - Avoid backlog spam.
 - Do not over-penalize useful density. Dense planning UI can be good if it is legible, scannable, and trustworthy.
 
+## Low-Usage Defaults
+
+Default to narrow audit mode: one page, one flow, one screenshot, or one user-stated concern. Do not inspect the whole app unless the user explicitly approves a whole-app audit.
+
+- Read only the minimum context needed for the audit scope: named pages, directly related components/copy, relevant screenshots, and any user-provided evidence.
+- Do not inspect `dist/`, `generated/`, `probe-output/`, `node_modules/`, large CSV/JSON files, cache artifacts, generated manifests, or old probe outputs unless explicitly needed and approved.
+- Use metadata, file names, headers, row counts, and targeted searches instead of opening full data or generated files.
+- Produce findings, prioritization, and candidate backlog recommendations; do not implement fixes unless the user explicitly asks after the audit.
+- Before broad investigation, whole-app inspection, repo-wide searches, generated/cache inspection, large-file reads, subagent fan-out, or expensive commands, explain why it is necessary and ask for approval.
+- If scope expands beyond the selected page, flow, or concern, stop and report options instead of continuing.
+
+Known failing command guardrail:
+
+- Do not repeatedly try command patterns that have already failed in the session.
+- If a cheap metadata/read-only command fails with a known sandbox/environment error such as `CryptUnprotectData failed`, stop and report the failure instead of retrying multiple variants.
+- Before rerunning with escalation or an alternate command, explain why the rerun is necessary and ask for approval unless the user already explicitly authorized it.
+- Prefer direct reads of small known files over broad shell commands, and prefer targeted checks over recursive commands.
+
 When the user asks for an audit, review through these lenses:
 
 - Information architecture
@@ -88,7 +106,7 @@ Otherwise, keep the recommendation in the audit readout and let the user decide 
 
 ## Audit artifact workflow
 
-Keep this workflow lightweight.
+Keep this workflow lightweight and scoped to the audit the user requested.
 
 When the user wants to preserve audit results beyond chat history, recommend storing the audit under `planning/ux-audits/` as a planning artifact.
 
@@ -124,7 +142,7 @@ If the user later asks for fixes, convert the prioritized findings into the smal
 ## Audit workflow
 
 1. Establish the audit scope from the user request and available artifacts.
-2. Review the relevant pages, flows, components, screenshots, or copy with the product stance above.
+2. Review the relevant pages, flows, components, screenshots, or copy with the product stance above; ask before expanding into a whole-app audit.
 3. Identify the most important friction, confusion, trust, and consistency issues first.
 4. Prefer concrete, implementation-aware recommendations over abstract design critique.
 5. Call out what is already working well so the audit does not read like a teardown.

@@ -42,6 +42,24 @@ Unless the user explicitly asks for a broader pass:
 
 If a tightly related issue must be adjusted so the requested fix behaves correctly, keep the change minimal and call it out explicitly. If you notice adjacent UX issues that are not required, note them briefly and leave them for later.
 
+## Low-Usage Defaults
+
+Default to selected UX fixes only. Do not convert a UX fix into a broad UX audit or multi-page cleanup unless the user explicitly approves that expansion.
+
+- Read only the minimum context needed: the selected issue, relevant saved audit excerpt when useful, directly affected route/component/style/test files, and nearby copy.
+- Do not inspect `dist/`, `generated/`, `probe-output/`, `node_modules/`, large CSV/JSON files, cache artifacts, generated manifests, or old probe outputs unless explicitly needed and approved.
+- Use metadata, file names, headers, row counts, and targeted searches instead of opening full data or generated files.
+- Use focused UI/helper tests when practical. Do not run full build, full test suite, broad lint, broad validation, or package installs unless the user approves or repo policy clearly requires it for the touched files.
+- Before broad investigation, repo-wide searches, generated/cache inspection, large-file reads, subagent fan-out, or expensive commands, explain why it is necessary and ask for approval.
+- If scope expands beyond the selected UX fix, stop and report options instead of continuing.
+
+Known failing command guardrail:
+
+- Do not repeatedly try command patterns that have already failed in the session.
+- If a cheap metadata/read-only command fails with a known sandbox/environment error such as `CryptUnprotectData failed`, stop and report the failure instead of retrying multiple variants.
+- Before rerunning with escalation or an alternate command, explain why the rerun is necessary and ask for approval unless the user already explicitly authorized it.
+- Prefer direct reads of small known files over broad shell commands, and prefer targeted checks over recursive commands.
+
 ## Audit context check
 
 Before implementing selected UX fixes, check `planning/ux-audits/` for the most recent relevant saved audit artifact when that folder exists.
@@ -58,6 +76,7 @@ Keep this lightweight:
 - do not treat the latest audit as a hard gate
 - do not summarize the whole audit unless the user asks
 - do not let an older audit override the user's current explicit request
+- do not inspect saved audits unless they are relevant to the selected fix and can be checked with a targeted read
 - if no saved audit exists, or the most recent one is not relevant to the requested fix, proceed normally
 
 If the current request conflicts with an older audit recommendation or disposition, note that briefly and follow the user's current request unless they instruct otherwise.
@@ -97,12 +116,12 @@ Treat this skill as complementary to the audit skill:
 
 1. Identify the exact UX issue or selected findings being fixed.
 2. Confirm the smallest appropriate scope from the request, the selected issues, the repository context, and the most recent relevant saved audit if one exists.
-3. Check recent saved audit context in `planning/ux-audits/` when relevant, using it to avoid re-litigating already-deferred or already-covered issues while keeping the current user request primary.
+3. Check recent saved audit context in `planning/ux-audits/` only when relevant and lightweight, using it to avoid re-litigating already-deferred or already-covered issues while keeping the current user request primary.
 4. Check backlog alignment and add or update a backlog item only if the change is meaningful and not already covered.
 5. Inspect only the relevant routes, components, styles, tests, and copy.
 6. Implement the fix conservatively, reusing existing patterns where possible.
 7. Add or update focused tests when practical.
-8. Run the relevant verification steps required by the repo: tests for behavior changes, lint for code changes, and build when UI or runtime behavior changed.
+8. Run the lowest sufficient verification for the selected fix: focused tests first, broader lint/build only when approved or clearly required by repo policy for the touched files.
 9. Summarize the result in product terms, then suggest the next reasonable backlog item with a short justification.
 
 ## Implementation heuristics

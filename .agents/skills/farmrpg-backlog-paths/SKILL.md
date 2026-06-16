@@ -24,6 +24,25 @@ Then keep retrieval targeted:
 - Read other planning/spec docs only when a candidate path needs them.
 - Use `planning/positioning.md` only as a secondary tie-breaker when multiple paths are otherwise reasonable.
 
+## Low-Usage Defaults
+
+Default to low-usage pathing. Recommend coherent work paths from backlog and planning docs; do not audit code to choose paths unless the user explicitly asks.
+
+- Read only the minimum context needed: planning core, candidate rows, direct dependency rows, and relevant roadmap snippets.
+- Do not inspect implementation files unless a path cannot be understood from planning docs.
+- Do not inspect `dist/`, `generated/`, `probe-output/`, `node_modules/`, large CSV/JSON files, cache artifacts, generated manifests, or old probe outputs unless explicitly needed and approved.
+- Use metadata, file names, headers, row counts, and targeted searches instead of opening full data or generated files.
+- Prefer grouping existing backlog rows over auditing code or inventing new work.
+- Before broad investigation, repo-wide searches, generated/cache inspection, large-file reads, subagent fan-out, or expensive commands, explain why it is necessary and ask for approval.
+- If scope expands beyond path recommendation, stop and report options instead of continuing.
+
+Known failing command guardrail:
+
+- Do not repeatedly try command patterns that have already failed in the session.
+- If a cheap metadata/read-only command fails with a known sandbox/environment error such as `CryptUnprotectData failed`, stop and report the failure instead of retrying multiple variants.
+- Before rerunning with escalation or an alternate command, explain why the rerun is necessary and ask for approval unless the user already explicitly authorized it.
+- Prefer direct reads of small known files over broad shell commands, and prefer targeted checks over recursive commands.
+
 ## Path Selection
 
 Recommend three coherent implementation paths by default. Each path should usually contain 3-7 backlog items; use up to 10 only when the items are small and tightly related.
@@ -41,6 +60,7 @@ Avoid:
 - listing the highest-priority rows without a story
 - mixing unrelated medium-priority work into a fake path
 - recommending broad mega-tasks as implementation items
+- inspecting implementation files when backlog and planning docs are enough
 - rewriting roadmap strategy during a path recommendation
 - creating backlog rows unless the user explicitly asks for backlog intake
 - including `shipped` or `icebox` rows except as context
@@ -109,4 +129,3 @@ End with a concise planning readout that includes:
 - next reasonable backlog item plus short justification
 
 Do not include app tests/lint/build unless files were changed in a follow-up planning edit.
-

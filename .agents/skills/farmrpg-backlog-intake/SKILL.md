@@ -23,6 +23,25 @@ Then keep retrieval targeted:
 - Read relevant roadmap, decision, spec, or architecture sections only when needed to place the idea correctly.
 - Use `planning/positioning.md` only as a secondary tie-breaker when placement is otherwise equivalent.
 
+## Low-Usage Defaults
+
+Default to low-usage intake. Keep feasibility checks backlog/planning-only unless the user explicitly asks for implementation investigation.
+
+- Read only the minimum context needed to place the idea: planning core, candidate duplicate rows, direct dependency rows, and related roadmap/decision snippets.
+- Do not inspect `dist/`, `generated/`, `probe-output/`, `node_modules/`, large CSV/JSON files, cache artifacts, generated manifests, or old probe outputs unless explicitly needed and approved.
+- Use metadata, file names, headers, row counts, and targeted searches instead of opening full data or generated files.
+- Do not validate feasibility by searching the whole repo unless the user asks for that deeper check.
+- Treat unknown feasibility, source-data coverage, or implementation details as assumptions/questions in the row notes instead of investigating deeply.
+- Before broad investigation, generated/cache inspection, large-file reads, full validation, or expensive commands, explain why it is necessary and ask for approval.
+- If scope expands beyond intake, stop and report options instead of continuing.
+
+Known failing command guardrail:
+
+- Do not repeatedly try command patterns that have already failed in the session.
+- If a cheap metadata/read-only command fails with a known sandbox/environment error such as `CryptUnprotectData failed`, stop and report the failure instead of retrying multiple variants.
+- Before rerunning with escalation or an alternate command, explain why the rerun is necessary and ask for approval unless the user already explicitly authorized it.
+- Prefer direct reads of small known files over broad shell commands, and prefer targeted checks over recursive commands.
+
 Before editing, check the working tree with `git status --short --branch`.
 
 - If unrelated product changes are already dirty, tell the user what is dirty in one concise sentence.
@@ -51,6 +70,7 @@ Default to `create-and-land` only after the intake is clear enough to write rows
 5. Make dependencies explicit with `BL-###` tokens when rows need prior work.
 6. Keep local-first, single-profile, no-backend, static-hosting, and normalized-item-key constraints intact unless a planning decision explicitly changes them.
 7. Update `roadmap.md`, `decisions.md`, or a spec only when backlog placement alone would be misleading.
+8. Keep unresolved implementation questions visible as assumptions or follow-up questions instead of broadening into code or data investigation.
 
 ## Implementation Handoff
 
@@ -95,6 +115,7 @@ In `create-and-land` mode:
 - stage exact files only
 - commit with a concise planning/tooling message
 - push the task branch, fast-forward merge to `master`, push `master`, and verify `master` is up to date with `origin/master`
+- keep validation proportional to planning-only edits; do not run app tests/lint/build unless product code was touched unexpectedly
 
 If a helper fails, stop and report the failure instead of silently falling back to raw git commands.
 

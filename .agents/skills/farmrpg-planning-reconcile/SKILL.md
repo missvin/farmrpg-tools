@@ -35,12 +35,31 @@ Then use targeted retrieval:
 - relevant roadmap sections
 - relevant decisions, releases, positioning, or spec docs only when needed
 
+## Low-Usage Defaults
+
+Default to narrow reconciliation. Start with backlog, roadmap, and planning-doc consistency only; broaden only when needed and approved.
+
+- Read only the minimum context needed: planning core, named rows or milestones, direct dependency rows, parent/child clusters, and relevant roadmap snippets.
+- Do not inspect product code, `data/`, `dist/`, `generated/`, `probe-output/`, `node_modules/`, large CSV/JSON files, cache artifacts, generated manifests, or old probe outputs unless explicitly needed and approved.
+- Use metadata, file names, headers, row counts, and targeted searches instead of opening full data or generated files.
+- Require explicit approval for repo-wide reconciliation, generated artifact checks, data/cache inspection, subagent review, large-file reads, full validation, or broad searches.
+- If reconciliation reveals a structural source-of-truth or artifact-sufficiency miss, stop broadening and use `planning/failure-recovery-protocol.md`.
+- If scope expands beyond the stated reconcile target, stop and report options instead of continuing.
+
+Known failing command guardrail:
+
+- Do not repeatedly try command patterns that have already failed in the session.
+- If a cheap metadata/read-only command fails with a known sandbox/environment error such as `CryptUnprotectData failed`, stop and report the failure instead of retrying multiple variants.
+- Before rerunning with escalation or an alternate command, explain why the rerun is necessary and ask for approval unless the user already explicitly authorized it.
+- Prefer direct reads of small known files over broad shell commands, and prefer targeted checks over recursive commands.
+
 ## Operating Modes
 
 - `Audit-only`: inspect planning docs and report drift without editing.
 - `Reconcile`: make small planning-doc or backlog updates to resolve documented drift.
 - `Roadmap-refresh`: update milestone framing from shipped/current backlog state.
 - `Umbrella-cleanup`: focus on parent/umbrella rows and shipped/open child status.
+- `Narrow reconcile`: default mode; check backlog, roadmap, and planning-doc consistency for the named scope without code, data, generated artifact, or cache inspection.
 
 Default behavior:
 
@@ -48,10 +67,11 @@ Default behavior:
 - Land completed planning updates by default with the repo-local `git codex-*` helper flow unless the user explicitly asks for audit-only, planning-only, propose-only, review-only, no-commit, or says not to push.
 - If the user asks audit-only, do not edit files.
 - If the user names rows or milestones, focus there and do not broaden unless needed to avoid a misleading result.
+- Ask for approval before switching from narrow reconcile to repo-wide audit, generated artifact validation, data/cache inspection, or subagent-assisted review.
 
 ## Reconciliation Workflow
 
-When reconciliation would benefit from parallel subagent review, follow `planning/subagent-review-workflow.md`. Use subagents only for bounded, evidence-based review scopes, and synthesize their findings before editing planning files.
+When reconciliation would benefit from parallel subagent review, ask for approval first, then follow `planning/subagent-review-workflow.md`. Use subagents only for bounded, evidence-based review scopes, and synthesize their findings before editing planning files.
 
 1. Define the reviewed scope: files, rows, dependencies, parent/child clusters, and roadmap sections.
 2. Classify findings:
@@ -98,7 +118,7 @@ Return a concise readout with these sections:
 - `Remaining mismatch / risk`: anything still unresolved.
 - `Final readout`: files changed, planning rows updated, verification, commit hash and branch/push status when landed, field-note status, and next reasonable backlog item with a short justification.
 
-Do not run app tests/lint/build unless product code was touched. For planning-only changes, validate with CSV import, targeted file inspection, and diffs.
+Do not run app tests/lint/build unless product code was touched. For planning-only changes, use the lowest sufficient validation: CSV import when backlog rows changed, targeted file inspection, and small diffs. Ask before broad validation or generated artifact checks.
 
 ## Git And Landing
 
