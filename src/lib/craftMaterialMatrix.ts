@@ -150,7 +150,10 @@ function buildRow(input: {
     depth: input.pathType === 'direct' ? 0 : 1,
     consumedSeedQuantity: input.consumedSeedQuantity,
     outputRecipe: input.outputRecipe,
-    matchedInput: input.pathType === 'direct' ? input.seedInput : findRecipeInput(input.outputRecipe, input.path.at(-1)?.inputCanonicalKey ?? ''),
+    matchedInput:
+      input.pathType === 'direct'
+        ? input.seedInput
+        : findRecipeInput(input.outputRecipe, input.path[input.path.length - 1]?.inputCanonicalKey ?? ''),
     intermediateOutput: input.intermediateOutput,
     path: input.path,
     currentMastery,

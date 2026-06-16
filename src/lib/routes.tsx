@@ -16,6 +16,9 @@ const AcquisitionBreakdownPage = lazy(() =>
   import('../pages/AcquisitionBreakdownPage').then((module) => ({ default: module.AcquisitionBreakdownPage })),
 );
 const ComparePage = lazy(() => import('../pages/ComparePage').then((module) => ({ default: module.ComparePage })));
+const CraftMaterialMatrixPage = lazy(() =>
+  import('../pages/CraftMaterialMatrixPage').then((module) => ({ default: module.CraftMaterialMatrixPage })),
+);
 const HistoryPage = lazy(() => import('../pages/HistoryPage').then((module) => ({ default: module.HistoryPage })));
 const IngredientDemandListPage = lazy(() =>
   import('../pages/IngredientDemandListPage').then((module) => ({ default: module.IngredientDemandListPage })),
@@ -128,6 +131,11 @@ export const appRoutes: AppRoute[] = [
     element: <IngredientDemandListPage />,
   },
   {
+    path: '/craft-material-matrix',
+    label: 'Craft Material Matrix',
+    element: <CraftMaterialMatrixPage />,
+  },
+  {
     path: '/items/:canonicalKey',
     label: 'Item Profile',
     element: <ItemProfilePage />,
@@ -216,6 +224,7 @@ export const navigationSections: NavigationSection[] = [
       { to: '/', label: 'Dashboard' },
       { to: '/ingredient-demand', label: 'Ingredient Lookup' },
       { to: '/ingredient-demand-list', label: 'Material Planner' },
+      { to: '/craft-material-matrix', label: 'Craft Material Matrix' },
       { to: '/mastery-goals', label: 'Mastery Goals' },
       { to: '/quest-planner', label: 'Quest Planner' },
       { to: '/target-planner', label: 'Target Planner' },
