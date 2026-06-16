@@ -173,6 +173,17 @@ describe('CraftMaterialMatrixPage', () => {
 
     await screen.findByRole('heading', { name: 'Craft Material Matrix' });
 
+    const pivotTable = await screen.findByRole('table', { name: 'Tower color craft pivot matrix' });
+    const redShirtPivotCell = within(pivotTable).getByRole('link', {
+      name: /Red Shirt, GM, 95% complete/,
+    });
+    expect(redShirtPivotCell).toHaveAttribute('href', '/items/red%20shirt');
+    expect(redShirtPivotCell).toHaveAttribute('title', expect.stringContaining('GM Tower 120'));
+    expect(within(redShirtPivotCell).getByText('Red Shirt')).toBeInTheDocument();
+    expect(within(redShirtPivotCell).getByText('GM')).toBeInTheDocument();
+    expect(within(redShirtPivotCell).getByText('95%')).toBeInTheDocument();
+    expect(within(redShirtPivotCell).queryByText(/L120|Tower 120/)).not.toBeInTheDocument();
+
     expect(await screen.findByRole('link', { name: 'Red Shirt' })).toHaveAttribute('href', '/items/red%20shirt');
     expect(screen.getAllByRole('link', { name: 'Red Cloak' })[0]).toHaveAttribute('href', '/items/red%20cloak');
     expect(screen.getByText('GM L120 · 5,000 left')).toBeInTheDocument();

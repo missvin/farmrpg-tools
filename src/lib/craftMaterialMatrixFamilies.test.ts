@@ -51,6 +51,7 @@ describe('classifyCraftMaterialMatrixRow', () => {
   it('classifies color family outputs by item name', () => {
     expect(classifyCraftMaterialMatrixRow(makeRow({ outputItemName: 'Red Shirt' })).id).toBe('shirt');
     expect(classifyCraftMaterialMatrixRow(makeRow({ outputItemName: 'Purple Scarf' })).id).toBe('scarf');
+    expect(classifyCraftMaterialMatrixRow(makeRow({ outputItemName: 'Green Shield' })).id).toBe('shield');
     expect(classifyCraftMaterialMatrixRow(makeRow({ outputItemName: 'White Purse' })).id).toBe('purse');
     expect(classifyCraftMaterialMatrixRow(makeRow({ outputItemName: 'Blue Butterfly' })).id).toBe('butterfly');
     expect(classifyCraftMaterialMatrixRow(makeRow({ outputItemName: 'Brown Bag' })).id).toBe('bag');

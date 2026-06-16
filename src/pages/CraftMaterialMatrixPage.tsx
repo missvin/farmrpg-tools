@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { type CSSProperties, useEffect, useMemo, useState } from 'react';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -44,6 +44,20 @@ type SortField = 'towerLevel' | 'remainingMastery' | 'seedQuantity' | 'family' |
 type DisplayMatrixRow = CraftMaterialMatrixRow & {
   familyId: CraftMaterialMatrixFamilyId;
   familyLabel: string;
+};
+
+type PivotCell = {
+  row: DisplayMatrixRow;
+  fillPercent: number;
+  statusLabel: string;
+  tooltip: string;
+  ariaLabel: string;
+};
+
+type PivotRow = {
+  familyId: CraftMaterialMatrixFamilyId;
+  familyLabel: string;
+  cellsBySeedKey: Map<string, PivotCell>;
 };
 
 const DYE_SEEDS = [
@@ -106,6 +120,21 @@ const PRESETS: Array<{ label: string; seeds: string[] }> = [
   },
 ];
 
+const PIVOT_FAMILY_ORDER: CraftMaterialMatrixFamilyId[] = [
+  'bag',
+  'butterfly',
+  'scarf',
+  'shield',
+  'twine',
+  'cloak',
+  'purse',
+  'shirt',
+  'dye',
+  'other_dye_uses',
+  'colored_twine_uses',
+  'other_raw_color_uses',
+];
+
 function formatAmount(value: number): string {
   return Math.round(value).toLocaleString();
 }
@@ -146,6 +175,16 @@ function getBestRemainingMastery(row: CraftMaterialMatrixRow): number | null {
   const unfinishedTargets = row.towerTargets.filter((target) => !target.achieved);
   const target = unfinishedTargets[0] ?? row.towerTargets[0] ?? null;
   return target?.remainingToRequirement ?? null;
+}
+
+function getPrimaryTowerTarget(row: CraftMaterialMatrixRow): CraftMaterialMatrixRow['towerTargets'][number] | null {
+  return row.towerTargets.find((target) => !target.achieved) ?? row.towerTargets[0] ?? null;
+}
+
+function getTowerLevelTooltip(row: CraftMaterialMatrixRow): string {
+  return row.towerTargets
+    .map((target) => `${target.masteryLevelNeeded} Tower ${target.levels.join(', ')}`)
+    .join('; ');
 }
 
 function matchesTargetFilter(row: CraftMaterialMatrixRow, targetFilter: TargetFilter): boolean {
@@ -252,6 +291,173 @@ function PathSummary({ row }: { row: CraftMaterialMatrixRow }) {
         </span>
       ))}
     </span>
+  );
+}
+
+function comparePivotCandidates(left: DisplayMatrixRow, right: DisplayMatrixRow): number {
+  const leftTarget = getPrimaryTowerTarget(left);
+  const rightTarget = getPrimaryTowerTarget(right);
+  const leftDone = leftTarget?.achieved ?? true;
+  const rightDone = rightTarget?.achieved ?? true;
+
+  if (leftDone !== rightDone) {
+    return leftDone ? 1 : -1;
+  }
+
+  const leftLevel = getBestTowerLevel(left) ?? Number.POSITIVE_INFINITY;
+  const rightLevel = getBestTowerLevel(right) ?? Number.POSITIVE_INFINITY;
+
+  if (leftLevel !== rightLevel) {
+    return leftLevel - rightLevel;
+  }
+
+  return left.outputItemName.localeCompare(right.outputItemName);
+}
+
+function buildPivotRows(rows: DisplayMatrixRow[], selectedSeedKeys: string[]): PivotRow[] {
+  const selectedSeedSet = new Set(selectedSeedKeys);
+  const cellRows = rows
+    .filter((row) => row.towerRelevant)
+    .filter((row) => selectedSeedSet.has(row.seedCanonicalKey));
+  const pivotRowsByFamily = new Map<CraftMaterialMatrixFamilyId, PivotRow>();
+
+  for (const row of cellRows) {
+    const target = getPrimaryTowerTarget(row);
+
+    if (!target) {
+      continue;
+    }
+
+    const pivotRow = pivotRowsByFamily.get(row.familyId) ?? {
+      familyId: row.familyId,
+      familyLabel: row.familyLabel,
+      cellsBySeedKey: new Map<string, PivotCell>(),
+    };
+    const existingCell = pivotRow.cellsBySeedKey.get(row.seedCanonicalKey);
+
+    if (existingCell && comparePivotCandidates(existingCell.row, row) <= 0) {
+      pivotRowsByFamily.set(row.familyId, pivotRow);
+      continue;
+    }
+
+    const fillPercent = Math.max(0, Math.min(100, Math.floor((target.currentMastery / target.requiredThreshold) * 100)));
+    const statusLabel = target.achieved ? 'Done' : target.masteryLevelNeeded;
+    const tooltip = `${row.outputItemName}: ${getTowerLevelTooltip(row)}; ${formatAmount(target.currentMastery)} of ${formatAmount(
+      target.requiredThreshold,
+    )} mastery.`;
+
+    pivotRow.cellsBySeedKey.set(row.seedCanonicalKey, {
+      row,
+      fillPercent,
+      statusLabel,
+      tooltip,
+      ariaLabel: `${row.outputItemName}, ${statusLabel}, ${fillPercent}% complete. ${getTowerLevelTooltip(row)}.`,
+    });
+    pivotRowsByFamily.set(row.familyId, pivotRow);
+  }
+
+  return [...pivotRowsByFamily.values()].sort((left, right) => {
+    const leftIndex = PIVOT_FAMILY_ORDER.indexOf(left.familyId);
+    const rightIndex = PIVOT_FAMILY_ORDER.indexOf(right.familyId);
+
+    if (leftIndex !== rightIndex) {
+      return (leftIndex === -1 ? Number.POSITIVE_INFINITY : leftIndex) - (rightIndex === -1 ? Number.POSITIVE_INFINITY : rightIndex);
+    }
+
+    return left.familyLabel.localeCompare(right.familyLabel);
+  });
+}
+
+function TowerColorPivotMatrix({
+  pivotRows,
+  selectedSeedKeys,
+  optionsByKey,
+}: {
+  pivotRows: PivotRow[];
+  selectedSeedKeys: string[];
+  optionsByKey: Map<string, SeedOption>;
+}) {
+  const columnSeedKeys = selectedSeedKeys.filter((seedKey) => pivotRows.some((row) => row.cellsBySeedKey.has(seedKey)));
+
+  if (pivotRows.length === 0 || columnSeedKeys.length === 0) {
+    return (
+      <section className="page-card page-stack" aria-labelledby="tower-color-matrix-heading">
+        <div>
+          <h2 id="tower-color-matrix-heading">Tower Color Matrix</h2>
+          <p className="muted-text">No Tower color craft cells match the selected materials yet.</p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="page-card page-stack" aria-labelledby="tower-color-matrix-heading">
+      <div>
+        <h2 id="tower-color-matrix-heading">Tower Color Matrix</h2>
+        <p className="muted-text">Scan color craft families at a glance. Hover or focus a cell for Tower levels.</p>
+      </div>
+      <div className="material-matrix-pivot-scroll">
+        <table className="material-matrix-pivot" aria-label="Tower color craft pivot matrix">
+          <thead>
+            <tr>
+              <th scope="col">Family</th>
+              {columnSeedKeys.map((seedKey) => {
+                const option = optionsByKey.get(seedKey);
+                const iconSrc = getIconSrc(seedKey);
+
+                return (
+                  <th scope="col" key={seedKey}>
+                    <span className="material-matrix-pivot__column-heading">
+                      {iconSrc ? <img className="item-icon" src={iconSrc} alt="" aria-hidden="true" /> : null}
+                      <span>{option?.itemName ?? seedKey}</span>
+                    </span>
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {pivotRows.map((pivotRow) => (
+              <tr key={pivotRow.familyId}>
+                <th scope="row">{pivotRow.familyLabel}</th>
+                {columnSeedKeys.map((seedKey) => {
+                  const cell = pivotRow.cellsBySeedKey.get(seedKey);
+
+                  if (!cell) {
+                    return (
+                      <td className="material-matrix-pivot__empty-cell" key={seedKey}>
+                        <span aria-hidden="true">-</span>
+                      </td>
+                    );
+                  }
+
+                  const iconSrc = getIconSrc(cell.row.outputCanonicalKey);
+
+                  return (
+                    <td key={seedKey}>
+                      <a
+                        className={`material-matrix-pivot__cell ${cell.statusLabel === 'Done' ? 'material-matrix-pivot__cell--done' : ''}`}
+                        href={cell.row.outputProfilePath}
+                        title={cell.tooltip}
+                        aria-label={cell.ariaLabel}
+                        style={{ '--matrix-cell-fill': `${cell.fillPercent}%` } as CSSProperties}
+                      >
+                        <span className="material-matrix-pivot__cell-content">
+                          {iconSrc ? <img className="item-icon" src={iconSrc} alt="" aria-hidden="true" /> : null}
+                          <span className="material-matrix-pivot__item-name">{cell.row.outputItemName}</span>
+                          <span className="material-matrix-pivot__status">{cell.statusLabel}</span>
+                          <span className="material-matrix-pivot__percent">{cell.fillPercent}%</span>
+                        </span>
+                      </a>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
 
@@ -393,6 +599,11 @@ export function CraftMaterialMatrixPage() {
       sortField,
     );
   }, [achievedFilter, familyFilter, matrixResult?.rows, pathFilter, sortField, targetFilter, towerFilter]);
+
+  const pivotRows = useMemo(() => buildPivotRows((matrixResult?.rows ?? []).map(withFamily), selectedSeedKeys), [
+    matrixResult?.rows,
+    selectedSeedKeys,
+  ]);
 
   function addSeed(canonicalKey: string): void {
     if (!canonicalKey || selectedSeedKeys.includes(canonicalKey)) {
@@ -586,6 +797,8 @@ export function CraftMaterialMatrixPage() {
       </section>
 
       <section className="material-matrix__results" aria-labelledby="craft-material-results-heading">
+        <TowerColorPivotMatrix pivotRows={pivotRows} selectedSeedKeys={selectedSeedKeys} optionsByKey={optionsByKey} />
+
         <div className="section-heading-row">
           <div>
             <h2 id="craft-material-results-heading">Craft Uses</h2>
