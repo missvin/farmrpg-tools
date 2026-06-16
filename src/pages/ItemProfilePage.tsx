@@ -14,6 +14,11 @@ import {
   type UserCraftingModifierState,
 } from '../lib/craftingModifierState';
 import {
+  deriveCraftMaterialMatrix,
+  type CraftMaterialMatrixRow,
+} from '../lib/craftMaterialMatrix';
+import { classifyCraftMaterialMatrixRow } from '../lib/craftMaterialMatrixFamilies';
+import {
   buildItemGoalCalculatorResult,
   type ItemGoalCalculatorResult,
   type ItemGoalMode,
@@ -277,6 +282,14 @@ function getAcquisitionBreakdownPath(profile: ItemProfile): string {
   return `/acquisition-breakdown?${searchParams.toString()}`;
 }
 
+function getCraftMaterialMatrixPath(profile: ItemProfile): string {
+  const searchParams = new URLSearchParams({
+    seed: profile.canonicalKey,
+  });
+
+  return `/craft-material-matrix?${searchParams.toString()}`;
+}
+
 function RecipeInputRow({ input }: { input: RecipeInput }) {
   const icon = getItemIcon(input.canonicalKey);
 
@@ -311,6 +324,114 @@ function UsedInRecipeRow({ recipe }: { recipe: RecipeNode }) {
         </span>
       </Link>
     </li>
+  );
+}
+
+function compareMaterialSinkRows(left: CraftMaterialMatrixRow, right: CraftMaterialMatrixRow): number {
+  const leftUnfinished = left.towerTargets.some((target) => !target.achieved);
+  const rightUnfinished = right.towerTargets.some((target) => !target.achieved);
+
+  if (leftUnfinished !== rightUnfinished) {
+    return leftUnfinished ? -1 : 1;
+  }
+
+  const leftLevel = left.towerTargets.flatMap((target) => target.levels)[0] ?? Number.POSITIVE_INFINITY;
+  const rightLevel = right.towerTargets.flatMap((target) => target.levels)[0] ?? Number.POSITIVE_INFINITY;
+
+  if (leftLevel !== rightLevel) {
+    return leftLevel - rightLevel;
+  }
+
+  return left.outputItemName.localeCompare(right.outputItemName);
+}
+
+function formatMaterialSinkTarget(row: CraftMaterialMatrixRow): string {
+  const target = row.towerTargets.find((towerTarget) => !towerTarget.achieved) ?? row.towerTargets[0] ?? null;
+
+  if (!target) {
+    return 'No Tower target';
+  }
+
+  const status = target.achieved ? 'done' : `${formatMastery(target.remainingToRequirement)} left`;
+  return `${target.masteryLevelNeeded} L${target.levels.join(', ')} · ${status}`;
+}
+
+function ItemMaterialSinkPanel({
+  profile,
+  recipeGraph,
+  towerRequirementsData,
+  snapshot,
+}: {
+  profile: ItemProfile;
+  recipeGraph: RecipeGraph;
+  towerRequirementsData: TowerRequirementsData | null;
+  snapshot: MasterySnapshot | null;
+}) {
+  const rows = useMemo(
+    () =>
+      deriveCraftMaterialMatrix({
+        seedCanonicalKeys: [profile.canonicalKey],
+        recipeGraph,
+        towerRequirementsData,
+        snapshot,
+        maxDepth: 1,
+      }).rows
+        .filter((row) => row.towerRelevant)
+        .sort(compareMaterialSinkRows),
+    [profile.canonicalKey, recipeGraph, snapshot, towerRequirementsData],
+  );
+  const previewRows = rows.slice(0, 6);
+
+  return (
+    <section className="page-card page-stack" aria-labelledby="item-profile-material-sinks-title">
+      <div className="section-heading-row">
+        <div>
+          <h2 id="item-profile-material-sinks-title">Tower Craft Sinks</h2>
+          <p className="supporting-text">Tower-relevant downstream crafts that use this item directly or one step away.</p>
+        </div>
+        <Link className="button button--secondary" to={getCraftMaterialMatrixPath(profile)}>
+          Open Matrix
+        </Link>
+      </div>
+
+      {previewRows.length > 0 ? (
+        <details className="advanced-details">
+          <summary>Show Tower craft sinks</summary>
+          <ul className="data-list data-list--clickable">
+            {previewRows.map((row) => {
+              const icon = getItemIcon(row.outputCanonicalKey);
+              const family = classifyCraftMaterialMatrixRow(row);
+
+              return (
+                <li key={`${row.outputCanonicalKey}-${row.pathType}`}>
+                  <div className="recipe-link-row">
+                    <ItemProfileLink
+                      canonicalKey={row.outputCanonicalKey}
+                      itemName={row.outputItemName}
+                      iconSrc={icon?.src}
+                    />
+                    <span>
+                      <strong>{formatMaterialSinkTarget(row)}</strong>
+                      <span className="subtle-text">
+                        {' '}
+                        {family.label}; {formatMastery(row.consumedSeedQuantity)} {profile.itemName} per output
+                      </span>
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          {rows.length > previewRows.length ? (
+            <p className="supporting-text">
+              Showing {previewRows.length.toLocaleString()} of {rows.length.toLocaleString()} Tower-relevant sinks.
+            </p>
+          ) : null}
+        </details>
+      ) : (
+        <p className="empty-state">No Tower-relevant craft sinks found for this item in local recipe data.</p>
+      )}
+    </section>
   );
 }
 
@@ -1168,6 +1289,15 @@ export function ItemProfilePage() {
               <p className="empty-state">Import a mastery snapshot to estimate recursive material needs.</p>
             )}
           </section>
+
+          {resourcesState.resources?.recipeGraph ? (
+            <ItemMaterialSinkPanel
+              profile={profile}
+              recipeGraph={resourcesState.resources.recipeGraph}
+              towerRequirementsData={resourcesState.resources.towerRequirementsData}
+              snapshot={resourcesState.resources.snapshot}
+            />
+          ) : null}
 
           <section className="page-card page-stack" aria-labelledby="item-profile-used-in-title">
             <h2 id="item-profile-used-in-title">Used In</h2>

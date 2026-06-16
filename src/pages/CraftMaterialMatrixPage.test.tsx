@@ -223,4 +223,19 @@ describe('CraftMaterialMatrixPage', () => {
     expect(screen.queryByRole('link', { name: 'Red Shirt' })).not.toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Red Cloak' })).toHaveLength(2);
   });
+
+  it('uses the seed query parameter as the initial material selection', async () => {
+    render(
+      <MemoryRouter initialEntries={['/craft-material-matrix?seed=red%20shirt']}>
+        <CraftMaterialMatrixPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole('heading', { name: 'Craft Material Matrix' });
+
+    expect(screen.getByRole('button', { name: 'Remove Red Shirt' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Remove Red Dye' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Red Cloak' })).toHaveAttribute('href', '/items/red%20cloak');
+    expect(screen.queryByRole('link', { name: 'Red Shirt' })).not.toBeInTheDocument();
+  });
 });

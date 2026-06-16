@@ -113,6 +113,32 @@ describe('ItemProfilePage', () => {
           sourceSheet: null,
           sourceRow: null,
         },
+        {
+          towerLevel: 305,
+          towerLevelRange: '301-310',
+          slotIndex: 1,
+          itemName: 'Red Shirt',
+          canonicalKey: 'red shirt',
+          masteryLevelNeeded: 'GM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: null,
+          sourceSheet: null,
+          sourceRow: null,
+        },
+        {
+          towerLevel: 306,
+          towerLevelRange: '301-310',
+          slotIndex: 1,
+          itemName: 'Red Cloak',
+          canonicalKey: 'red cloak',
+          masteryLevelNeeded: 'MM',
+          farmrpgItemId: null,
+          buddySlug: null,
+          notes: null,
+          sourceSheet: null,
+          sourceRow: null,
+        },
       ],
       byCanonicalKey: {
         'red dye': [
@@ -123,6 +149,36 @@ describe('ItemProfilePage', () => {
             itemName: 'Red Dye',
             canonicalKey: 'red dye',
             masteryLevelNeeded: 'GM',
+            farmrpgItemId: null,
+            buddySlug: null,
+            notes: null,
+            sourceSheet: null,
+            sourceRow: null,
+          },
+        ],
+        'red shirt': [
+          {
+            towerLevel: 305,
+            towerLevelRange: '301-310',
+            slotIndex: 1,
+            itemName: 'Red Shirt',
+            canonicalKey: 'red shirt',
+            masteryLevelNeeded: 'GM',
+            farmrpgItemId: null,
+            buddySlug: null,
+            notes: null,
+            sourceSheet: null,
+            sourceRow: null,
+          },
+        ],
+        'red cloak': [
+          {
+            towerLevel: 306,
+            towerLevelRange: '301-310',
+            slotIndex: 1,
+            itemName: 'Red Cloak',
+            canonicalKey: 'red cloak',
+            masteryLevelNeeded: 'MM',
             farmrpgItemId: null,
             buddySlug: null,
             notes: null,
@@ -151,14 +207,56 @@ describe('ItemProfilePage', () => {
         },
       ],
     };
+    const redShirtRecipe = {
+      outputItemName: 'Red Shirt',
+      outputCanonicalKey: 'red shirt',
+      recipeType: 'craft',
+      recipeBookItemName: null,
+      recipeBookCanonicalKey: null,
+      cookingLevel: null,
+      baseTime: null,
+      sourceBuddyUrl: 'https://buddy.farm/i/red-shirt/',
+      inputs: [
+        {
+          inputOrder: 1,
+          itemName: 'Red Dye',
+          canonicalKey: 'red dye',
+          quantity: 2,
+        },
+      ],
+    };
+    const redCloakRecipe = {
+      outputItemName: 'Red Cloak',
+      outputCanonicalKey: 'red cloak',
+      recipeType: 'craft',
+      recipeBookItemName: null,
+      recipeBookCanonicalKey: null,
+      cookingLevel: null,
+      baseTime: null,
+      sourceBuddyUrl: 'https://buddy.farm/i/red-cloak/',
+      inputs: [
+        {
+          inputOrder: 1,
+          itemName: 'Red Shirt',
+          canonicalKey: 'red shirt',
+          quantity: 1,
+        },
+      ],
+    };
 
     loadRecipeGraphMock.mockResolvedValue({
-      recipes: [redDyeRecipe],
+      recipes: [redDyeRecipe, redShirtRecipe, redCloakRecipe],
       byOutputCanonicalKey: {
         'red dye': redDyeRecipe,
+        'red shirt': redShirtRecipe,
+        'red cloak': redCloakRecipe,
       },
-      byInputCanonicalKey: {},
-      craftRecipes: [redDyeRecipe],
+      byInputCanonicalKey: {
+        'glass orb': [redDyeRecipe],
+        'red dye': [redShirtRecipe],
+        'red shirt': [redCloakRecipe],
+      },
+      craftRecipes: [redDyeRecipe, redShirtRecipe, redCloakRecipe],
       cookingRecipes: [],
     });
 
@@ -255,6 +353,22 @@ describe('ItemProfilePage', () => {
     expect(within(burdenSection as HTMLElement).getByText('To GM')).toBeInTheDocument();
     expect(within(burdenSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);
     expect(screen.getByRole('heading', { name: 'Used In' })).toBeInTheDocument();
+
+    const sinkSection = screen.getByRole('heading', { name: 'Tower Craft Sinks' }).closest('section');
+    expect(sinkSection).not.toBeNull();
+    expect(within(sinkSection as HTMLElement).getByRole('link', { name: 'Open Matrix' })).toHaveAttribute(
+      'href',
+      '/craft-material-matrix?seed=red+dye',
+    );
+    expect(within(sinkSection as HTMLElement).getByText('Show Tower craft sinks')).toBeInTheDocument();
+    expect(within(sinkSection as HTMLElement).getByRole('link', { name: /Red Shirt/ })).toHaveAttribute(
+      'href',
+      '/items/red%20shirt',
+    );
+    expect(within(sinkSection as HTMLElement).getByRole('link', { name: /Red Cloak/ })).toHaveAttribute(
+      'href',
+      '/items/red%20cloak',
+    );
 
     const acquisitionSection = screen.getByRole('heading', { name: 'Acquisition' }).closest('section');
     expect(acquisitionSection).not.toBeNull();

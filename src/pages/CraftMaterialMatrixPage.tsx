@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { useSearchParams } from 'react-router-dom';
+
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import {
@@ -254,6 +256,7 @@ function PathSummary({ row }: { row: CraftMaterialMatrixRow }) {
 }
 
 export function CraftMaterialMatrixPage() {
+  const [searchParams] = useSearchParams();
   const [resourcesState, setResourcesState] = useState<ResourceState>({
     isLoading: true,
     error: null,
@@ -317,9 +320,17 @@ export function CraftMaterialMatrixPage() {
       return;
     }
 
+    const seedParam = searchParams.get('seed');
+    const seedParamKey = seedParam ? toCanonicalItemKey(seedParam) : '';
+
+    if (seedParamKey && optionsByKey.has(seedParamKey)) {
+      setSelectedSeedKeys([seedParamKey]);
+      return;
+    }
+
     const defaultPreset = getPresetSeedKeys(PRESETS[0].seeds, optionsByKey);
     setSelectedSeedKeys(defaultPreset.length > 0 ? defaultPreset : [seedOptions[0].canonicalKey]);
-  }, [optionsByKey, seedOptions, selectedSeedKeys.length]);
+  }, [optionsByKey, searchParams, seedOptions, selectedSeedKeys.length]);
 
   const filteredSeedOptions = useMemo(() => {
     const normalizedSearch = searchText.trim().toLowerCase();
