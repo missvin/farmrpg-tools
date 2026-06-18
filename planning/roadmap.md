@@ -103,9 +103,9 @@ Item pages should answer practical questions like how long Salt, Large Nets, Fro
   - broader reviewed quest-universe coverage for reliable history matching (`BL-274`, shipped)
   - questline and seasonal progress model (`BL-275`, shipped)
   - item-page future quest demand adapter for known unfinished requirements (`BL-276`, shipped)
-  - source-rate assumptions for prep-time planning (`BL-280`, shipped) and quest source-burden estimates (`BL-281`, planned)
-  - prep-time-based scary watch scoring and explainability controls (`BL-282`, `BL-283`, planned)
-  - shared source allocation scenarios for multi-goal what-if planning (`BL-284`, planned)
+  - source-rate assumptions for prep-time planning (`BL-280`, shipped) and quest source-burden estimates (`BL-281`, shipped)
+  - prep-time-based scary watch scoring and explainability controls (`BL-282`, `BL-283`, shipped)
+  - shared source allocation scenarios for multi-goal what-if planning (`BL-284`, shipped)
   - Quest History import review and dashboard UI (`BL-277`, shipped)
   - questline heatmap and bottleneck explorer (`BL-278`, shipped)
 

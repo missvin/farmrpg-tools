@@ -849,6 +849,30 @@ a {
   gap: 0.75rem;
 }
 
+.inline-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.number-input {
+  width: 7rem;
+  min-height: 2.4rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.45rem;
+  background: var(--color-surface-muted);
+  color: var(--color-text-strong);
+  font: inherit;
+  font-weight: 700;
+  padding: 0.45rem 0.6rem;
+}
+
+.number-input--compact {
+  width: 5.75rem;
+}
+
 .filter-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
@@ -1680,6 +1704,38 @@ a {
   background: transparent;
 }
 
+.history-reason-badge--scary {
+  border-color: rgba(255, 117, 117, 0.7);
+  background: rgba(255, 117, 117, 0.14);
+}
+
+.history-reason-badge--watch {
+  border-color: rgba(250, 204, 92, 0.7);
+  background: rgba(250, 204, 92, 0.14);
+}
+
+.history-reason-badge--ok {
+  border-color: rgba(112, 214, 164, 0.65);
+  background: rgba(112, 214, 164, 0.13);
+}
+
+.history-reason-badge--unknown {
+  border-color: var(--color-border-strong);
+  background: rgba(142, 197, 255, 0.08);
+}
+
+.quest-burden-row {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.quest-burden-row__main {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
 .memory-helper-board {
   display: grid;
   grid-template-columns: repeat(6, minmax(3.75rem, 1fr));
@@ -2122,6 +2178,11 @@ a {
   display: grid;
   gap: 0.5rem;
   margin: 0;
+}
+
+.compact-stat-grid--dense {
+  gap: 0.35rem;
+  font-size: 0.95rem;
 }
 
 .compact-stat-grid div {

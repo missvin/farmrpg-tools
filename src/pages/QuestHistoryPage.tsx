@@ -2,7 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
+import { loadAcquisitionPlannerInputState, type AcquisitionPlannerInputState } from '../lib/acquisitionPlannerState';
+import {
+  loadDropRateAcquisitionSettings,
+  type DropRateAcquisitionSettings,
+} from '../lib/dropRateAcquisitionSettings';
 import { getItemIcon } from '../lib/itemIconManifest';
+import { loadDropRateReference, type DropRateReferenceData } from '../lib/loadDropRateReference';
+import { loadPetSourceReference, type PetSourceReferenceData } from '../lib/loadPetSourceReference';
 import { loadQuestReference, type QuestReferenceData } from '../lib/loadQuestReference';
 import {
   parseCompletedRequestsPaste,
@@ -25,11 +32,24 @@ import {
   type QuestHistoryState,
 } from '../lib/questHistoryState';
 import { loadQuestPlannerState, type QuestPlannerState } from '../lib/questPlannerState';
+import {
+  DEFAULT_SCARY_PREP_DAYS_THRESHOLD,
+  deriveQuestSourceAllocationScenario,
+  deriveQuestSourceBurdenAnalytics,
+  type QuestSourceBurdenAnalytics,
+  type QuestSourceBurdenRow,
+} from '../lib/questSourceBurden';
+import { loadSourceRateAssumptionsState, type SourceRateAssumptionsState } from '../lib/sourceRateAssumptions';
 
 type QuestHistoryResourceState = {
   isLoading: boolean;
   error: string | null;
   referenceData: QuestReferenceData | null;
+  dropRateReference: DropRateReferenceData | null;
+  dropRateSettings: DropRateAcquisitionSettings;
+  sourceRateState: SourceRateAssumptionsState;
+  acquisitionState: AcquisitionPlannerInputState;
+  petSourceReference: PetSourceReferenceData | null;
   historyState: QuestHistoryState;
   questPlannerState: QuestPlannerState | null;
 };
@@ -41,6 +61,30 @@ const EMPTY_HISTORY_STATE: QuestHistoryState = {
 
 function formatNumber(value: number): string {
   return Math.round(value).toLocaleString();
+}
+
+function formatPreciseNumber(value: number): string {
+  if (!Number.isFinite(value)) {
+    return 'n/a';
+  }
+
+  if (value >= 100 || Number.isInteger(value)) {
+    return Math.round(value).toLocaleString();
+  }
+
+  return value.toLocaleString(undefined, {
+    maximumFractionDigits: 1,
+  });
+}
+
+function formatDays(value: number | null): string {
+  if (value === null || !Number.isFinite(value)) {
+    return 'n/a';
+  }
+
+  return `${value.toLocaleString(undefined, {
+    maximumFractionDigits: value < 10 ? 1 : 0,
+  })} days`;
 }
 
 function formatPercent(value: number | null): string {
@@ -165,6 +209,255 @@ function QuestHistoryDashboard({
       {planning.warnings.length > 0 ? (
         <ul className="quest-warning-list">
           {planning.warnings.map((warning) => (
+            <li key={warning}>{warning}</li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}
+
+function getSeverityLabel(row: QuestSourceBurdenRow): string {
+  switch (row.severity) {
+    case 'scary':
+      return 'Scary';
+    case 'watch':
+      return 'Watch';
+    case 'ok':
+      return 'Covered';
+    case 'unknown':
+      return 'Unknown';
+  }
+}
+
+function QuestScaryWatch({
+  burden,
+  thresholdDays,
+  onThresholdDaysChange,
+}: {
+  burden: QuestSourceBurdenAnalytics;
+  thresholdDays: number;
+  onThresholdDaysChange: (value: number) => void;
+}) {
+  const visibleRows = burden.scaryRows.slice(0, 12);
+
+  return (
+    <section className="page-card page-stack" aria-labelledby="quest-scary-watch-title">
+      <div className="section-heading-row">
+        <div>
+          <h2 id="quest-scary-watch-title">Scary Future Prep</h2>
+          <p className="supporting-text">
+            Future quest items ranked by counted supply, reviewed source burden, and saved daily source rates.
+          </p>
+        </div>
+        <label className="inline-control" htmlFor="quest-scary-threshold-days">
+          <span>Scary after</span>
+          <input
+            id="quest-scary-threshold-days"
+            className="number-input number-input--compact"
+            type="number"
+            min="1"
+            value={thresholdDays}
+            onChange={(event) => onThresholdDaysChange(Number(event.target.value))}
+          />
+          <span>days</span>
+        </label>
+      </div>
+      {burden.warnings.length > 0 ? (
+        <ul className="quest-warning-list">
+          {burden.warnings.map((warning) => (
+            <li key={warning}>{warning}</li>
+          ))}
+        </ul>
+      ) : null}
+      {visibleRows.length > 0 ? (
+        <ul className="data-list">
+          {visibleRows.map((row) => {
+            const icon = getItemIcon(row.canonicalKey);
+            const bestOption = row.bestOption;
+
+            return (
+              <li key={row.canonicalKey}>
+                <div className="quest-burden-row">
+                  <div className="quest-burden-row__main">
+                    <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} iconSrc={icon?.src ?? null} />
+                    <span className={`history-reason-badge history-reason-badge--${row.severity}`}>
+                      {getSeverityLabel(row)}
+                    </span>
+                  </div>
+                  <dl className="compact-stat-grid compact-stat-grid--dense">
+                    <div>
+                      <dt>Remaining</dt>
+                      <dd>{formatNumber(row.remainingQuantity)}</dd>
+                    </div>
+                    <div>
+                      <dt>Counted supply</dt>
+                      <dd>{formatNumber(row.availableQuantity)}</dd>
+                    </div>
+                    <div>
+                      <dt>Best estimate</dt>
+                      <dd>{formatDays(row.prepDays)}</dd>
+                    </div>
+                    <div>
+                      <dt>Source</dt>
+                      <dd>{bestOption ? bestOption.sourceName : 'n/a'}</dd>
+                    </div>
+                  </dl>
+                  {bestOption ? (
+                    <p className="subtle-text">
+                      {bestOption.sourceUnitQuantity !== null
+                        ? `${formatPreciseNumber(bestOption.sourceUnitQuantity)} ${bestOption.unitLabel}${
+                          bestOption.dailyRate ? ` at ${formatPreciseNumber(bestOption.dailyRate)}/day` : ''
+                        }.`
+                        : `${bestOption.sourceName} is known, but exact source units are not reviewed yet.`}
+                    </p>
+                  ) : null}
+                  <p className="subtle-text">{row.reasons.join('; ')}.</p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className="empty-state">No future quest item has crossed the current scary-prep threshold.</p>
+      )}
+    </section>
+  );
+}
+
+function QuestAllocationScenario({
+  burden,
+}: {
+  burden: QuestSourceBurdenAnalytics;
+}) {
+  const candidates = useMemo(
+    () =>
+      burden.scaryRows
+        .filter((row) => row.bestOption?.sourceUnitQuantity !== null && row.bestOption?.dailyRate !== null)
+        .slice(0, 8),
+    [burden.scaryRows],
+  );
+  const [waitDays, setWaitDays] = useState(7);
+  const [allocations, setAllocations] = useState<Record<string, number>>({});
+  const scenario = useMemo(() => {
+    return deriveQuestSourceAllocationScenario(burden, {
+      waitDays,
+      allocations: candidates.map((row) => ({
+        canonicalKey: row.canonicalKey,
+        allocationPercent: allocations[row.canonicalKey] ?? 0,
+      })),
+    });
+  }, [allocations, burden, candidates, waitDays]);
+
+  function handleEvenSplit(): void {
+    if (candidates.length === 0) {
+      return;
+    }
+
+    const split = Math.floor((100 / candidates.length) * 10) / 10;
+    setAllocations(
+      Object.fromEntries(candidates.map((row) => [row.canonicalKey, split])),
+    );
+  }
+
+  return (
+    <section className="page-card page-stack" aria-labelledby="quest-allocation-title">
+      <div className="section-heading-row">
+        <div>
+          <h2 id="quest-allocation-title">Source Allocation What-if</h2>
+          <p className="supporting-text">
+            Split saved daily source budgets across scary items and see what remains after a chosen wait.
+          </p>
+        </div>
+        <div className="button-row">
+          <label className="inline-control" htmlFor="quest-allocation-wait-days">
+            <span>Wait</span>
+            <input
+              id="quest-allocation-wait-days"
+              className="number-input number-input--compact"
+              type="number"
+              min="0"
+              value={waitDays}
+              onChange={(event) => setWaitDays(Number(event.target.value))}
+            />
+            <span>days</span>
+          </label>
+          <button type="button" className="button" onClick={handleEvenSplit} disabled={candidates.length === 0}>
+            Even split
+          </button>
+        </div>
+      </div>
+      {candidates.length > 0 ? (
+        <div className="table-scroll">
+          <table className="summary-table quest-history-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Allocation</th>
+                <th>Daily source</th>
+                <th>After wait</th>
+              </tr>
+            </thead>
+            <tbody>
+              {candidates.map((row) => {
+                const scenarioRow = scenario.rows.find((entry) => entry.canonicalKey === row.canonicalKey);
+
+                return (
+                  <tr key={row.canonicalKey}>
+                    <td>
+                      <ItemProfileLink
+                        canonicalKey={row.canonicalKey}
+                        itemName={row.itemName}
+                        iconSrc={getItemIcon(row.canonicalKey)?.src ?? null}
+                      />
+                    </td>
+                    <td>
+                      <label className="sr-only" htmlFor={`quest-allocation-${row.canonicalKey}`}>
+                        {row.itemName} allocation percent
+                      </label>
+                      <input
+                        id={`quest-allocation-${row.canonicalKey}`}
+                        className="number-input number-input--compact"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={allocations[row.canonicalKey] ?? 0}
+                        onChange={(event) => {
+                          const nextValue = Number(event.target.value);
+                          setAllocations((current) => ({
+                            ...current,
+                            [row.canonicalKey]: Number.isFinite(nextValue) ? nextValue : 0,
+                          }));
+                        }}
+                      />
+                      <span className="subtle-text">%</span>
+                    </td>
+                    <td>
+                      {scenarioRow
+                        ? `${formatPreciseNumber(scenarioRow.dailySourceUnits)} ${scenarioRow.unitLabel}/day`
+                        : 'n/a'}
+                    </td>
+                    <td>
+                      {scenarioRow
+                        ? `${formatPreciseNumber(scenarioRow.projectedItemQuantity)} gained; ${formatNumber(
+                          scenarioRow.remainingAfterWait,
+                        )} left`
+                        : 'n/a'}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="empty-state">
+          Save daily source rates and reviewed source units before allocation scenarios can be modeled.
+        </p>
+      )}
+      {scenario.warnings.length > 0 ? (
+        <ul className="quest-warning-list">
+          {scenario.warnings.map((warning) => (
             <li key={warning}>{warning}</li>
           ))}
         </ul>
@@ -385,21 +678,34 @@ export function QuestHistoryPage() {
     isLoading: true,
     error: null,
     referenceData: null,
+    dropRateReference: null,
+    dropRateSettings: loadDropRateAcquisitionSettings(),
+    sourceRateState: loadSourceRateAssumptionsState(),
+    acquisitionState: loadAcquisitionPlannerInputState(),
+    petSourceReference: null,
     historyState: EMPTY_HISTORY_STATE,
     questPlannerState: null,
   });
   const [pasteText, setPasteText] = useState('');
   const [preview, setPreview] = useState<CompletedRequestsPasteParseResult | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [scaryThresholdDays, setScaryThresholdDays] = useState(DEFAULT_SCARY_PREP_DAYS_THRESHOLD);
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadResources(): Promise<void> {
       try {
-        const [referenceData] = await Promise.all([loadQuestReference()]);
+        const [referenceData, dropRateReference, petSourceReference] = await Promise.all([
+          loadQuestReference(),
+          loadDropRateReference().catch(() => null),
+          loadPetSourceReference().catch(() => null),
+        ]);
         const historyState = loadQuestHistoryState();
         const questPlannerState = loadQuestPlannerState();
+        const dropRateSettings = loadDropRateAcquisitionSettings();
+        const sourceRateState = loadSourceRateAssumptionsState();
+        const acquisitionState = loadAcquisitionPlannerInputState();
 
         if (!isMounted) {
           return;
@@ -409,6 +715,11 @@ export function QuestHistoryPage() {
           isLoading: false,
           error: null,
           referenceData,
+          dropRateReference,
+          dropRateSettings,
+          sourceRateState,
+          acquisitionState,
+          petSourceReference,
           historyState,
           questPlannerState,
         });
@@ -421,6 +732,11 @@ export function QuestHistoryPage() {
           isLoading: false,
           error: error instanceof Error ? error.message : 'Unable to load quest history resources.',
           referenceData: null,
+          dropRateReference: null,
+          dropRateSettings: loadDropRateAcquisitionSettings(),
+          sourceRateState: loadSourceRateAssumptionsState(),
+          acquisitionState: loadAcquisitionPlannerInputState(),
+          petSourceReference: null,
           historyState: EMPTY_HISTORY_STATE,
           questPlannerState: null,
         });
@@ -445,6 +761,29 @@ export function QuestHistoryPage() {
       referenceData: resourcesState.referenceData,
     });
   }, [resourcesState.historyState, resourcesState.questPlannerState, resourcesState.referenceData]);
+  const sourceBurden = useMemo(() => {
+    if (!planning) {
+      return null;
+    }
+
+    return deriveQuestSourceBurdenAnalytics({
+      demandRows: planning.futureDemandRows,
+      sourceRateState: resourcesState.sourceRateState,
+      scaryThresholdDays,
+      acquisitionState: resourcesState.acquisitionState,
+      petSourceReference: resourcesState.petSourceReference,
+      dropRateReference: resourcesState.dropRateReference,
+      dropRateSettings: resourcesState.dropRateSettings,
+    });
+  }, [
+    planning,
+    resourcesState.acquisitionState,
+    resourcesState.dropRateReference,
+    resourcesState.dropRateSettings,
+    resourcesState.petSourceReference,
+    resourcesState.sourceRateState,
+    scaryThresholdDays,
+  ]);
 
   function handlePreview(): void {
     const nextPreview = parseCompletedRequestsPaste(pasteText);
@@ -511,6 +850,16 @@ export function QuestHistoryPage() {
           </section>
 
           <QuestHistoryDashboard historyState={resourcesState.historyState} planning={planning} />
+          {sourceBurden ? (
+            <>
+              <QuestScaryWatch
+                burden={sourceBurden}
+                thresholdDays={scaryThresholdDays}
+                onThresholdDaysChange={setScaryThresholdDays}
+              />
+              <QuestAllocationScenario burden={sourceBurden} />
+            </>
+          ) : null}
           <QuestFutureDemandList rows={planning.futureDemandRows} />
           <QuestlineProgressList rows={planning.questlineSummaries} />
           <QuestlineHeatmap rows={planning.heatmapRows} />
