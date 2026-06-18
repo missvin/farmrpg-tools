@@ -1336,6 +1336,65 @@ a {
   margin-top: 0.75rem;
 }
 
+.quest-demand-row {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) auto minmax(10rem, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.quest-history-progress-cell {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 9rem;
+}
+
+.quest-history-progress-track {
+  display: block;
+  overflow: hidden;
+  height: 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+}
+
+.quest-history-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-progress-fill);
+}
+
+.questline-heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 0.85rem;
+}
+
+.questline-heatmap-card {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface-muted);
+}
+
+.questline-heatmap-card h3 {
+  margin: 0;
+}
+
+.questline-heatmap-card--completed {
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
+}
+
+.questline-heatmap-card--in_progress {
+  border-color: var(--color-next-border);
+  background: var(--color-next-bg);
+}
+
 .tower-percent-cell {
   position: relative;
   overflow: hidden;
@@ -2699,7 +2758,8 @@ a {
   }
 
   .history-selected-list__item,
-  .history-candidate-card {
+  .history-candidate-card,
+  .quest-demand-row {
     grid-template-columns: 1fr;
   }
 

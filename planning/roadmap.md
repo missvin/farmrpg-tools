@@ -101,13 +101,13 @@ Item pages should answer practical questions like how long Salt, Large Nets, Fro
 - Quest history, future-demand, and questline planning
   - completed-request parser, local quest-history snapshots, and first rarity/population analytics (`BL-271`, `BL-272`, `BL-273`, shipped)
   - broader reviewed quest-universe coverage for reliable history matching (`BL-274`, shipped)
-  - questline and seasonal progress model (`BL-275`, planned)
-  - item-page future quest demand adapter for known unfinished requirements (`BL-276`, planned)
+  - questline and seasonal progress model (`BL-275`, shipped)
+  - item-page future quest demand adapter for known unfinished requirements (`BL-276`, shipped)
   - source-rate assumptions for prep-time planning (`BL-280`, shipped) and quest source-burden estimates (`BL-281`, planned)
   - prep-time-based scary watch scoring and explainability controls (`BL-282`, `BL-283`, planned)
   - shared source allocation scenarios for multi-goal what-if planning (`BL-284`, planned)
-  - Quest History import review and dashboard UI (`BL-277`, planned)
-  - questline heatmap and bottleneck explorer (`BL-278`, planned)
+  - Quest History import review and dashboard UI (`BL-277`, shipped)
+  - questline heatmap and bottleneck explorer (`BL-278`, shipped)
 
 User-facing story:
 Completed quest exports become useful planning data: you can review imports, see rare completions and community movement, understand questline progress, and connect future quest requirements back to item pages and hoard-worthy bottlenecks. Scary future items should be based on source burden and prep time, not raw required quantity alone.

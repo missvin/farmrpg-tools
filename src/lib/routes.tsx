@@ -47,6 +47,9 @@ const MuseumToolsPage = lazy(() =>
 const QuestPlannerPage = lazy(() =>
   import('../pages/QuestPlannerPage').then((module) => ({ default: module.QuestPlannerPage })),
 );
+const QuestHistoryPage = lazy(() =>
+  import('../pages/QuestHistoryPage').then((module) => ({ default: module.QuestHistoryPage })),
+);
 const SettingsPage = lazy(() => import('../pages/SettingsPage').then((module) => ({ default: module.SettingsPage })));
 const SortedPage = lazy(() => import('../pages/SortedPage').then((module) => ({ default: module.SortedPage })));
 const TargetOutputPlannerPage = lazy(() =>
@@ -109,6 +112,11 @@ export const appRoutes: AppRoute[] = [
     path: '/import-help',
     label: 'Import Help',
     element: <ImportHelpPage />,
+  },
+  {
+    path: '/quest-history',
+    label: 'Quest History',
+    element: <QuestHistoryPage />,
   },
   {
     path: '/museum-tools',
@@ -239,6 +247,7 @@ export const navigationSections: NavigationSection[] = [
       { to: '/import-inventory', label: 'Import Inventory' },
       { to: '/import-pet-items', label: 'Import Pet Items' },
       { to: '/import-locksmith', label: 'Locksmith Import' },
+      { to: '/quest-history', label: 'Quest History' },
     ],
   },
   {

@@ -37,8 +37,16 @@ import {
   type OpenableContentsReferenceData,
 } from '../lib/loadOpenableContentsReference';
 import { loadPetSourceReference, type PetSourceReferenceData } from '../lib/loadPetSourceReference';
+import { loadQuestReference, type QuestReferenceData } from '../lib/loadQuestReference';
 import { loadRecipeGraph, type RecipeGraph, type RecipeInput, type RecipeNode } from '../lib/loadRecipeGraph';
 import { loadWishingWellReference, type WishingWellReferenceData } from '../lib/loadWishingWellReference';
+import {
+  deriveQuestHistoryPlanningAnalytics,
+  getQuestFutureDemandScopeLabel,
+  type QuestFutureDemandRow,
+} from '../lib/questHistoryPlanning';
+import { loadQuestHistoryState, type QuestHistoryState } from '../lib/questHistoryState';
+import { loadQuestPlannerState, type QuestPlannerState } from '../lib/questPlannerState';
 import {
   calculateRecursiveIngredientBurden,
   type IngredientBurdenEntry,
@@ -63,6 +71,9 @@ type ItemProfileResources = {
   petSourceReference: PetSourceReferenceData | null;
   openableContentsReference: OpenableContentsReferenceData | null;
   wishingWellReference: WishingWellReferenceData | null;
+  questReferenceData: QuestReferenceData | null;
+  questHistoryState: QuestHistoryState | null;
+  questPlannerState: QuestPlannerState | null;
 };
 
 type MasteryMilestone = {
@@ -710,6 +721,79 @@ function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
   );
 }
 
+function ItemQuestFutureDemandPanel({ demand }: { demand: QuestFutureDemandRow | null }) {
+  return (
+    <section className="page-card page-stack" aria-labelledby="item-profile-quest-demand-title">
+      <div>
+        <h2 id="item-profile-quest-demand-title">Future Quest Demand</h2>
+        <p className="supporting-text">
+          Known unfinished reviewed quest requirements, using saved quest history and manual Quest Planner state.
+        </p>
+      </div>
+      {demand ? (
+        <>
+          <dl className="summary-grid">
+            <div className="summary-grid__item">
+              <dt>Total known demand</dt>
+              <dd>{formatPlannerQuantity(demand.totalQuantity)}</dd>
+            </div>
+            <div className="summary-grid__item">
+              <dt>Unfinished quests</dt>
+              <dd>{demand.questCount.toLocaleString()}</dd>
+            </div>
+            <div className="summary-grid__item">
+              <dt>Scopes</dt>
+              <dd>
+                {demand.scopes.map((scope) => getQuestFutureDemandScopeLabel(scope.scope)).join(', ')}
+              </dd>
+            </div>
+          </dl>
+          <details className="advanced-details">
+            <summary>Show quest requirements</summary>
+            <ul className="data-list">
+              {demand.requirements.slice(0, 12).map((requirement) => (
+                <li key={`${requirement.questKey}:${requirement.scope}`}>
+                  <div className="recipe-link-row">
+                    <span>
+                      <strong>{requirement.questName}</strong>
+                      <span className="subtle-text"> {requirement.questlineName}</span>
+                    </span>
+                    <span>
+                      {formatPlannerQuantity(requirement.quantity)} needed ·{' '}
+                      {getQuestFutureDemandScopeLabel(requirement.scope)}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </details>
+          {demand.sourceHints.length > 0 ? (
+            <details className="advanced-details">
+              <summary>Show reviewed source hints</summary>
+              <ul className="data-list data-list--clickable">
+                {demand.sourceHints.slice(0, 8).map((sourceHint) => (
+                  <li key={`${sourceHint.sourceCanonicalKey}:${sourceHint.sourceType}`}>
+                    <div className="recipe-link-row">
+                      <ItemProfileLink
+                        canonicalKey={sourceHint.sourceCanonicalKey}
+                        itemName={sourceHint.sourceName}
+                        iconSrc={getItemIcon(sourceHint.sourceCanonicalKey)?.src ?? null}
+                      />
+                      <span>{sourceHint.sourceType}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ) : null}
+        </>
+      ) : (
+        <p className="empty-state">No unfinished reviewed quest requirements currently need this item.</p>
+      )}
+    </section>
+  );
+}
+
 function ItemGoalWaitProjectionRows({ result }: { result: ItemGoalCalculatorResult }) {
   const rows = result.waitProjection.activeRemainingRows.slice(0, 8);
 
@@ -1059,6 +1143,7 @@ export function ItemProfilePage() {
       loadPetSourceReference().catch(() => null),
       loadOpenableContentsReference().catch(() => null),
       loadWishingWellReference().catch(() => null),
+      loadQuestReference().catch(() => null),
     ])
       .then((
         [
@@ -1070,6 +1155,7 @@ export function ItemProfilePage() {
           petSourceReference,
           openableContentsReference,
           wishingWellReference,
+          questReferenceData,
         ],
       ) => {
         if (!isMounted) {
@@ -1088,6 +1174,9 @@ export function ItemProfilePage() {
             petSourceReference,
             openableContentsReference,
             wishingWellReference,
+            questReferenceData,
+            questHistoryState: loadQuestHistoryState(),
+            questPlannerState: loadQuestPlannerState(),
           },
         });
       })
@@ -1156,6 +1245,24 @@ export function ItemProfilePage() {
       dropRateReference: resourcesState.resources?.dropRateReference ?? null,
     });
   }, [acquisitionState, burdenResult, profile, resourcesState.resources?.dropRateReference]);
+  const questFutureDemand = useMemo(() => {
+    if (!profile || !resourcesState.resources?.questReferenceData || !resourcesState.resources.questHistoryState) {
+      return null;
+    }
+
+    const planning = deriveQuestHistoryPlanningAnalytics({
+      state: resourcesState.resources.questHistoryState,
+      questPlannerState: resourcesState.resources.questPlannerState,
+      referenceData: resourcesState.resources.questReferenceData,
+    });
+
+    return planning.futureDemandByCanonicalKey.get(profile.canonicalKey) ?? null;
+  }, [
+    profile,
+    resourcesState.resources?.questHistoryState,
+    resourcesState.resources?.questPlannerState,
+    resourcesState.resources?.questReferenceData,
+  ]);
 
   return (
     <div className="page-stack">
@@ -1315,6 +1422,8 @@ export function ItemProfilePage() {
           {acquisitionContext ? (
             <ItemAcquisitionContextSection context={acquisitionContext} profile={profile} />
           ) : null}
+
+          <ItemQuestFutureDemandPanel demand={questFutureDemand} />
 
           {resourcesState.resources?.recipeGraph ? (
             <ItemGoalCalculatorSection
