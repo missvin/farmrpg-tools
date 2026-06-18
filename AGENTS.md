@@ -88,6 +88,7 @@ Think before coding:
 - state assumptions when they matter
 - ask for clarification when multiple interpretations would produce different outcomes
 - if a significant assumption, dependency, artifact, or source-of-truth miss is discovered, stop forward work and follow `planning/failure-recovery-protocol.md` before resuming
+- if a required command is narrow, read-only, output-bounded, and belongs to a command class already known to hit Windows `CryptUnprotectData` sandbox failures in this environment, run it with escalation from the start instead of burning a predictable sandbox failure first; this is a token/usage-safety rule, not permission to broaden scope, and it must not be used for broad reads, generated/cache inspection, validation-heavy commands, network actions, writes, staging, commits, pushes, or destructive commands
 
 Keep changes small:
 

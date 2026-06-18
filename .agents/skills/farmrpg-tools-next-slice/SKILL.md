@@ -41,9 +41,11 @@ Default to low-usage implementation. Implement only the selected backlog row or 
 Known failing command guardrail:
 
 - Do not repeatedly try command patterns that have already failed in the session.
-- If a cheap metadata/read-only command fails with a known sandbox/environment error such as `CryptUnprotectData failed`, stop and report the failure instead of retrying multiple variants.
-- Before rerunning with escalation or an alternate command, explain why the rerun is necessary and ask for approval unless the user already explicitly authorized it.
-- Prefer direct reads of small known files over broad shell commands, and prefer targeted checks over recursive commands.
+- If a required command is narrow, read-only, output-bounded, and belongs to a command class already known to hit `CryptUnprotectData failed` in this environment, run it with escalation from the start instead of spending a sandbox failure first.
+- This applies only to small named file reads, targeted `Import-Csv` projections with selected rows/columns, and small git status/rev-parse checks that are genuinely needed.
+- Do not use this lane for broad reads, raw large-file reads, repo-wide searches, generated/cache/probe-output inspection, full build/test/lint, package installs, network/Vercel actions, writes, staging, commits, pushes, or destructive commands; explain and ask first or avoid the command.
+- Prefer targeted snippets, status filters, row projections, selected columns, and bounded output. Do not raw-read `planning/backlog.csv` or other large files just because escalation is available.
+- If an unknown command fails with a known sandbox/environment error such as `CryptUnprotectData failed`, stop and report the failure instead of retrying multiple variants.
 
 ## Slice Selection
 
