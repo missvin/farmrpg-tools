@@ -4,6 +4,11 @@ import {
   saveAcquisitionPlannerInputState,
 } from './acquisitionPlannerState';
 import {
+  clearBuildingProductionState,
+  loadBuildingProductionState,
+  saveBuildingProductionState,
+} from './buildingProductionState';
+import {
   loadCraftingModifierState,
   clearCraftingModifierState,
   saveCraftingModifierState,
@@ -108,6 +113,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   const currentUnknownItemEvidenceState = loadUnknownItemEvidenceState();
   const currentSnapshotVelocityPreferences = loadSnapshotVelocityPreferences();
   const currentSourceRateAssumptionsState = loadSourceRateAssumptionsState();
+  const currentBuildingProductionState = loadBuildingProductionState();
   const currentThemePreference = readStoredAppTheme();
 
   try {
@@ -191,6 +197,12 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       clearSourceRateAssumptionsState();
     }
 
+    if (payload.state.preferences.buildingProductionState) {
+      saveBuildingProductionState(payload.state.preferences.buildingProductionState);
+    } else {
+      clearBuildingProductionState();
+    }
+
     if (payload.state.preferences.themePreference) {
       persistAppTheme(payload.state.preferences.themePreference);
     } else {
@@ -211,6 +223,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     saveUnknownItemEvidenceState(currentUnknownItemEvidenceState);
     saveSnapshotVelocityPreferences(currentSnapshotVelocityPreferences);
     saveSourceRateAssumptionsState(currentSourceRateAssumptionsState);
+    saveBuildingProductionState(currentBuildingProductionState);
 
     if (currentThemePreference) {
       persistAppTheme(currentThemePreference);

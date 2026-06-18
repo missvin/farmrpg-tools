@@ -16,6 +16,7 @@ const {
   mockLoadQuestHistoryState,
   mockLoadSnapshotVelocityPreferences,
   mockLoadSourceRateAssumptionsState,
+  mockLoadBuildingProductionState,
   mockReadStoredAppTheme,
 } = vi.hoisted(() => ({
   mockListSnapshots: vi.fn<() => Promise<MasterySnapshot[]>>(),
@@ -31,6 +32,7 @@ const {
   mockLoadQuestHistoryState: vi.fn(),
   mockLoadSnapshotVelocityPreferences: vi.fn(),
   mockLoadSourceRateAssumptionsState: vi.fn(),
+  mockLoadBuildingProductionState: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
 }));
 
@@ -84,6 +86,10 @@ vi.mock('./snapshotVelocityPreferences', () => ({
 
 vi.mock('./sourceRateAssumptions', () => ({
   loadSourceRateAssumptionsState: mockLoadSourceRateAssumptionsState,
+}));
+
+vi.mock('./buildingProductionState', () => ({
+  loadBuildingProductionState: mockLoadBuildingProductionState,
 }));
 
 vi.mock('./themePreference', () => ({
@@ -357,6 +363,20 @@ function createSourceRateAssumptionsFixture() {
   };
 }
 
+function createBuildingProductionStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    perkSettings: {
+      sugarBoostI: true,
+      sugarBoostII: false,
+      pineBoost: true,
+    },
+    queuedOutputByCanonicalKey: {
+      'pine board': 42,
+    },
+  };
+}
+
 function createQuestPlannerStateFixture() {
   return {
     schemaVersion: 1 as const,
@@ -420,6 +440,7 @@ describe('appBackupExport', () => {
     mockLoadQuestHistoryState.mockReset();
     mockLoadSnapshotVelocityPreferences.mockReset();
     mockLoadSourceRateAssumptionsState.mockReset();
+    mockLoadBuildingProductionState.mockReset();
     mockReadStoredAppTheme.mockReset();
   });
 
@@ -448,6 +469,7 @@ describe('appBackupExport', () => {
     const questHistoryState = createQuestHistoryStateFixture();
     const snapshotVelocityPreferences = createSnapshotVelocityPreferencesFixture();
     const sourceRateAssumptionsState = createSourceRateAssumptionsFixture();
+    const buildingProductionState = createBuildingProductionStateFixture();
 
     mockListSnapshots.mockResolvedValue(snapshots);
     mockLoadCraftingModifierState.mockReturnValue(craftingModifierState);
@@ -462,6 +484,7 @@ describe('appBackupExport', () => {
     mockLoadQuestHistoryState.mockReturnValue(questHistoryState);
     mockLoadSnapshotVelocityPreferences.mockReturnValue(snapshotVelocityPreferences);
     mockLoadSourceRateAssumptionsState.mockReturnValue(sourceRateAssumptionsState);
+    mockLoadBuildingProductionState.mockReturnValue(buildingProductionState);
     mockReadStoredAppTheme.mockReturnValue('dark');
 
     const payload = await buildCurrentAppBackupPayload({
@@ -486,6 +509,7 @@ describe('appBackupExport', () => {
     expect(payload.state.preferences.questHistoryState).toEqual(questHistoryState);
     expect(payload.state.preferences.snapshotVelocityPreferences).toEqual(snapshotVelocityPreferences);
     expect(payload.state.preferences.sourceRateAssumptionsState).toEqual(sourceRateAssumptionsState);
+    expect(payload.state.preferences.buildingProductionState).toEqual(buildingProductionState);
     expect(payload.state.preferences.themePreference).toBe('dark');
   });
 

@@ -1,4 +1,8 @@
 import type { AcquisitionPlannerInputState } from './acquisitionPlannerState';
+import {
+  isValidBuildingProductionState,
+  type BuildingProductionState,
+} from './buildingProductionState';
 import type { UserCraftingModifierState } from './craftingModifierState';
 import type { DropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import type { MasteryRaceCountsState } from './masteryRaceCounts';
@@ -50,6 +54,7 @@ export type AppBackupStateV1 = {
     unknownItemEvidenceState?: UnknownItemEvidenceState | null;
     snapshotVelocityPreferences?: SnapshotVelocityPreferences | null;
     sourceRateAssumptionsState?: SourceRateAssumptionsState | null;
+    buildingProductionState?: BuildingProductionState | null;
     themePreference: AppTheme | null;
   };
 };
@@ -81,6 +86,7 @@ export type CreateAppBackupPayloadInput = {
   unknownItemEvidenceState?: UnknownItemEvidenceState | null;
   snapshotVelocityPreferences?: SnapshotVelocityPreferences | null;
   sourceRateAssumptionsState?: SourceRateAssumptionsState | null;
+  buildingProductionState?: BuildingProductionState | null;
   themePreference: AppTheme | null;
 };
 
@@ -115,7 +121,8 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_quest_history_state'
   | 'invalid_unknown_item_evidence_state'
   | 'invalid_snapshot_velocity_preferences'
-  | 'invalid_source_rate_assumptions_state';
+  | 'invalid_source_rate_assumptions_state'
+  | 'invalid_building_production_state';
 
 export type AppBackupPayloadValidationResult =
   | { ok: true; payload: AppBackupPayloadV1 }
@@ -651,6 +658,7 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
           unknownItemEvidenceState: input.unknownItemEvidenceState ?? null,
           snapshotVelocityPreferences: input.snapshotVelocityPreferences ?? null,
           sourceRateAssumptionsState: input.sourceRateAssumptionsState ?? null,
+          buildingProductionState: input.buildingProductionState ?? null,
           themePreference: input.themePreference,
         },
       },
@@ -940,6 +948,19 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       ok: false,
       code: 'invalid_source_rate_assumptions_state',
       message: 'The backup file contains malformed source-rate assumptions.',
+    };
+  }
+
+  const buildingProductionState = value.state.preferences.buildingProductionState;
+  if (
+    buildingProductionState !== undefined &&
+    buildingProductionState !== null &&
+    !isValidBuildingProductionState(buildingProductionState)
+  ) {
+    return {
+      ok: false,
+      code: 'invalid_building_production_state',
+      message: 'The backup file contains malformed building production assumptions.',
     };
   }
 

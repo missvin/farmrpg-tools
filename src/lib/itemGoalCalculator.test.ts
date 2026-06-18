@@ -4,8 +4,10 @@ import {
   createDefaultAcquisitionPlannerInputState,
   type AcquisitionPlannerInputState,
 } from './acquisitionPlannerState';
+import { createDefaultBuildingProductionState } from './buildingProductionState';
 import { createDefaultCraftingModifierState } from './craftingModifierState';
 import { buildItemGoalCalculatorResult } from './itemGoalCalculator';
+import type { BuildingProductionReferenceData } from './loadBuildingProductionReference';
 import type { OpenableContentsReferenceData } from './loadOpenableContentsReference';
 import type { RecipeGraph, RecipeNode } from './loadRecipeGraph';
 import type { WishingWellReferenceData } from './loadWishingWellReference';
@@ -543,5 +545,121 @@ describe('buildItemGoalCalculatorResult', () => {
     });
     expect(result.waitProjection.warnings[0]).toContain('needs 30 throws');
     expect(result.waitProjection.warnings[0]).toContain('only 10 are counted as available');
+  });
+
+  it('surfaces timed building production paths for item goals', () => {
+    const buildingProductionReference: BuildingProductionReferenceData = {
+      productions: [
+        {
+          productionKey: 'sugar_cane_mill_unrefined_sugar',
+          buildingName: 'Sugar Cane Mill',
+          outputItemName: 'Unrefined Sugar',
+          outputCanonicalKey: 'unrefined sugar',
+          outputQuantity: 1,
+          processingMinutes: 1,
+          perkGroup: 'sugar_cane_mill',
+          evidence: 'user_confirmed',
+          notes: [],
+          inputs: [
+            {
+              itemName: 'Sugar Cane',
+              canonicalKey: 'sugar cane',
+              quantity: 7,
+            },
+            {
+              itemName: 'Machine Press',
+              canonicalKey: 'machine press',
+              quantity: 1,
+            },
+          ],
+        },
+      ],
+      conversions: [
+        {
+          conversionKey: 'sugar_cane_mill_molasses',
+          buildingOutputItemName: 'Unrefined Sugar',
+          buildingOutputCanonicalKey: 'unrefined sugar',
+          finalItemName: 'Molasses',
+          finalCanonicalKey: 'molasses',
+          buildingOutputQuantity: 3,
+          finalOutputQuantity: 1,
+          secondaryInputs: [
+            {
+              itemName: 'Glass Jar',
+              canonicalKey: 'glass jar',
+              quantity: 1,
+            },
+          ],
+          evidence: 'user_confirmed',
+          notes: [],
+        },
+      ],
+      byOutputCanonicalKey: {
+        'unrefined sugar': [],
+      },
+      conversionsByFinalCanonicalKey: {
+        molasses: [],
+      },
+    };
+    buildingProductionReference.byOutputCanonicalKey['unrefined sugar'] =
+      buildingProductionReference.productions;
+    buildingProductionReference.conversionsByFinalCanonicalKey.molasses =
+      buildingProductionReference.conversions;
+
+    const result = buildItemGoalCalculatorResult({
+      itemName: 'Molasses',
+      canonicalKey: 'molasses',
+      currentMastery: 0,
+      acquisitionState: createBaseAcquisitionState(),
+      modifierState: createDefaultCraftingModifierState(),
+      recipeGraph: EMPTY_RECIPE_GRAPH,
+      openableContentsReference: { entries: [], byOpenableCanonicalKey: {}, byContentCanonicalKey: {} },
+      wishingWellReference: { entries: [], byThrownCanonicalKey: {}, byRewardCanonicalKey: {} },
+      buildingProductionReference,
+      buildingProductionState: {
+        ...createDefaultBuildingProductionState(),
+        perkSettings: {
+          sugarBoostI: true,
+          sugarBoostII: true,
+          pineBoost: false,
+        },
+        queuedOutputByCanonicalKey: {
+          'unrefined sugar': 300,
+        },
+      },
+      settings: {
+        goalMode: 'quantity',
+        targetQuantity: 500,
+      },
+    });
+
+    expect(result.buildingSources[0]).toMatchObject({
+      buildingName: 'Sugar Cane Mill',
+      finalItemName: 'Molasses',
+      requiredFinalQuantity: 500,
+      requiredBuildingOutputQuantity: 1500,
+      queuedOutputQuantity: 300,
+      remainingBuildingOutputQuantity: 1200,
+      batchesRequired: 600,
+      effectiveOutputPerBatch: 2,
+      processingMinutes: 300,
+      perksApplied: ['Sugar Boost I', 'Sugar Boost II'],
+    });
+    expect(result.buildingSources[0]?.inputRequirements).toEqual([
+      {
+        itemName: 'Sugar Cane',
+        canonicalKey: 'sugar cane',
+        requiredQuantity: 4200,
+        availableQuantity: 0,
+        remainingQuantity: 4200,
+      },
+      {
+        itemName: 'Machine Press',
+        canonicalKey: 'machine press',
+        requiredQuantity: 600,
+        availableQuantity: 0,
+        remainingQuantity: 600,
+      },
+    ]);
   });
 });

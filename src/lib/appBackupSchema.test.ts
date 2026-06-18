@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createDefaultAcquisitionPlannerInputState } from './acquisitionPlannerState';
+import { createDefaultBuildingProductionState } from './buildingProductionState';
 import { createDefaultCraftingModifierState } from './craftingModifierState';
 import { createDefaultDropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import { createDefaultPumpkinJuicePlannerState } from './pumpkinJuicePlannerState';
@@ -208,6 +209,17 @@ describe('appBackupSchema', () => {
         },
       ],
     };
+    const buildingProductionState = {
+      ...createDefaultBuildingProductionState(),
+      perkSettings: {
+        sugarBoostI: true,
+        sugarBoostII: true,
+        pineBoost: true,
+      },
+      queuedOutputByCanonicalKey: {
+        'unrefined sugar': 500,
+      },
+    };
 
     const payload = createAppBackupPayload({
       appVersion: '1.1.0',
@@ -225,6 +237,7 @@ describe('appBackupSchema', () => {
       questHistoryState,
       snapshotVelocityPreferences,
       sourceRateAssumptionsState,
+      buildingProductionState,
       themePreference: 'dark',
     });
 
@@ -251,6 +264,7 @@ describe('appBackupSchema', () => {
           unknownItemEvidenceState: null,
           snapshotVelocityPreferences,
           sourceRateAssumptionsState,
+          buildingProductionState,
           themePreference: 'dark',
         },
       },
@@ -744,6 +758,40 @@ describe('appBackupSchema', () => {
       ok: false,
       code: 'invalid_source_rate_assumptions_state',
       message: 'The backup file contains malformed source-rate assumptions.',
+    });
+
+    expect(
+      validateAppBackupPayloadV1({
+        kind: APP_BACKUP_PAYLOAD_KIND,
+        schemaVersion: APP_BACKUP_SCHEMA_VERSION,
+        appVersion: '1.1.0',
+        exportedAt: '2026-03-21T09:00:00.000Z',
+        profileId: 'default',
+        restoreStrategy: APP_BACKUP_RESTORE_STRATEGY,
+        state: {
+          snapshots: [],
+          preferences: {
+            craftingModifierState: null,
+            acquisitionPlannerState: null,
+            buildingProductionState: {
+              schemaVersion: 1,
+              perkSettings: {
+                sugarBoostI: true,
+                sugarBoostII: false,
+                pineBoost: false,
+              },
+              queuedOutputByCanonicalKey: {
+                'pine board': -1,
+              },
+            },
+            themePreference: 'dark',
+          },
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      code: 'invalid_building_production_state',
+      message: 'The backup file contains malformed building production assumptions.',
     });
   });
 });

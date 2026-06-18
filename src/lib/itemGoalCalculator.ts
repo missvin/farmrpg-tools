@@ -10,8 +10,14 @@ import {
   type AvailableSupplyPool,
 } from './availableSupply';
 import type { AcquisitionPlannerInputState } from './acquisitionPlannerState';
+import {
+  deriveItemGoalBuildingSources,
+  type ItemGoalBuildingSource,
+} from './buildingProductionCalculator';
+import type { BuildingProductionState } from './buildingProductionState';
 import type { UserCraftingModifierState } from './craftingModifierState';
 import type { OpenableContentsReferenceData, OpenableContentsReferenceEntry } from './loadOpenableContentsReference';
+import type { BuildingProductionReferenceData } from './loadBuildingProductionReference';
 import type { PetSourceReferenceData } from './loadPetSourceReference';
 import type { RecipeGraph } from './loadRecipeGraph';
 import type { WishingWellReferenceData, WishingWellReferenceEntry } from './loadWishingWellReference';
@@ -86,6 +92,7 @@ export type ItemGoalCalculatorResult = {
   openableSources: ItemGoalOpenableSource[];
   wishingWellSources: ItemGoalWishingWellSource[];
   petSources: ItemGoalPetSource[];
+  buildingSources: ItemGoalBuildingSource[];
   waitProjection: ItemGoalWaitProjection;
   warnings: string[];
 };
@@ -403,6 +410,8 @@ export function buildItemGoalCalculatorResult(input: {
   petSourceReference?: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
   openableContentsReference?: OpenableContentsReferenceData | null;
   wishingWellReference?: WishingWellReferenceData | null;
+  buildingProductionReference?: BuildingProductionReferenceData | null;
+  buildingProductionState?: BuildingProductionState | null;
   settings?: Partial<ItemGoalCalculatorSettings>;
 }): ItemGoalCalculatorResult {
   const settings = {
@@ -477,6 +486,16 @@ export function buildItemGoalCalculatorResult(input: {
     plannerResult,
     targetCanonicalKey: canonicalKey,
   });
+  const buildingSources = input.buildingProductionState
+    ? deriveItemGoalBuildingSources({
+      targetCanonicalKey: canonicalKey,
+      targetItemName: input.itemName,
+      targetRemainingQuantity: targetRow?.remainingQuantity ?? desiredQuantity,
+      buildingProductionReference: input.buildingProductionReference ?? null,
+      buildingProductionState: input.buildingProductionState,
+      supplyPool,
+    })
+    : [];
   const waitProjection = buildWaitProjection({
     settings,
     plannerResult,
@@ -494,6 +513,10 @@ export function buildItemGoalCalculatorResult(input: {
     warnings.push('Wishing Well reference data was not loaded, so expected Wishing Well rewards are not shown.');
   }
 
+  if (input.buildingProductionReference === null || input.buildingProductionReference === undefined) {
+    warnings.push('Building production reference data was not loaded, so timed building sources are not shown.');
+  }
+
   return {
     goalMode: settings.goalMode,
     desiredQuantity,
@@ -507,6 +530,7 @@ export function buildItemGoalCalculatorResult(input: {
     openableSources,
     wishingWellSources,
     petSources,
+    buildingSources,
     waitProjection,
     warnings,
   };

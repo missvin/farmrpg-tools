@@ -9,6 +9,14 @@ import {
   type AcquisitionPlannerInputState,
 } from '../lib/acquisitionPlannerState';
 import {
+  createDefaultBuildingProductionState,
+  loadBuildingProductionState,
+  saveBuildingProductionState,
+  setBuildingProductionPerk,
+  setQueuedBuildingOutput,
+  type BuildingProductionState,
+} from '../lib/buildingProductionState';
+import {
   createDefaultCraftingModifierState,
   loadCraftingModifierState,
   type UserCraftingModifierState,
@@ -31,6 +39,10 @@ import { decodeItemProfileParam, toItemProfilePath } from '../lib/itemProfileRou
 import { getItemIcon } from '../lib/itemIconManifest';
 import { resolveItemProfile, type ItemProfile, type ItemProfileTowerTarget } from '../lib/itemProfileResolver';
 import { loadDropRateReference, type DropRateReferenceData } from '../lib/loadDropRateReference';
+import {
+  loadBuildingProductionReference,
+  type BuildingProductionReferenceData,
+} from '../lib/loadBuildingProductionReference';
 import { loadItemCatalog, type ItemCatalogData } from '../lib/loadItemCatalog';
 import {
   loadOpenableContentsReference,
@@ -71,6 +83,7 @@ type ItemProfileResources = {
   petSourceReference: PetSourceReferenceData | null;
   openableContentsReference: OpenableContentsReferenceData | null;
   wishingWellReference: WishingWellReferenceData | null;
+  buildingProductionReference: BuildingProductionReferenceData | null;
   questReferenceData: QuestReferenceData | null;
   questHistoryState: QuestHistoryState | null;
   questPlannerState: QuestPlannerState | null;
@@ -112,6 +125,32 @@ function formatPlannerQuantity(value: number): string {
   return value.toLocaleString(undefined, {
     maximumFractionDigits: 1,
   });
+}
+
+function formatProductionDuration(minutes: number): string {
+  if (!Number.isFinite(minutes) || minutes <= 0) {
+    return 'No processing time';
+  }
+
+  const roundedMinutes = Math.ceil(minutes);
+  const days = Math.floor(roundedMinutes / 1440);
+  const hours = Math.floor((roundedMinutes % 1440) / 60);
+  const remainingMinutes = roundedMinutes % 60;
+  const parts: string[] = [];
+
+  if (days > 0) {
+    parts.push(`${days}d`);
+  }
+
+  if (hours > 0) {
+    parts.push(`${hours}h`);
+  }
+
+  if (remainingMinutes > 0 || parts.length === 0) {
+    parts.push(`${remainingMinutes}m`);
+  }
+
+  return parts.join(' ');
 }
 
 function formatPumpkinJuiceCount(value: number | null): string {
@@ -717,6 +756,59 @@ function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
           <p className="empty-state">No reviewed Wishing Well path is available for this item yet.</p>
         )}
       </div>
+
+      <div className="item-goal-source-card">
+        <h3>Buildings</h3>
+        {result.buildingSources.length > 0 ? (
+          <ul className="data-list data-list--clickable">
+            {result.buildingSources.map((source) => (
+              <li key={source.sourceKey}>
+                <div className="building-source-row">
+                  <div className="recipe-link-row">
+                    <ItemProfileLink
+                      canonicalKey={source.outputCanonicalKey}
+                      itemName={source.outputItemName}
+                      iconSrc={getItemIcon(source.outputCanonicalKey)?.src ?? null}
+                    />
+                    <span>
+                      <strong>{formatProductionDuration(source.processingMinutes)}</strong>
+                      <span className="subtle-text">
+                        {' '}
+                        {source.buildingName}
+                        {source.role === 'conversion' ? ` for ${source.finalItemName}` : ''}
+                      </span>
+                    </span>
+                  </div>
+                  <p className="subtle-text">
+                    Produce {formatPlannerQuantity(source.remainingBuildingOutputQuantity)} more{' '}
+                    {source.outputItemName}
+                    {source.queuedOutputQuantity > 0
+                      ? ` after ${formatPlannerQuantity(source.queuedOutputQuantity)} queued output`
+                      : ''}
+                    {source.perksApplied.length > 0 ? ` with ${source.perksApplied.join(', ')}` : ''}.
+                  </p>
+                  <dl className="compact-stat-grid compact-stat-grid--dense">
+                    {source.inputRequirements.map((requirement) => (
+                      <div key={requirement.canonicalKey}>
+                        <dt>{requirement.itemName}</dt>
+                        <dd>{formatPlannerQuantity(requirement.remainingQuantity)} left</dd>
+                      </div>
+                    ))}
+                    {source.secondaryRequirements.map((requirement) => (
+                      <div key={requirement.canonicalKey}>
+                        <dt>{requirement.itemName}</dt>
+                        <dd>{formatPlannerQuantity(requirement.remainingQuantity)} left</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="empty-state">No timed building production path is available for this item yet.</p>
+        )}
+      </div>
     </div>
   );
 }
@@ -833,6 +925,9 @@ function ItemGoalCalculatorSection({
   petSourceReference,
   openableContentsReference,
   wishingWellReference,
+  buildingProductionReference,
+  buildingProductionState,
+  setBuildingProductionState,
 }: {
   profile: ItemProfile;
   acquisitionState: AcquisitionPlannerInputState;
@@ -841,6 +936,9 @@ function ItemGoalCalculatorSection({
   petSourceReference: PetSourceReferenceData | null;
   openableContentsReference: OpenableContentsReferenceData | null;
   wishingWellReference: WishingWellReferenceData | null;
+  buildingProductionReference: BuildingProductionReferenceData | null;
+  buildingProductionState: BuildingProductionState;
+  setBuildingProductionState: (state: BuildingProductionState) => void;
 }) {
   const defaultMasteryTarget = getNextMasteryMilestone(profile.currentMastery)?.targetMastery ?? 1_000_000;
   const [goalMode, setGoalMode] = useState<ItemGoalMode>('mastery');
@@ -868,6 +966,8 @@ function ItemGoalCalculatorSection({
       petSourceReference,
       openableContentsReference,
       wishingWellReference,
+      buildingProductionReference,
+      buildingProductionState,
       settings: {
         goalMode,
         targetMastery,
@@ -883,6 +983,8 @@ function ItemGoalCalculatorSection({
   }, [
     acquisitionState,
     crunchyOmeletteActive,
+    buildingProductionReference,
+    buildingProductionState,
     goalMode,
     includeOpenables,
     modifierState,
@@ -1047,6 +1149,67 @@ function ItemGoalCalculatorSection({
             />
             Crunchy Omelette for pet collection
           </label>
+          <label className="checkbox-field">
+            <input
+              type="checkbox"
+              checked={buildingProductionState.perkSettings.sugarBoostI}
+              onChange={(event) =>
+                setBuildingProductionState(
+                  setBuildingProductionPerk(buildingProductionState, 'sugarBoostI', event.target.checked),
+                )}
+            />
+            Sugar Boost I
+          </label>
+          <label className="checkbox-field">
+            <input
+              type="checkbox"
+              checked={buildingProductionState.perkSettings.sugarBoostII}
+              onChange={(event) =>
+                setBuildingProductionState(
+                  setBuildingProductionPerk(buildingProductionState, 'sugarBoostII', event.target.checked),
+                )}
+            />
+            Sugar Boost II
+          </label>
+          <label className="checkbox-field">
+            <input
+              type="checkbox"
+              checked={buildingProductionState.perkSettings.pineBoost}
+              onChange={(event) =>
+                setBuildingProductionState(
+                  setBuildingProductionPerk(buildingProductionState, 'pineBoost', event.target.checked),
+                )}
+            />
+            Pine Boost
+          </label>
+          <label>
+            Queued Unrefined Sugar
+            <input
+              className="text-input"
+              type="number"
+              min="0"
+              step="1"
+              value={buildingProductionState.queuedOutputByCanonicalKey['unrefined sugar'] ?? 0}
+              onChange={(event) =>
+                setBuildingProductionState(
+                  setQueuedBuildingOutput(buildingProductionState, 'unrefined sugar', Number(event.target.value)),
+                )}
+            />
+          </label>
+          <label>
+            Queued Pine Board
+            <input
+              className="text-input"
+              type="number"
+              min="0"
+              step="1"
+              value={buildingProductionState.queuedOutputByCanonicalKey['pine board'] ?? 0}
+              onChange={(event) =>
+                setBuildingProductionState(
+                  setQueuedBuildingOutput(buildingProductionState, 'pine board', Number(event.target.value)),
+                )}
+            />
+          </label>
         </div>
       </details>
 
@@ -1112,6 +1275,13 @@ export function ItemProfilePage() {
       return createDefaultCraftingModifierState();
     }
   });
+  const [buildingProductionState, setBuildingProductionState] = useState<BuildingProductionState>(() => {
+    try {
+      return loadBuildingProductionState();
+    } catch {
+      return createDefaultBuildingProductionState();
+    }
+  });
   const [resourcesState, setResourcesState] = useState<{
     isLoading: boolean;
     error: string | null;
@@ -1134,6 +1304,12 @@ export function ItemProfilePage() {
 
     setAcquisitionState(loadedAcquisitionState);
 
+    try {
+      setBuildingProductionState(loadBuildingProductionState());
+    } catch {
+      setBuildingProductionState(createDefaultBuildingProductionState());
+    }
+
     void Promise.all([
       getLatestSnapshot(),
       loadItemCatalog(),
@@ -1143,6 +1319,7 @@ export function ItemProfilePage() {
       loadPetSourceReference().catch(() => null),
       loadOpenableContentsReference().catch(() => null),
       loadWishingWellReference().catch(() => null),
+      loadBuildingProductionReference().catch(() => null),
       loadQuestReference().catch(() => null),
     ])
       .then((
@@ -1155,6 +1332,7 @@ export function ItemProfilePage() {
           petSourceReference,
           openableContentsReference,
           wishingWellReference,
+          buildingProductionReference,
           questReferenceData,
         ],
       ) => {
@@ -1174,6 +1352,7 @@ export function ItemProfilePage() {
             petSourceReference,
             openableContentsReference,
             wishingWellReference,
+            buildingProductionReference,
             questReferenceData,
             questHistoryState: loadQuestHistoryState(),
             questPlannerState: loadQuestPlannerState(),
@@ -1196,6 +1375,14 @@ export function ItemProfilePage() {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    try {
+      saveBuildingProductionState(buildingProductionState);
+    } catch {
+      // Local storage can be unavailable in private or restricted contexts.
+    }
+  }, [buildingProductionState]);
 
   const profile = useMemo(() => {
     if (!canonicalKey || !resourcesState.resources) {
@@ -1434,6 +1621,9 @@ export function ItemProfilePage() {
               petSourceReference={resourcesState.resources.petSourceReference}
               openableContentsReference={resourcesState.resources.openableContentsReference}
               wishingWellReference={resourcesState.resources.wishingWellReference}
+              buildingProductionReference={resourcesState.resources.buildingProductionReference}
+              buildingProductionState={buildingProductionState}
+              setBuildingProductionState={setBuildingProductionState}
             />
           ) : null}
 

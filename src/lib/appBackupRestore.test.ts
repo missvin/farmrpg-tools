@@ -39,6 +39,9 @@ const {
   mockSaveSourceRateAssumptionsState,
   mockLoadSourceRateAssumptionsState,
   mockClearSourceRateAssumptionsState,
+  mockSaveBuildingProductionState,
+  mockLoadBuildingProductionState,
+  mockClearBuildingProductionState,
   mockPersistAppTheme,
   mockClearStoredAppTheme,
   mockReadStoredAppTheme,
@@ -81,6 +84,9 @@ const {
   mockSaveSourceRateAssumptionsState: vi.fn(),
   mockLoadSourceRateAssumptionsState: vi.fn(),
   mockClearSourceRateAssumptionsState: vi.fn(),
+  mockSaveBuildingProductionState: vi.fn(),
+  mockLoadBuildingProductionState: vi.fn(),
+  mockClearBuildingProductionState: vi.fn(),
   mockPersistAppTheme: vi.fn(),
   mockClearStoredAppTheme: vi.fn(),
   mockReadStoredAppTheme: vi.fn(),
@@ -166,6 +172,13 @@ vi.mock('./sourceRateAssumptions', () => ({
   isValidSourceRateAssumptionsState: vi.fn(() => true),
 }));
 
+vi.mock('./buildingProductionState', () => ({
+  loadBuildingProductionState: mockLoadBuildingProductionState,
+  saveBuildingProductionState: mockSaveBuildingProductionState,
+  clearBuildingProductionState: mockClearBuildingProductionState,
+  isValidBuildingProductionState: vi.fn(() => true),
+}));
+
 vi.mock('./themePreference', () => ({
   persistAppTheme: mockPersistAppTheme,
   clearStoredAppTheme: mockClearStoredAppTheme,
@@ -235,6 +248,7 @@ function createBackupPayload() {
     questHistoryState: createQuestHistoryStateFixture(),
     snapshotVelocityPreferences: createSnapshotVelocityPreferencesFixture(),
     sourceRateAssumptionsState: createSourceRateAssumptionsFixture(),
+    buildingProductionState: createBuildingProductionStateFixture(),
     themePreference: 'dark',
   });
 }
@@ -503,6 +517,20 @@ function createSourceRateAssumptionsFixture() {
   };
 }
 
+function createBuildingProductionStateFixture() {
+  return {
+    schemaVersion: 1 as const,
+    perkSettings: {
+      sugarBoostI: true,
+      sugarBoostII: false,
+      pineBoost: true,
+    },
+    queuedOutputByCanonicalKey: {
+      'pine board': 42,
+    },
+  };
+}
+
 describe('appBackupRestore', () => {
   beforeEach(() => {
     mockReplaceSnapshots.mockReset();
@@ -543,6 +571,9 @@ describe('appBackupRestore', () => {
     mockSaveSourceRateAssumptionsState.mockReset();
     mockLoadSourceRateAssumptionsState.mockReset();
     mockClearSourceRateAssumptionsState.mockReset();
+    mockSaveBuildingProductionState.mockReset();
+    mockLoadBuildingProductionState.mockReset();
+    mockClearBuildingProductionState.mockReset();
     mockPersistAppTheme.mockReset();
     mockClearStoredAppTheme.mockReset();
     mockReadStoredAppTheme.mockReset();
@@ -559,6 +590,7 @@ describe('appBackupRestore', () => {
     mockLoadQuestHistoryState.mockReturnValue(createQuestHistoryStateFixture());
     mockLoadSnapshotVelocityPreferences.mockReturnValue(createSnapshotVelocityPreferencesFixture());
     mockLoadSourceRateAssumptionsState.mockReturnValue(createSourceRateAssumptionsFixture());
+    mockLoadBuildingProductionState.mockReturnValue(createBuildingProductionStateFixture());
     mockReadStoredAppTheme.mockReturnValue('light');
   });
 
@@ -635,6 +667,9 @@ describe('appBackupRestore', () => {
     expect(mockSaveSourceRateAssumptionsState).toHaveBeenCalledWith(
       payload.state.preferences.sourceRateAssumptionsState,
     );
+    expect(mockSaveBuildingProductionState).toHaveBeenCalledWith(
+      payload.state.preferences.buildingProductionState,
+    );
     expect(mockPersistAppTheme).toHaveBeenCalledWith('dark');
     expect(mockClearCraftingModifierState).not.toHaveBeenCalled();
     expect(mockClearAcquisitionPlannerInputState).not.toHaveBeenCalled();
@@ -648,6 +683,7 @@ describe('appBackupRestore', () => {
     expect(mockClearQuestHistoryState).not.toHaveBeenCalled();
     expect(mockClearSnapshotVelocityPreferences).not.toHaveBeenCalled();
     expect(mockClearSourceRateAssumptionsState).not.toHaveBeenCalled();
+    expect(mockClearBuildingProductionState).not.toHaveBeenCalled();
     expect(mockClearStoredAppTheme).not.toHaveBeenCalled();
   });
 
@@ -668,6 +704,7 @@ describe('appBackupRestore', () => {
       questHistoryState: null,
       snapshotVelocityPreferences: null,
       sourceRateAssumptionsState: null,
+      buildingProductionState: null,
       themePreference: null,
     });
 
@@ -686,6 +723,7 @@ describe('appBackupRestore', () => {
     expect(mockClearQuestHistoryState).toHaveBeenCalledTimes(1);
     expect(mockClearSnapshotVelocityPreferences).toHaveBeenCalledTimes(1);
     expect(mockClearSourceRateAssumptionsState).toHaveBeenCalledTimes(1);
+    expect(mockClearBuildingProductionState).toHaveBeenCalledTimes(1);
     expect(mockClearStoredAppTheme).toHaveBeenCalledTimes(1);
   });
 
@@ -784,6 +822,7 @@ describe('appBackupRestore', () => {
     const previousQuestHistoryState = createQuestHistoryStateFixture();
     const previousSnapshotVelocityPreferences = createSnapshotVelocityPreferencesFixture();
     const previousSourceRateAssumptionsState = createSourceRateAssumptionsFixture();
+    const previousBuildingProductionState = createBuildingProductionStateFixture();
 
     mockListSnapshots.mockResolvedValue(previousSnapshots);
     mockLoadCraftingModifierState.mockReturnValue(previousModifierState);
@@ -798,6 +837,7 @@ describe('appBackupRestore', () => {
     mockLoadQuestHistoryState.mockReturnValue(previousQuestHistoryState);
     mockLoadSnapshotVelocityPreferences.mockReturnValue(previousSnapshotVelocityPreferences);
     mockLoadSourceRateAssumptionsState.mockReturnValue(previousSourceRateAssumptionsState);
+    mockLoadBuildingProductionState.mockReturnValue(previousBuildingProductionState);
     mockReadStoredAppTheme.mockReturnValue('dark');
     mockSaveCraftingModifierState
       .mockImplementationOnce(() => {
@@ -823,6 +863,7 @@ describe('appBackupRestore', () => {
     expect(mockSaveQuestHistoryState).toHaveBeenLastCalledWith(previousQuestHistoryState);
     expect(mockSaveSnapshotVelocityPreferences).toHaveBeenLastCalledWith(previousSnapshotVelocityPreferences);
     expect(mockSaveSourceRateAssumptionsState).toHaveBeenLastCalledWith(previousSourceRateAssumptionsState);
+    expect(mockSaveBuildingProductionState).toHaveBeenLastCalledWith(previousBuildingProductionState);
     expect(mockPersistAppTheme).toHaveBeenLastCalledWith('dark');
   });
 

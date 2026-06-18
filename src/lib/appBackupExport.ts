@@ -1,6 +1,7 @@
 import { loadAcquisitionPlannerInputState } from './acquisitionPlannerState';
 import packageJson from '../../package.json';
 
+import { loadBuildingProductionState } from './buildingProductionState';
 import { loadCraftingModifierState } from './craftingModifierState';
 import { createAppBackupPayload, type AppBackupPayloadV1 } from './appBackupSchema';
 import { loadDropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
@@ -62,6 +63,7 @@ export async function buildCurrentAppBackupPayload(
     unknownItemEvidenceState: loadUnknownItemEvidenceState(),
     snapshotVelocityPreferences: loadSnapshotVelocityPreferences(),
     sourceRateAssumptionsState: loadSourceRateAssumptionsState(),
+    buildingProductionState: loadBuildingProductionState(),
     themePreference: readStoredAppTheme(),
   });
 }
