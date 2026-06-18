@@ -19,8 +19,22 @@ export type ParseLocksmithStockpilePasteResult = {
   warnings: string[];
 };
 
-const LOCKSMITH_SECTION_HEADINGS = new Set(['May Starter Pack Item', 'Favorite Items', 'Items you can open']);
-const LOCKSMITH_SECTION_ENDINGS = new Set(['Consume a meal', 'Close Panel']);
+const LOCKSMITH_SECTION_HEADINGS = new Set(['favorite items', 'items you can open']);
+const LOCKSMITH_SECTION_ENDINGS = new Set(['consume a meal', 'close panel']);
+
+function normalizeLocksmithChromeLine(line: string): string {
+  return line.trim().replace(/\s+/gu, ' ').toLowerCase();
+}
+
+function isLocksmithSectionHeading(line: string): boolean {
+  const normalizedLine = normalizeLocksmithChromeLine(line);
+
+  return LOCKSMITH_SECTION_HEADINGS.has(normalizedLine) || /(?:^|\s)starter pack item$/u.test(normalizedLine);
+}
+
+function isLocksmithSectionEnding(line: string): boolean {
+  return LOCKSMITH_SECTION_ENDINGS.has(normalizeLocksmithChromeLine(line));
+}
 
 function parseCount(value: string): number | null {
   const parsedValue = Number(value.trim().replace(/,/g, ''));
@@ -115,12 +129,12 @@ function parseLocksmithPageRows(
   lines.forEach((line, index) => {
     const trimmedLine = line.trim();
 
-    if (LOCKSMITH_SECTION_HEADINGS.has(trimmedLine)) {
+    if (isLocksmithSectionHeading(trimmedLine)) {
       inLocksmithOpenableSection = true;
       return;
     }
 
-    if (LOCKSMITH_SECTION_ENDINGS.has(trimmedLine)) {
+    if (isLocksmithSectionEnding(trimmedLine)) {
       inLocksmithOpenableSection = false;
       return;
     }

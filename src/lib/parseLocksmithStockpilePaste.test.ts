@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -10,10 +12,16 @@ const options: ParseLocksmithStockpilePasteOptions = {
     const knownItems: Record<string, string> = {
       'birthday surprise box 05': 'Birthday Surprise Box 05',
       'grab bag 01': 'Grab Bag 01',
+      'grab bag 02': 'Grab Bag 02',
       'large chest': 'Large Chest',
       'large chest 01': 'Large Chest 01',
+      'large chest 02': 'Large Chest 02',
+      'large chest 03': 'Large Chest 03',
+      'medium chest 01': 'Medium Chest 01',
       'pot of gold (large)': 'Pot of Gold (Large)',
       'small chest': 'Small Chest',
+      'small chest 01': 'Small Chest 01',
+      'traveler\'s bag 01': 'Traveler\'s Bag 01',
     };
     const canonicalItemKey = itemName.trim().toLowerCase();
     const displayName = knownItems[canonicalItemKey];
@@ -26,6 +34,11 @@ const options: ParseLocksmithStockpilePasteOptions = {
     };
   },
 };
+
+const locksmithWithMaxButtonsSample = readFileSync(
+  'src/lib/fixtures/locksmith.with-max-buttons.sample.txt',
+  'utf8',
+);
 
 describe('parseLocksmithStockpilePaste', () => {
   it('parses Locksmith-style item count rows as owned stockpiles', () => {
@@ -101,6 +114,40 @@ describe('parseLocksmithStockpilePaste', () => {
       ],
       warnings: [],
     });
+  });
+
+  it('parses current Locksmith page exports with +MAX controls without importing controls', () => {
+    const result = parseLocksmithStockpilePaste(locksmithWithMaxButtonsSample, options);
+
+    expect(result.entries).toEqual(
+      expect.arrayContaining([
+        {
+          canonicalItemKey: 'traveler\'s bag 01',
+          itemName: 'Traveler\'s Bag 01',
+          ownedCount: 1,
+        },
+        {
+          canonicalItemKey: 'grab bag 01',
+          itemName: 'Grab Bag 01',
+          ownedCount: 4942,
+        },
+        {
+          canonicalItemKey: 'grab bag 02',
+          itemName: 'Grab Bag 02',
+          ownedCount: 23660,
+        },
+        {
+          canonicalItemKey: 'large chest 03',
+          itemName: 'Large Chest 03',
+          ownedCount: 2169,
+        },
+      ]),
+    );
+    expect(result.entries.length).toBeGreaterThan(20);
+    expect(result.entries.some((entry) => entry.itemName.includes('+MAX') || entry.canonicalItemKey.includes('max'))).toBe(
+      false,
+    );
+    expect(result.warnings.some((warning) => warning.includes('+MAX'))).toBe(false);
   });
 
   it('keeps unrecognized openable names with warnings', () => {
