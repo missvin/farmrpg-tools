@@ -671,6 +671,8 @@ function ItemGoalDemandList({
 }
 
 function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
+  const hasPetSources = result.petSources.length > 0 || result.referencePetSources.length > 0;
+
   return (
     <div className="item-goal-source-grid">
       <div className="item-goal-source-card">
@@ -699,7 +701,7 @@ function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
 
       <div className="item-goal-source-card">
         <h3>Pets</h3>
-        {result.petSources.length > 0 ? (
+        {hasPetSources ? (
           <ul className="data-list data-list--clickable">
             {result.petSources.map((source) => {
               const icon = getItemIcon(source.canonicalKey);
@@ -719,9 +721,27 @@ function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
                 </li>
               );
             })}
+            {result.referencePetSources.map((source) => {
+              const icon = getItemIcon(source.canonicalKey);
+
+              return (
+                <li key={`reference-${source.overrideKey}`}>
+                  <div className="recipe-link-row">
+                    <ItemProfileLink canonicalKey={source.canonicalKey} itemName={source.itemName} iconSrc={icon?.src} />
+                    <span>
+                      <strong>{formatPlannerQuantity(source.forecastQuantity)}</strong>
+                      <span className="subtle-text">
+                        {source.role === 'target' ? 'Target item' : 'Recipe ingredient'} from {source.petName} level{' '}
+                        {source.petLevel.toLocaleString()} over {source.forecastHours.toLocaleString()} hours
+                      </span>
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         ) : (
-          <p className="empty-state">No future pet rows match this target item or its current recipe demand.</p>
+          <p className="empty-state">No reviewed or saved future pet path matches this item goal yet.</p>
         )}
       </div>
 
@@ -950,6 +970,7 @@ function ItemGoalCalculatorSection({
   const [towerAntlersPerDay, setTowerAntlersPerDay] = useState(0);
   const [wishingWellThrowsPerDay, setWishingWellThrowsPerDay] = useState(30);
   const [wishingWellRewardMultiplier, setWishingWellRewardMultiplier] = useState(1);
+  const [referencePetLevelOverrides, setReferencePetLevelOverrides] = useState<Record<string, number>>({});
 
   useEffect(() => {
     setTargetMastery(defaultMasteryTarget);
@@ -978,6 +999,7 @@ function ItemGoalCalculatorSection({
         towerAntlersPerDay,
         wishingWellThrowsPerDay,
         wishingWellRewardMultiplier,
+        referencePetLevelOverrides,
       },
     });
   }, [
@@ -998,12 +1020,40 @@ function ItemGoalCalculatorSection({
     targetQuantity,
     towerAntlersPerDay,
     waitDays,
+    referencePetLevelOverrides,
     wishingWellReference,
     wishingWellRewardMultiplier,
     wishingWellThrowsPerDay,
   ]);
   const goalLabel = goalMode === 'mastery' ? 'Mastery remaining' : 'Quantity target';
   const allWarnings = [...result.warnings, ...result.waitProjection.warnings];
+  const countedSupplyNotes = [
+    result.openableQuantity > 0 ? `${formatPlannerQuantity(result.openableQuantity)} from openables` : '',
+    result.storedPetInventoryQuantity > 0
+      ? `${formatPlannerQuantity(result.storedPetInventoryQuantity)} stored pet inventory`
+      : '',
+    result.crunchyStoredPetBonusQuantity > 0
+      ? `${formatPlannerQuantity(result.effectiveStoredPetInventoryQuantity)} after Crunchy`
+      : '',
+    result.waitProjection.futurePetQuantity > 0
+      ? `${formatPlannerQuantity(result.waitProjection.futurePetQuantity)} future pets`
+      : '',
+  ].filter(Boolean);
+  const hasAntlerAssumption =
+    result.plannerResult.rows.some((row) => row.canonicalKey === 'antler') ||
+    result.openableSources.some((source) => source.entry.openableCanonicalKey === 'large chest 03');
+  const hasWishingWellAssumption = result.wishingWellSources.length > 0;
+  const hasPetCollectionAssumption =
+    result.storedPetInventoryQuantity > 0 || result.petSources.length > 0 || result.referencePetSources.length > 0;
+  const hasSugarBuildingSource = result.buildingSources.some((source) => source.buildingName === 'Sugar Cane Mill');
+  const hasPineBuildingSource = result.buildingSources.some((source) => source.buildingName === 'Sawmill');
+
+  function updateReferencePetLevel(overrideKey: string, nextLevel: number): void {
+    setReferencePetLevelOverrides((currentOverrides) => ({
+      ...currentOverrides,
+      [overrideKey]: nextLevel,
+    }));
+  }
 
   return (
     <section className="page-card page-stack" aria-labelledby="item-goal-calculator-title">
@@ -1023,15 +1073,7 @@ function ItemGoalCalculatorSection({
         <div className="summary-grid__item">
           <dt>Counted supply</dt>
           <dd>{formatPlannerQuantity(result.totalAvailableQuantity)}</dd>
-          {result.openableQuantity > 0 || result.crunchyStoredPetBonusQuantity > 0 ? (
-            <p className="subtle-text">
-              {result.openableQuantity > 0 ? `${formatPlannerQuantity(result.openableQuantity)} from openables` : ''}
-              {result.openableQuantity > 0 && result.crunchyStoredPetBonusQuantity > 0 ? ', ' : ''}
-              {result.crunchyStoredPetBonusQuantity > 0
-                ? `${formatPlannerQuantity(result.crunchyStoredPetBonusQuantity)} Crunchy pet bonus`
-                : ''}
-            </p>
-          ) : null}
+          {countedSupplyNotes.length > 0 ? <p className="subtle-text">{countedSupplyNotes.join(', ')}</p> : null}
         </div>
         <div className="summary-grid__item">
           <dt>Remaining</dt>
@@ -1100,39 +1142,45 @@ function ItemGoalCalculatorSection({
               onChange={(event) => setWaitDays(Number(event.target.value))}
             />
           </label>
-          <label>
-            Tower Antlers / day
-            <input
-              className="text-input"
-              type="number"
-              min="0"
-              step="1"
-              value={towerAntlersPerDay}
-              onChange={(event) => setTowerAntlersPerDay(Number(event.target.value))}
-            />
-          </label>
-          <label>
-            Wishing Well throws / day
-            <input
-              className="text-input"
-              type="number"
-              min="0"
-              step="1"
-              value={wishingWellThrowsPerDay}
-              onChange={(event) => setWishingWellThrowsPerDay(Number(event.target.value))}
-            />
-          </label>
-          <label>
-            Wishing Well reward multiplier
-            <input
-              className="text-input"
-              type="number"
-              min="1"
-              step="1"
-              value={wishingWellRewardMultiplier}
-              onChange={(event) => setWishingWellRewardMultiplier(Number(event.target.value))}
-            />
-          </label>
+          {hasAntlerAssumption ? (
+            <label>
+              Tower Antlers / day
+              <input
+                className="text-input"
+                type="number"
+                min="0"
+                step="1"
+                value={towerAntlersPerDay}
+                onChange={(event) => setTowerAntlersPerDay(Number(event.target.value))}
+              />
+            </label>
+          ) : null}
+          {hasWishingWellAssumption ? (
+            <>
+              <label>
+                Wishing Well throws / day
+                <input
+                  className="text-input"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={wishingWellThrowsPerDay}
+                  onChange={(event) => setWishingWellThrowsPerDay(Number(event.target.value))}
+                />
+              </label>
+              <label>
+                Wishing Well reward multiplier
+                <input
+                  className="text-input"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={wishingWellRewardMultiplier}
+                  onChange={(event) => setWishingWellRewardMultiplier(Number(event.target.value))}
+                />
+              </label>
+            </>
+          ) : null}
           <label className="checkbox-field">
             <input
               type="checkbox"
@@ -1141,75 +1189,106 @@ function ItemGoalCalculatorSection({
             />
             Count reviewed openable contents
           </label>
-          <label className="checkbox-field">
-            <input
-              type="checkbox"
-              checked={crunchyOmeletteActive}
-              onChange={(event) => setCrunchyOmeletteActive(event.target.checked)}
-            />
-            Crunchy Omelette for pet collection
-          </label>
-          <label className="checkbox-field">
-            <input
-              type="checkbox"
-              checked={buildingProductionState.perkSettings.sugarBoostI}
-              onChange={(event) =>
-                setBuildingProductionState(
-                  setBuildingProductionPerk(buildingProductionState, 'sugarBoostI', event.target.checked),
-                )}
-            />
-            Sugar Boost I
-          </label>
-          <label className="checkbox-field">
-            <input
-              type="checkbox"
-              checked={buildingProductionState.perkSettings.sugarBoostII}
-              onChange={(event) =>
-                setBuildingProductionState(
-                  setBuildingProductionPerk(buildingProductionState, 'sugarBoostII', event.target.checked),
-                )}
-            />
-            Sugar Boost II
-          </label>
-          <label className="checkbox-field">
-            <input
-              type="checkbox"
-              checked={buildingProductionState.perkSettings.pineBoost}
-              onChange={(event) =>
-                setBuildingProductionState(
-                  setBuildingProductionPerk(buildingProductionState, 'pineBoost', event.target.checked),
-                )}
-            />
-            Pine Boost
-          </label>
-          <label>
-            Queued Unrefined Sugar
-            <input
-              className="text-input"
-              type="number"
-              min="0"
-              step="1"
-              value={buildingProductionState.queuedOutputByCanonicalKey['unrefined sugar'] ?? 0}
-              onChange={(event) =>
-                setBuildingProductionState(
-                  setQueuedBuildingOutput(buildingProductionState, 'unrefined sugar', Number(event.target.value)),
-                )}
-            />
-          </label>
-          <label>
-            Queued Pine Board
-            <input
-              className="text-input"
-              type="number"
-              min="0"
-              step="1"
-              value={buildingProductionState.queuedOutputByCanonicalKey['pine board'] ?? 0}
-              onChange={(event) =>
-                setBuildingProductionState(
-                  setQueuedBuildingOutput(buildingProductionState, 'pine board', Number(event.target.value)),
-                )}
-            />
-          </label>
+          {hasPetCollectionAssumption ? (
+            <label className="checkbox-field">
+              <input
+                type="checkbox"
+                checked={crunchyOmeletteActive}
+                onChange={(event) => setCrunchyOmeletteActive(event.target.checked)}
+              />
+              Crunchy Omelette for pet collection
+            </label>
+          ) : null}
+          {result.referencePetSources.length > 0 ? (
+            <div className="item-goal-control-group">
+              <h3>Future pet levels</h3>
+              {result.referencePetSources.map((source) => (
+                <label key={source.overrideKey}>
+                  {source.petName} for {source.itemName}
+                  <input
+                    className="text-input"
+                    type="number"
+                    min={source.unlockLevel}
+                    step="1"
+                    value={
+                      referencePetLevelOverrides[source.overrideKey] ??
+                      source.petLevel
+                    }
+                    onChange={(event) => updateReferencePetLevel(source.overrideKey, Number(event.target.value))}
+                  />
+                </label>
+              ))}
+            </div>
+          ) : null}
+          {hasSugarBuildingSource ? (
+            <>
+              <label className="checkbox-field">
+                <input
+                  type="checkbox"
+                  checked={buildingProductionState.perkSettings.sugarBoostI}
+                  onChange={(event) =>
+                    setBuildingProductionState(
+                      setBuildingProductionPerk(buildingProductionState, 'sugarBoostI', event.target.checked),
+                    )}
+                />
+                Sugar Boost I
+              </label>
+              <label className="checkbox-field">
+                <input
+                  type="checkbox"
+                  checked={buildingProductionState.perkSettings.sugarBoostII}
+                  onChange={(event) =>
+                    setBuildingProductionState(
+                      setBuildingProductionPerk(buildingProductionState, 'sugarBoostII', event.target.checked),
+                    )}
+                />
+                Sugar Boost II
+              </label>
+              <label>
+                Queued Unrefined Sugar
+                <input
+                  className="text-input"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={buildingProductionState.queuedOutputByCanonicalKey['unrefined sugar'] ?? 0}
+                  onChange={(event) =>
+                    setBuildingProductionState(
+                      setQueuedBuildingOutput(buildingProductionState, 'unrefined sugar', Number(event.target.value)),
+                    )}
+                />
+              </label>
+            </>
+          ) : null}
+          {hasPineBuildingSource ? (
+            <>
+              <label className="checkbox-field">
+                <input
+                  type="checkbox"
+                  checked={buildingProductionState.perkSettings.pineBoost}
+                  onChange={(event) =>
+                    setBuildingProductionState(
+                      setBuildingProductionPerk(buildingProductionState, 'pineBoost', event.target.checked),
+                    )}
+                />
+                Pine Boost
+              </label>
+              <label>
+                Queued Pine Board
+                <input
+                  className="text-input"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={buildingProductionState.queuedOutputByCanonicalKey['pine board'] ?? 0}
+                  onChange={(event) =>
+                    setBuildingProductionState(
+                      setQueuedBuildingOutput(buildingProductionState, 'pine board', Number(event.target.value)),
+                    )}
+                />
+              </label>
+            </>
+          ) : null}
         </div>
       </details>
 

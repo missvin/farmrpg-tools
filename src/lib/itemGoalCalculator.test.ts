@@ -9,6 +9,7 @@ import { createDefaultCraftingModifierState } from './craftingModifierState';
 import { buildItemGoalCalculatorResult } from './itemGoalCalculator';
 import type { BuildingProductionReferenceData } from './loadBuildingProductionReference';
 import type { OpenableContentsReferenceData } from './loadOpenableContentsReference';
+import type { PetSourceReferenceData } from './loadPetSourceReference';
 import type { RecipeGraph, RecipeNode } from './loadRecipeGraph';
 import type { WishingWellReferenceData } from './loadWishingWellReference';
 
@@ -200,9 +201,88 @@ describe('buildItemGoalCalculatorResult', () => {
       },
     });
 
+    expect(result.storedPetInventoryQuantity).toBe(10);
     expect(result.crunchyStoredPetBonusQuantity).toBe(5);
+    expect(result.effectiveStoredPetInventoryQuantity).toBe(15);
     expect(result.totalAvailableQuantity).toBe(15);
     expect(result.remainingQuantity).toBe(5);
+  });
+
+  it('derives reviewed pet sources for the target item when no future pet rows are saved', () => {
+    const acquisitionState: AcquisitionPlannerInputState = {
+      ...createBaseAcquisitionState(),
+      pets: {
+        ...createBaseAcquisitionState().pets,
+        futureProduction: {
+          ...createBaseAcquisitionState().pets.futureProduction,
+          enabled: false,
+          horizonDays: 1,
+          offlineHoursCap: 48,
+          entries: [],
+        },
+      },
+    };
+    const petSourceReference: PetSourceReferenceData = {
+      entries: [],
+      byItemCanonicalKey: {
+        salt: [
+          {
+            petName: 'Skunk',
+            petCanonicalKey: 'skunk',
+            itemName: 'Salt',
+            itemCanonicalKey: 'salt',
+            unlockLevel: 3,
+            sourceUrl: 'https://buddy.farm/i/salt/',
+            pageDataUrl: '',
+            petAvailability: 'normal',
+            coverageStatus: 'reviewed',
+            notes: [],
+          },
+          {
+            petName: 'Red Dragon',
+            petCanonicalKey: 'red dragon',
+            itemName: 'Salt',
+            itemCanonicalKey: 'salt',
+            unlockLevel: 6,
+            sourceUrl: 'https://buddy.farm/i/salt/',
+            pageDataUrl: '',
+            petAvailability: 'normal',
+            coverageStatus: 'reviewed',
+            notes: [],
+          },
+        ],
+      },
+      byPetCanonicalKey: {},
+      byPetAndItemKey: {},
+    };
+
+    const result = buildItemGoalCalculatorResult({
+      itemName: 'Salt',
+      canonicalKey: 'salt',
+      currentMastery: 0,
+      acquisitionState,
+      modifierState: createDefaultCraftingModifierState(),
+      recipeGraph: EMPTY_RECIPE_GRAPH,
+      petSourceReference,
+      openableContentsReference: { entries: [], byOpenableCanonicalKey: {}, byContentCanonicalKey: {} },
+      wishingWellReference: { entries: [], byThrownCanonicalKey: {}, byRewardCanonicalKey: {} },
+      settings: {
+        goalMode: 'quantity',
+        targetQuantity: 100,
+        waitDays: 1,
+        referencePetLevelOverrides: {
+          'skunk:salt': 6,
+        },
+      },
+    });
+
+    expect(result.referencePetSources.map((source) => `${source.petName}:${source.petLevel}`)).toEqual([
+      'Red Dragon:6',
+      'Skunk:6',
+    ]);
+    expect(result.waitProjection.futurePetQuantity).toBe(24);
+    expect(result.totalAvailableQuantity).toBe(24);
+    expect(result.remainingQuantity).toBe(76);
   });
 
   it('models Wishing Well expected rewards without adding them to immediate supply', () => {

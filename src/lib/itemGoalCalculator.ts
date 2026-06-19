@@ -1,6 +1,8 @@
 import {
   CRUNCHY_OMELETTE_COLLECTION_MULTIPLIER,
   deriveFuturePetProductionForecast,
+  FUTURE_PET_HOURLY_OUTPUT_PER_LEVEL,
+  getAvailablePetItemPoolSize,
   type FuturePetProductionForecastItem,
 } from './deriveFuturePetProductionForecast';
 import {
@@ -36,6 +38,7 @@ export type ItemGoalCalculatorSettings = {
   towerAntlersPerDay: number;
   wishingWellThrowsPerDay: number;
   wishingWellRewardMultiplier: number;
+  referencePetLevelOverrides: Record<string, number>;
 };
 
 export type ItemGoalOpenableSource = {
@@ -59,6 +62,22 @@ export type ItemGoalPetSource = {
   forecastQuantity: number;
   sourcePetCount: number;
   forecast: FuturePetProductionForecastItem;
+};
+
+export type ItemGoalReferencePetSource = {
+  overrideKey: string;
+  canonicalKey: string;
+  itemName: string;
+  role: 'target' | 'ingredient';
+  petName: string;
+  petCanonicalKey: string;
+  petLevel: number;
+  unlockLevel: number;
+  forecastHours: number;
+  availableItemPoolSize: number;
+  collectionMultiplier: number;
+  forecastQuantity: number;
+  sourceUrl: string | null;
 };
 
 export type ItemGoalActiveRemainingRow = {
@@ -85,13 +104,16 @@ export type ItemGoalCalculatorResult = {
   totalAvailableQuantity: number;
   remainingQuantity: number;
   openableQuantity: number;
+  storedPetInventoryQuantity: number;
   crunchyStoredPetBonusQuantity: number;
+  effectiveStoredPetInventoryQuantity: number;
   expectedWishingWellQuantityPerDay: number;
   plannerResult: TargetOutputPlannerResult;
   supplyPool: AvailableSupplyPool;
   openableSources: ItemGoalOpenableSource[];
   wishingWellSources: ItemGoalWishingWellSource[];
   petSources: ItemGoalPetSource[];
+  referencePetSources: ItemGoalReferencePetSource[];
   buildingSources: ItemGoalBuildingSource[];
   waitProjection: ItemGoalWaitProjection;
   warnings: string[];
@@ -107,7 +129,12 @@ export const DEFAULT_ITEM_GOAL_CALCULATOR_SETTINGS: ItemGoalCalculatorSettings =
   towerAntlersPerDay: 0,
   wishingWellThrowsPerDay: 30,
   wishingWellRewardMultiplier: 1,
+  referencePetLevelOverrides: {},
 };
+
+export function getItemGoalReferencePetLevelKey(petCanonicalKey: string, itemCanonicalKey: string): string {
+  return `${toCanonicalItemKey(petCanonicalKey)}:${toCanonicalItemKey(itemCanonicalKey)}`;
+}
 
 function clampNonNegative(value: number): number {
   return Number.isFinite(value) && value > 0 ? value : 0;
@@ -280,6 +307,22 @@ function getDemandedCanonicalKeys(plannerResult: TargetOutputPlannerResult): Set
   return new Set(plannerResult.rows.map((row) => row.canonicalKey));
 }
 
+function getReferencePetForecastHours(input: {
+  acquisitionState: AcquisitionPlannerInputState;
+  settings: ItemGoalCalculatorSettings;
+}): number {
+  const waitDays = clampOptionalWaitDays(input.settings.waitDays) ?? input.acquisitionState.pets.futureProduction.horizonDays;
+  return Math.min(waitDays * 24, input.acquisitionState.pets.futureProduction.offlineHoursCap);
+}
+
+function getSavedFuturePetSourceKeys(acquisitionState: AcquisitionPlannerInputState): Set<string> {
+  return new Set(
+    acquisitionState.pets.futureProduction.entries.map((entry) =>
+      getItemGoalReferencePetLevelKey(entry.petName, entry.canonicalItemKey),
+    ),
+  );
+}
+
 function derivePetSources(input: {
   acquisitionState: AcquisitionPlannerInputState;
   petSourceReference: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
@@ -313,6 +356,91 @@ function derivePetSources(input: {
 
       return right.forecastQuantity - left.forecastQuantity || left.itemName.localeCompare(right.itemName);
     });
+}
+
+function deriveReferencePetSources(input: {
+  acquisitionState: AcquisitionPlannerInputState;
+  petSourceReference: Pick<PetSourceReferenceData, 'byItemCanonicalKey'> | null;
+  plannerResult: TargetOutputPlannerResult;
+  targetCanonicalKey: string;
+  settings: ItemGoalCalculatorSettings;
+}): ItemGoalReferencePetSource[] {
+  const demandedKeys = getDemandedCanonicalKeys(input.plannerResult);
+
+  if (demandedKeys.size === 0 || !input.petSourceReference) {
+    return [];
+  }
+
+  const savedFuturePetSourceKeys = getSavedFuturePetSourceKeys(input.acquisitionState);
+  const forecastHours = getReferencePetForecastHours(input);
+  const collectionMultiplier = input.settings.crunchyOmeletteActive ? CRUNCHY_OMELETTE_COLLECTION_MULTIPLIER : 1;
+  const sources: ItemGoalReferencePetSource[] = [];
+
+  for (const canonicalKey of demandedKeys) {
+    for (const entry of input.petSourceReference.byItemCanonicalKey[canonicalKey] ?? []) {
+      const overrideKey = getItemGoalReferencePetLevelKey(entry.petCanonicalKey, entry.itemCanonicalKey);
+
+      if (savedFuturePetSourceKeys.has(overrideKey)) {
+        continue;
+      }
+
+      const overrideLevel = input.settings.referencePetLevelOverrides[overrideKey];
+      const petLevel = Math.max(entry.unlockLevel, Math.floor(clampNonNegative(overrideLevel ?? entry.unlockLevel)));
+      const availableItemPoolSize = getAvailablePetItemPoolSize(petLevel);
+      const forecastQuantity =
+        petLevel >= entry.unlockLevel
+          ? (petLevel * forecastHours * FUTURE_PET_HOURLY_OUTPUT_PER_LEVEL * collectionMultiplier) /
+            availableItemPoolSize
+          : 0;
+
+      sources.push({
+        overrideKey,
+        canonicalKey: entry.itemCanonicalKey,
+        itemName: entry.itemName,
+        role: entry.itemCanonicalKey === input.targetCanonicalKey ? 'target' : 'ingredient',
+        petName: entry.petName,
+        petCanonicalKey: entry.petCanonicalKey,
+        petLevel,
+        unlockLevel: entry.unlockLevel,
+        forecastHours,
+        availableItemPoolSize,
+        collectionMultiplier,
+        forecastQuantity,
+        sourceUrl: entry.sourceUrl,
+      });
+    }
+  }
+
+  return sources
+    .filter((source) => source.forecastQuantity > 0)
+    .sort((left, right) => {
+      if (left.role !== right.role) {
+        return left.role === 'target' ? -1 : 1;
+      }
+
+      return left.itemName.localeCompare(right.itemName) ||
+        left.petName.localeCompare(right.petName) ||
+        left.overrideKey.localeCompare(right.overrideKey);
+    });
+}
+
+function buildReferencePetExtraBreakdowns(
+  referencePetSources: ItemGoalReferencePetSource[],
+): AvailableSupplyExtraBreakdownInput[] {
+  return referencePetSources.map((source) => ({
+    canonicalKey: source.canonicalKey,
+    itemName: source.itemName,
+    sourceKey: 'future_pet_production',
+    timing: 'future',
+    quantity: source.forecastQuantity,
+    notes: [
+      `${source.petName} level ${source.petLevel.toLocaleString()} over ` +
+        `${source.forecastHours.toLocaleString()} forecast hours.`,
+      `Reviewed pet-source unlock level ${source.unlockLevel.toLocaleString()}.`,
+      `Pet level ${source.petLevel.toLocaleString()} uses a ${source.availableItemPoolSize}-item output pool.`,
+      source.collectionMultiplier > 1 ? 'Crunchy Omelette collection multiplier applied.' : '',
+    ].filter(Boolean),
+  }));
 }
 
 function sumBreakdowns(
@@ -407,7 +535,7 @@ export function buildItemGoalCalculatorResult(input: {
   acquisitionState: AcquisitionPlannerInputState;
   modifierState: UserCraftingModifierState;
   recipeGraph: RecipeGraph;
-  petSourceReference?: Pick<PetSourceReferenceData, 'byPetAndItemKey'> | null;
+  petSourceReference?: Pick<PetSourceReferenceData, 'byPetAndItemKey' | 'byItemCanonicalKey'> | null;
   openableContentsReference?: OpenableContentsReferenceData | null;
   wishingWellReference?: WishingWellReferenceData | null;
   buildingProductionReference?: BuildingProductionReferenceData | null;
@@ -433,7 +561,7 @@ export function buildItemGoalCalculatorResult(input: {
     openableContentsReference: input.openableContentsReference ?? null,
     includeOpenableContents: settings.includeOpenableContents,
   });
-  const extraBreakdowns = [
+  const baseExtraBreakdowns = [
     ...buildOpenableExtraBreakdowns(openableSources),
     ...buildCrunchyStoredPetBonusBreakdowns({
       acquisitionState,
@@ -444,12 +572,12 @@ export function buildItemGoalCalculatorResult(input: {
       waitDays,
     }),
   ];
-  const supplyPool = deriveAvailableSupplyPool({
+  const baseSupplyPool = deriveAvailableSupplyPool({
     acquisitionState,
     petSourceReference: input.petSourceReference ?? null,
-    extraBreakdowns,
+    extraBreakdowns: baseExtraBreakdowns,
   });
-  const plannerResult = buildTargetOutputPlannerResult({
+  const basePlannerResult = buildTargetOutputPlannerResult({
     goals: [
       {
         targetId: `item-goal:${canonicalKey}`,
@@ -461,11 +589,50 @@ export function buildItemGoalCalculatorResult(input: {
     ],
     recipeGraph: input.recipeGraph,
     modifierState: input.modifierState,
-    supplyPool,
+    supplyPool: baseSupplyPool,
   });
+  const referencePetSources = deriveReferencePetSources({
+    acquisitionState,
+    petSourceReference: input.petSourceReference ?? null,
+    plannerResult: basePlannerResult,
+    targetCanonicalKey: canonicalKey,
+    settings,
+  });
+  const extraBreakdowns = [
+    ...baseExtraBreakdowns,
+    ...buildReferencePetExtraBreakdowns(referencePetSources),
+  ];
+  const supplyPool = referencePetSources.length > 0
+    ? deriveAvailableSupplyPool({
+      acquisitionState,
+      petSourceReference: input.petSourceReference ?? null,
+      extraBreakdowns,
+    })
+    : baseSupplyPool;
+  const plannerResult = referencePetSources.length > 0
+    ? buildTargetOutputPlannerResult({
+      goals: [
+        {
+          targetId: `item-goal:${canonicalKey}`,
+          targetLabel: input.itemName,
+          itemName: input.itemName,
+          canonicalKey,
+          desiredQuantity,
+        },
+      ],
+      recipeGraph: input.recipeGraph,
+      modifierState: input.modifierState,
+      supplyPool,
+    })
+    : basePlannerResult;
   const targetRow = plannerResult.rowsByCanonicalKey[canonicalKey] ?? null;
   const targetSupplyBreakdowns = targetRow?.supply?.breakdowns ?? [];
   const openableQuantity = sumBreakdowns(targetSupplyBreakdowns, (entry) => entry.sourceKey === 'openable_contents');
+  const storedPetInventoryQuantity = sumBreakdowns(
+    targetSupplyBreakdowns,
+    (entry) => entry.sourceKey === 'stored_pet_inventory' &&
+      !entry.notes.some((note) => note.includes('Crunchy Omelette')),
+  );
   const crunchyStoredPetBonusQuantity = sumBreakdowns(
     targetSupplyBreakdowns,
     (entry) => entry.sourceKey === 'stored_pet_inventory' &&
@@ -523,13 +690,16 @@ export function buildItemGoalCalculatorResult(input: {
     totalAvailableQuantity: targetRow?.availableQuantity ?? 0,
     remainingQuantity: targetRow?.remainingQuantity ?? desiredQuantity,
     openableQuantity,
+    storedPetInventoryQuantity,
     crunchyStoredPetBonusQuantity,
+    effectiveStoredPetInventoryQuantity: storedPetInventoryQuantity + crunchyStoredPetBonusQuantity,
     expectedWishingWellQuantityPerDay,
     plannerResult,
     supplyPool,
-    openableSources,
+    openableSources: openableSources.filter((source) => getDemandedCanonicalKeys(plannerResult).has(source.entry.contentCanonicalKey)),
     wishingWellSources,
     petSources,
+    referencePetSources,
     buildingSources,
     waitProjection,
     warnings,
