@@ -47,6 +47,9 @@ const MuseumToolsPage = lazy(() =>
 const QuestPlannerPage = lazy(() =>
   import('../pages/QuestPlannerPage').then((module) => ({ default: module.QuestPlannerPage })),
 );
+const RatingSourceWorkbenchPage = lazy(() =>
+  import('../pages/RatingSourceWorkbenchPage').then((module) => ({ default: module.RatingSourceWorkbenchPage })),
+);
 const QuestHistoryPage = lazy(() =>
   import('../pages/QuestHistoryPage').then((module) => ({ default: module.QuestHistoryPage })),
 );
@@ -204,6 +207,11 @@ export const appRoutes: AppRoute[] = [
     element: <TowerReferenceMaintenancePage />,
   },
   {
+    path: '/rating-source-workbench',
+    label: 'Rating Source Workbench',
+    element: <RatingSourceWorkbenchPage />,
+  },
+  {
     path: '/unknown-items',
     label: 'Unknown Item Review',
     element: <UnknownItemReviewPage />,
@@ -278,6 +286,7 @@ export const navigationSections: NavigationSection[] = [
     items: [
       { to: '/museum-tools', label: 'Museum Tools' },
       { to: '/tower-reference-maintenance', label: 'Tower Reference Maintenance' },
+      { to: '/rating-source-workbench', label: 'Rating Source Workbench' },
       { to: '/unknown-items', label: 'Unknown Item Review' },
       { to: '/backlog-graph', label: 'Backlog Graph' },
     ],
