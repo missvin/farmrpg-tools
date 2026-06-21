@@ -287,4 +287,22 @@ describe('deriveTowerProgress', () => {
       'red diamond fish',
     ]);
   });
+  it('filters tower requirements before aggregating unique item targets when a max Tower level is selected', () => {
+    const derived = deriveTowerProgress(
+      createSnapshot({
+        board: 150_000,
+        'gold cucumber': 50_000,
+        'red diamond fish': 5_000,
+      }),
+      towerRequirementsData,
+      masteryDifficultyData,
+      { maxTowerLevel: 300 },
+    );
+
+    expect(derived.items.map((item) => item.canonicalKey)).toEqual(['board']);
+    expect(derived.difficultyDrilldown.flatMap((group) => group.rows).map((row) => row.towerLevel)).toEqual([205]);
+    expect(derived.gmItemsLeftCount).toBe(0);
+    expect(derived.mmItemsLeftCount).toBe(1);
+    expect(derived.totalPumpkinJuicesNeeded).toBe(20);
+  });
 });

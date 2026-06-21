@@ -1,4 +1,5 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -26,6 +27,127 @@ function renderTowerProgressPage(initialEntries = ['/tower-progress']) {
       <TowerProgressPage />
     </MemoryRouter>,
   );
+}
+
+function setupTowerCutoffMocks() {
+  getLatestSnapshotMock.mockResolvedValue({
+    snapshotId: 'snapshot-cutoff',
+    createdAt: '2026-03-16T00:00:00.000Z',
+    rawText: '',
+    masteryByItem: {
+      board: 150_000,
+      'gold cucumber': 50_000,
+    },
+    parseSummary: {
+      itemsParsed: 2,
+      parsedRowsCount: 0,
+      tiersDetected: [100_000, 1_000_000],
+      duplicateRowsCount: 0,
+      skippedNonItemLinesCount: 0,
+      skippedNonItemLineSamples: [],
+      unknownItemsCount: 0,
+      warnings: [],
+    },
+    parsedRows: [],
+  });
+
+  loadTowerRequirementsMock.mockResolvedValue({
+    entries: [
+      {
+        towerLevel: 205,
+        towerLevelRange: '201-220',
+        slotIndex: 1,
+        itemName: 'Board',
+        canonicalKey: 'board',
+        masteryLevelNeeded: 'MM',
+        farmrpgItemId: null,
+        buddySlug: null,
+        notes: null,
+        sourceSheet: null,
+        sourceRow: null,
+      },
+      {
+        towerLevel: 301,
+        towerLevelRange: '301-320',
+        slotIndex: 1,
+        itemName: 'Gold Cucumber',
+        canonicalKey: 'gold cucumber',
+        masteryLevelNeeded: 'GM',
+        farmrpgItemId: null,
+        buddySlug: null,
+        notes: null,
+        sourceSheet: null,
+        sourceRow: null,
+      },
+    ],
+    byCanonicalKey: {
+      board: [],
+      'gold cucumber': [],
+    },
+  });
+
+  loadMasteryDifficultyMock.mockResolvedValue({
+    entries: [
+      {
+        itemName: 'Board',
+        canonicalKey: 'board',
+        difficulty: 1,
+        method: 'Crafting',
+        notes: null,
+        tags: null,
+        passiveCraftworksInfo: null,
+        farmrpgItemId: null,
+        buddyItemId: null,
+        buddySlug: null,
+        sourceSheet: null,
+        sourceRow: null,
+      },
+      {
+        itemName: 'Gold Cucumber',
+        canonicalKey: 'gold cucumber',
+        difficulty: 9,
+        method: 'Farming',
+        notes: null,
+        tags: null,
+        passiveCraftworksInfo: null,
+        farmrpgItemId: null,
+        buddyItemId: null,
+        buddySlug: null,
+        sourceSheet: null,
+        sourceRow: null,
+      },
+    ],
+    byCanonicalKey: {
+      board: {
+        itemName: 'Board',
+        canonicalKey: 'board',
+        difficulty: 1,
+        method: 'Crafting',
+        notes: null,
+        tags: null,
+        passiveCraftworksInfo: null,
+        farmrpgItemId: null,
+        buddyItemId: null,
+        buddySlug: null,
+        sourceSheet: null,
+        sourceRow: null,
+      },
+      'gold cucumber': {
+        itemName: 'Gold Cucumber',
+        canonicalKey: 'gold cucumber',
+        difficulty: 9,
+        method: 'Farming',
+        notes: null,
+        tags: null,
+        passiveCraftworksInfo: null,
+        farmrpgItemId: null,
+        buddyItemId: null,
+        buddySlug: null,
+        sourceSheet: null,
+        sourceRow: null,
+      },
+    },
+  });
 }
 
 describe('TowerProgressPage', () => {
@@ -317,7 +439,7 @@ describe('TowerProgressPage', () => {
       expect(screen.getByRole('heading', { name: 'Tower Items by Difficulty' })).toBeInTheDocument();
     });
 
-    const summarySection = screen.getByRole('heading', { name: 'Progress Summary' }).closest('section');
+    const summarySection = screen.getByRole('heading', { name: 'Pumpkin Juice Target Planner' }).closest('section');
     expect(summarySection).not.toBeNull();
     expect(within(summarySection as HTMLElement).queryByText(/Unmatched tower items/i)).not.toBeInTheDocument();
     expect(within(summarySection as HTMLElement).queryByText(/mastery difficulty data/i)).not.toBeInTheDocument();
@@ -435,5 +557,40 @@ describe('TowerProgressPage', () => {
     expect(difficultyOneBucket).not.toBeNull();
     expect(within(difficultyOneBucket as HTMLElement).getAllByText('Board')).toHaveLength(2);
     expect(within(difficultyOneBucket as HTMLElement).queryByText(/Slot/)).not.toBeInTheDocument();
+  });
+
+  it('initializes the Pumpkin Juice target planner from the through query param', async () => {
+    setupTowerCutoffMocks();
+
+    renderTowerProgressPage(['/tower-progress?through=300']);
+
+    await screen.findByRole('heading', { name: 'Pumpkin Juice Target Planner' });
+
+    expect(screen.getByDisplayValue('300')).toBeInTheDocument();
+    expect(screen.getByText('Pumpkin Juice needed through Tower 300')).toBeInTheDocument();
+    expect(screen.queryByText('Gold Cucumber')).not.toBeInTheDocument();
+  });
+
+  it('switches between all-known and T300 Pumpkin Juice target scopes', async () => {
+    const user = userEvent.setup();
+    setupTowerCutoffMocks();
+
+    renderTowerProgressPage();
+
+    await screen.findAllByText('Gold Cucumber');
+
+    await user.click(screen.getByRole('button', { name: 'T300' }));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Gold Cucumber')).not.toBeInTheDocument();
+    });
+    expect(screen.getByDisplayValue('300')).toBeInTheDocument();
+    expect(screen.getByText('Pumpkin Juice needed through Tower 300')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'All known' }));
+
+    await screen.findAllByText('Gold Cucumber');
+    expect(screen.getByPlaceholderText('All')).toHaveValue(null);
+    expect(screen.getByText('Pumpkin Juice needed for all known Tower levels')).toBeInTheDocument();
   });
 });

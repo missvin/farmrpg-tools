@@ -79,6 +79,12 @@ export type DerivedTowerProgress = {
   unratedItemCount: number;
 };
 
+export type TowerProgressDerivationOptions = {
+  maxTowerLevel?: number | null;
+};
+
+type TowerRequirementEntry = TowerRequirementsData['entries'][number];
+
 type TowerProgressAccumulator = {
   itemName: string;
   canonicalKey: string;
@@ -145,10 +151,21 @@ function toProgressPercent(currentMastery: number, requiredThreshold: number): n
   return Math.min(100, (currentMastery / requiredThreshold) * 100);
 }
 
-function buildAggregatedTowerItems(towerRequirementsData: TowerRequirementsData): TowerProgressAccumulator[] {
+function filterTowerEntries(
+  towerRequirementsData: TowerRequirementsData,
+  maxTowerLevel: number | null | undefined,
+): TowerRequirementEntry[] {
+  if (!maxTowerLevel) {
+    return towerRequirementsData.entries;
+  }
+
+  return towerRequirementsData.entries.filter((entry) => entry.towerLevel <= maxTowerLevel);
+}
+
+function buildAggregatedTowerItems(towerEntries: TowerRequirementEntry[]): TowerProgressAccumulator[] {
   const byCanonicalKey = new Map<string, TowerProgressAccumulator>();
 
-  for (const entry of towerRequirementsData.entries) {
+  for (const entry of towerEntries) {
     const requiredThreshold = getTowerRequirementThreshold(entry.masteryLevelNeeded);
     const existing = byCanonicalKey.get(entry.canonicalKey);
 
@@ -192,8 +209,10 @@ export function deriveTowerProgress(
   snapshot: MasterySnapshot,
   towerRequirementsData: TowerRequirementsData,
   masteryDifficultyData: MasteryDifficultyData,
+  options: TowerProgressDerivationOptions = {},
 ): DerivedTowerProgress {
-  const aggregatedItems = buildAggregatedTowerItems(towerRequirementsData);
+  const towerEntries = filterTowerEntries(towerRequirementsData, options.maxTowerLevel);
+  const aggregatedItems = buildAggregatedTowerItems(towerEntries);
   const difficultySummaryByLabel = new Map<string, DifficultySummaryAccumulator>();
   const difficultyDrilldownByLabel = new Map<string, DifficultyDrilldownAccumulator>();
   const items: TowerProgressItem[] = [];
@@ -290,7 +309,7 @@ export function deriveTowerProgress(
     difficultySummaryByLabel.set(difficultyLabel, bucket);
   }
 
-  for (const entry of towerRequirementsData.entries) {
+  for (const entry of towerEntries) {
     const matchedDifficultyEntry: MasteryDifficultyEntry | undefined = masteryDifficultyData.byCanonicalKey[entry.canonicalKey];
     const currentMastery = snapshot.masteryByItem[entry.canonicalKey] ?? 0;
     const requiredThreshold = getTowerRequirementThreshold(entry.masteryLevelNeeded);
