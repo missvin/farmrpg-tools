@@ -36,6 +36,15 @@ function matchesQuery(value: string, query: string): boolean {
   return value.toLowerCase().includes(query);
 }
 
+function routeMatchesQuery(route: (typeof appRoutes)[number], query: string): boolean {
+  return (
+    matchesQuery(route.label, query) ||
+    matchesQuery(route.path, query) ||
+    matchesQuery(route.description, query) ||
+    route.aliases.some((alias) => matchesQuery(alias, query))
+  );
+}
+
 function setSearchableItem(
   byCanonicalKey: Map<string, SearchableItem>,
   canonicalKey: string,
@@ -129,7 +138,7 @@ export function GlobalSearch() {
         ? []
         : appRoutes
             .filter((route) => !route.path.includes(':'))
-            .filter((route) => matchesQuery(route.label, normalizedQuery) || matchesQuery(route.path, normalizedQuery))
+            .filter((route) => routeMatchesQuery(route, normalizedQuery))
             .slice(0, 6),
     [normalizedQuery],
   );

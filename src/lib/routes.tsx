@@ -5,6 +5,7 @@ import { ImportPage } from '../pages/ImportPage';
 import { ImportInventoryPage } from '../pages/ImportInventoryPage';
 import { ImportPetItemsPage } from '../pages/ImportPetItemsPage';
 import { LocksmithImportPage } from '../pages/LocksmithImportPage';
+import { getRouteToolMetadata, type RouteToolId, type RouteToolMetadata } from './routeMetadata';
 
 const ImportHelpPage = lazy(() =>
   import('../pages/ImportHelpPage').then((module) => ({ default: module.ImportHelpPage })),
@@ -71,224 +72,113 @@ const UnknownItemReviewPage = lazy(() =>
   import('../pages/UnknownItemReviewPage').then((module) => ({ default: module.UnknownItemReviewPage })),
 );
 
-type AppRoute = {
-  path: string;
-  label: string;
+type AppRoute = RouteToolMetadata & {
   element: ReactElement;
 };
 
 type NavigationSection = {
   title: string;
   items: {
+    routeId: RouteToolId;
     to: string;
     label: string;
   }[];
 };
 
+function appRoute(routeId: RouteToolId, element: ReactElement): AppRoute {
+  return {
+    ...getRouteToolMetadata(routeId),
+    element,
+  };
+}
+
+function navigationItem(routeId: RouteToolId): NavigationSection['items'][number] {
+  const metadata = getRouteToolMetadata(routeId);
+
+  return {
+    routeId,
+    to: metadata.path,
+    label: metadata.label,
+  };
+}
+
 export const appRoutes: AppRoute[] = [
-  {
-    path: '/',
-    label: 'Dashboard',
-    element: <DashboardPage />,
-  },
-  {
-    path: '/import',
-    label: 'Import Mastery',
-    element: <ImportPage />,
-  },
-  {
-    path: '/import-inventory',
-    label: 'Import Inventory',
-    element: <ImportInventoryPage />,
-  },
-  {
-    path: '/import-pet-items',
-    label: 'Import Pet Items',
-    element: <ImportPetItemsPage />,
-  },
-  {
-    path: '/import-locksmith',
-    label: 'Locksmith Import',
-    element: <LocksmithImportPage />,
-  },
-  {
-    path: '/import-help',
-    label: 'Import Help',
-    element: <ImportHelpPage />,
-  },
-  {
-    path: '/quest-history',
-    label: 'Quest History',
-    element: <QuestHistoryPage />,
-  },
-  {
-    path: '/museum-tools',
-    label: 'Museum Tools',
-    element: <MuseumToolsPage />,
-  },
-  {
-    path: '/backlog-graph',
-    label: 'Backlog Graph',
-    element: <BacklogGraphPage />,
-  },
-  {
-    path: '/ingredient-demand',
-    label: 'Ingredient Lookup',
-    element: <IngredientDemandPage />,
-  },
-  {
-    path: '/ingredient-demand-list',
-    label: 'Material Planner',
-    element: <IngredientDemandListPage />,
-  },
-  {
-    path: '/craft-material-matrix',
-    label: 'Craft Material Matrix',
-    element: <CraftMaterialMatrixPage />,
-  },
-  {
-    path: '/items/:canonicalKey',
-    label: 'Item Profile',
-    element: <ItemProfilePage />,
-  },
-  {
-    path: '/mastery-goals',
-    label: 'Mastery Goals',
-    element: <MasteryGoalsPage />,
-  },
-  {
-    path: '/memory-helper',
-    label: "Borgen's Lost and Found",
-    element: <MemoryHelperPage />,
-  },
-  {
-    path: '/quest-planner',
-    label: 'Quest Planner',
-    element: <QuestPlannerPage />,
-  },
-  {
-    path: '/target-planner',
-    label: 'Target Planner',
-    element: <TargetOutputPlannerPage />,
-  },
-  {
-    path: '/large-net-planner',
-    label: 'Large Net Planner',
-    element: <LargeNetPlannerPage />,
-  },
-  {
-    path: '/museum-completion',
-    label: 'Museum Completion',
-    element: <MuseumCompletionPage />,
-  },
-  {
-    path: '/acquisition-breakdown',
-    label: 'Acquisition Breakdown',
-    element: <AcquisitionBreakdownPage />,
-  },
-  {
-    path: '/sorted',
-    label: 'Sorted',
-    element: <SortedPage />,
-  },
-  {
-    path: '/tower',
-    label: 'Tower',
-    element: <TowerPage />,
-  },
-  {
-    path: '/tower-progress',
-    label: 'Tower Items by Difficulty',
-    element: <TowerProgressPage />,
-  },
-  {
-    path: '/tower-reference-maintenance',
-    label: 'Tower Reference Maintenance',
-    element: <TowerReferenceMaintenancePage />,
-  },
-  {
-    path: '/rating-source-workbench',
-    label: 'Rating Source Workbench',
-    element: <RatingSourceWorkbenchPage />,
-  },
-  {
-    path: '/unknown-items',
-    label: 'Unknown Item Review',
-    element: <UnknownItemReviewPage />,
-  },
-  {
-    path: '/history',
-    label: 'History',
-    element: <HistoryPage />,
-  },
-  {
-    path: '/compare',
-    label: 'Compare',
-    element: <ComparePage />,
-  },
-  {
-    path: '/settings',
-    label: 'Settings',
-    element: <SettingsPage />,
-  },
+  appRoute('home', <DashboardPage />),
+  appRoute('importMastery', <ImportPage />),
+  appRoute('importInventory', <ImportInventoryPage />),
+  appRoute('importPetItems', <ImportPetItemsPage />),
+  appRoute('importLocksmith', <LocksmithImportPage />),
+  appRoute('importHelp', <ImportHelpPage />),
+  appRoute('questHistory', <QuestHistoryPage />),
+  appRoute('museumTools', <MuseumToolsPage />),
+  appRoute('backlogGraph', <BacklogGraphPage />),
+  appRoute('ingredientLookup', <IngredientDemandPage />),
+  appRoute('materialPlanner', <IngredientDemandListPage />),
+  appRoute('craftMaterialMatrix', <CraftMaterialMatrixPage />),
+  appRoute('itemProfile', <ItemProfilePage />),
+  appRoute('masteryGoals', <MasteryGoalsPage />),
+  appRoute('borgenHelper', <MemoryHelperPage />),
+  appRoute('questPlanner', <QuestPlannerPage />),
+  appRoute('targetPlanner', <TargetOutputPlannerPage />),
+  appRoute('largeNetPlanner', <LargeNetPlannerPage />),
+  appRoute('museumCompletion', <MuseumCompletionPage />),
+  appRoute('acquisitionBreakdown', <AcquisitionBreakdownPage />),
+  appRoute('sorted', <SortedPage />),
+  appRoute('tower', <TowerPage />),
+  appRoute('towerProgress', <TowerProgressPage />),
+  appRoute('towerReferenceMaintenance', <TowerReferenceMaintenancePage />),
+  appRoute('ratingSourceWorkbench', <RatingSourceWorkbenchPage />),
+  appRoute('unknownItemReview', <UnknownItemReviewPage />),
+  appRoute('history', <HistoryPage />),
+  appRoute('compare', <ComparePage />),
+  appRoute('settings', <SettingsPage />),
 ];
 
 export const navigationSections: NavigationSection[] = [
   {
     title: 'Plan',
     items: [
-      { to: '/', label: 'Dashboard' },
-      { to: '/ingredient-demand', label: 'Ingredient Lookup' },
-      { to: '/ingredient-demand-list', label: 'Material Planner' },
-      { to: '/craft-material-matrix', label: 'Craft Material Matrix' },
-      { to: '/mastery-goals', label: 'Mastery Goals' },
-      { to: '/quest-planner', label: 'Quest Planner' },
-      { to: '/target-planner', label: 'Target Planner' },
-      { to: '/large-net-planner', label: 'Large Net Planner' },
-      { to: '/acquisition-breakdown', label: 'Acquisition Breakdown' },
+      navigationItem('home'),
+      navigationItem('ingredientLookup'),
+      navigationItem('materialPlanner'),
+      navigationItem('craftMaterialMatrix'),
+      navigationItem('masteryGoals'),
+      navigationItem('questPlanner'),
+      navigationItem('targetPlanner'),
+      navigationItem('largeNetPlanner'),
+      navigationItem('acquisitionBreakdown'),
     ],
   },
   {
     title: 'Import',
     items: [
-      { to: '/import', label: 'Import Mastery' },
-      { to: '/import-inventory', label: 'Import Inventory' },
-      { to: '/import-pet-items', label: 'Import Pet Items' },
-      { to: '/import-locksmith', label: 'Locksmith Import' },
-      { to: '/quest-history', label: 'Quest History' },
+      navigationItem('importMastery'),
+      navigationItem('importInventory'),
+      navigationItem('importPetItems'),
+      navigationItem('importLocksmith'),
+      navigationItem('questHistory'),
     ],
   },
   {
     title: 'Progress',
-    items: [
-      { to: '/tower-progress', label: 'Tower Items by Difficulty' },
-      { to: '/sorted', label: 'Sorted' },
-      { to: '/tower', label: 'Tower' },
-    ],
+    items: [navigationItem('towerProgress'), navigationItem('sorted'), navigationItem('tower')],
   },
   {
     title: 'Other',
-    items: [
-      { to: '/memory-helper', label: "Borgen's Lost and Found" },
-      { to: '/museum-completion', label: 'Museum Completion' },
-    ],
+    items: [navigationItem('borgenHelper'), navigationItem('museumCompletion')],
   },
   {
     title: 'Data',
-    items: [
-      { to: '/history', label: 'History' },
-      { to: '/compare', label: 'Compare' },
-      { to: '/settings', label: 'Settings' },
-    ],
+    items: [navigationItem('history'), navigationItem('compare'), navigationItem('settings')],
   },
   {
     title: 'Dev Tools',
     items: [
-      { to: '/museum-tools', label: 'Museum Tools' },
-      { to: '/tower-reference-maintenance', label: 'Tower Reference Maintenance' },
-      { to: '/rating-source-workbench', label: 'Rating Source Workbench' },
-      { to: '/unknown-items', label: 'Unknown Item Review' },
-      { to: '/backlog-graph', label: 'Backlog Graph' },
+      navigationItem('museumTools'),
+      navigationItem('towerReferenceMaintenance'),
+      navigationItem('ratingSourceWorkbench'),
+      navigationItem('unknownItemReview'),
+      navigationItem('backlogGraph'),
     ],
   },
 ];

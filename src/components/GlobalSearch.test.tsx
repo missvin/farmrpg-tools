@@ -90,4 +90,21 @@ describe('GlobalSearch', () => {
       expect(screen.getByText('/items/tin%20scraps')).toBeInTheDocument();
     });
   });
+  it('matches pages by route metadata aliases', async () => {
+    mockSearchResources();
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <GlobalSearch />
+      </MemoryRouter>,
+    );
+
+    await user.type(screen.getByLabelText('Search pages and items'), 'pj');
+
+    expect(await screen.findByRole('link', { name: /Tower Items by Difficulty/ })).toHaveAttribute(
+      'href',
+      '/tower-progress',
+    );
+  });
 });
