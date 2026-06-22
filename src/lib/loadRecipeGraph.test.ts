@@ -114,7 +114,7 @@ fancy pipe,Fancy Pipe,1,Wood,wood,10,https://buddy.farm/i/fancy-pipe/,https://bu
     const recipeInputsCsv = readFileSync(join(process.cwd(), 'data', 'recipe_inputs.csv'), 'utf8');
     const graph = buildRecipeGraph(parseRecipesCsv(recipesCsv), parseRecipeInputsCsv(recipeInputsCsv));
 
-    expect(graph.recipes).toHaveLength(273);
+    expect(graph.recipes).toHaveLength(275);
     expect(graph.recipes.every((recipe) => recipe.inputs.length > 0)).toBe(true);
     expect(graph.byOutputCanonicalKey.valve.inputs.map((input) => input.itemName).sort()).toEqual([
       'Broken Pipe',
@@ -128,6 +128,27 @@ fancy pipe,Fancy Pipe,1,Wood,wood,10,https://buddy.farm/i/fancy-pipe/,https://bu
       cookingLevel: '50',
       baseTime: '24h',
     });
+    expect(graph.byOutputCanonicalKey['wood planer']).toMatchObject({
+      outputItemName: 'Wood Planer',
+      recipeType: 'craft',
+    });
+    expect(graph.byOutputCanonicalKey['wood planer'].inputs.map((input) => input.itemName)).toEqual([
+      'Iron',
+      'Wood',
+      'Steel',
+      'Moonstone',
+      'Small Bolt',
+    ]);
+    expect(graph.byOutputCanonicalKey['pine shavings']).toMatchObject({
+      outputItemName: 'Pine Shavings',
+      recipeType: 'craft',
+    });
+    expect(graph.byOutputCanonicalKey['pine shavings'].inputs.map((input) => input.itemName)).toEqual([
+      'Emberstone',
+      'Pine Board',
+      'Wood Planer',
+    ]);
+    expect(graph.byInputCanonicalKey['wood planer'].map((recipe) => recipe.outputItemName)).toEqual(['Pine Shavings']);
     expect(graph.byOutputCanonicalKey['green top hat']).toBeUndefined();
     expect(graph.byOutputCanonicalKey['shamrock milk']).toBeUndefined();
   });

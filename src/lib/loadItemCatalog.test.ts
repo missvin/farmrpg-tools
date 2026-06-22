@@ -69,7 +69,7 @@ Glass Orb,glass orb,yes,,,,,`),
   it('parses the checked-in local item catalog', () => {
     const result = parseItemCatalogCsv(readFileSync(join(process.cwd(), 'data', 'item_catalog.csv'), 'utf8'));
 
-    expect(result.entries.length).toBe(1461);
+    expect(result.entries.length).toBe(1464);
     expect(result.byCanonicalKey['acorn butter']).toMatchObject({
       itemName: 'Acorn Butter',
       masteryPossible: 'yes',
@@ -98,6 +98,24 @@ Glass Orb,glass orb,yes,,,,,`),
       masteryPossible: 'unknown',
       buddySlug: 'large-chest-01',
       sourceDatasets: ['buddy_item_evidence_cache'],
+    });
+    expect(result.byCanonicalKey['goldfish prize']).toMatchObject({
+      itemName: 'Goldfish Prize',
+      masteryPossible: 'no',
+      buddySlug: 'goldfish-prize',
+      sourceDatasets: ['buddy_manual_refresh'],
+    });
+    expect(result.byCanonicalKey['wood planer']).toMatchObject({
+      itemName: 'Wood Planer',
+      masteryPossible: 'yes',
+      farmrpgItemId: '1511',
+      buddySlug: 'wood-planer',
+    });
+    expect(result.byCanonicalKey['pine shavings']).toMatchObject({
+      itemName: 'Pine Shavings',
+      masteryPossible: 'yes',
+      farmrpgItemId: '1510',
+      buddySlug: 'pine-shavings',
     });
   });
 });

@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import { parseMasteryDifficultyCsv } from './loadMasteryDifficulty';
@@ -42,6 +45,27 @@ Valid Item,2,,,,,,,,,`),
       parseMasteryDifficultyCsv(`item_name,difficulty,method
 Board,1,Crafting`),
     ).toThrow('Invalid mastery difficulty data schema');
+  });
+
+
+  it('parses the checked-in new item mastery batch without inferring non-masterable prizes', () => {
+    const result = parseMasteryDifficultyCsv(readFileSync(join(process.cwd(), 'data', 'mastery_difficulty.csv'), 'utf8'));
+
+    expect(result.byCanonicalKey['wood planer']).toMatchObject({
+      itemName: 'Wood Planer',
+      difficulty: null,
+      method: 'Crafting',
+      farmrpgItemId: '1511',
+      buddySlug: 'wood-planer',
+    });
+    expect(result.byCanonicalKey['pine shavings']).toMatchObject({
+      itemName: 'Pine Shavings',
+      difficulty: null,
+      method: 'Crafting',
+      farmrpgItemId: '1510',
+      buddySlug: 'pine-shavings',
+    });
+    expect(result.byCanonicalKey['goldfish prize']).toBeUndefined();
   });
 
   it('rejects non-numeric non-blank difficulty values', () => {
