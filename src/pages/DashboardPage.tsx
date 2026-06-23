@@ -4,7 +4,55 @@ import { Link } from 'react-router-dom';
 import { PageIntro } from '../components/PageIntro';
 import { deriveMasteryDifficultyStats } from '../lib/deriveMasteryDifficultyStats';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
+import { getRouteToolMetadata, type RouteToolId } from '../lib/routeMetadata';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
+
+type LatestSnapshot = Awaited<ReturnType<typeof getLatestSnapshot>>;
+
+type DashboardState = {
+  isLoading: boolean;
+  snapshotError: string | null;
+  difficultyError: string | null;
+  snapshot: LatestSnapshot;
+  derivedStats: ReturnType<typeof deriveMasteryDifficultyStats> | null;
+};
+
+type CommandCenterAction = {
+  to: string;
+  title: string;
+  description: string;
+  reason: string;
+};
+
+type DataStatusItem = {
+  label: string;
+  value: string;
+  description: string;
+  action?: {
+    to: string;
+    label: string;
+  };
+};
+
+function routeAction(routeId: RouteToolId, reason: string): CommandCenterAction {
+  const metadata = getRouteToolMetadata(routeId);
+
+  return {
+    to: metadata.path,
+    title: metadata.label,
+    description: metadata.description,
+    reason,
+  };
+}
+
+function restoreBackupAction(reason: string): CommandCenterAction {
+  return {
+    to: '/settings#settings-restore-title',
+    title: 'Restore Backup',
+    description: 'Load a previously exported FarmRPG Tools backup file.',
+    reason,
+  };
+}
 
 function formatTierList(tiers: Array<number | 'INF'>): string {
   if (tiers.length === 0) {
@@ -49,7 +97,7 @@ function getSummaryProgressStyle(
   };
 }
 
-function getLocalDataStatus(snapshot: Awaited<ReturnType<typeof getLatestSnapshot>>, isLoading: boolean): string {
+function getLocalDataStatus(snapshot: LatestSnapshot, isLoading: boolean): string {
   if (isLoading) {
     return 'Checking the latest local snapshot saved in this browser.';
   }
@@ -61,14 +109,154 @@ function getLocalDataStatus(snapshot: Awaited<ReturnType<typeof getLatestSnapsho
   return `Latest local snapshot saved ${new Date(snapshot.createdAt).toLocaleString()} with ${snapshot.parseSummary.itemsParsed.toLocaleString()} items parsed.`;
 }
 
+function getDataStatusItems(state: DashboardState): DataStatusItem[] {
+  const snapshotStatus: DataStatusItem = state.isLoading
+    ? {
+        label: 'Mastery snapshot',
+        value: 'Checking',
+        description: 'Looking for the latest mastery snapshot saved in this browser.',
+      }
+    : state.snapshotError
+      ? {
+          label: 'Mastery snapshot',
+          value: 'Needs attention',
+          description: 'The local snapshot store could not be read. Restore a backup or import again.',
+          action: {
+            to: '/settings#settings-restore-title',
+            label: 'Restore backup',
+          },
+        }
+      : state.snapshot
+        ? {
+            label: 'Mastery snapshot',
+            value: 'Ready',
+            description: `${state.snapshot.parseSummary.itemsParsed.toLocaleString()} items parsed from the latest saved snapshot.`,
+            action: {
+              to: '/import',
+              label: 'Refresh import',
+            },
+          }
+        : {
+            label: 'Mastery snapshot',
+            value: 'Needed',
+            description: 'Import a mastery export or restore a backup before progress-aware views can speak clearly.',
+            action: {
+              to: '/import',
+              label: 'Import mastery',
+            },
+          };
+
+  const difficultyStatus: DataStatusItem = state.isLoading
+    ? {
+        label: 'Difficulty ratings',
+        value: 'Waiting',
+        description: 'Ratings are checked after the local snapshot status is known.',
+      }
+    : state.snapshot && state.derivedStats
+      ? {
+          label: 'Difficulty ratings',
+          value: 'Ready',
+          description: 'Dashboard, Sorted, and mastery summaries can use local difficulty data.',
+          action: {
+            to: '/sorted',
+            label: 'Open Sorted',
+          },
+        }
+      : state.snapshot && state.difficultyError
+        ? {
+            label: 'Difficulty ratings',
+            value: 'Limited',
+            description: 'Snapshot data loaded, but difficulty-based summaries are unavailable.',
+          }
+        : {
+            label: 'Difficulty ratings',
+            value: 'After import',
+            description: 'Difficulty summaries become useful once a mastery snapshot is saved.',
+          };
+
+  return [
+    snapshotStatus,
+    difficultyStatus,
+    {
+      label: 'Backup and restore',
+      value: 'Available',
+      description: 'Settings can export or restore data saved in this browser.',
+      action: {
+        to: '/settings#settings-restore-title',
+        label: 'Open restore',
+      },
+    },
+  ];
+}
+
+function getNextActions(state: DashboardState): CommandCenterAction[] {
+  if (state.isLoading) {
+    return [
+      routeAction('importMastery', 'Available while Home checks whether this browser already has local data.'),
+      restoreBackupAction('Available while Home checks whether this browser already has local data.'),
+    ];
+  }
+
+  if (state.snapshotError) {
+    return [
+      restoreBackupAction('The local snapshot store could not be read, so restore is the safest recovery path.'),
+      routeAction('importMastery', 'A fresh mastery export can recreate the local snapshot if restore is not needed.'),
+    ];
+  }
+
+  if (!state.snapshot) {
+    return [
+      routeAction('importMastery', 'No mastery snapshot is saved in this browser.'),
+      restoreBackupAction('Use this if you already exported a backup from another browser or device.'),
+      routeAction('importHelp', 'Import and restore expectations are useful before pasting data.'),
+      routeAction('ingredientLookup', 'Limited exploration is still possible from checked-in reference data.'),
+    ];
+  }
+
+  const actions = [
+    routeAction('masteryGoals', 'Uses the latest mastery snapshot plus local item metadata.'),
+    routeAction('towerProgress', 'Uses the latest mastery snapshot and local Tower requirement data.'),
+    routeAction('compare', 'Useful after future imports create another saved snapshot to compare against.'),
+  ];
+
+  if (state.derivedStats) {
+    actions.splice(2, 0, routeAction('sorted', 'Uses the latest mastery snapshot and local difficulty ratings.'));
+  }
+
+  return actions;
+}
+
+const workbenchSections: Array<{
+  title: string;
+  items: Array<{ routeId: RouteToolId; reason: string }>;
+}> = [
+  {
+    title: 'Goals',
+    items: [
+      { routeId: 'tower', reason: 'Tower requirements stay under Goals and use local Tower data.' },
+      { routeId: 'questPlanner', reason: 'Quest planning becomes sharper after quest-history import.' },
+      { routeId: 'museumCompletion', reason: 'Museum progress uses reviewed local museum reference data.' },
+    ],
+  },
+  {
+    title: 'Items',
+    items: [
+      { routeId: 'ingredientLookup', reason: 'Item lookup can run from checked-in recipe/reference data.' },
+      { routeId: 'acquisitionBreakdown', reason: 'Source breakdowns show provenance for a selected item.' },
+    ],
+  },
+  {
+    title: 'Planning Data',
+    items: [
+      { routeId: 'importInventory', reason: 'Inventory import lets planners account for owned materials.' },
+      { routeId: 'importPetItems', reason: 'Stored pet inventory improves source and supply planning.' },
+      { routeId: 'importLocksmith', reason: 'Locksmith import improves availability checks for supported planners.' },
+    ],
+  },
+];
+
 export function DashboardPage() {
-  const [dashboardState, setDashboardState] = useState<{
-    isLoading: boolean;
-    snapshotError: string | null;
-    difficultyError: string | null;
-    snapshot: Awaited<ReturnType<typeof getLatestSnapshot>>;
-    derivedStats: ReturnType<typeof deriveMasteryDifficultyStats> | null;
-  }>({
+  const [dashboardState, setDashboardState] = useState<DashboardState>({
     isLoading: true,
     snapshotError: null,
     difficultyError: null,
@@ -148,41 +336,69 @@ export function DashboardPage() {
     <div className="page-stack">
       <PageIntro
         title="Dashboard"
-        description="Start from your latest local mastery snapshot, confirm what data is saved, then jump to the planning view that matches what you want to check next."
+        description="Start from local data status, clear missing-data actions, and the next workbench entry point that has enough evidence to be useful."
         storageKey="dashboard"
       />
 
-      <section className="page-card page-stack" aria-labelledby="getting-started-title">
+      <section className="page-card page-stack" aria-labelledby="command-center-title">
         <div>
-          <h2 id="getting-started-title">Start Here</h2>
+          <h2 id="command-center-title">Command Center</h2>
           <p className="supporting-text">{getLocalDataStatus(dashboardState.snapshot, dashboardState.isLoading)}</p>
         </div>
 
+        <div className="summary-grid">
+          {getDataStatusItems(dashboardState).map((item) => (
+            <div className="summary-grid__item" key={item.label}>
+              <h3 className="section-title">{item.label}</h3>
+              <p>
+                <strong>{item.value}</strong>
+              </p>
+              <p className="subtle-text">{item.description}</p>
+              {item.action ? (
+                <p className="subtle-text">
+                  <Link to={item.action.to}>{item.action.label}</Link>
+                </p>
+              ) : null}
+            </div>
+          ))}
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <h3 className="section-title">Next Useful Actions</h3>
+          <div className="quick-link-grid">
+            {getNextActions(dashboardState).map((action) => (
+              <Link className="quick-link-card" to={action.to} key={`${action.to}-${action.title}`}>
+                <span className="quick-link-card__title">{action.title}</span>
+                <span className="quick-link-card__description">{action.description}</span>
+                <span className="quick-link-card__description">Why: {action.reason}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="page-card page-stack" aria-labelledby="workbench-entry-title">
+        <div>
+          <h2 id="workbench-entry-title">Workbench Entry Points</h2>
+          <p className="supporting-text">Open the current goal, item, and planning-data workflows directly.</p>
+        </div>
+
         <div className="quick-link-grid">
-          <Link className="quick-link-card" to="/import">
-            <span className="quick-link-card__title">Import snapshot</span>
-            <span className="quick-link-card__description">Paste a FarmRPG mastery export and save it locally.</span>
-          </Link>
-          <Link className="quick-link-card" to="/settings#settings-restore-title">
-            <span className="quick-link-card__title">Restore backup</span>
-            <span className="quick-link-card__description">Load a previously exported FarmRPG Tools backup file.</span>
-          </Link>
-          <Link className="quick-link-card" to="/tower-progress">
-            <span className="quick-link-card__title">Tower Progress</span>
-            <span className="quick-link-card__description">See the unique Tower items still left to GM or MM.</span>
-          </Link>
-          <Link className="quick-link-card" to="/tower">
-            <span className="quick-link-card__title">Tower</span>
-            <span className="quick-link-card__description">Review level-by-level Tower requirement status.</span>
-          </Link>
-          <Link className="quick-link-card" to="/sorted">
-            <span className="quick-link-card__title">Sorted</span>
-            <span className="quick-link-card__description">Browse mastery progress grouped by difficulty and remaining work.</span>
-          </Link>
-          <Link className="quick-link-card" to="/compare">
-            <span className="quick-link-card__title">Compare</span>
-            <span className="quick-link-card__description">Compare two saved snapshots to see what changed.</span>
-          </Link>
+          {workbenchSections.flatMap((section) =>
+            section.items.map((item) => {
+              const metadata = getRouteToolMetadata(item.routeId);
+
+              return (
+                <Link className="quick-link-card" to={metadata.path} key={metadata.id}>
+                  <span className="quick-link-card__title">
+                    {section.title}: {metadata.label}
+                  </span>
+                  <span className="quick-link-card__description">{metadata.description}</span>
+                  <span className="quick-link-card__description">Data note: {item.reason}</span>
+                </Link>
+              );
+            }),
+          )}
         </div>
       </section>
 

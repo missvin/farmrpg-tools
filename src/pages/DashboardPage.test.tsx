@@ -195,22 +195,41 @@ describe('DashboardPage', () => {
     expect(percentCells[2]).toHaveStyle('--dashboard-percent-fill: 0%');
   });
 
-  it('renders getting-started links when no local snapshot exists yet', async () => {
+  it('renders command-center actions when no local snapshot exists yet', async () => {
     getLatestSnapshotMock.mockResolvedValue(null);
 
     renderDashboardPage();
 
-    expect(await screen.findByRole('heading', { name: 'Start Here' })).toBeInTheDocument();
-    expect(screen.getByText('No local snapshot saved yet. Import a fresh mastery export or restore a backup to get started.')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Import snapshot/i })).toHaveAttribute('href', '/import');
-    expect(screen.getByRole('link', { name: /Restore backup/i })).toHaveAttribute(
+    expect(await screen.findByRole('heading', { name: 'Command Center' })).toBeInTheDocument();
+    expect(
+      screen.getByText('No local snapshot saved yet. Import a fresh mastery export or restore a backup to get started.'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Mastery snapshot')).toBeInTheDocument();
+    expect(screen.getByText('Needed')).toBeInTheDocument();
+
+    const nextActionsSection = screen.getByText('Next Useful Actions').closest('div');
+    const nextActions = within(nextActionsSection as HTMLElement);
+
+    expect(nextActions.getByRole('link', { name: /^Import Mastery/i })).toHaveAttribute('href', '/import');
+    expect(nextActions.getByRole('link', { name: /^Restore Backup/i })).toHaveAttribute(
       'href',
       '/settings#settings-restore-title',
     );
-    expect(screen.getByRole('link', { name: /^Tower Progress/i })).toHaveAttribute('href', '/tower-progress');
-    expect(screen.getByRole('link', { name: /^Tower Review/i })).toHaveAttribute('href', '/tower');
-    expect(screen.getByRole('link', { name: /Sorted/i })).toHaveAttribute('href', '/sorted');
-    expect(screen.getByRole('link', { name: /Compare/i })).toHaveAttribute('href', '/compare');
+    expect(nextActions.getByRole('link', { name: /^Import Help/i })).toHaveAttribute('href', '/import-help');
+    expect(nextActions.getByRole('link', { name: /^Ingredient Lookup/i })).toHaveAttribute(
+      'href',
+      '/ingredient-demand',
+    );
+    expect(nextActions.getByText('Why: No mastery snapshot is saved in this browser.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Workbench Entry Points' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^Planning Data: Import Inventory/i })).toHaveAttribute(
+      'href',
+      '/import-inventory',
+    );
+    expect(screen.getByRole('link', { name: /^Items: Acquisition Breakdown/i })).toHaveAttribute(
+      'href',
+      '/acquisition-breakdown',
+    );
   });
 
   it('renders achieved status summary fills based on items parsed', async () => {
@@ -333,6 +352,16 @@ describe('DashboardPage', () => {
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Achieved Status Summary' })).toBeInTheDocument();
     });
+
+    expect(screen.getByRole('link', { name: /^Mastery Goals/i })).toHaveAttribute('href', '/mastery-goals');
+    expect(screen.getByRole('link', { name: /^Tower Items by Difficulty/i })).toHaveAttribute(
+      'href',
+      '/tower-progress',
+    );
+    expect(screen.getByRole('link', { name: /^Sorted/i })).toHaveAttribute('href', '/sorted');
+    expect(
+      screen.getByText('Why: Uses the latest mastery snapshot and local difficulty ratings.'),
+    ).toBeInTheDocument();
 
     const achievedSection = screen.getByRole('heading', { name: 'Achieved Status Summary' }).closest('section');
     const achievedSectionQueries = within(achievedSection as HTMLElement);
