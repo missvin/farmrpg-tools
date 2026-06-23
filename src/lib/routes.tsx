@@ -143,43 +143,50 @@ export const appRouteCompatibilityRedirects = appRoutes.flatMap((route) =>
 
 export const navigationSections: NavigationSection[] = [
   {
-    title: 'Plan',
+    title: 'Home',
+    items: [navigationItem('home')],
+  },
+  {
+    title: 'Goals',
     items: [
-      navigationItem('home'),
-      navigationItem('ingredientLookup'),
-      navigationItem('materialPlanner'),
-      navigationItem('craftMaterialMatrix'),
       navigationItem('masteryGoals'),
+      navigationItem('tower'),
+      navigationItem('towerProgress'),
       navigationItem('questPlanner'),
-      navigationItem('targetPlanner'),
-      navigationItem('largeNetPlanner'),
-      navigationItem('acquisitionBreakdown'),
+      navigationItem('museumCompletion'),
+      navigationItem('borgenHelper'),
+      navigationItem('sorted'),
     ],
   },
   {
-    title: 'Import',
+    title: 'Items',
+    items: [navigationItem('ingredientLookup'), navigationItem('acquisitionBreakdown')],
+  },
+  {
+    title: 'Planning',
+    items: [
+      navigationItem('materialPlanner'),
+      navigationItem('craftMaterialMatrix'),
+      navigationItem('targetPlanner'),
+      navigationItem('largeNetPlanner'),
+    ],
+  },
+  {
+    title: 'Data',
     items: [
       navigationItem('importMastery'),
       navigationItem('importInventory'),
       navigationItem('importPetItems'),
       navigationItem('importLocksmith'),
       navigationItem('questHistory'),
+      navigationItem('history'),
+      navigationItem('compare'),
+      navigationItem('settings'),
+      navigationItem('importHelp'),
     ],
   },
   {
-    title: 'Progress',
-    items: [navigationItem('towerProgress'), navigationItem('sorted'), navigationItem('tower')],
-  },
-  {
-    title: 'Other',
-    items: [navigationItem('borgenHelper'), navigationItem('museumCompletion')],
-  },
-  {
-    title: 'Data',
-    items: [navigationItem('history'), navigationItem('compare'), navigationItem('settings')],
-  },
-  {
-    title: 'Dev Tools',
+    title: 'Advanced',
     items: [
       navigationItem('museumTools'),
       navigationItem('towerReferenceMaintenance'),

@@ -151,41 +151,51 @@ describe('App shell', () => {
     expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
     expect(screen.getByText('FarmRPG Planning Tools')).toBeInTheDocument();
     expect(screen.getByText('Local-first progress and material planning.')).toBeInTheDocument();
-    expect(screen.getByText('Plan')).toBeInTheDocument();
-    expect(screen.getByText('Import')).toBeInTheDocument();
-    expect(screen.getByText('Progress')).toBeInTheDocument();
-    expect(screen.getByText('Other')).toBeInTheDocument();
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByText('Goals')).toBeInTheDocument();
+    expect(screen.getByText('Items')).toBeInTheDocument();
+    expect(screen.getByText('Planning')).toBeInTheDocument();
     expect(screen.getByText('Data')).toBeInTheDocument();
-    expect(screen.getByText('Dev Tools')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Plan' }));
-    expect(screen.getByRole('link', { name: 'Ingredient Lookup' })).toBeVisible();
-    expect(screen.getByRole('link', { name: 'Material Planner' })).toBeVisible();
-    expect(screen.getByRole('link', { name: 'Mastery Goals' })).toBeVisible();
+    expect(screen.getByText('Advanced')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Home' }));
+    expect(screen.getByRole('link', { name: 'Dashboard' })).toBeVisible();
     expect(screen.queryByRole('link', { name: 'Museum Tools' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Backlog Graph' })).not.toBeInTheDocument();
 
-    await user.click(screen.getByText('Import'));
+    await user.click(screen.getByRole('button', { name: 'Goals' }));
+    expect(await screen.findByRole('link', { name: 'Mastery Goals' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Tower' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Tower Items by Difficulty' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Quest Planner' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Museum Completion' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: "Borgen's Lost and Found" })).toBeVisible();
+
+    await user.click(screen.getByRole('button', { name: 'Items' }));
+    expect(await screen.findByRole('link', { name: 'Ingredient Lookup' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Acquisition Breakdown' })).toBeVisible();
+    expect(screen.queryByRole('link', { name: 'Import Mastery' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Planning' }));
+    expect(await screen.findByRole('link', { name: 'Material Planner' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Craft Material Matrix' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Target Planner' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Large Net Planner' })).toBeVisible();
+    expect(screen.queryByRole('link', { name: 'Import Mastery' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Data' }));
     expect(await screen.findByRole('link', { name: 'Import Mastery' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Import Inventory' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Import Pet Items' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Locksmith Import' })).toBeVisible();
-
-    await user.click(screen.getByText('Progress'));
-    expect(await screen.findByRole('link', { name: 'Tower Items by Difficulty' })).toBeVisible();
-    expect(screen.queryByRole('link', { name: 'History' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Compare' })).not.toBeInTheDocument();
-
-    await user.click(screen.getByText('Other'));
-    expect(await screen.findByRole('link', { name: "Borgen's Lost and Found" })).toBeVisible();
-    expect(await screen.findByRole('link', { name: 'Museum Completion' })).toBeVisible();
-
-    await user.click(screen.getByText('Data'));
+    expect(await screen.findByRole('link', { name: 'Quest History' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'History' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Compare' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Settings' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Import Help' })).toBeVisible();
 
-    await user.click(screen.getByText('Dev Tools'));
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
     expect(await screen.findByRole('link', { name: 'Museum Tools' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Tower Reference Maintenance' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Backlog Graph' })).toBeVisible();
   });
 
@@ -206,7 +216,7 @@ describe('App shell', () => {
     );
 
     await screen.findByRole('heading', { name: 'Dashboard' });
-    await user.click(screen.getByRole('button', { name: 'Dev Tools' }));
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
     expect(screen.getByRole('link', { name: 'Museum Tools' })).toBeVisible();
 
     await user.click(screen.getByRole('heading', { name: 'Dashboard' }));
@@ -232,10 +242,10 @@ describe('App shell', () => {
     );
 
     await screen.findByRole('heading', { name: 'Dashboard' });
-    await user.click(screen.getByRole('button', { name: 'Progress' }));
+    await user.click(screen.getByRole('button', { name: 'Goals' }));
     expect(screen.getByRole('link', { name: 'Tower Items by Difficulty' })).toBeVisible();
 
-    await user.click(screen.getByRole('button', { name: 'Import' }));
+    await user.click(screen.getByRole('button', { name: 'Data' }));
     expect(screen.queryByRole('link', { name: 'Tower Items by Difficulty' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Import Mastery' })).toBeVisible();
 
@@ -261,7 +271,7 @@ describe('App shell', () => {
     );
 
     await screen.findByRole('heading', { name: 'Dashboard' });
-    await user.click(screen.getByRole('button', { name: 'Import' }));
+    await user.click(screen.getByRole('button', { name: 'Data' }));
     await user.click(screen.getByRole('link', { name: 'Import Mastery' }));
 
     expect(await screen.findByRole('heading', { name: 'Import Mastery Snapshot' })).toBeInTheDocument();
