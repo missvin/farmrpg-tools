@@ -11,6 +11,7 @@ export type RouteToolId =
   | 'ingredientLookup'
   | 'materialPlanner'
   | 'craftMaterialMatrix'
+  | 'itemsLanding'
   | 'itemProfile'
   | 'masteryGoals'
   | 'borgenHelper'
@@ -187,6 +188,17 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     visibility: 'user-facing',
     dataRequirements: ['reference-data', 'planning-assumptions'],
     compatibilityPaths: ['/planning/craft-matrix'],
+  },
+  {
+    id: 'itemsLanding',
+    path: '/items',
+    label: 'Items',
+    description: 'Find local item profiles and open item workbench pages.',
+    aliases: ['items', 'item search', 'item catalog', 'item workbench'],
+    iaGroup: 'items',
+    visibility: 'user-facing',
+    dataRequirements: ['reference-data'],
+    compatibilityPaths: ['/items/search'],
   },
   {
     id: 'itemProfile',

@@ -241,6 +241,7 @@ const workbenchSections: Array<{
   {
     title: 'Items',
     items: [
+      { routeId: 'itemsLanding', reason: 'Item profiles can open from checked-in catalog data before imports.' },
       { routeId: 'ingredientLookup', reason: 'Item lookup can run from checked-in recipe/reference data.' },
       { routeId: 'acquisitionBreakdown', reason: 'Source breakdowns show provenance for a selected item.' },
     ],

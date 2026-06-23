@@ -153,7 +153,7 @@ describe('App shell', () => {
     expect(screen.getByText('Local-first progress and material planning.')).toBeInTheDocument();
     expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Goals')).toBeInTheDocument();
-    expect(screen.getByText('Items')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Items' })).toBeInTheDocument();
     expect(screen.getByText('Planning')).toBeInTheDocument();
     expect(screen.getByText('Data')).toBeInTheDocument();
     expect(screen.getByText('Advanced')).toBeInTheDocument();
@@ -171,6 +171,7 @@ describe('App shell', () => {
     expect(await screen.findByRole('link', { name: "Borgen's Lost and Found" })).toBeVisible();
 
     await user.click(screen.getByRole('button', { name: 'Items' }));
+    expect(await screen.findByRole('link', { name: 'Items' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Ingredient Lookup' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Acquisition Breakdown' })).toBeVisible();
     expect(screen.queryByRole('link', { name: 'Import Mastery' })).not.toBeInTheDocument();
@@ -416,6 +417,25 @@ describe('App shell', () => {
     expect(screen.getByLabelText('Loading page')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'Snapshot History' })).toBeInTheDocument();
   });
+
+  it('renders the static Items landing route before item-profile routes', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={['/items']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('Loading page')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Items' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Red Dye/ })).toHaveAttribute('href', '/items/red%20dye');
+  });
+
   it('redirects grouped IA compatibility paths to existing routes', async () => {
     render(
       <MemoryRouter

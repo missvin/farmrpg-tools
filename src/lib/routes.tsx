@@ -27,6 +27,9 @@ const IngredientDemandListPage = lazy(() =>
 const IngredientDemandPage = lazy(() =>
   import('../pages/IngredientDemandPage').then((module) => ({ default: module.IngredientDemandPage })),
 );
+const ItemsLandingPage = lazy(() =>
+  import('../pages/ItemsLandingPage').then((module) => ({ default: module.ItemsLandingPage })),
+);
 const ItemProfilePage = lazy(() =>
   import('../pages/ItemProfilePage').then((module) => ({ default: module.ItemProfilePage })),
 );
@@ -115,6 +118,7 @@ export const appRoutes: AppRoute[] = [
   appRoute('ingredientLookup', <IngredientDemandPage />),
   appRoute('materialPlanner', <IngredientDemandListPage />),
   appRoute('craftMaterialMatrix', <CraftMaterialMatrixPage />),
+  appRoute('itemsLanding', <ItemsLandingPage />),
   appRoute('itemProfile', <ItemProfilePage />),
   appRoute('masteryGoals', <MasteryGoalsPage />),
   appRoute('borgenHelper', <MemoryHelperPage />),
@@ -160,7 +164,7 @@ export const navigationSections: NavigationSection[] = [
   },
   {
     title: 'Items',
-    items: [navigationItem('ingredientLookup'), navigationItem('acquisitionBreakdown')],
+    items: [navigationItem('itemsLanding'), navigationItem('ingredientLookup'), navigationItem('acquisitionBreakdown')],
   },
   {
     title: 'Planning',
