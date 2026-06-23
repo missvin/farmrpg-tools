@@ -134,6 +134,13 @@ export const appRoutes: AppRoute[] = [
   appRoute('settings', <SettingsPage />),
 ];
 
+export const appRouteCompatibilityRedirects = appRoutes.flatMap((route) =>
+  route.compatibilityPaths.map((path) => ({
+    path,
+    to: route.path,
+  })),
+);
+
 export const navigationSections: NavigationSection[] = [
   {
     title: 'Plan',

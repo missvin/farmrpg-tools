@@ -406,4 +406,19 @@ describe('App shell', () => {
     expect(screen.getByLabelText('Loading page')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'Snapshot History' })).toBeInTheDocument();
   });
+  it('redirects grouped IA compatibility paths to existing routes', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={['/goals/tower-progress']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('heading', { name: 'Tower Items by Difficulty' })).toBeInTheDocument();
+  });
 });

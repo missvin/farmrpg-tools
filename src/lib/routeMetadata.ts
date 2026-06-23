@@ -65,7 +65,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'home',
     visibility: 'user-facing',
     dataRequirements: [],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/home'],
   },
   {
     id: 'importMastery',
@@ -76,7 +76,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'data',
     visibility: 'user-facing',
     dataRequirements: [],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/data/import/mastery'],
   },
   {
     id: 'importInventory',
@@ -87,7 +87,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'data',
     visibility: 'user-facing',
     dataRequirements: [],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/data/import/inventory'],
   },
   {
     id: 'importPetItems',
@@ -98,7 +98,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'data',
     visibility: 'user-facing',
     dataRequirements: [],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/data/import/pets'],
   },
   {
     id: 'importLocksmith',
@@ -109,7 +109,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'data',
     visibility: 'user-facing',
     dataRequirements: [],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/data/import/locksmith'],
   },
   {
     id: 'importHelp',
@@ -120,7 +120,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'data',
     visibility: 'user-facing',
     dataRequirements: [],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/data/import/help'],
   },
   {
     id: 'questHistory',
@@ -131,7 +131,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'data',
     visibility: 'user-facing',
     dataRequirements: ['quest-history'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/data/quest-history'],
   },
   {
     id: 'museumTools',
@@ -142,7 +142,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'advanced',
     visibility: 'advanced',
     dataRequirements: ['reference-data'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/advanced/museum-tools'],
   },
   {
     id: 'backlogGraph',
@@ -153,7 +153,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'advanced',
     visibility: 'advanced',
     dataRequirements: [],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/advanced/backlog-graph'],
   },
   {
     id: 'ingredientLookup',
@@ -164,7 +164,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'planning',
     visibility: 'user-facing',
     dataRequirements: ['reference-data', 'planning-assumptions'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/planning/material-lookup'],
   },
   {
     id: 'materialPlanner',
@@ -175,7 +175,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'planning',
     visibility: 'user-facing',
     dataRequirements: ['reference-data', 'planning-assumptions'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/planning/materials'],
   },
   {
     id: 'craftMaterialMatrix',
@@ -186,7 +186,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'planning',
     visibility: 'user-facing',
     dataRequirements: ['reference-data', 'planning-assumptions'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/planning/craft-matrix'],
   },
   {
     id: 'itemProfile',
@@ -208,7 +208,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'goals',
     visibility: 'user-facing',
     dataRequirements: ['mastery-snapshot', 'reference-data'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/goals/mastery'],
   },
   {
     id: 'borgenHelper',
@@ -219,7 +219,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'goals',
     visibility: 'user-facing',
     dataRequirements: ['reference-data'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/goals/borgen'],
   },
   {
     id: 'questPlanner',
@@ -230,7 +230,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'goals',
     visibility: 'user-facing',
     dataRequirements: ['quest-history', 'reference-data', 'planning-assumptions'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/goals/quests'],
   },
   {
     id: 'targetPlanner',
@@ -241,7 +241,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'planning',
     visibility: 'user-facing',
     dataRequirements: ['inventory-import', 'pet-inventory', 'reference-data', 'planning-assumptions'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/planning/targets'],
   },
   {
     id: 'largeNetPlanner',
@@ -252,7 +252,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'planning',
     visibility: 'user-facing',
     dataRequirements: ['inventory-import', 'reference-data', 'planning-assumptions'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/planning/large-nets'],
   },
   {
     id: 'museumCompletion',
@@ -263,7 +263,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'goals',
     visibility: 'user-facing',
     dataRequirements: ['reference-data'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/goals/museum'],
   },
   {
     id: 'acquisitionBreakdown',
@@ -274,7 +274,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'planning',
     visibility: 'user-facing',
     dataRequirements: ['reference-data', 'planning-assumptions'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/planning/sources'],
   },
   {
     id: 'sorted',
@@ -285,7 +285,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'goals',
     visibility: 'user-facing',
     dataRequirements: ['mastery-snapshot', 'reference-data'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/goals/progress'],
   },
   {
     id: 'tower',
@@ -296,7 +296,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'goals',
     visibility: 'user-facing',
     dataRequirements: ['mastery-snapshot', 'reference-data'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/goals/tower'],
   },
   {
     id: 'towerProgress',
@@ -307,7 +307,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'goals',
     visibility: 'user-facing',
     dataRequirements: ['mastery-snapshot', 'reference-data'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/goals/tower-progress'],
   },
   {
     id: 'towerReferenceMaintenance',
@@ -318,7 +318,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'advanced',
     visibility: 'advanced',
     dataRequirements: ['reference-data'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/advanced/tower-reference-maintenance'],
   },
   {
     id: 'ratingSourceWorkbench',
@@ -329,7 +329,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'advanced',
     visibility: 'advanced',
     dataRequirements: ['reference-data'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/advanced/rating-source-workbench'],
   },
   {
     id: 'unknownItemReview',
@@ -340,7 +340,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'advanced',
     visibility: 'advanced',
     dataRequirements: ['reference-data'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/advanced/unknown-items'],
   },
   {
     id: 'history',
@@ -351,7 +351,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'data',
     visibility: 'user-facing',
     dataRequirements: ['mastery-snapshot'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/data/history'],
   },
   {
     id: 'compare',
@@ -362,7 +362,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'data',
     visibility: 'user-facing',
     dataRequirements: ['mastery-snapshot'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/data/compare'],
   },
   {
     id: 'settings',
@@ -373,7 +373,7 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     iaGroup: 'data',
     visibility: 'user-facing',
     dataRequirements: ['backup-file'],
-    compatibilityPaths: [],
+    compatibilityPaths: ['/data/settings'],
   },
 ];
 

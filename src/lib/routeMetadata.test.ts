@@ -22,6 +22,18 @@ describe('routeToolMetadata', () => {
     }
   });
 
+  it('keeps compatibility paths unique and separate from canonical routes', () => {
+    const canonicalPaths = new Set(routeToolMetadata.map((metadata) => metadata.path));
+    const compatibilityPaths = routeToolMetadata.flatMap((metadata) => metadata.compatibilityPaths);
+
+    expect(new Set(compatibilityPaths).size).toBe(compatibilityPaths.length);
+
+    for (const path of compatibilityPaths) {
+      expect(path).toMatch(/^\//);
+      expect(path).not.toContain(':');
+      expect(canonicalPaths.has(path)).toBe(false);
+    }
+  });
   it('marks advanced tools separately from normal user-facing routes', () => {
     const advancedRouteIds = routeToolMetadata
       .filter((metadata) => metadata.visibility === 'advanced')

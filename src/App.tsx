@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppShell } from './components/AppShell';
-import { appRoutes } from './lib/routes';
+import { appRouteCompatibilityRedirects, appRoutes } from './lib/routes';
 
 export default function App() {
   return (
@@ -17,6 +17,9 @@ export default function App() {
         <Routes>
           {appRoutes.map(({ path, element }) => (
             <Route key={path} path={path} element={element} />
+          ))}
+          {appRouteCompatibilityRedirects.map(({ path, to }) => (
+            <Route key={path} path={path} element={<Navigate to={to} replace />} />
           ))}
         </Routes>
       </Suspense>
