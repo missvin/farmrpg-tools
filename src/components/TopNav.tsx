@@ -63,7 +63,7 @@ export function TopNav() {
       <ul className="top-nav-menu-list">
         {navigationSections.map((section) => (
           <li key={section.title}>
-            <div className="top-nav-menu">
+            <div className={`top-nav-menu${section.title === 'Advanced' ? ' top-nav-menu--advanced' : ''}`}>
               <button
                 type="button"
                 aria-expanded={openSectionTitle === section.title}
@@ -87,7 +87,11 @@ export function TopNav() {
                   <li key={item.to}>
                     <NavLink
                       to={item.to}
-                      className={({ isActive }) => (isActive ? 'nav-link nav-link--active' : 'nav-link')}
+                      className={({ isActive }) => {
+                        const baseClassName = section.title === 'Advanced' ? 'nav-link nav-link--advanced' : 'nav-link';
+
+                        return isActive ? `${baseClassName} nav-link--active` : baseClassName;
+                      }}
                       onClick={() => closeMenu()}
                     >
                       {item.label}

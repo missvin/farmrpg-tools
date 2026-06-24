@@ -160,8 +160,8 @@ describe('App shell', () => {
     expect(screen.getByText('Advanced')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Home' }));
     expect(screen.getByRole('link', { name: 'Dashboard' })).toBeVisible();
-    expect(screen.queryByRole('link', { name: 'Museum Tools' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Backlog Graph' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Museum Reference Tools' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Internal Backlog Graph' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Goals' }));
     expect(await screen.findByRole('link', { name: 'Goals' })).toBeVisible();
@@ -197,10 +197,16 @@ describe('App shell', () => {
     expect(await screen.findByRole('link', { name: 'Settings' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Import Help' })).toBeVisible();
 
-    await user.click(screen.getByRole('button', { name: 'Advanced' }));
-    expect(await screen.findByRole('link', { name: 'Museum Tools' })).toBeVisible();
-    expect(await screen.findByRole('link', { name: 'Tower Reference Maintenance' })).toBeVisible();
-    expect(await screen.findByRole('link', { name: 'Backlog Graph' })).toBeVisible();
+    const advancedMenuButton = screen.getByRole('button', { name: 'Advanced' });
+    expect(advancedMenuButton.closest('.top-nav-menu')).toHaveClass('top-nav-menu--advanced');
+
+    await user.click(advancedMenuButton);
+    expect(await screen.findByRole('link', { name: 'Museum Reference Tools' })).toHaveClass('nav-link--advanced');
+    expect(await screen.findByRole('link', { name: 'Museum Reference Tools' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Tower Reference Review' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Rating Source Review' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Unknown Item Review' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Internal Backlog Graph' })).toBeVisible();
   });
 
   it('closes an open dropdown when clicking outside the navigation', async () => {
@@ -221,12 +227,12 @@ describe('App shell', () => {
 
     await screen.findByRole('heading', { name: 'Dashboard' });
     await user.click(screen.getByRole('button', { name: 'Advanced' }));
-    expect(screen.getByRole('link', { name: 'Museum Tools' })).toBeVisible();
+    expect(screen.getByRole('link', { name: 'Museum Reference Tools' })).toBeVisible();
 
     await user.click(screen.getByRole('heading', { name: 'Dashboard' }));
 
-    expect(screen.queryByRole('link', { name: 'Museum Tools' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Backlog Graph' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Museum Reference Tools' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Internal Backlog Graph' })).not.toBeInTheDocument();
   });
 
   it('keeps at most one dropdown open at a time and closes on Escape', async () => {
