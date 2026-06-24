@@ -13,6 +13,7 @@ export type RouteToolId =
   | 'craftMaterialMatrix'
   | 'itemsLanding'
   | 'itemProfile'
+  | 'goalsOverview'
   | 'masteryGoals'
   | 'borgenHelper'
   | 'questPlanner'
@@ -210,6 +211,17 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     visibility: 'user-facing',
     dataRequirements: ['reference-data'],
     compatibilityPaths: [],
+  },
+  {
+    id: 'goalsOverview',
+    path: '/goals',
+    label: 'Goals',
+    description: 'Overview of Tower mastery, mastery targets, quests, museum, Borgen, and custom target goal sources.',
+    aliases: ['goals overview', 'goal sources', 'goal hub', 'goal planning'],
+    iaGroup: 'goals',
+    visibility: 'user-facing',
+    dataRequirements: ['mastery-snapshot', 'quest-history', 'reference-data'],
+    compatibilityPaths: ['/goals/overview'],
   },
   {
     id: 'masteryGoals',

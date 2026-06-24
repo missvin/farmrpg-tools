@@ -152,7 +152,7 @@ describe('App shell', () => {
     expect(screen.getByText('FarmRPG Planning Tools')).toBeInTheDocument();
     expect(screen.getByText('Local-first progress and material planning.')).toBeInTheDocument();
     expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('Goals')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Goals' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Items' })).toBeInTheDocument();
     expect(screen.getByText('Planning')).toBeInTheDocument();
     expect(screen.getByText('Data')).toBeInTheDocument();
@@ -163,6 +163,7 @@ describe('App shell', () => {
     expect(screen.queryByRole('link', { name: 'Backlog Graph' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Goals' }));
+    expect(await screen.findByRole('link', { name: 'Goals' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Mastery Goals' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Tower' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Tower Items by Difficulty' })).toBeVisible();
@@ -416,6 +417,24 @@ describe('App shell', () => {
 
     expect(screen.getByLabelText('Loading page')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'Snapshot History' })).toBeInTheDocument();
+  });
+
+  it('renders the Goals overview route through the app shell', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={['/goals']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('Loading page')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Goals' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link').some((link) => link.textContent?.includes('Tower mastery') && link.getAttribute('href') === '/tower')).toBe(true);
   });
 
   it('renders the static Items landing route before item-profile routes', async () => {

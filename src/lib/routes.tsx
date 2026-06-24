@@ -36,6 +36,9 @@ const ItemProfilePage = lazy(() =>
 const LargeNetPlannerPage = lazy(() =>
   import('../pages/LargeNetPlannerPage').then((module) => ({ default: module.LargeNetPlannerPage })),
 );
+const GoalsOverviewPage = lazy(() =>
+  import('../pages/GoalsOverviewPage').then((module) => ({ default: module.GoalsOverviewPage })),
+);
 const MasteryGoalsPage = lazy(() =>
   import('../pages/MasteryGoalsPage').then((module) => ({ default: module.MasteryGoalsPage })),
 );
@@ -120,6 +123,7 @@ export const appRoutes: AppRoute[] = [
   appRoute('craftMaterialMatrix', <CraftMaterialMatrixPage />),
   appRoute('itemsLanding', <ItemsLandingPage />),
   appRoute('itemProfile', <ItemProfilePage />),
+  appRoute('goalsOverview', <GoalsOverviewPage />),
   appRoute('masteryGoals', <MasteryGoalsPage />),
   appRoute('borgenHelper', <MemoryHelperPage />),
   appRoute('questPlanner', <QuestPlannerPage />),
@@ -153,6 +157,7 @@ export const navigationSections: NavigationSection[] = [
   {
     title: 'Goals',
     items: [
+      navigationItem('goalsOverview'),
       navigationItem('masteryGoals'),
       navigationItem('tower'),
       navigationItem('towerProgress'),
