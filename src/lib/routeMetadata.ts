@@ -1,5 +1,6 @@
 export type RouteToolId =
   | 'home'
+  | 'dataCenter'
   | 'importMastery'
   | 'importInventory'
   | 'importPetItems'
@@ -68,6 +69,17 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     visibility: 'user-facing',
     dataRequirements: [],
     compatibilityPaths: ['/home'],
+  },
+  {
+    id: 'dataCenter',
+    path: '/data',
+    label: 'Data',
+    description: 'Manage local imports, backup and restore, snapshot history, comparisons, and app settings.',
+    aliases: ['data center', 'import center', 'backup', 'restore', 'local data'],
+    iaGroup: 'data',
+    visibility: 'user-facing',
+    dataRequirements: [],
+    compatibilityPaths: ['/data/imports'],
   },
   {
     id: 'importMastery',

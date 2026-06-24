@@ -8,6 +8,7 @@ import { APP_THEME_STORAGE_KEY } from './lib/themePreference';
 vi.mock('./lib/storage/masterySnapshots', () => ({
   getLatestSnapshot: vi.fn().mockResolvedValue(null),
   listSnapshots: vi.fn().mockResolvedValue([]),
+  listSnapshotSummaries: vi.fn().mockResolvedValue([]),
 }));
 
 vi.mock('./lib/loadMasteryDifficulty', () => ({
@@ -155,7 +156,7 @@ describe('App shell', () => {
     expect(screen.getByRole('button', { name: 'Goals' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Items' })).toBeInTheDocument();
     expect(screen.getByText('Planning')).toBeInTheDocument();
-    expect(screen.getByText('Data')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Data' })).toBeInTheDocument();
     expect(screen.getByText('Advanced')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Home' }));
     expect(screen.getByRole('link', { name: 'Dashboard' })).toBeVisible();
@@ -185,6 +186,7 @@ describe('App shell', () => {
     expect(screen.queryByRole('link', { name: 'Import Mastery' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Data' }));
+    expect(await screen.findByRole('link', { name: 'Data' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Import Mastery' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Import Inventory' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Import Pet Items' })).toBeVisible();
@@ -435,6 +437,25 @@ describe('App shell', () => {
     expect(screen.getByLabelText('Loading page')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'Goals' })).toBeInTheDocument();
     expect(screen.getAllByRole('link').some((link) => link.textContent?.includes('Tower mastery') && link.getAttribute('href') === '/tower')).toBe(true);
+  });
+
+  it('renders the Data center route through the app shell', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={['/data']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('Loading page')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Data' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'Import Mastery' })[0]).toHaveAttribute('href', '/import');
+    expect(screen.getAllByRole('link', { name: /Compare/ })[0]).toHaveAttribute('href', '/compare');
   });
 
   it('renders the static Items landing route before item-profile routes', async () => {

@@ -17,6 +17,9 @@ const AcquisitionBreakdownPage = lazy(() =>
   import('../pages/AcquisitionBreakdownPage').then((module) => ({ default: module.AcquisitionBreakdownPage })),
 );
 const ComparePage = lazy(() => import('../pages/ComparePage').then((module) => ({ default: module.ComparePage })));
+const DataCenterPage = lazy(() =>
+  import('../pages/DataCenterPage').then((module) => ({ default: module.DataCenterPage })),
+);
 const CraftMaterialMatrixPage = lazy(() =>
   import('../pages/CraftMaterialMatrixPage').then((module) => ({ default: module.CraftMaterialMatrixPage })),
 );
@@ -110,6 +113,7 @@ function navigationItem(routeId: RouteToolId): NavigationSection['items'][number
 
 export const appRoutes: AppRoute[] = [
   appRoute('home', <DashboardPage />),
+  appRoute('dataCenter', <DataCenterPage />),
   appRoute('importMastery', <ImportPage />),
   appRoute('importInventory', <ImportInventoryPage />),
   appRoute('importPetItems', <ImportPetItemsPage />),
@@ -183,6 +187,7 @@ export const navigationSections: NavigationSection[] = [
   {
     title: 'Data',
     items: [
+      navigationItem('dataCenter'),
       navigationItem('importMastery'),
       navigationItem('importInventory'),
       navigationItem('importPetItems'),
