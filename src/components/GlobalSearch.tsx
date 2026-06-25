@@ -24,6 +24,66 @@ type SearchResult = {
   iconSrc?: string | null;
 };
 
+type SearchableAction = {
+  id: string;
+  label: string;
+  meta: string;
+  to: string;
+  keywords: string[];
+};
+
+const searchableActions: SearchableAction[] = [
+  {
+    id: 'action:import-mastery',
+    label: 'Import mastery data',
+    meta: 'Action -> Import Mastery',
+    to: '/import',
+    keywords: ['import', 'paste', 'mastery', 'snapshot', 'data missing', 'start'],
+  },
+  {
+    id: 'action:restore-backup',
+    label: 'Restore a local backup',
+    meta: 'Action -> Settings',
+    to: '/settings#settings-restore-title',
+    keywords: ['restore', 'backup', 'recover', 'migration', 'data'],
+  },
+  {
+    id: 'action:compare-snapshots',
+    label: 'Compare saved snapshots',
+    meta: 'Action -> Compare',
+    to: '/compare',
+    keywords: ['compare', 'snapshot', 'progress', 'diff', 'changes'],
+  },
+  {
+    id: 'action:open-items',
+    label: 'Find an item profile',
+    meta: 'Action -> Items',
+    to: '/items',
+    keywords: ['item', 'items', 'search item', 'item profile', 'workbench'],
+  },
+  {
+    id: 'action:add-mastery-goal',
+    label: 'Review mastery goals',
+    meta: 'Action -> Mastery Goals',
+    to: '/mastery-goals',
+    keywords: ['add goal', 'view goals', 'mastery goal', 'gm', 'mm', 'target'],
+  },
+  {
+    id: 'action:open-target-planner',
+    label: 'Open target planner',
+    meta: 'Action -> Target Planner',
+    to: '/target-planner',
+    keywords: ['target', 'planner', 'plan output', 'craft target', 'materials'],
+  },
+  {
+    id: 'action:import-quest-history',
+    label: 'Import quest history',
+    meta: 'Action -> Quest History',
+    to: '/quest-history',
+    keywords: ['quest history', 'completed quests', 'quest import', 'future demand'],
+  },
+];
+
 function formatFallbackItemName(canonicalKey: string): string {
   return canonicalKey
     .split(' ')
@@ -36,6 +96,11 @@ function matchesQuery(value: string, query: string): boolean {
   return value.toLowerCase().includes(query);
 }
 
+function matchesAllQueryTerms(value: string, query: string): boolean {
+  const normalizedValue = value.toLowerCase();
+  return query.split(/\s+/).filter(Boolean).every((term) => normalizedValue.includes(term));
+}
+
 function routeMatchesQuery(route: (typeof appRoutes)[number], query: string): boolean {
   return (
     matchesQuery(route.label, query) ||
@@ -43,6 +108,12 @@ function routeMatchesQuery(route: (typeof appRoutes)[number], query: string): bo
     matchesQuery(route.description, query) ||
     route.aliases.some((alias) => matchesQuery(alias, query))
   );
+}
+
+function actionMatchesQuery(action: SearchableAction, query: string): boolean {
+  const searchableText = [action.label, action.meta, action.to, ...action.keywords].join(' ');
+
+  return matchesQuery(searchableText, query) || matchesAllQueryTerms(searchableText, query);
 }
 
 function setSearchableItem(
@@ -132,6 +203,14 @@ export function GlobalSearch() {
     };
   }, [hasLoadedItems, normalizedQuery]);
 
+  const actionResults = useMemo(
+    () =>
+      normalizedQuery.length < 2
+        ? []
+        : searchableActions.filter((action) => actionMatchesQuery(action, normalizedQuery)).slice(0, 5),
+    [normalizedQuery],
+  );
+
   const pageResults = useMemo(
     () =>
       normalizedQuery.length < 2
@@ -159,6 +238,13 @@ export function GlobalSearch() {
   const shouldShowResults = normalizedQuery.length >= 2;
   const combinedResults = useMemo<SearchResult[]>(
     () => [
+      ...actionResults.map((action) => ({
+        id: action.id,
+        label: action.label,
+        meta: action.meta,
+        to: action.to,
+        iconSrc: null,
+      })),
       ...pageResults.map((route) => ({
         id: `page:${route.path}`,
         label: route.label,
@@ -174,7 +260,7 @@ export function GlobalSearch() {
         iconSrc: getItemIcon(item.canonicalKey)?.src ?? null,
       })),
     ],
-    [itemResults, pageResults],
+    [actionResults, itemResults, pageResults],
   );
   const activeResultId =
     activeResultIndex >= 0 && combinedResults[activeResultIndex]
@@ -249,27 +335,56 @@ export function GlobalSearch() {
 
       {shouldShowResults ? (
         <div id="global-search-results" className="global-search__panel" role="region" aria-label="Search results">
+          {actionResults.length > 0 ? (
+            <section className="global-search__section" aria-labelledby="global-search-actions">
+              <h2 id="global-search-actions" className="global-search__section-title">
+                Actions
+              </h2>
+              <ul className="global-search__result-list">
+                {actionResults.map((action, resultIndex) => (
+                  <li key={action.id}>
+                    <Link
+                      id={`global-search-result-${resultIndex}`}
+                      className={`global-search__result${
+                        activeResultIndex === resultIndex ? ' global-search__result--active' : ''
+                      }`}
+                      to={action.to}
+                      onClick={handleResultClick}
+                    >
+                      <span>{action.label}</span>
+                      <span className="global-search__meta">{action.meta}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
           {pageResults.length > 0 ? (
             <section className="global-search__section" aria-labelledby="global-search-pages">
               <h2 id="global-search-pages" className="global-search__section-title">
                 Pages
               </h2>
               <ul className="global-search__result-list">
-                {pageResults.map((route, resultIndex) => (
-                  <li key={route.path}>
-                    <Link
-                      id={`global-search-result-${resultIndex}`}
-                      className={`global-search__result${
-                        activeResultIndex === resultIndex ? ' global-search__result--active' : ''
-                      }`}
-                      to={route.path}
-                      onClick={handleResultClick}
-                    >
-                      <span>{route.label}</span>
-                      <span className="global-search__meta">{route.path}</span>
-                    </Link>
-                  </li>
-                ))}
+                {pageResults.map((route, pageIndex) => {
+                  const resultIndex = actionResults.length + pageIndex;
+
+                  return (
+                    <li key={route.path}>
+                      <Link
+                        id={`global-search-result-${resultIndex}`}
+                        className={`global-search__result${
+                          activeResultIndex === resultIndex ? ' global-search__result--active' : ''
+                        }`}
+                        to={route.path}
+                        onClick={handleResultClick}
+                      >
+                        <span>{route.label}</span>
+                        <span className="global-search__meta">{route.path}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           ) : null}
@@ -281,7 +396,7 @@ export function GlobalSearch() {
               </h2>
               <ul className="global-search__result-list">
                 {itemResults.map((item, itemIndex) => {
-                  const resultIndex = pageResults.length + itemIndex;
+                  const resultIndex = actionResults.length + pageResults.length + itemIndex;
                   const icon = getItemIcon(item.canonicalKey);
 
                   return (
@@ -309,7 +424,7 @@ export function GlobalSearch() {
             </section>
           ) : null}
 
-          {pageResults.length === 0 && itemResults.length === 0 ? (
+          {actionResults.length === 0 && pageResults.length === 0 && itemResults.length === 0 ? (
             <p className="global-search__empty">
               {loadError ? 'Page search is available, but local item search could not load.' : 'No matches yet.'}
             </p>

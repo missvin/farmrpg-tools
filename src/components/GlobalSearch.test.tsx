@@ -107,4 +107,45 @@ describe('GlobalSearch', () => {
       '/tower-progress',
     );
   });
+
+  it('shows explicit action results for command-style searches', async () => {
+    mockSearchResources();
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <GlobalSearch />
+      </MemoryRouter>,
+    );
+
+    await user.type(screen.getByLabelText('Search pages and items'), 'restore backup');
+
+    expect(await screen.findByRole('heading', { name: 'Actions' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Restore a local backup/ })).toHaveAttribute(
+      'href',
+      '/settings#settings-restore-title',
+    );
+  });
+
+  it('opens the top action result from the keyboard', async () => {
+    mockSearchResources();
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <GlobalSearch />
+        <Routes>
+          <Route path="*" element={<LocationReadout />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await user.type(screen.getByLabelText('Search pages and items'), 'compare progress');
+    await screen.findByRole('link', { name: /Compare saved snapshots/ });
+    await user.keyboard('{Enter}');
+
+    await waitFor(() => {
+      expect(screen.getByText('/compare')).toBeInTheDocument();
+    });
+  });
 });
