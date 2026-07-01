@@ -69,7 +69,7 @@ Glass Orb,glass orb,yes,,,,,`),
   it('parses the checked-in local item catalog', () => {
     const result = parseItemCatalogCsv(readFileSync(join(process.cwd(), 'data', 'item_catalog.csv'), 'utf8'));
 
-    expect(result.entries.length).toBe(1464);
+    expect(result.entries.length).toBe(1469);
     expect(result.byCanonicalKey['acorn butter']).toMatchObject({
       itemName: 'Acorn Butter',
       masteryPossible: 'yes',
