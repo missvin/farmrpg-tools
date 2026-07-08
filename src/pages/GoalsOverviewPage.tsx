@@ -1,10 +1,36 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
-import { getRouteToolMetadata, type RouteToolId } from '../lib/routeMetadata';
+import { derivePersonalMasteryGoalPlanning } from '../lib/derivePersonalMasteryGoalPlanning';
+import {
+  buildMasteryRaceCountLookup,
+  loadMasteryRaceCountsState,
+} from '../lib/masteryRaceCounts';
+import { loadPersonalMasteryGoalsState } from '../lib/personalMasteryGoals';
 import { loadQuestHistoryState } from '../lib/questHistoryState';
-import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
+import { getRouteToolMetadata, type RouteToolId } from '../lib/routeMetadata';
+import { getLatestSnapshot, type MasterySnapshot } from '../lib/storage/masterySnapshots';
+import { loadTargetOutputPlannerState } from '../lib/targetOutputPlannerState';
+
+type GoalPlanningNextAction = {
+  itemName: string;
+  canonicalKey: string;
+  targetTier: string;
+  totalPumpkinJuices: number | null;
+  nextItemsSaved: number | null;
+};
+
+type GoalPlanningSummary = {
+  personalGoalCount: number;
+  completeGoalCount: number;
+  calculablePumpkinJuiceTotal: number;
+  blockedGoalCount: number;
+  nextAction: GoalPlanningNextAction | null;
+  targetPlannerTargetCount: number;
+  error: string | null;
+};
 
 type GoalsOverviewState = {
   isLoading: boolean;
@@ -12,6 +38,7 @@ type GoalsOverviewState = {
   hasSnapshot: boolean | null;
   parsedItemCount: number | null;
   questHistoryImportCount: number | null;
+  planningSummary: GoalPlanningSummary;
 };
 
 type GoalSource = {
@@ -29,6 +56,64 @@ type GoalSource = {
 
 function routePath(routeId: RouteToolId): string {
   return getRouteToolMetadata(routeId).path;
+}
+
+function createEmptyPlanningSummary(error: string | null = null): GoalPlanningSummary {
+  return {
+    personalGoalCount: 0,
+    completeGoalCount: 0,
+    calculablePumpkinJuiceTotal: 0,
+    blockedGoalCount: 0,
+    nextAction: null,
+    targetPlannerTargetCount: 0,
+    error,
+  };
+}
+
+function loadGoalPlanningSummary(snapshot: MasterySnapshot | null): GoalPlanningSummary {
+  try {
+    const personalGoalsState = loadPersonalMasteryGoalsState();
+    const raceCountByCanonicalKey = buildMasteryRaceCountLookup(loadMasteryRaceCountsState());
+    const targetPlannerState = loadTargetOutputPlannerState();
+    const rows = derivePersonalMasteryGoalPlanning(
+      personalGoalsState.goals,
+      snapshot,
+      raceCountByCanonicalKey,
+    );
+    const incompleteCalculableRows = rows
+      .filter((row) => row.pumpkinJuiceEstimate.status === 'calculable')
+      .sort((left, right) => {
+        const pjComparison = (left.pumpkinJuiceEstimate.totalPumpkinJuices ?? 0) -
+          (right.pumpkinJuiceEstimate.totalPumpkinJuices ?? 0);
+
+        return pjComparison || left.itemName.localeCompare(right.itemName);
+      });
+    const nextRow = incompleteCalculableRows[0] ?? null;
+
+    return {
+      personalGoalCount: rows.length,
+      completeGoalCount: rows.filter((row) => row.pumpkinJuiceEstimate.status === 'complete').length,
+      calculablePumpkinJuiceTotal: rows.reduce((total, row) => {
+        return total + (row.pumpkinJuiceEstimate.totalPumpkinJuices ?? 0);
+      }, 0),
+      blockedGoalCount: rows.filter((row) => row.pumpkinJuiceEstimate.status === 'needs_baseline').length,
+      nextAction: nextRow
+        ? {
+          itemName: nextRow.itemName,
+          canonicalKey: nextRow.canonicalKey,
+          targetTier: nextRow.targetTier,
+          totalPumpkinJuices: nextRow.pumpkinJuiceEstimate.totalPumpkinJuices,
+          nextItemsSaved: nextRow.pumpkinJuiceValueEstimate.nextItemsSaved,
+        }
+        : null,
+      targetPlannerTargetCount: targetPlannerState.targets.length,
+      error: null,
+    };
+  } catch (error) {
+    return createEmptyPlanningSummary(
+      error instanceof Error ? error.message : 'Unable to load saved goal planning state.',
+    );
+  }
 }
 
 function getSnapshotStatus(state: GoalsOverviewState): string {
@@ -160,6 +245,7 @@ export function GoalsOverviewPage() {
     hasSnapshot: null,
     parsedItemCount: null,
     questHistoryImportCount: null,
+    planningSummary: createEmptyPlanningSummary(),
   });
 
   useEffect(() => {
@@ -184,6 +270,7 @@ export function GoalsOverviewPage() {
           hasSnapshot: snapshot !== null,
           parsedItemCount: snapshot?.parseSummary.itemsParsed ?? null,
           questHistoryImportCount,
+          planningSummary: loadGoalPlanningSummary(snapshot),
         });
       })
       .catch((error: unknown) => {
@@ -197,6 +284,7 @@ export function GoalsOverviewPage() {
           hasSnapshot: null,
           parsedItemCount: null,
           questHistoryImportCount,
+          planningSummary: createEmptyPlanningSummary(),
         });
       });
 
@@ -263,6 +351,77 @@ export function GoalsOverviewPage() {
         </div>
 
         {state.snapshotError ? <p className="status-message status-message--error">{state.snapshotError}</p> : null}
+      </section>
+
+      <section className="page-card page-stack" aria-labelledby="goal-planning-summary-title">
+        <div>
+          <h2 id="goal-planning-summary-title">Planning Summary</h2>
+          <p className="supporting-text">
+            Saved goal planning stays attached to the workflow that owns the detail; this view summarizes the local next step.
+          </p>
+        </div>
+
+        <div className="summary-grid">
+          <div className="summary-grid__item">
+            <h3 className="section-title">Personal mastery goals</h3>
+            <p>
+              <strong>{state.planningSummary.personalGoalCount.toLocaleString()}</strong>
+            </p>
+            <p className="subtle-text">
+              {state.planningSummary.completeGoalCount.toLocaleString()} complete, {state.planningSummary.blockedGoalCount.toLocaleString()} waiting on baseline mastery.
+            </p>
+            <p className="subtle-text">
+              <Link to={routePath('masteryGoals')}>Open mastery goals</Link>
+            </p>
+          </div>
+
+          <div className="summary-grid__item">
+            <h3 className="section-title">Pumpkin Juice plan</h3>
+            <p>
+              <strong>{state.planningSummary.calculablePumpkinJuiceTotal.toLocaleString()}</strong>
+            </p>
+            <p className="subtle-text">PJs across calculable saved mastery goals.</p>
+          </div>
+
+          <div className="summary-grid__item">
+            <h3 className="section-title">Custom targets</h3>
+            <p>
+              <strong>{state.planningSummary.targetPlannerTargetCount.toLocaleString()}</strong>
+            </p>
+            <p className="subtle-text">
+              <Link to={routePath('targetPlanner')}>Open target planner</Link>
+            </p>
+          </div>
+
+          <div className="summary-grid__item">
+            <h3 className="section-title">Next useful action</h3>
+            {state.planningSummary.nextAction ? (
+              <>
+                <p>
+                  <strong>
+                    <ItemProfileLink
+                      canonicalKey={state.planningSummary.nextAction.canonicalKey}
+                      itemName={state.planningSummary.nextAction.itemName}
+                    />
+                  </strong>
+                </p>
+                <p className="subtle-text">
+                  {state.planningSummary.nextAction.targetTier} target, {state.planningSummary.nextAction.totalPumpkinJuices?.toLocaleString() ?? 'unknown'} PJs, next PJ saves {state.planningSummary.nextAction.nextItemsSaved?.toLocaleString() ?? 'unknown'} mastery.
+                </p>
+              </>
+            ) : state.hasSnapshot ? (
+              <p className="subtle-text">Save a mastery goal or custom target to make this summary actionable.</p>
+            ) : (
+              <p className="subtle-text">
+                <Link to="/import">Import mastery snapshot</Link>
+              </p>
+            )}
+          </div>
+        </div>
+
+        {state.planningSummary.error ? (
+          <p className="status-message status-message--error">{state.planningSummary.error}</p>
+        ) : null}
       </section>
 
       <section className="page-card page-stack" aria-labelledby="goal-sources-title">

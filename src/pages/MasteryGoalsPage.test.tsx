@@ -115,6 +115,32 @@ describe('MasteryGoalsPage', () => {
     );
   });
 
+  it('saves Pumpkin Juice value thresholds and highlights matching goal rows', async () => {
+    const user = userEvent.setup();
+    mockResources();
+
+    render(<MasteryGoalsPage />);
+
+    await screen.findByRole('heading', { name: 'Mastery Goals' });
+    await user.type(screen.getByLabelText('Item', { selector: '#personal-goal-item' }), 'Board');
+    await user.selectOptions(screen.getByLabelText('Target'), 'GM');
+    await user.click(screen.getByRole('button', { name: 'Save Goal' }));
+
+    await user.click(screen.getByLabelText('Highlight high-value PJs'));
+    await user.clear(screen.getByLabelText('Next Arnold Palmers saved'));
+    await user.type(screen.getByLabelText('Next Arnold Palmers saved'), '20');
+    await user.click(screen.getAllByRole('button', { name: 'Save' })[1]);
+
+    const savedGoalsSection = screen.getByRole('heading', { name: 'Saved Goals' }).closest('section');
+    expect(within(savedGoalsSection as HTMLElement).getByText('25 AP / 12,500 stamina')).toBeInTheDocument();
+    expect(
+      within(savedGoalsSection as HTMLElement).getByText('High-value PJ: Next PJ saves about 25 Arnold Palmers.'),
+    ).toBeInTheDocument();
+    expect(window.localStorage.getItem(PUMPKIN_JUICE_PLANNER_STATE_STORAGE_KEY)).toContain(
+      '"minNextApSaved":20',
+    );
+  });
+
   it('names goals that need baseline mastery before Pumpkin Juice can help', async () => {
     const user = userEvent.setup();
     mockResources();

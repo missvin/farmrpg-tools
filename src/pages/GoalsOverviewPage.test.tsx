@@ -1,8 +1,17 @@
-import { render, screen, waitFor } from '@testing-library/react';
+﻿import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import {
+  savePersonalMasteryGoalsState,
+  upsertPersonalMasteryGoal,
+} from '../lib/personalMasteryGoals';
 import { saveQuestHistoryState } from '../lib/questHistoryState';
+import {
+  addTargetOutputPlannerTarget,
+  createDefaultTargetOutputPlannerState,
+  saveTargetOutputPlannerState,
+} from '../lib/targetOutputPlannerState';
 import { GoalsOverviewPage } from './GoalsOverviewPage';
 
 const getLatestSnapshotMock = vi.fn();
@@ -60,6 +69,62 @@ describe('GoalsOverviewPage', () => {
     expectLinkMatchingNameToHaveHref(/Borgen goals/i, '/memory-helper');
     expectLinkMatchingNameToHaveHref(/Custom targets/i, '/target-planner');
     expect(screen.getByText(/not Buddy reward pages/i)).toBeInTheDocument();
+  });
+
+  it('summarizes saved goal planning without blocking partial goal sources', async () => {
+    savePersonalMasteryGoalsState(
+      upsertPersonalMasteryGoal(
+        {
+          schemaVersion: 1,
+          goals: [],
+        },
+        {
+          itemName: 'Board',
+          targetTier: 'GM',
+        },
+      ),
+    );
+    saveTargetOutputPlannerState(
+      addTargetOutputPlannerTarget(createDefaultTargetOutputPlannerState(), {
+        itemName: 'Board',
+        desiredQuantity: 100,
+      }),
+    );
+    getLatestSnapshotMock.mockResolvedValue({
+      snapshotId: 'snapshot-1',
+      createdAt: '2026-03-23T00:00:00.000Z',
+      rawText: '',
+      masteryByItem: {
+        board: 50_000,
+      },
+      parseSummary: {
+        itemsParsed: 42,
+        parsedRowsCount: 42,
+        tiersDetected: [10000],
+        duplicateRowsCount: 0,
+        skippedNonItemLinesCount: 0,
+        skippedNonItemLineSamples: [],
+        unknownItemsCount: 0,
+        warnings: [],
+      },
+      parsedRows: [
+        {
+          rawItemName: 'Board',
+          canonicalKey: 'board',
+          count: 50_000,
+          targetTier: 100_000,
+          sourceLineIndex: 0,
+        },
+      ],
+    });
+
+    renderGoalsOverviewPage();
+
+    expect(await screen.findByRole('heading', { name: 'Planning Summary' })).toBeInTheDocument();
+    expect(screen.getByText('PJs across calculable saved mastery goals.')).toBeInTheDocument();
+    expect(screen.getByText(/GM target, 8 PJs, next PJ saves 5,000 mastery\./)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Board' })).toHaveAttribute('href', '/items/board');
+    expect(screen.getByRole('link', { name: 'Open target planner' })).toHaveAttribute('href', '/target-planner');
   });
 
   it('summarizes available local mastery and quest history without blocking partial goal sources', async () => {

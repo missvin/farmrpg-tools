@@ -2,7 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
-import { derivePersonalMasteryGoalPlanning } from '../lib/derivePersonalMasteryGoalPlanning';
+import { deriveConsumableAcquisitionEstimates } from '../lib/acquisitionEstimates';
+import {
+  createDefaultAcquisitionPlannerInputState,
+  loadAcquisitionPlannerInputState,
+} from '../lib/acquisitionPlannerState';
+import {
+  derivePersonalMasteryGoalPlanning,
+  type PersonalMasteryGoalPlanRow,
+} from '../lib/derivePersonalMasteryGoalPlanning';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import {
   buildMasteryRaceCountLookup,
@@ -23,6 +31,7 @@ import {
   createDefaultPumpkinJuicePlannerState,
   loadPumpkinJuicePlannerState,
   savePumpkinJuicePlannerState,
+  type PumpkinJuiceValueThresholdState,
 } from '../lib/pumpkinJuicePlannerState';
 import { getLatestSnapshot, type MasterySnapshot } from '../lib/storage/masterySnapshots';
 
@@ -37,6 +46,22 @@ type GoalSortMode = 'fewest_pj' | 'most_pj' | 'item_name' | 'remaining_mastery' 
 
 function formatPjCount(value: number | null): string {
   return value === null ? 'Needs baseline mastery first' : value.toLocaleString();
+}
+
+function formatValueMetric(value: number | null, label: string): string {
+  return value === null ? 'Unknown' : `${value.toLocaleString()} ${label}`;
+}
+
+function formatPumpkinJuiceValue(row: PersonalMasteryGoalPlanRow): string {
+  if (row.pumpkinJuiceValueEstimate.status === 'needs_baseline') {
+    return 'Unknown until baseline';
+  }
+
+  if (row.pumpkinJuiceValueEstimate.status === 'complete') {
+    return 'Complete';
+  }
+
+  return `${formatValueMetric(row.pumpkinJuiceValueEstimate.nextArnoldPalmersSaved, 'AP')} / ${formatValueMetric(row.pumpkinJuiceValueEstimate.nextStaminaSaved, 'stamina')}`;
 }
 
 function formatShortItemList(itemNames: string[]): string {
@@ -95,6 +120,32 @@ function matchesStatusFilter(rowStatus: PumpkinJuiceEstimateStatus, filter: Goal
   return filter === 'all' || rowStatus === filter;
 }
 
+function parseThresholdInput(value: string): number | null {
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return 0;
+  }
+
+  const numericValue = Number(trimmedValue);
+
+  if (!Number.isFinite(numericValue) || numericValue < 0) {
+    return null;
+  }
+
+  return Math.floor(numericValue);
+}
+
+function createThresholdInputs(thresholds: PumpkinJuiceValueThresholdState) {
+  return {
+    enabled: thresholds.enabled,
+    minNextApSaved: String(thresholds.minNextApSaved),
+    minTotalApSaved: String(thresholds.minTotalApSaved),
+    minNextStaminaSaved: String(thresholds.minNextStaminaSaved),
+    minTotalStaminaSaved: String(thresholds.minTotalStaminaSaved),
+  };
+}
+
 function compareNullablePjCount(left: number | null, right: number | null): number {
   if (left === null && right === null) {
     return 0;
@@ -141,6 +192,13 @@ export function MasteryGoalsPage() {
       return createDefaultPumpkinJuicePlannerState();
     }
   });
+  const [acquisitionPlannerState] = useState(() => {
+    try {
+      return loadAcquisitionPlannerInputState();
+    } catch {
+      return createDefaultAcquisitionPlannerInputState();
+    }
+  });
   const [resourcesState, setResourcesState] = useState<{
     isLoading: boolean;
     snapshot: MasterySnapshot | null;
@@ -161,6 +219,9 @@ export function MasteryGoalsPage() {
   const [ownedPumpkinJuiceInput, setOwnedPumpkinJuiceInput] = useState(
     String(pumpkinJuicePlannerState.ownedPumpkinJuiceCount),
   );
+  const [valueThresholdInputs, setValueThresholdInputs] = useState(() => (
+    createThresholdInputs(pumpkinJuicePlannerState.valueThresholds)
+  ));
   const [goalMessage, setGoalMessage] = useState<string | null>(null);
   const [goalError, setGoalError] = useState<string | null>(null);
   const [raceCountMessage, setRaceCountMessage] = useState<string | null>(null);
@@ -212,13 +273,26 @@ export function MasteryGoalsPage() {
     () => buildItemOptions(resourcesState.snapshot, resourcesState.referenceOptions),
     [resourcesState.referenceOptions, resourcesState.snapshot],
   );
+  const consumableEstimates = useMemo(
+    () => deriveConsumableAcquisitionEstimates(acquisitionPlannerState),
+    [acquisitionPlannerState],
+  );
   const raceCountByCanonicalKey = useMemo(
     () => buildMasteryRaceCountLookup(raceCountsState),
     [raceCountsState],
   );
   const goalRows = useMemo(
-    () => derivePersonalMasteryGoalPlanning(goalsState.goals, resourcesState.snapshot, raceCountByCanonicalKey),
-    [goalsState.goals, raceCountByCanonicalKey, resourcesState.snapshot],
+    () => derivePersonalMasteryGoalPlanning(goalsState.goals, resourcesState.snapshot, raceCountByCanonicalKey, {
+      consumableEstimates,
+      pumpkinJuiceValueThresholds: pumpkinJuicePlannerState.valueThresholds,
+    }),
+    [
+      consumableEstimates,
+      goalsState.goals,
+      pumpkinJuicePlannerState.valueThresholds,
+      raceCountByCanonicalKey,
+      resourcesState.snapshot,
+    ],
   );
   const visibleGoalRows = useMemo(() => {
     return goalRows
@@ -261,6 +335,7 @@ export function MasteryGoalsPage() {
   const blockedGoalRows = goalRows.filter((row) => row.pumpkinJuiceEstimate.status === 'needs_baseline');
   const blockedGoalCount = blockedGoalRows.length;
   const completeGoalCount = goalRows.filter((row) => row.pumpkinJuiceEstimate.status === 'complete').length;
+  const highlightedGoalCount = goalRows.filter((row) => row.pumpkinJuiceValueThreshold.isHighlighted).length;
 
   function parseOptionalCount(value: string): number | null {
     const trimmedValue = value.trim();
@@ -301,6 +376,47 @@ export function MasteryGoalsPage() {
       setPumpkinJuiceMessage(null);
       setPumpkinJuiceError(
         error instanceof Error ? error.message : 'Unable to save Pumpkin Juice count.',
+      );
+    }
+  }
+
+  function handleSaveValueThresholds(): void {
+    const minNextApSaved = parseThresholdInput(valueThresholdInputs.minNextApSaved);
+    const minTotalApSaved = parseThresholdInput(valueThresholdInputs.minTotalApSaved);
+    const minNextStaminaSaved = parseThresholdInput(valueThresholdInputs.minNextStaminaSaved);
+    const minTotalStaminaSaved = parseThresholdInput(valueThresholdInputs.minTotalStaminaSaved);
+
+    if (
+      minNextApSaved === null ||
+      minTotalApSaved === null ||
+      minNextStaminaSaved === null ||
+      minTotalStaminaSaved === null
+    ) {
+      setPumpkinJuiceMessage(null);
+      setPumpkinJuiceError('Enter non-negative value thresholds.');
+      return;
+    }
+
+    try {
+      const savedState = savePumpkinJuicePlannerState({
+        ...pumpkinJuicePlannerState,
+        valueThresholds: {
+          enabled: valueThresholdInputs.enabled,
+          minNextApSaved,
+          minTotalApSaved,
+          minNextStaminaSaved,
+          minTotalStaminaSaved,
+        },
+      });
+
+      setPumpkinJuicePlannerState(savedState);
+      setValueThresholdInputs(createThresholdInputs(savedState.valueThresholds));
+      setPumpkinJuiceError(null);
+      setPumpkinJuiceMessage('Saved Pumpkin Juice value thresholds on this device.');
+    } catch (error) {
+      setPumpkinJuiceMessage(null);
+      setPumpkinJuiceError(
+        error instanceof Error ? error.message : 'Unable to save Pumpkin Juice value thresholds.',
       );
     }
   }
@@ -440,6 +556,15 @@ export function MasteryGoalsPage() {
                 : `${(calculablePjTotal - pumpkinJuicePlannerState.ownedPumpkinJuiceCount).toLocaleString()} short for calculable goals`}
             </p>
           </div>
+          <div className="summary-grid__item">
+            <dt>Value highlights</dt>
+            <dd>{highlightedGoalCount.toLocaleString()}</dd>
+            <p className="subtle-text">
+              {pumpkinJuicePlannerState.valueThresholds.enabled
+                ? 'Rows meeting saved AP or stamina thresholds are highlighted.'
+                : 'Enable thresholds to flag high-value Pumpkin Juice rows.'}
+            </p>
+          </div>
         </dl>
 
         <div className="inline-control-row" aria-label="Pumpkin Juice planner assumptions">
@@ -460,6 +585,90 @@ export function MasteryGoalsPage() {
           <button type="button" className="button" onClick={handleSaveOwnedPumpkinJuiceCount}>
             Save
           </button>
+        </div>
+
+        <div className="filter-grid" aria-label="Pumpkin Juice value thresholds">
+          <label className="field-label" htmlFor="goals-value-threshold-enabled">
+            <input
+              id="goals-value-threshold-enabled"
+              type="checkbox"
+              checked={valueThresholdInputs.enabled}
+              onChange={(event) => {
+                setValueThresholdInputs((current) => ({ ...current, enabled: event.target.checked }));
+              }}
+            />
+            Highlight high-value PJs
+          </label>
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="goals-min-next-ap">
+              Next Arnold Palmers saved
+            </label>
+            <input
+              id="goals-min-next-ap"
+              className="text-input text-input--short"
+              type="number"
+              min="0"
+              step="1"
+              value={valueThresholdInputs.minNextApSaved}
+              onChange={(event) => {
+                setValueThresholdInputs((current) => ({ ...current, minNextApSaved: event.target.value }));
+              }}
+            />
+          </div>
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="goals-min-total-ap">
+              Total Arnold Palmers saved
+            </label>
+            <input
+              id="goals-min-total-ap"
+              className="text-input text-input--short"
+              type="number"
+              min="0"
+              step="1"
+              value={valueThresholdInputs.minTotalApSaved}
+              onChange={(event) => {
+                setValueThresholdInputs((current) => ({ ...current, minTotalApSaved: event.target.value }));
+              }}
+            />
+          </div>
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="goals-min-next-stamina">
+              Next stamina saved
+            </label>
+            <input
+              id="goals-min-next-stamina"
+              className="text-input text-input--short"
+              type="number"
+              min="0"
+              step="1"
+              value={valueThresholdInputs.minNextStaminaSaved}
+              onChange={(event) => {
+                setValueThresholdInputs((current) => ({ ...current, minNextStaminaSaved: event.target.value }));
+              }}
+            />
+          </div>
+          <div className="page-stack page-stack--tight">
+            <label className="field-label" htmlFor="goals-min-total-stamina">
+              Total stamina saved
+            </label>
+            <input
+              id="goals-min-total-stamina"
+              className="text-input text-input--short"
+              type="number"
+              min="0"
+              step="1"
+              value={valueThresholdInputs.minTotalStaminaSaved}
+              onChange={(event) => {
+                setValueThresholdInputs((current) => ({ ...current, minTotalStaminaSaved: event.target.value }));
+              }}
+            />
+          </div>
+          <div className="page-stack page-stack--tight">
+            <span className="field-label">Value model</span>
+            <button type="button" className="button" onClick={handleSaveValueThresholds}>
+              Save
+            </button>
+          </div>
         </div>
         {pumpkinJuiceMessage ? <p className="status-message status-message--success">{pumpkinJuiceMessage}</p> : null}
         {pumpkinJuiceError ? <p className="status-message status-message--error">{pumpkinJuiceError}</p> : null}
@@ -600,7 +809,7 @@ export function MasteryGoalsPage() {
 
         {visibleGoalRows.length > 0 ? (
           <div className="table-scroll">
-            <table className="data-table">
+            <table className="summary-table data-table">
               <thead>
                 <tr>
                   <th scope="col">Item</th>
@@ -609,6 +818,7 @@ export function MasteryGoalsPage() {
                   <th scope="col">Remaining</th>
                   <th scope="col">PJs</th>
                   <th scope="col">Next PJ</th>
+                  <th scope="col">Next value</th>
                   <th scope="col">Public count</th>
                   <th scope="col">Status</th>
                   <th scope="col">Actions</th>
@@ -616,7 +826,10 @@ export function MasteryGoalsPage() {
               </thead>
               <tbody>
                 {visibleGoalRows.map((row) => (
-                  <tr key={row.goalId}>
+                  <tr
+                    key={row.goalId}
+                    className={row.pumpkinJuiceValueThreshold.isHighlighted ? 'summary-table__row--highlight' : undefined}
+                  >
                     <td>
                       <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} />
                       {!row.matchedSnapshotRow ? (
@@ -647,6 +860,14 @@ export function MasteryGoalsPage() {
                       {row.pumpkinJuiceEstimate.nextPumpkinJuiceGain === null
                         ? '-'
                         : `+${row.pumpkinJuiceEstimate.nextPumpkinJuiceGain.toLocaleString()}`}
+                    </td>
+                    <td>
+                      {formatPumpkinJuiceValue(row)}
+                      {row.pumpkinJuiceValueThreshold.isHighlighted ? (
+                        <p className="subtle-text">
+                          High-value PJ: {row.pumpkinJuiceValueThreshold.reasons.join(' ')}
+                        </p>
+                      ) : null}
                     </td>
                     <td>{row.targetTierPublicCount === null ? '-' : row.targetTierPublicCount.toLocaleString()}</td>
                     <td>{getStatusLabel(row.pumpkinJuiceEstimate.status)}</td>
@@ -755,7 +976,7 @@ export function MasteryGoalsPage() {
 
         {raceCountsState.entries.length > 0 ? (
           <div className="table-scroll">
-            <table className="data-table">
+            <table className="summary-table data-table">
               <thead>
                 <tr>
                   <th scope="col">Item</th>

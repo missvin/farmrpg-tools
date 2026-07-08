@@ -1,3 +1,4 @@
+﻿import type { ConsumableAcquisitionEstimate } from './acquisitionEstimates';
 import type { MasteryRaceCountEntry } from './masteryRaceCounts';
 import type { PersonalMasteryGoal } from './personalMasteryGoals';
 import {
@@ -5,6 +6,13 @@ import {
   getMasteryTargetForTier,
   type PumpkinJuiceEstimate,
 } from './pumpkinJuiceEstimator';
+import type { PumpkinJuiceValueThresholdState } from './pumpkinJuicePlannerState';
+import {
+  derivePumpkinJuiceValueEstimate,
+  evaluatePumpkinJuiceValueThresholds,
+  type PumpkinJuiceValueEstimate,
+  type PumpkinJuiceValueThresholdResult,
+} from './pumpkinJuiceValueModel';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 
 export type PersonalMasteryGoalPlanRow = PersonalMasteryGoal & {
@@ -13,14 +21,30 @@ export type PersonalMasteryGoalPlanRow = PersonalMasteryGoal & {
   remainingMastery: number;
   matchedSnapshotRow: boolean;
   pumpkinJuiceEstimate: PumpkinJuiceEstimate;
+  pumpkinJuiceValueEstimate: PumpkinJuiceValueEstimate;
+  pumpkinJuiceValueThreshold: PumpkinJuiceValueThresholdResult;
   raceCountEntry: MasteryRaceCountEntry | null;
   targetTierPublicCount: number | null;
+};
+
+export type PersonalMasteryGoalPlanningOptions = {
+  consumableEstimates?: ConsumableAcquisitionEstimate[];
+  pumpkinJuiceValueThresholds?: PumpkinJuiceValueThresholdState;
+};
+
+const DEFAULT_VALUE_THRESHOLDS: PumpkinJuiceValueThresholdState = {
+  enabled: false,
+  minNextApSaved: 0,
+  minTotalApSaved: 0,
+  minNextStaminaSaved: 0,
+  minTotalStaminaSaved: 0,
 };
 
 export function derivePersonalMasteryGoalPlanning(
   goals: PersonalMasteryGoal[],
   snapshot: MasterySnapshot | null,
   raceCountByCanonicalKey: Record<string, MasteryRaceCountEntry> = {},
+  options: PersonalMasteryGoalPlanningOptions = {},
 ): PersonalMasteryGoalPlanRow[] {
   return goals.map((goal) => {
     const currentMastery = snapshot?.masteryByItem[goal.canonicalKey] ?? 0;
@@ -33,6 +57,18 @@ export function derivePersonalMasteryGoalPlanning(
         : goal.targetTier === 'GM'
           ? raceCountEntry?.grandMasteredCount ?? null
           : raceCountEntry?.megaMasteredCount ?? null;
+    const pumpkinJuiceEstimate = estimatePumpkinJuiceForTarget({
+      itemName: goal.itemName,
+      canonicalKey: goal.canonicalKey,
+      currentMastery,
+      targetTier: goal.targetTier,
+      targetMastery,
+      sourceScope: 'personal',
+    });
+    const pumpkinJuiceValueEstimate = derivePumpkinJuiceValueEstimate(
+      pumpkinJuiceEstimate,
+      options.consumableEstimates ?? [],
+    );
 
     return {
       ...goal,
@@ -42,14 +78,12 @@ export function derivePersonalMasteryGoalPlanning(
       matchedSnapshotRow: Boolean(snapshot && goal.canonicalKey in snapshot.masteryByItem),
       raceCountEntry,
       targetTierPublicCount,
-      pumpkinJuiceEstimate: estimatePumpkinJuiceForTarget({
-        itemName: goal.itemName,
-        canonicalKey: goal.canonicalKey,
-        currentMastery,
-        targetTier: goal.targetTier,
-        targetMastery,
-        sourceScope: 'personal',
-      }),
+      pumpkinJuiceEstimate,
+      pumpkinJuiceValueEstimate,
+      pumpkinJuiceValueThreshold: evaluatePumpkinJuiceValueThresholds(
+        pumpkinJuiceValueEstimate,
+        options.pumpkinJuiceValueThresholds ?? DEFAULT_VALUE_THRESHOLDS,
+      ),
     };
   });
 }

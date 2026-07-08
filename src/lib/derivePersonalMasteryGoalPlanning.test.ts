@@ -1,5 +1,7 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 
+import { deriveConsumableAcquisitionEstimates } from './acquisitionEstimates';
+import { createDefaultAcquisitionPlannerInputState } from './acquisitionPlannerState';
 import { derivePersonalMasteryGoalPlanning } from './derivePersonalMasteryGoalPlanning';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 
@@ -103,6 +105,44 @@ describe('derivePersonalMasteryGoalPlanning', () => {
       targetTierPublicCount: 150,
       raceCountEntry: {
         megaMasteredCount: 12,
+      },
+    });
+  });
+
+  it('attaches Pumpkin Juice value estimates and threshold reasons', () => {
+    const rows = derivePersonalMasteryGoalPlanning(
+      [
+        {
+          goalId: 'goal-4',
+          itemName: 'Board',
+          canonicalKey: 'board',
+          targetTier: 'GM',
+          createdAt: '2026-05-08T00:00:00.000Z',
+          updatedAt: '2026-05-08T00:00:00.000Z',
+        },
+      ],
+      snapshot,
+      {},
+      {
+        consumableEstimates: deriveConsumableAcquisitionEstimates(createDefaultAcquisitionPlannerInputState()),
+        pumpkinJuiceValueThresholds: {
+          enabled: true,
+          minNextApSaved: 20,
+          minTotalApSaved: 0,
+          minNextStaminaSaved: 0,
+          minTotalStaminaSaved: 0,
+        },
+      },
+    );
+
+    expect(rows[0]).toMatchObject({
+      pumpkinJuiceValueEstimate: {
+        nextArnoldPalmersSaved: 25,
+        nextStaminaSaved: 12_500,
+      },
+      pumpkinJuiceValueThreshold: {
+        isHighlighted: true,
+        reasons: ['Next PJ saves about 25 Arnold Palmers.'],
       },
     });
   });
