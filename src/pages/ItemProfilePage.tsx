@@ -94,12 +94,16 @@ type MasteryMilestone = {
   targetMastery: number;
 };
 
+type ItemBurdenTargetEntry = Pick<IngredientBurdenEntry, 'canonicalKey' | 'itemName' | 'isCraftable'> & {
+  requiredEffectiveOutput: number;
+};
+
 type ItemBurdenTarget = {
   scope: IngredientBurdenGoalScope;
   label: string;
   rootGoal: IngredientBurdenRootGoal | null;
   unresolvedGoal: IngredientBurdenUnresolvedGoal | null;
-  entries: IngredientBurdenEntry[];
+  entries: ItemBurdenTargetEntry[];
   isComplete: boolean;
 };
 
@@ -233,13 +237,25 @@ function getIngredientEntriesForRootGoal(
   burdenResult: RecursiveIngredientBurdenResult,
   scope: IngredientBurdenGoalScope,
   rootGoal: IngredientBurdenRootGoal,
-): IngredientBurdenEntry[] {
+): ItemBurdenTargetEntry[] {
   return Object.values(burdenResult.scopeResults[scope].ingredientBurdenByCanonicalKey)
     .filter((entry) => entry.canonicalKey !== rootGoal.outputCanonicalKey)
-    .filter((entry) => entry.contributions.some((contribution) => contribution.rootGoalId === rootGoal.goalId))
+    .map((entry) => {
+      const contribution = entry.contributions.find((candidate) => candidate.rootGoalId === rootGoal.goalId);
+
+      return contribution
+        ? {
+            canonicalKey: entry.canonicalKey,
+            itemName: entry.itemName,
+            isCraftable: entry.isCraftable,
+            requiredEffectiveOutput: contribution.requiredEffectiveOutput,
+          }
+        : null;
+    })
+    .filter((entry): entry is ItemBurdenTargetEntry => entry !== null)
     .sort((left, right) => {
-      if (right.totalRequiredEffectiveOutput !== left.totalRequiredEffectiveOutput) {
-        return right.totalRequiredEffectiveOutput - left.totalRequiredEffectiveOutput;
+      if (right.requiredEffectiveOutput !== left.requiredEffectiveOutput) {
+        return right.requiredEffectiveOutput - left.requiredEffectiveOutput;
       }
 
       return left.itemName.localeCompare(right.itemName);
@@ -403,7 +419,7 @@ function formatMaterialSinkTarget(row: CraftMaterialMatrixRow): string {
   }
 
   const status = target.achieved ? 'done' : `${formatMastery(target.remainingToRequirement)} left`;
-  return `${target.masteryLevelNeeded} L${target.levels.join(', ')} · ${status}`;
+  return `${target.masteryLevelNeeded} L${target.levels.join(', ')} Ã‚Â· ${status}`;
 }
 
 function ItemMaterialSinkPanel({
@@ -541,7 +557,7 @@ function ItemBurdenTargetCard({ target }: { target: ItemBurdenTarget }) {
                       itemName={entry.itemName}
                       iconSrc={icon?.src}
                     />
-                    <strong>{formatMastery(entry.totalRequiredEffectiveOutput)}</strong>
+                    <strong>{formatMastery(entry.requiredEffectiveOutput)}</strong>
                   </div>
                 </li>
               );
@@ -871,7 +887,7 @@ function ItemQuestFutureDemandPanel({ demand }: { demand: QuestFutureDemandRow |
                       <span className="subtle-text"> {requirement.questlineName}</span>
                     </span>
                     <span>
-                      {formatPlannerQuantity(requirement.quantity)} needed ·{' '}
+                      {formatPlannerQuantity(requirement.quantity)} needed Ã‚Â·{' '}
                       {getQuestFutureDemandScopeLabel(requirement.scope)}
                     </span>
                   </div>

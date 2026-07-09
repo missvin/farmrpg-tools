@@ -352,6 +352,9 @@ describe('ItemProfilePage', () => {
     expect(burdenSection).not.toBeNull();
     expect(within(burdenSection as HTMLElement).getByText('To GM')).toBeInTheDocument();
     expect(within(burdenSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);
+    expect(within(burdenSection as HTMLElement).getAllByRole('link', { name: /Glass Orb/ }).length).toBeGreaterThan(0);
+    expect(within(burdenSection as HTMLElement).getAllByText('100,000').length).toBeGreaterThan(0);
+    expect(within(burdenSection as HTMLElement).queryByText('4,500,000')).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Used In' })).toBeInTheDocument();
 
     const sinkSection = screen.getByRole('heading', { name: 'Tower Craft Sinks' }).closest('section');
