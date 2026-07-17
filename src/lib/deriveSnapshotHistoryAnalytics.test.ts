@@ -74,6 +74,37 @@ describe('deriveSnapshotHistoryAnalytics', () => {
     const towerItem = analytics.itemRows.find((row) => row.canonicalKey === 'tower item');
     expect(towerItem?.suggestionReasons).toContain('Tower');
     expect(towerItem?.recentGainPerDay).toBe(12_500);
+
+    const bestInterval = analytics.milestoneCallouts.find(
+      (callout) => callout.id === 'best_interval',
+    );
+    expect(bestInterval?.evidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: 'Mastery gained', value: '25,950' }),
+        expect.objectContaining({ label: 'Elapsed time', value: '2.00 days' }),
+      ]),
+    );
+    const thresholds = analytics.milestoneCallouts.find(
+      (callout) => callout.id === 'recent_thresholds',
+    );
+    expect(thresholds?.evidence).toContainEqual(
+      expect.objectContaining({ canonicalKey: 'carrot', label: 'Mastered reached' }),
+    );
+  });
+
+  it('includes elapsed time in active-streak evidence', () => {
+    const analytics = deriveSnapshotHistoryAnalytics([
+      createSnapshot('snapshot-a', '2026-03-17T12:00:00.000Z', { apple: 100 }),
+      createSnapshot('snapshot-b', '2026-03-18T12:00:00.000Z', { apple: 200 }),
+      createSnapshot('snapshot-c', '2026-03-19T12:00:00.000Z', { apple: 300 }),
+    ]);
+    const streak = analytics.milestoneCallouts.find(
+      (callout) => callout.id === 'longest_active_streak',
+    );
+
+    expect(streak?.evidence).toContainEqual(
+      expect.objectContaining({ label: 'Elapsed time', value: '2.00 days' }),
+    );
   });
 
   it('keeps zero-baseline and same-timestamp rates as not applicable', () => {

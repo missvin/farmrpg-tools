@@ -84,6 +84,17 @@ function createManyItemSnapshots() {
   ];
 }
 
+function createDenseSaltSnapshots() {
+  return Array.from({ length: 12 }, (_, index) => {
+    const day = String(index + 1).padStart(2, '0');
+    return createSnapshot(
+      `snapshot-${index + 1}`,
+      `2026-03-${day}T12:00:00.000Z`,
+      { salt: 100_000 + index * 10_000 },
+    );
+  });
+}
+
 describe('HistoryPage', () => {
   beforeEach(() => {
     listSnapshotsMock.mockReset();
@@ -153,5 +164,43 @@ describe('HistoryPage', () => {
     expect(screen.getByLabelText('Chart mode')).toHaveValue('threshold');
     expect(screen.getByLabelText('Range')).toHaveValue('recent');
     expect(screen.getAllByText('Tiny Item').length).toBeGreaterThan(0);
+  });
+
+  it('keeps dense dates readable and exposes exact historical mastery from each point', async () => {
+    const user = userEvent.setup();
+    listSnapshotsMock.mockResolvedValue(createDenseSaltSnapshots());
+
+    render(<HistoryPage />);
+
+    const itemVelocityHeading = await screen.findByRole('heading', { name: 'Item Velocity' });
+    const itemVelocitySection = itemVelocityHeading.closest('section') as HTMLElement;
+    const chart = within(itemVelocitySection).getByLabelText('Mastery count item velocity chart');
+    const visibleTicks = chart.querySelectorAll('.history-chart__tick');
+    const saltPoints = within(itemVelocitySection).getAllByRole('button', {
+      name: /Salt, .* mastery /i,
+    });
+
+    expect(visibleTicks.length).toBeLessThanOrEqual(8);
+    expect(saltPoints).toHaveLength(12);
+
+    await user.hover(saltPoints[0]);
+    expect(within(itemVelocitySection).getByRole('status')).toHaveTextContent('Salt');
+    expect(within(itemVelocitySection).getByRole('status')).toHaveTextContent('100,000');
+
+    await user.unhover(saltPoints[0]);
+    await user.click(saltPoints[11]);
+    expect(within(itemVelocitySection).getByRole('status')).toHaveTextContent('210,000');
+  });
+
+  it('expands interesting-movement callouts to show supporting snapshot evidence', async () => {
+    listSnapshotsMock.mockResolvedValue(createManyItemSnapshots());
+
+    render(<HistoryPage />);
+
+    const bestInterval = await screen.findByText('Best interval');
+    const bestIntervalDetails = bestInterval.closest('details') as HTMLElement;
+
+    expect(within(bestIntervalDetails).getByText('Snapshot range')).toBeInTheDocument();
+    expect(within(bestIntervalDetails).getByText('Mastery gained')).toBeInTheDocument();
   });
 });

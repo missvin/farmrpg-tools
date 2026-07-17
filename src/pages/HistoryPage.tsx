@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
@@ -68,6 +68,67 @@ function formatPercent(value: number | null): string {
 
 function formatDate(value: string): string {
   return new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function formatFullDate(value: string): string {
+  return new Date(value).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+function getVisibleTickIndexes(pointCount: number, maxTickCount: number): Set<number> {
+  if (pointCount <= maxTickCount) {
+    return new Set(Array.from({ length: pointCount }, (_, index) => index));
+  }
+
+  const indexes = new Set<number>([0, pointCount - 1]);
+  const intervalCount = Math.max(1, maxTickCount - 1);
+
+  for (let tickIndex = 1; tickIndex < intervalCount; tickIndex += 1) {
+    indexes.add(Math.round((tickIndex / intervalCount) * (pointCount - 1)));
+  }
+
+  return indexes;
+}
+
+function formatVelocityValue(value: number, chartMode: SnapshotVelocityChartMode): string {
+  if (chartMode === 'threshold') {
+    return `${value.toFixed(1)}%`;
+  }
+
+  if (chartMode === 'gain') {
+    return formatSignedNumber(value);
+  }
+
+  return formatCompactNumber(value);
+}
+
+function useChartWidth() {
+  const chartRef = useRef<HTMLDivElement>(null);
+  const [chartWidth, setChartWidth] = useState(640);
+
+  useEffect(() => {
+    const chart = chartRef.current;
+
+    if (!chart) {
+      return undefined;
+    }
+
+    const updateWidth = () => setChartWidth(chart.clientWidth || 640);
+    updateWidth();
+
+    if (typeof ResizeObserver === 'undefined') {
+      return undefined;
+    }
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(chart);
+    return () => observer.disconnect();
+  }, []);
+
+  return { chartRef, chartWidth };
 }
 
 function getPointX(index: number, count: number): number {
@@ -255,6 +316,9 @@ function ItemVelocityChart({
   chartMode: SnapshotVelocityChartMode;
   rangeMode: SnapshotVelocityRangeMode;
 }) {
+  const [activePointKey, setActivePointKey] = useState<string | null>(null);
+  const { chartRef, chartWidth } = useChartWidth();
+
   if (rows.length === 0) {
     return <p className="empty-state">Choose at least one item to draw velocity lines.</p>;
   }
@@ -266,43 +330,106 @@ function ItemVelocityChart({
   const values = rows.flatMap((row) => pointIndexes.map((pointIndex) => getItemChartValue(row, pointIndex, chartMode)));
   const minValue = chartMode === 'gain' ? Math.min(0, ...values) : 0;
   const maxValue = Math.max(1, ...values);
+  const maxTickCount = Math.max(2, Math.min(8, Math.floor(chartWidth / 88)));
+  const visibleTickIndexes = getVisibleTickIndexes(pointIndexes.length, maxTickCount);
+  const pointDetails = rows.flatMap((row, rowIndex) =>
+    pointIndexes.flatMap((pointIndex, visibleIndex) => {
+      const point = row.points[pointIndex];
+
+      if (!point) {
+        return [];
+      }
+
+      return [{
+        key: `${row.canonicalKey}-${point.snapshotId}`,
+        row,
+        point,
+        chartValue: getItemChartValue(row, pointIndex, chartMode),
+        x: getPointX(visibleIndex, pointIndexes.length),
+        y: getScaledY(getItemChartValue(row, pointIndex, chartMode), minValue, maxValue),
+        color: ITEM_CHART_COLORS[rowIndex % ITEM_CHART_COLORS.length],
+      }];
+    }));
+  const activePoint = pointDetails.find((point) => point.key === activePointKey) ?? null;
 
   return (
-    <div className="history-chart" role="img" aria-label={`${getChartModeLabel(chartMode)} item velocity chart`}>
-      <svg className="history-chart__svg" viewBox="0 0 640 240" aria-hidden="true" focusable="false">
-        <line className="history-chart__axis" x1="32" y1="190" x2="612" y2="190" />
-        {rows.map((row, rowIndex) => {
-          const linePoints = pointIndexes
-            .map((pointIndex, visibleIndex) => {
-              const x = getPointX(visibleIndex, pointIndexes.length);
-              const y = getScaledY(getItemChartValue(row, pointIndex, chartMode), minValue, maxValue);
-              return `${x},${y}`;
-            })
-            .join(' ');
+    <div className="history-chart" ref={chartRef}>
+      <div className="history-chart__plot">
+        <svg
+          className="history-chart__svg"
+          viewBox="0 0 640 240"
+          role="img"
+          aria-label={`${getChartModeLabel(chartMode)} item velocity chart`}
+        >
+          <line className="history-chart__axis" x1="32" y1="190" x2="612" y2="190" />
+          {rows.map((row, rowIndex) => {
+            const linePoints = pointIndexes
+              .map((pointIndex, visibleIndex) => {
+                const x = getPointX(visibleIndex, pointIndexes.length);
+                const y = getScaledY(getItemChartValue(row, pointIndex, chartMode), minValue, maxValue);
+                return `${x},${y}`;
+              })
+              .join(' ');
 
-          return (
-            <polyline
-              key={row.canonicalKey}
-              className="history-chart__item-line"
-              points={linePoints}
-              style={{ stroke: ITEM_CHART_COLORS[rowIndex % ITEM_CHART_COLORS.length] }}
-            />
-          );
-        })}
-        {pointIndexes.map((pointIndex, visibleIndex) => {
-          const point = basePoints[pointIndex];
+            return (
+              <polyline
+                key={row.canonicalKey}
+                className="history-chart__item-line"
+                points={linePoints}
+                style={{ stroke: ITEM_CHART_COLORS[rowIndex % ITEM_CHART_COLORS.length] }}
+                aria-hidden="true"
+              />
+            );
+          })}
+          {pointDetails.map(({ key, row, point, chartValue, x, y, color }) => (
+            <g
+              key={key}
+              className="history-chart__point"
+              role="button"
+              tabIndex={0}
+              aria-label={`${row.itemName}, ${formatFullDate(point.savedAt)}, mastery ${formatCompactNumber(point.value)}, ${getChartModeLabel(chartMode)} ${formatVelocityValue(chartValue, chartMode)}`}
+              onPointerEnter={() => setActivePointKey(key)}
+              onPointerLeave={() => setActivePointKey((current) => current === key ? null : current)}
+              onFocus={() => setActivePointKey(key)}
+              onBlur={() => setActivePointKey((current) => current === key ? null : current)}
+              onClick={() => setActivePointKey(key)}
+            >
+              <circle className="history-chart__point-hit" cx={x} cy={y} r="12" />
+              <circle className="history-chart__point-marker" cx={x} cy={y} r="4" style={{ fill: color }} />
+            </g>
+          ))}
+          {pointIndexes.map((pointIndex, visibleIndex) => {
+            const point = basePoints[pointIndex];
 
-          if (!point) {
-            return null;
-          }
+            if (!point || !visibleTickIndexes.has(visibleIndex)) {
+              return null;
+            }
 
-          return (
-            <text key={point.snapshotId} className="history-chart__tick" x={getPointX(visibleIndex, pointIndexes.length)} y="214" textAnchor="middle">
-              {formatDate(point.savedAt)}
-            </text>
-          );
-        })}
-      </svg>
+            return (
+              <text key={point.snapshotId} className="history-chart__tick" x={getPointX(visibleIndex, pointIndexes.length)} y="214" textAnchor="middle">
+                {formatDate(point.savedAt)}
+              </text>
+            );
+          })}
+        </svg>
+        {activePoint ? (
+          <div
+            className={`history-chart__tooltip${activePoint.x > 500 ? ' history-chart__tooltip--right' : ''}`}
+            style={{
+              left: `${(activePoint.x / 640) * 100}%`,
+              top: `${(activePoint.y / 240) * 100}%`,
+            }}
+            role="status"
+          >
+            <strong>{activePoint.row.itemName}</strong>
+            <span>{formatFullDate(activePoint.point.savedAt)}</span>
+            <span>Mastery: {formatCompactNumber(activePoint.point.value)}</span>
+            {chartMode !== 'mastery' ? (
+              <span>{getChartModeLabel(chartMode)}: {formatVelocityValue(activePoint.chartValue, chartMode)}</span>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
       <ul className="history-chart__legend history-chart__legend--items">
         {rows.map((row, rowIndex) => (
           <li key={row.canonicalKey}>
@@ -553,10 +680,33 @@ export function HistoryPage() {
               <h2 id="history-callouts-title">Interesting Movement</h2>
               <ul className="history-callout-list">
                 {itemAnalytics.milestoneCallouts.map((callout) => (
-                  <li key={`${callout.title}-${callout.value}`} className="history-callout-card">
-                    <span className="history-callout-card__title">{callout.title}</span>
-                    <strong>{callout.value}</strong>
-                    <span>{callout.detail}</span>
+                  <li key={callout.id} className="history-callout-card">
+                    <details>
+                      <summary>
+                        <span className="history-callout-card__title">{callout.title}</span>
+                        <strong>{callout.value}</strong>
+                        <span>{callout.detail}</span>
+                        <span className="history-callout-card__action">View details</span>
+                      </summary>
+                      <dl className="history-callout-evidence">
+                        {callout.evidence.map((evidence, index) => (
+                          <div key={`${evidence.label}-${evidence.canonicalKey ?? index}`}>
+                            <dt>{evidence.label}</dt>
+                            <dd>
+                              {evidence.canonicalKey && evidence.itemName ? (
+                                <>
+                                  <ItemProfileLink
+                                    canonicalKey={evidence.canonicalKey}
+                                    itemName={evidence.itemName}
+                                  />
+                                  <span>{evidence.value}</span>
+                                </>
+                              ) : evidence.value}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </details>
                   </li>
                 ))}
               </ul>

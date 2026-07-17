@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { deriveSnapshotComparison } from './deriveSnapshotComparison';
+import {
+  deriveSnapshotComparison,
+  deriveSnapshotComparisonNarrative,
+} from './deriveSnapshotComparison';
 import type { MasterySnapshot } from './storage/masterySnapshots';
 
 function createSnapshot(
@@ -99,5 +102,39 @@ describe('deriveSnapshotComparison', () => {
     expect(comparison.totalChangedItems).toBe(0);
     expect(comparison.changedRows).toEqual([]);
     expect(comparison.totalMasteryDelta).toBe(0);
+  });
+
+  it('summarizes the biggest gain, threshold crossings, and rows worth rechecking', () => {
+    const comparison = deriveSnapshotComparison(
+      createSnapshot('snapshot-a', {
+        salt: 9_000,
+        wrench: 90_000,
+        'wizard hat': 900_000,
+        banana: 300,
+      }),
+      createSnapshot('snapshot-b', {
+        salt: 11_000,
+        wrench: 110_000,
+        'wizard hat': 1_100_000,
+        banana: 100,
+      }),
+    );
+
+    const narrative = deriveSnapshotComparisonNarrative(comparison);
+
+    expect(narrative.biggestGain).toMatchObject({
+      canonicalKey: 'wizard hat',
+      delta: 200_000,
+    });
+    expect(narrative.thresholdCrossings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ canonicalKey: 'salt', label: 'Mastered' }),
+        expect.objectContaining({ canonicalKey: 'wrench', label: 'GM' }),
+        expect.objectContaining({ canonicalKey: 'wizard hat', label: 'MM' }),
+      ]),
+    );
+    expect(narrative.recheckRows).toEqual([
+      expect.objectContaining({ canonicalKey: 'banana', delta: -200 }),
+    ]);
   });
 });

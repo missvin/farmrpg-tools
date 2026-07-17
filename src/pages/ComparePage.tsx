@@ -2,7 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
-import { deriveSnapshotComparison } from '../lib/deriveSnapshotComparison';
+import {
+  deriveSnapshotComparison,
+  deriveSnapshotComparisonNarrative,
+} from '../lib/deriveSnapshotComparison';
 import {
   getSnapshot,
   listSnapshotSummaries,
@@ -153,6 +156,10 @@ export function ComparePage() {
 
     return deriveSnapshotComparison(compareState.fromSnapshot, compareState.toSnapshot);
   }, [compareState.fromSnapshot, compareState.toSnapshot]);
+  const narrative = useMemo(
+    () => comparison ? deriveSnapshotComparisonNarrative(comparison) : null,
+    [comparison],
+  );
 
   return (
     <div className="page-stack">
@@ -268,6 +275,72 @@ export function ComparePage() {
               </div>
             </dl>
           </section>
+
+          {narrative ? (
+            <section className="page-card page-stack" aria-labelledby="compare-notable-title">
+              <div>
+                <h2 id="compare-notable-title">Notable Changes</h2>
+                <p className="supporting-text">
+                  A short readout of the movements most useful to inspect before the full table.
+                </p>
+              </div>
+
+              {narrative.biggestGain || narrative.thresholdCrossings.length > 0 || narrative.recheckRows.length > 0 ? (
+                <ul className="history-callout-list">
+                  {narrative.biggestGain ? (
+                    <li className="history-callout-card">
+                      <span className="history-callout-card__title">Biggest gain</span>
+                      <ItemProfileLink
+                        canonicalKey={narrative.biggestGain.canonicalKey}
+                        itemName={narrative.biggestGain.itemName}
+                      />
+                      <strong>{formatCompactDelta(narrative.biggestGain.delta)}</strong>
+                      <span>
+                        {narrative.biggestGain.fromValue.toLocaleString()} to{' '}
+                        {narrative.biggestGain.toValue.toLocaleString()}
+                      </span>
+                    </li>
+                  ) : null}
+
+                  {narrative.thresholdCrossings.length > 0 ? (
+                    <li className="history-callout-card">
+                      <span className="history-callout-card__title">Thresholds reached</span>
+                      <strong>{narrative.thresholdCrossings.length.toLocaleString()}</strong>
+                      <ul className="compare-notable-list">
+                        {narrative.thresholdCrossings.map((crossing) => (
+                          <li key={`${crossing.canonicalKey}-${crossing.threshold}`}>
+                            <ItemProfileLink
+                              canonicalKey={crossing.canonicalKey}
+                              itemName={crossing.itemName}
+                            />
+                            <span>{crossing.label} at {crossing.threshold.toLocaleString()}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ) : null}
+
+                  {narrative.recheckRows.length > 0 ? (
+                    <li className="history-callout-card">
+                      <span className="history-callout-card__title">Worth rechecking</span>
+                      <strong>{narrative.recheckRows.length.toLocaleString()}</strong>
+                      <span>These counts decreased or disappeared between snapshots.</span>
+                      <ul className="compare-notable-list">
+                        {narrative.recheckRows.map((row) => (
+                          <li key={row.canonicalKey}>
+                            <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} />
+                            <span>{formatCompactDelta(row.delta)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ) : null}
+                </ul>
+              ) : (
+                <p className="empty-state">No notable item movement between these snapshots.</p>
+              )}
+            </section>
+          ) : null}
 
           <section className="page-card page-stack" aria-labelledby="compare-changed-items-title">
             <div>

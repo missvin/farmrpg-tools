@@ -142,3 +142,55 @@ export function deriveSnapshotComparison(
     changedRows,
   };
 }
+
+export type SnapshotComparisonThresholdCrossing = {
+  canonicalKey: string;
+  itemName: string;
+  label: 'Mastered' | 'GM' | 'MM';
+  threshold: number;
+  fromValue: number;
+  toValue: number;
+};
+
+export type SnapshotComparisonNarrative = {
+  biggestGain: SnapshotComparisonRow | null;
+  thresholdCrossings: SnapshotComparisonThresholdCrossing[];
+  recheckRows: SnapshotComparisonRow[];
+};
+
+const COMPARISON_THRESHOLDS: Array<Pick<SnapshotComparisonThresholdCrossing, 'label' | 'threshold'>> = [
+  { label: 'Mastered', threshold: 10_000 },
+  { label: 'GM', threshold: 100_000 },
+  { label: 'MM', threshold: 1_000_000 },
+];
+
+export function deriveSnapshotComparisonNarrative(
+  comparison: SnapshotComparison,
+): SnapshotComparisonNarrative {
+  const biggestGain = comparison.changedRows
+    .filter((row) => row.delta > 0)
+    .sort((left, right) => right.delta - left.delta || left.itemName.localeCompare(right.itemName))[0] ?? null;
+  const thresholdCrossings = comparison.changedRows
+    .flatMap((row) =>
+      COMPARISON_THRESHOLDS
+        .filter(({ threshold }) => row.fromValue < threshold && row.toValue >= threshold)
+        .map(({ label, threshold }) => ({
+          canonicalKey: row.canonicalKey,
+          itemName: row.itemName,
+          label,
+          threshold,
+          fromValue: row.fromValue,
+          toValue: row.toValue,
+        })))
+    .sort((left, right) => right.threshold - left.threshold || left.itemName.localeCompare(right.itemName));
+  const recheckRows = comparison.changedRows
+    .filter((row) => row.delta < 0)
+    .sort((left, right) => left.delta - right.delta || left.itemName.localeCompare(right.itemName))
+    .slice(0, 3);
+
+  return {
+    biggestGain,
+    thresholdCrossings,
+    recheckRows,
+  };
+}

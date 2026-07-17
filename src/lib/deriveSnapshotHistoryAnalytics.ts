@@ -64,9 +64,18 @@ export type SnapshotHistorySuggestionBucket = {
 };
 
 export type SnapshotHistoryCallout = {
+  id: 'best_interval' | 'fastest_recent_item' | 'recent_thresholds' | 'longest_active_streak';
   title: string;
   value: string;
   detail: string;
+  evidence: SnapshotHistoryCalloutEvidence[];
+};
+
+export type SnapshotHistoryCalloutEvidence = {
+  label: string;
+  value: string;
+  canonicalKey?: string;
+  itemName?: string;
 };
 
 export type SnapshotHistoryAnalytics = {
@@ -431,6 +440,17 @@ function buildSuggestionBuckets(suggestionSets: Record<string, Set<string>>): Sn
   ];
 }
 
+function formatCalloutDate(value: string): string {
+  return new Date(value).toLocaleDateString();
+}
+
+function formatElapsedDays(value: number | null): string {
+  if (value === null) {
+    return 'Same saved time';
+  }
+
+  return `${value.toFixed(value >= 10 ? 1 : 2)} days`;
+}
 function formatCompactNumber(value: number): string {
   return Math.round(value).toLocaleString();
 }
@@ -457,36 +477,111 @@ function buildCallouts(
   const callouts: SnapshotHistoryCallout[] = [];
 
   if (bestInterval?.masteryPerDay !== null && bestInterval?.masteryPerDay !== undefined) {
+    const bestIntervalIndex = snapshotPoints.findIndex((point) => point.snapshotId === bestInterval.snapshotId);
+    const previousPoint = snapshotPoints[bestIntervalIndex - 1];
+
     callouts.push({
+      id: 'best_interval',
       title: 'Best interval',
       value: `${formatCompactNumber(bestInterval.masteryPerDay)} / day`,
       detail: `${formatCompactNumber(bestInterval.totalDelta)} mastery gained by ${new Date(
         bestInterval.savedAt,
       ).toLocaleDateString()}.`,
+      evidence: [
+        {
+          label: 'Snapshot range',
+          value: previousPoint
+            ? `${formatCalloutDate(previousPoint.savedAt)} to ${formatCalloutDate(bestInterval.savedAt)}`
+            : formatCalloutDate(bestInterval.savedAt),
+        },
+        { label: 'Mastery gained', value: formatCompactNumber(bestInterval.totalDelta) },
+        { label: 'Elapsed time', value: formatElapsedDays(bestInterval.elapsedDays) },
+        { label: 'Average rate', value: `${formatCompactNumber(bestInterval.masteryPerDay)} / day` },
+      ],
     });
   }
 
   if (topRecentItem) {
+    const latestPoint = topRecentItem.points[topRecentItem.points.length - 1];
+    const previousPoint =
+      topRecentItem.points[topRecentItem.points.length - 2];
+
     callouts.push({
+      id: 'fastest_recent_item',
       title: 'Fastest recent item',
       value: topRecentItem.itemName,
       detail: `${formatCompactNumber(topRecentItem.recentDelta)} gained in the latest interval.`,
+      evidence: [
+        {
+          label: 'Item',
+          value: `${formatCompactNumber(topRecentItem.recentDelta)} gained`,
+          canonicalKey: topRecentItem.canonicalKey,
+          itemName: topRecentItem.itemName,
+        },
+        {
+          label: 'Snapshot range',
+          value: previousPoint && latestPoint
+            ? `${formatCalloutDate(previousPoint.savedAt)} to ${formatCalloutDate(latestPoint.savedAt)}`
+            : 'Latest interval',
+        },
+        { label: 'Before', value: formatCompactNumber(previousPoint?.value ?? topRecentItem.firstValue) },
+        { label: 'After', value: formatCompactNumber(latestPoint?.value ?? topRecentItem.latestValue) },
+        {
+          label: 'Average rate',
+          value: topRecentItem.recentGainPerDay === null
+            ? 'n/a'
+            : `${formatCompactNumber(topRecentItem.recentGainPerDay)} / day`,
+        },
+      ],
     });
   }
 
   if (recentThresholdRows.length > 0) {
     callouts.push({
+      id: 'recent_thresholds',
       title: 'Recent thresholds',
       value: recentThresholdRows.length.toLocaleString(),
       detail: 'Items crossed a mastery threshold in the latest interval.',
+      evidence: recentThresholdRows.flatMap((row) =>
+        row.latestThresholdCrossings.map((crossing) => ({
+          label: `${crossing.label} reached`,
+          value: formatCalloutDate(crossing.savedAt),
+          canonicalKey: row.canonicalKey,
+          itemName: row.itemName,
+        }))),
     });
   }
 
   if (streakItem) {
+    const positiveIntervalCount = countTrailingPositiveIntervals(streakItem);
+    const startPoint = streakItem.points[Math.max(0, streakItem.points.length - positiveIntervalCount - 1)];
+    const latestPoint = streakItem.points[streakItem.points.length - 1];
+    const elapsedDays = startPoint && latestPoint
+      ? getElapsedDays(new Date(startPoint.savedAt).getTime(), new Date(latestPoint.savedAt).getTime())
+      : null;
+
     callouts.push({
+      id: 'longest_active_streak',
       title: 'Longest active streak',
       value: streakItem.itemName,
-      detail: `${countTrailingPositiveIntervals(streakItem).toLocaleString()} positive intervals in a row.`,
+      detail: `${positiveIntervalCount.toLocaleString()} positive intervals in a row.`,
+      evidence: [
+        {
+          label: 'Item',
+          value: `${positiveIntervalCount.toLocaleString()} positive intervals`,
+          canonicalKey: streakItem.canonicalKey,
+          itemName: streakItem.itemName,
+        },
+        {
+          label: 'Active range',
+          value: startPoint && latestPoint
+            ? `${formatCalloutDate(startPoint.savedAt)} to ${formatCalloutDate(latestPoint.savedAt)}`
+            : 'Current snapshot history',
+        },
+        { label: 'Elapsed time', value: formatElapsedDays(elapsedDays) },
+        { label: 'Started at', value: formatCompactNumber(startPoint?.value ?? streakItem.firstValue) },
+        { label: 'Current mastery', value: formatCompactNumber(latestPoint?.value ?? streakItem.latestValue) },
+      ],
     });
   }
 

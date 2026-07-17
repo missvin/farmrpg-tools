@@ -108,12 +108,18 @@ describe('ComparePage', () => {
     render(<ComparePage />);
 
     expect(await screen.findByRole('heading', { name: 'Comparison Summary' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Notable Changes' })).toBeInTheDocument();
     expect(screen.getByText('+6')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Changed Items' })).toBeInTheDocument();
+    const biggestGainCard = screen.getByText('Biggest gain').closest('li') as HTMLElement;
+    expect(within(biggestGainCard).getByText('Carrot')).toBeInTheDocument();
+    expect(within(biggestGainCard).getByText('+7')).toBeInTheDocument();
+    expect(screen.getByText('Worth rechecking')).toBeInTheDocument();
+    expect(screen.getByText('Removed')).toBeInTheDocument();
     expect(screen.getByText('Apple')).toBeInTheDocument();
-    expect(screen.getByText('Banana')).toBeInTheDocument();
-    expect(screen.getByText('Carrot')).toBeInTheDocument();
+    expect(screen.getAllByText('Banana').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Carrot').length).toBeGreaterThan(0);
   });
 
   it('displays item names and compares the known legacy piñata mojibake key as the same item', async () => {
@@ -150,7 +156,7 @@ describe('ComparePage', () => {
     render(<ComparePage />);
 
     expect(await screen.findByRole('heading', { name: 'Comparison Summary' })).toBeInTheDocument();
-    expect(screen.getByText('Piñata Whop Stick')).toBeInTheDocument();
+    expect(screen.getAllByText('Piñata Whop Stick').length).toBeGreaterThan(0);
     expect(screen.getAllByText('+704').length).toBeGreaterThan(0);
     expect(screen.queryByText('PiÃ±ata Whop Stick')).not.toBeInTheDocument();
     expect(screen.queryByText('Removed')).not.toBeInTheDocument();
