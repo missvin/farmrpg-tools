@@ -2,7 +2,7 @@
 
 This file is for milestone-level planning; use [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for the detailed backlog and dependencies.
 
-## Completed Through v2.2
+## Completed Through v2.3
 
 - `v1.5` established the core local tracker and Tower workflow
   - Tower requirements loading and read-only Tower view
@@ -96,7 +96,7 @@ The target-output planner becomes easier to feed with real inventory data and ea
 User-facing story:
 Item pages should answer practical questions like how long Salt, Large Nets, Frost Snapper Shells, or Spiked Shells will take when current inventory, stored pets, future pets, openables, Wishing Well throws, recursive recipes, and active gathering sources all matter.
 
-## v2.3 (Planned)
+## v2.3 (Complete)
 
 - Quest history, future-demand, and questline planning
   - completed-request parser, local quest-history snapshots, and first rarity/population analytics (`BL-271`, `BL-272`, `BL-273`, shipped)
@@ -112,24 +112,51 @@ Item pages should answer practical questions like how long Salt, Large Nets, Fro
 User-facing story:
 Completed quest exports become useful planning data: you can review imports, see rare completions and community movement, understand questline progress, and connect future quest requirements back to item pages and hoard-worthy bottlenecks. Scary future items should be based on source burden and prep time, not raw required quantity alone.
 
+## Completed After v2.3
+
+- Goal-and-item workbench information architecture
+  - navigation regrouped around Home, Goals, Items, Planning, Data, and Advanced
+  - compatibility redirects preserve existing routes and bookmarks
+  - Home, Goals, Items, and Data entry surfaces connect existing workflows without removing pages
+  - route metadata and action-oriented search aliases provide consistent labels and discovery
+- Focused planning expansion
+  - dynamic craft-material and Tower color matrix views
+  - farm-building production assumptions and item-goal source integration
+  - Tower cutoff Pumpkin Juice planning and item-goal source relevance cleanup
+- Reference maintenance and history usability
+  - repeatable cache-first new-item intake with a reviewed June 2026 promotion batch
+  - readable Item Velocity dates and historical point tooltips
+  - reusable price-check paste normalization as the foundation for later trade-value features
+
+User-facing story:
+The app now behaves as a goal-and-item workbench rather than a loose collection of tools, while preserving familiar routes and local data. Item planning reaches more source types, new reference items have a repeatable review path, and historical progress is easier to inspect.
+
 ## Later
 
-- Focused planning and workflow polish
+- Trade-price and valuation workflow
+  - reviewed giveable/tradeable item tagging
+  - compact item-page trade-price context
+  - explicit currency-conversion assumptions and local inventory valuation
+  - optional dated price history after the current-price workflow proves useful
+- Focused planning follow-ups
+  - per-zone Apple Cider effectiveness and optional temporary meal modifiers
+  - acquisition context for named missing Museum items
+  - Tower method filtering when method metadata is trustworthy enough
+- Trust, performance, and workflow polish
+  - alternate rating-source selection after reviewed ClientCoin rows are populated
+  - item-icon manifest chunk optimization if the build warning remains isolated there
   - shipped-version release tracking in the backlog/changelog workflow
   - stable backlog row ordering maintenance
-  - selected item-icon integration into app views
   - Tower requirement data refreshes as confirmed values are released
-- Optional enrichment
-  - buddy slug enrichment and related reference-maintenance workflows
-  - unmatched export helpers where they materially improve maintenance
 - Deeper identity work when planning breadth truly requires it
   - stronger canonical item identity
-  - alias support and registry groundwork
 
 ## Icebox
 
 - Community process features
   - community feature request intake
   - community voting workflow
-- Deferred import/docs ideas
-  - mastery export help page with an import-screen link
+- Optional modeling and maintenance ideas
+  - crop-row-aware seed drop-rate modeling
+  - manual difficulty rating overrides
+  - reviewed method-update export workflow
