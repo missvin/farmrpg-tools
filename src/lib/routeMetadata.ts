@@ -25,6 +25,7 @@ export type RouteToolId =
   | 'sorted'
   | 'tower'
   | 'towerProgress'
+  | 't300RaceStory'
   | 'towerReferenceMaintenance'
   | 'ratingSourceWorkbench'
   | 'unknownItemReview'
@@ -56,6 +57,7 @@ export type RouteToolMetadata = {
   visibility: RouteVisibility;
   dataRequirements: LocalDataRequirement[];
   compatibilityPaths: string[];
+  searchable?: boolean;
 };
 
 export const routeToolMetadata: RouteToolMetadata[] = [
@@ -344,6 +346,18 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     visibility: 'user-facing',
     dataRequirements: ['mastery-snapshot', 'reference-data'],
     compatibilityPaths: ['/goals/tower-progress'],
+  },
+  {
+    id: 't300RaceStory',
+    path: '/stories/race-to-t300',
+    label: 'The Race to T300',
+    description: '@blackberry’s public data story covering 169 Tower MM requirements and the final T300 race.',
+    aliases: ['race to t300', 't300 story', 'tower race'],
+    iaGroup: 'goals',
+    visibility: 'user-facing',
+    dataRequirements: ['reference-data'],
+    compatibilityPaths: [],
+    searchable: false,
   },
   {
     id: 'towerReferenceMaintenance',

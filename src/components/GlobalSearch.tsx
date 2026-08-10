@@ -217,6 +217,7 @@ export function GlobalSearch() {
         ? []
         : appRoutes
             .filter((route) => !route.path.includes(':'))
+            .filter((route) => route.searchable !== false)
             .filter((route) => routeMatchesQuery(route, normalizedQuery))
             .slice(0, 6),
     [normalizedQuery],

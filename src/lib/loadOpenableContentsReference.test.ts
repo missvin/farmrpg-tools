@@ -82,13 +82,19 @@ describe('parseOpenableContentsReferenceCsv', () => {
     const saltOpenables = data.byContentCanonicalKey.salt.map((entry) => entry.openableItemName);
     const fixedRows = data.entries.filter((entry) => entry.quantityKind === 'fixed');
     const expectedRows = data.entries.filter((entry) => entry.quantityKind === 'expected');
+    const lornKitContents = data.byOpenableCanonicalKey["lorn's expedition kit"];
     const borgenBuckFromBag = data.byContentCanonicalKey['borgen buck'].find(
       (entry) => entry.openableCanonicalKey === 'borgen bag 01',
     );
 
-    expect(data.entries).toHaveLength(897);
-    expect(fixedRows).toHaveLength(634);
+    expect(data.entries).toHaveLength(921);
+    expect(fixedRows).toHaveLength(658);
     expect(expectedRows).toHaveLength(263);
+    expect(lornKitContents).toHaveLength(11);
+    expect(lornKitContents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ contentCanonicalKey: 'glyph sphere', quantityPerOpen: 2 }),
+      expect.objectContaining({ contentCanonicalKey: 'temple voucher', quantityPerOpen: 3 }),
+    ]));
     expect(saltOpenables).toEqual(expect.arrayContaining(['Corn Prize Bag', 'Large Chest 03']));
     expect(data.entries.some((entry) => entry.evidence === 'container_to_content')).toBe(false);
     expect(borgenBuckFromBag).toMatchObject({

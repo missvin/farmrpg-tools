@@ -68,8 +68,13 @@ Glass Orb,glass orb,yes,,,,,`),
 
   it('parses the checked-in local item catalog', () => {
     const result = parseItemCatalogCsv(readFileSync(join(process.cwd(), 'data', 'item_catalog.csv'), 'utf8'));
+    const masteryStatusCounts = result.entries.reduce<Record<string, number>>((counts, entry) => {
+      counts[entry.masteryPossible] = (counts[entry.masteryPossible] ?? 0) + 1;
+      return counts;
+    }, {});
 
-    expect(result.entries.length).toBe(1469);
+    expect(result.entries.length).toBe(1474);
+    expect(masteryStatusCounts).toEqual({ unknown: 951, yes: 503, no: 20 });
     expect(result.byCanonicalKey['acorn butter']).toMatchObject({
       itemName: 'Acorn Butter',
       masteryPossible: 'yes',
@@ -117,5 +122,26 @@ Glass Orb,glass orb,yes,,,,,`),
       farmrpgItemId: '1510',
       buddySlug: 'pine-shavings',
     });
+    expect([
+      result.byCanonicalKey.croissant,
+      result.byCanonicalKey['blitz buddy doll'],
+      result.byCanonicalKey['glyph sphere'],
+      result.byCanonicalKey["lorn's expedition kit"],
+      result.byCanonicalKey['temple voucher'],
+    ]).toEqual([
+      expect.objectContaining({ masteryPossible: 'no', farmrpgItemId: '1538', buddySlug: 'croissant' }),
+      expect.objectContaining({ masteryPossible: 'no', farmrpgItemId: '1533', buddySlug: 'blitz-buddy-doll' }),
+      expect.objectContaining({ masteryPossible: 'no', farmrpgItemId: '1532', buddySlug: 'glyph-sphere' }),
+      expect.objectContaining({ masteryPossible: 'no', farmrpgItemId: '1531', buddySlug: 'lorn-s-expedition-kit' }),
+      expect.objectContaining({ masteryPossible: 'no', farmrpgItemId: '1522', buddySlug: 'temple-voucher' }),
+    ]);
+    expect(result.byCanonicalKey['small bolt']).toMatchObject({
+      masteryPossible: 'yes',
+      farmrpgItemId: '595',
+      buddySlug: 'small-bolt',
+      sourceDatasets: expect.arrayContaining(['personal_mastery_export_2026_08_08']),
+    });
+    expect(result.byCanonicalKey['swamp puzzle']).toMatchObject({ masteryPossible: 'no' });
+    expect(result.byCanonicalKey.anglerfish).toMatchObject({ masteryPossible: 'no' });
   });
 });

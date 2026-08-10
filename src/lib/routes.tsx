@@ -72,6 +72,9 @@ const TowerPage = lazy(() => import('../pages/TowerPage').then((module) => ({ de
 const TowerProgressPage = lazy(() =>
   import('../pages/TowerProgressPage').then((module) => ({ default: module.TowerProgressPage })),
 );
+const T300RaceStoryPage = lazy(() =>
+  import('../pages/T300RaceStoryPage').then((module) => ({ default: module.T300RaceStoryPage })),
+);
 const TowerReferenceMaintenancePage = lazy(() =>
   import('../pages/TowerReferenceMaintenancePage').then((module) => ({
     default: module.TowerReferenceMaintenancePage,
@@ -138,6 +141,7 @@ export const appRoutes: AppRoute[] = [
   appRoute('sorted', <SortedPage />),
   appRoute('tower', <TowerPage />),
   appRoute('towerProgress', <TowerProgressPage />),
+  appRoute('t300RaceStory', <T300RaceStoryPage />),
   appRoute('towerReferenceMaintenance', <TowerReferenceMaintenancePage />),
   appRoute('ratingSourceWorkbench', <RatingSourceWorkbenchPage />),
   appRoute('unknownItemReview', <UnknownItemReviewPage />),

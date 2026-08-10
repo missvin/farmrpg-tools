@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build && node scripts/copyStaticAssets.mjs",
+    "generate:t300-race": "node scripts/generateT300RaceStory.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint ."

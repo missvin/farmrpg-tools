@@ -60,4 +60,13 @@ describe('routeToolMetadata', () => {
       expect(item.label).toBe(metadata?.label);
     }
   });
+
+  it('keeps the public T300 story direct-link only', () => {
+    const storyRoute = routeToolMetadata.find((metadata) => metadata.id === 't300RaceStory');
+    const navigationIds = navigationSections.flatMap((section) => section.items.map((item) => item.routeId));
+
+    expect(storyRoute?.path).toBe('/stories/race-to-t300');
+    expect(storyRoute?.searchable).toBe(false);
+    expect(navigationIds).not.toContain('t300RaceStory');
+  });
 });

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "buddy_item_page_data",
+  "extractionVersion": "buddy-item-evidence-cache-v1",
+  "fetchedAt": "2026-08-09T04:34:50.780Z",
+  "httpStatus": 200,
+  "itemName": "Glyph Sphere",
+  "canonicalKey": "glyph sphere",
+  "buddyUrl": "https://buddy.farm/i/glyph-sphere/",
+  "pageDataUrl": "https://buddy.farm/page-data/i/glyph-sphere/page-data.json",
+  "pageTitle": "Glyph Sphere",
+  "buddyItemName": "Glyph Sphere",
+  "buddyItemId": "1532",
+  "buddyItemImage": "/img/items/glyphsphere.png",
+  "sourceStatus": "sources_present",
+  "blankSourceIndicators": [],
+  "detectedSections": [
+    "locksmithOutputItems",
+    "requiredForQuests"
+  ],
+  "reviewNotes": [
+    "BL-325 generated slug candidate from new item seed."
+  ],
+  "fetchError": null,
+  "pageData": {
+    "componentChunkName": "component---src-templates-item-tsx",
+    "path": "/i/glyph-sphere/",
+    "result": {
+      "data": {
+        "farmrpg": {
+          "items": [
+            {
+              "__typename": "FarmRPG_Item",
+              "id": 1532,
+              "name": "Glyph Sphere",
+              "image": "/img/items/glyphsphere.png",
+              "type": "item",
+              "description": "Stay away from the summoner!",
+              "manualFishingOnly": false,
+              "canBuy": false,
+              "canMail": false,
+              "canCraft": false,
+              "canCook": false,
+              "canFleaMarket": false,
+              "craftingLevel": 0,
+              "cookingLevel": 0,
+              "buyPrice": 0,
+              "fleaMarketPrice": 0,
+              "fleaMarketRotate": false,
+              "baseYieldMinutes": 0,
+              "locksmithGrabBag": false,
+              "locksmithGold": 0,
+              "requiredForQuests": [
+                {
+                  "quantity": 1,
+                  "quest": {
+                    "__typename": "FarmRPG_Quest",
+                    "id": 7562433,
+                    "name": "Cloistered Cluster I",
+                    "image": "/img/items/ragvin.png?1",
+                    "endDate": "2026-09-01T04:59:59+00:00",
+                    "isHidden": false
+                  }
+                }
+              ],
+              "rewardForQuests": [],
+              "petItems": [],
+              "dropRates": [],
+              "dropRatesItems": [],
+              "quizRewards": [],
+              "npcItems": [],
+              "npcRewards": [],
+              "passwordItems": [],
+              "wishingWellInputItems": [],
+              "wishingWellOutputItems": [],
+              "recipeItems": [],
+              "recipeIngredientItems": [],
+              "locksmithItems": [],
+              "locksmithOutputItems": [
+                {
+                  "quantityMax": 2,
+                  "quantityMin": 2,
+                  "item": {
+                    "__typename": "FarmRPG_Item",
+                    "id": 1531,
+                    "name": "Lorn's Expedition Kit",
+                    "image": "/img/items/Bag_with_strap.png"
+                  }
+                }
+              ],
+              "cookingRecipeItem": null,
+              "cookingRecipeCookable": null,
+              "locksmithKey": null,
+              "locksmithKeyItems": [],
+              "manualProductions": [],
+              "exchangeCenterInputs": [],
+              "exchangeCenterOutputs": [],
+              "cardsTrades": [],
+              "towerRewards": [],
+              "skillLevelRewards": [],
+              "communityCenterOutputs": [],
+              "templeRewardItems": []
+            }
+          ]
+        }
+      },
+      "pageContext": {
+        "id": 1532,
+        "name": "Glyph Sphere"
+      }
+    },
+    "staticQueryHashes": [],
+    "slicesMap": {}
+  }
+}
