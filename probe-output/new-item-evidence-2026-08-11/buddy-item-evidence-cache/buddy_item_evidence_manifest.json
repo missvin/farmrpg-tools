@@ -1,0 +1,572 @@
+{
+  "plan": {
+    "entries": [
+      {
+        "index": 0,
+        "target": {
+          "itemName": "Mariya's Wheelbarrow",
+          "canonicalKey": "mariya's wheelbarrow",
+          "buddyUrl": "https://buddy.farm/i/mariyas-wheelbarrow/",
+          "sourceSchema": "target",
+          "sourceProbeStatus": null,
+          "notes": [
+            "BL-329 generated slug candidate",
+            "apostrophe-preserving alternate remains bounded fallback if this target fails."
+          ]
+        },
+        "cacheKey": "mariya-s-wheelbarrow__mariyas-wheelbarrow",
+        "cacheFileName": "mariya-s-wheelbarrow__mariyas-wheelbarrow.json",
+        "pageDataUrl": "https://buddy.farm/page-data/i/mariyas-wheelbarrow/page-data.json",
+        "action": "skip_terminal",
+        "reason": "Cached terminal evidence is newer than 30 days.",
+        "existingEvidence": {
+          "schemaVersion": 1,
+          "evidenceType": "buddy_item_page_data",
+          "extractionVersion": "buddy-item-evidence-cache-v1",
+          "fetchedAt": "2026-08-11T15:55:46.713Z",
+          "httpStatus": 404,
+          "itemName": "Mariya's Wheelbarrow",
+          "canonicalKey": "mariya's wheelbarrow",
+          "buddyUrl": "https://buddy.farm/i/mariyas-wheelbarrow/",
+          "pageDataUrl": "https://buddy.farm/page-data/i/mariyas-wheelbarrow/page-data.json",
+          "pageTitle": null,
+          "buddyItemName": null,
+          "buddyItemId": null,
+          "buddyItemImage": null,
+          "sourceStatus": "uncertain",
+          "blankSourceIndicators": [],
+          "detectedSections": [],
+          "reviewNotes": [
+            "BL-329 generated slug candidate",
+            "apostrophe-preserving alternate remains bounded fallback if this target fails.",
+            "Expected a successful Buddy page-data fetch but received HTTP 404."
+          ],
+          "fetchError": null,
+          "pageData": null
+        },
+        "existingFetchedAt": "2026-08-11T15:55:46.713Z"
+      },
+      {
+        "index": 1,
+        "target": {
+          "itemName": "Veggie Juice Instruction Sheet",
+          "canonicalKey": "veggie juice instruction sheet",
+          "buddyUrl": "https://buddy.farm/i/veggie-juice-instruction-sheet/",
+          "sourceSchema": "target",
+          "sourceProbeStatus": null,
+          "notes": [
+            "BL-329 generated slug candidate from new item seed."
+          ]
+        },
+        "cacheKey": "veggie-juice-instruction-sheet__veggie-juice-instruction-sheet",
+        "cacheFileName": "veggie-juice-instruction-sheet__veggie-juice-instruction-sheet.json",
+        "pageDataUrl": "https://buddy.farm/page-data/i/veggie-juice-instruction-sheet/page-data.json",
+        "action": "skip_fresh",
+        "reason": "Cached evidence is newer than 30 days.",
+        "existingEvidence": {
+          "schemaVersion": 1,
+          "evidenceType": "buddy_item_page_data",
+          "extractionVersion": "buddy-item-evidence-cache-v1",
+          "fetchedAt": "2026-08-11T15:55:46.713Z",
+          "httpStatus": 200,
+          "itemName": "Veggie Juice Instruction Sheet",
+          "canonicalKey": "veggie juice instruction sheet",
+          "buddyUrl": "https://buddy.farm/i/veggie-juice-instruction-sheet/",
+          "pageDataUrl": "https://buddy.farm/page-data/i/veggie-juice-instruction-sheet/page-data.json",
+          "pageTitle": "Veggie Juice Instruction Sheet",
+          "buddyItemName": "Veggie Juice Instruction Sheet",
+          "buddyItemId": "1535",
+          "buddyItemImage": "/img/items/6978.png",
+          "sourceStatus": "sources_present",
+          "blankSourceIndicators": [],
+          "detectedSections": [
+            "rewardForQuests"
+          ],
+          "reviewNotes": [
+            "BL-329 generated slug candidate from new item seed."
+          ],
+          "fetchError": null,
+          "pageData": {
+            "componentChunkName": "component---src-templates-item-tsx",
+            "path": "/i/veggie-juice-instruction-sheet/",
+            "result": {
+              "data": {
+                "farmrpg": {
+                  "items": [
+                    {
+                      "__typename": "FarmRPG_Item",
+                      "id": 1535,
+                      "name": "Veggie Juice Instruction Sheet",
+                      "image": "/img/items/6978.png",
+                      "type": "item",
+                      "description": "Shaken, not stirred",
+                      "manualFishingOnly": false,
+                      "canBuy": false,
+                      "canMail": false,
+                      "canCraft": false,
+                      "canCook": false,
+                      "canFleaMarket": false,
+                      "craftingLevel": 0,
+                      "cookingLevel": 0,
+                      "buyPrice": 0,
+                      "fleaMarketPrice": 0,
+                      "fleaMarketRotate": false,
+                      "baseYieldMinutes": 0,
+                      "locksmithGrabBag": false,
+                      "locksmithGold": 0,
+                      "requiredForQuests": [],
+                      "rewardForQuests": [
+                        {
+                          "quantity": 1,
+                          "quest": {
+                            "__typename": "FarmRPG_Quest",
+                            "id": 7562614,
+                            "name": "A Better Juice VI",
+                            "image": "/img/items/mariya.png",
+                            "endDate": null,
+                            "isHidden": false
+                          }
+                        }
+                      ],
+                      "petItems": [],
+                      "dropRates": [],
+                      "dropRatesItems": [],
+                      "quizRewards": [],
+                      "npcItems": [],
+                      "npcRewards": [],
+                      "passwordItems": [],
+                      "wishingWellInputItems": [],
+                      "wishingWellOutputItems": [],
+                      "recipeItems": [],
+                      "recipeIngredientItems": [],
+                      "locksmithItems": [],
+                      "locksmithOutputItems": [],
+                      "cookingRecipeItem": null,
+                      "cookingRecipeCookable": null,
+                      "locksmithKey": null,
+                      "locksmithKeyItems": [],
+                      "manualProductions": [],
+                      "exchangeCenterInputs": [],
+                      "exchangeCenterOutputs": [],
+                      "cardsTrades": [],
+                      "towerRewards": [],
+                      "skillLevelRewards": [],
+                      "communityCenterOutputs": [],
+                      "templeRewardItems": []
+                    }
+                  ]
+                }
+              },
+              "pageContext": {
+                "id": 1535,
+                "name": "Veggie Juice Instruction Sheet"
+              }
+            },
+            "staticQueryHashes": [],
+            "slicesMap": {}
+          }
+        },
+        "existingFetchedAt": "2026-08-11T15:55:46.713Z"
+      },
+      {
+        "index": 2,
+        "target": {
+          "itemName": "Highland Hollow Charm",
+          "canonicalKey": "highland hollow charm",
+          "buddyUrl": "https://buddy.farm/i/highland-hollow-charm/",
+          "sourceSchema": "target",
+          "sourceProbeStatus": null,
+          "notes": [
+            "BL-329 generated slug candidate from new item seed."
+          ]
+        },
+        "cacheKey": "highland-hollow-charm__highland-hollow-charm",
+        "cacheFileName": "highland-hollow-charm__highland-hollow-charm.json",
+        "pageDataUrl": "https://buddy.farm/page-data/i/highland-hollow-charm/page-data.json",
+        "action": "skip_fresh",
+        "reason": "Cached evidence is newer than 30 days.",
+        "existingEvidence": {
+          "schemaVersion": 1,
+          "evidenceType": "buddy_item_page_data",
+          "extractionVersion": "buddy-item-evidence-cache-v1",
+          "fetchedAt": "2026-08-11T15:55:46.713Z",
+          "httpStatus": 200,
+          "itemName": "Highland Hollow Charm",
+          "canonicalKey": "highland hollow charm",
+          "buddyUrl": "https://buddy.farm/i/highland-hollow-charm/",
+          "pageDataUrl": "https://buddy.farm/page-data/i/highland-hollow-charm/page-data.json",
+          "pageTitle": "Highland Hollow Charm",
+          "buddyItemName": "Highland Hollow Charm",
+          "buddyItemId": "1524",
+          "buddyItemImage": "/img/items/Fairy_crystal_charm.png",
+          "sourceStatus": "sources_blank",
+          "blankSourceIndicators": [
+            "no_nonempty_known_source_sections"
+          ],
+          "detectedSections": [],
+          "reviewNotes": [
+            "BL-329 generated slug candidate from new item seed."
+          ],
+          "fetchError": null,
+          "pageData": {
+            "componentChunkName": "component---src-templates-item-tsx",
+            "path": "/i/highland-hollow-charm/",
+            "result": {
+              "data": {
+                "farmrpg": {
+                  "items": [
+                    {
+                      "__typename": "FarmRPG_Item",
+                      "id": 1524,
+                      "name": "Highland Hollow Charm",
+                      "image": "/img/items/Fairy_crystal_charm.png",
+                      "type": "item",
+                      "description": "Increases Mining Effectiveness<br/>\r\nin Highland Hollow",
+                      "manualFishingOnly": false,
+                      "canBuy": false,
+                      "canMail": false,
+                      "canCraft": false,
+                      "canCook": false,
+                      "canFleaMarket": false,
+                      "craftingLevel": 0,
+                      "cookingLevel": 0,
+                      "buyPrice": 0,
+                      "fleaMarketPrice": 0,
+                      "fleaMarketRotate": false,
+                      "baseYieldMinutes": 0,
+                      "locksmithGrabBag": false,
+                      "locksmithGold": 0,
+                      "requiredForQuests": [],
+                      "rewardForQuests": [],
+                      "petItems": [],
+                      "dropRates": [],
+                      "dropRatesItems": [],
+                      "quizRewards": [],
+                      "npcItems": [],
+                      "npcRewards": [],
+                      "passwordItems": [],
+                      "wishingWellInputItems": [],
+                      "wishingWellOutputItems": [],
+                      "recipeItems": [],
+                      "recipeIngredientItems": [],
+                      "locksmithItems": [],
+                      "locksmithOutputItems": [],
+                      "cookingRecipeItem": null,
+                      "cookingRecipeCookable": null,
+                      "locksmithKey": null,
+                      "locksmithKeyItems": [],
+                      "manualProductions": [],
+                      "exchangeCenterInputs": [],
+                      "exchangeCenterOutputs": [],
+                      "cardsTrades": [],
+                      "towerRewards": [],
+                      "skillLevelRewards": [],
+                      "communityCenterOutputs": [],
+                      "templeRewardItems": []
+                    }
+                  ]
+                }
+              },
+              "pageContext": {
+                "id": 1524,
+                "name": "Highland Hollow Charm"
+              }
+            },
+            "staticQueryHashes": [],
+            "slicesMap": {}
+          }
+        },
+        "existingFetchedAt": "2026-08-11T15:55:46.713Z"
+      },
+      {
+        "index": 3,
+        "target": {
+          "itemName": "Spring Cave Charm",
+          "canonicalKey": "spring cave charm",
+          "buddyUrl": "https://buddy.farm/i/spring-cave-charm/",
+          "sourceSchema": "target",
+          "sourceProbeStatus": null,
+          "notes": [
+            "BL-329 generated slug candidate from new item seed."
+          ]
+        },
+        "cacheKey": "spring-cave-charm__spring-cave-charm",
+        "cacheFileName": "spring-cave-charm__spring-cave-charm.json",
+        "pageDataUrl": "https://buddy.farm/page-data/i/spring-cave-charm/page-data.json",
+        "action": "skip_fresh",
+        "reason": "Cached evidence is newer than 30 days.",
+        "existingEvidence": {
+          "schemaVersion": 1,
+          "evidenceType": "buddy_item_page_data",
+          "extractionVersion": "buddy-item-evidence-cache-v1",
+          "fetchedAt": "2026-08-11T15:55:46.713Z",
+          "httpStatus": 200,
+          "itemName": "Spring Cave Charm",
+          "canonicalKey": "spring cave charm",
+          "buddyUrl": "https://buddy.farm/i/spring-cave-charm/",
+          "pageDataUrl": "https://buddy.farm/page-data/i/spring-cave-charm/page-data.json",
+          "pageTitle": "Spring Cave Charm",
+          "buddyItemName": "Spring Cave Charm",
+          "buddyItemId": "1523",
+          "buddyItemImage": "/img/items/Spring_cave_Charm.png",
+          "sourceStatus": "sources_blank",
+          "blankSourceIndicators": [
+            "no_nonempty_known_source_sections"
+          ],
+          "detectedSections": [],
+          "reviewNotes": [
+            "BL-329 generated slug candidate from new item seed."
+          ],
+          "fetchError": null,
+          "pageData": {
+            "componentChunkName": "component---src-templates-item-tsx",
+            "path": "/i/spring-cave-charm/",
+            "result": {
+              "data": {
+                "farmrpg": {
+                  "items": [
+                    {
+                      "__typename": "FarmRPG_Item",
+                      "id": 1523,
+                      "name": "Spring Cave Charm",
+                      "image": "/img/items/Spring_cave_Charm.png",
+                      "type": "item",
+                      "description": "Increases Mining Effectiveness<br/>\r\nin Spring Cave",
+                      "manualFishingOnly": false,
+                      "canBuy": false,
+                      "canMail": false,
+                      "canCraft": false,
+                      "canCook": false,
+                      "canFleaMarket": false,
+                      "craftingLevel": 0,
+                      "cookingLevel": 0,
+                      "buyPrice": 0,
+                      "fleaMarketPrice": 0,
+                      "fleaMarketRotate": false,
+                      "baseYieldMinutes": 0,
+                      "locksmithGrabBag": false,
+                      "locksmithGold": 0,
+                      "requiredForQuests": [],
+                      "rewardForQuests": [],
+                      "petItems": [],
+                      "dropRates": [],
+                      "dropRatesItems": [],
+                      "quizRewards": [],
+                      "npcItems": [],
+                      "npcRewards": [],
+                      "passwordItems": [],
+                      "wishingWellInputItems": [],
+                      "wishingWellOutputItems": [],
+                      "recipeItems": [],
+                      "recipeIngredientItems": [],
+                      "locksmithItems": [],
+                      "locksmithOutputItems": [],
+                      "cookingRecipeItem": null,
+                      "cookingRecipeCookable": null,
+                      "locksmithKey": null,
+                      "locksmithKeyItems": [],
+                      "manualProductions": [],
+                      "exchangeCenterInputs": [],
+                      "exchangeCenterOutputs": [],
+                      "cardsTrades": [],
+                      "towerRewards": [],
+                      "skillLevelRewards": [],
+                      "communityCenterOutputs": [],
+                      "templeRewardItems": []
+                    }
+                  ]
+                }
+              },
+              "pageContext": {
+                "id": 1523,
+                "name": "Spring Cave Charm"
+              }
+            },
+            "staticQueryHashes": [],
+            "slicesMap": {}
+          }
+        },
+        "existingFetchedAt": "2026-08-11T15:55:46.713Z"
+      }
+    ],
+    "summary": {
+      "targetsAvailable": 4,
+      "targetsPlanned": 4,
+      "fetchesPlanned": 0,
+      "fetchCandidatesAvailable": 0,
+      "limitApplied": false,
+      "countsByAction": {
+        "skip_terminal": 1,
+        "skip_fresh": 3
+      },
+      "warnings": []
+    }
+  },
+  "results": [
+    {
+      "itemName": "Mariya's Wheelbarrow",
+      "canonicalKey": "mariya's wheelbarrow",
+      "buddyUrl": "https://buddy.farm/i/mariyas-wheelbarrow/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/mariyas-wheelbarrow/page-data.json",
+      "cacheKey": "mariya-s-wheelbarrow__mariyas-wheelbarrow",
+      "cacheFileName": "mariya-s-wheelbarrow__mariyas-wheelbarrow.json",
+      "action": "skip_terminal",
+      "status": "skip_terminal",
+      "httpStatus": 404,
+      "sourceStatus": "uncertain",
+      "fetchedAt": "2026-08-11T15:55:46.713Z",
+      "flags": [
+        "uncertain",
+        "http_404"
+      ],
+      "notes": [
+        "BL-329 generated slug candidate",
+        "apostrophe-preserving alternate remains bounded fallback if this target fails.",
+        "Expected a successful Buddy page-data fetch but received HTTP 404.",
+        "Cached terminal evidence is newer than 30 days."
+      ],
+      "evidence": null
+    },
+    {
+      "itemName": "Veggie Juice Instruction Sheet",
+      "canonicalKey": "veggie juice instruction sheet",
+      "buddyUrl": "https://buddy.farm/i/veggie-juice-instruction-sheet/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/veggie-juice-instruction-sheet/page-data.json",
+      "cacheKey": "veggie-juice-instruction-sheet__veggie-juice-instruction-sheet",
+      "cacheFileName": "veggie-juice-instruction-sheet__veggie-juice-instruction-sheet.json",
+      "action": "skip_fresh",
+      "status": "skip_fresh",
+      "httpStatus": 200,
+      "sourceStatus": "sources_present",
+      "fetchedAt": "2026-08-11T15:55:46.713Z",
+      "flags": [],
+      "notes": [
+        "BL-329 generated slug candidate from new item seed.",
+        "Cached evidence is newer than 30 days."
+      ],
+      "evidence": null
+    },
+    {
+      "itemName": "Highland Hollow Charm",
+      "canonicalKey": "highland hollow charm",
+      "buddyUrl": "https://buddy.farm/i/highland-hollow-charm/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/highland-hollow-charm/page-data.json",
+      "cacheKey": "highland-hollow-charm__highland-hollow-charm",
+      "cacheFileName": "highland-hollow-charm__highland-hollow-charm.json",
+      "action": "skip_fresh",
+      "status": "skip_fresh",
+      "httpStatus": 200,
+      "sourceStatus": "sources_blank",
+      "fetchedAt": "2026-08-11T15:55:46.713Z",
+      "flags": [
+        "sources_blank"
+      ],
+      "notes": [
+        "BL-329 generated slug candidate from new item seed.",
+        "Cached evidence is newer than 30 days."
+      ],
+      "evidence": null
+    },
+    {
+      "itemName": "Spring Cave Charm",
+      "canonicalKey": "spring cave charm",
+      "buddyUrl": "https://buddy.farm/i/spring-cave-charm/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/spring-cave-charm/page-data.json",
+      "cacheKey": "spring-cave-charm__spring-cave-charm",
+      "cacheFileName": "spring-cave-charm__spring-cave-charm.json",
+      "action": "skip_fresh",
+      "status": "skip_fresh",
+      "httpStatus": 200,
+      "sourceStatus": "sources_blank",
+      "fetchedAt": "2026-08-11T15:55:46.713Z",
+      "flags": [
+        "sources_blank"
+      ],
+      "notes": [
+        "BL-329 generated slug candidate from new item seed.",
+        "Cached evidence is newer than 30 days."
+      ],
+      "evidence": null
+    }
+  ],
+  "reviewResults": [
+    {
+      "itemName": "Mariya's Wheelbarrow",
+      "canonicalKey": "mariya's wheelbarrow",
+      "buddyUrl": "https://buddy.farm/i/mariyas-wheelbarrow/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/mariyas-wheelbarrow/page-data.json",
+      "cacheKey": "mariya-s-wheelbarrow__mariyas-wheelbarrow",
+      "cacheFileName": "mariya-s-wheelbarrow__mariyas-wheelbarrow.json",
+      "action": "skip_terminal",
+      "status": "skip_terminal",
+      "httpStatus": 404,
+      "sourceStatus": "uncertain",
+      "fetchedAt": "2026-08-11T15:55:46.713Z",
+      "flags": [
+        "uncertain",
+        "http_404"
+      ],
+      "notes": [
+        "BL-329 generated slug candidate",
+        "apostrophe-preserving alternate remains bounded fallback if this target fails.",
+        "Expected a successful Buddy page-data fetch but received HTTP 404.",
+        "Cached terminal evidence is newer than 30 days."
+      ],
+      "evidence": null
+    },
+    {
+      "itemName": "Highland Hollow Charm",
+      "canonicalKey": "highland hollow charm",
+      "buddyUrl": "https://buddy.farm/i/highland-hollow-charm/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/highland-hollow-charm/page-data.json",
+      "cacheKey": "highland-hollow-charm__highland-hollow-charm",
+      "cacheFileName": "highland-hollow-charm__highland-hollow-charm.json",
+      "action": "skip_fresh",
+      "status": "skip_fresh",
+      "httpStatus": 200,
+      "sourceStatus": "sources_blank",
+      "fetchedAt": "2026-08-11T15:55:46.713Z",
+      "flags": [
+        "sources_blank"
+      ],
+      "notes": [
+        "BL-329 generated slug candidate from new item seed.",
+        "Cached evidence is newer than 30 days."
+      ],
+      "evidence": null
+    },
+    {
+      "itemName": "Spring Cave Charm",
+      "canonicalKey": "spring cave charm",
+      "buddyUrl": "https://buddy.farm/i/spring-cave-charm/",
+      "pageDataUrl": "https://buddy.farm/page-data/i/spring-cave-charm/page-data.json",
+      "cacheKey": "spring-cave-charm__spring-cave-charm",
+      "cacheFileName": "spring-cave-charm__spring-cave-charm.json",
+      "action": "skip_fresh",
+      "status": "skip_fresh",
+      "httpStatus": 200,
+      "sourceStatus": "sources_blank",
+      "fetchedAt": "2026-08-11T15:55:46.713Z",
+      "flags": [
+        "sources_blank"
+      ],
+      "notes": [
+        "BL-329 generated slug candidate from new item seed.",
+        "Cached evidence is newer than 30 days."
+      ],
+      "evidence": null
+    }
+  ],
+  "summary": {
+    "targetsProcessed": 4,
+    "evidenceCached": 0,
+    "reviewCount": 3,
+    "countsByStatus": {
+      "skip_terminal": 1,
+      "skip_fresh": 3
+    },
+    "warnings": [
+      "3 evidence results need review before parser promotion."
+    ]
+  }
+}

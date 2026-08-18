@@ -73,8 +73,8 @@ Glass Orb,glass orb,yes,,,,,`),
       return counts;
     }, {});
 
-    expect(result.entries.length).toBe(1474);
-    expect(masteryStatusCounts).toEqual({ unknown: 951, yes: 503, no: 20 });
+    expect(result.entries.length).toBe(1478);
+    expect(masteryStatusCounts).toEqual({ unknown: 951, yes: 503, no: 24 });
     expect(result.byCanonicalKey['acorn butter']).toMatchObject({
       itemName: 'Acorn Butter',
       masteryPossible: 'yes',
@@ -103,6 +103,12 @@ Glass Orb,glass orb,yes,,,,,`),
       masteryPossible: 'unknown',
       buddySlug: 'large-chest-01',
       sourceDatasets: ['buddy_item_evidence_cache'],
+    });
+    expect(result.byCanonicalKey["mariya's wheelbarrow"]).toMatchObject({
+      itemName: "Mariya's Wheelbarrow",
+      masteryPossible: 'no',
+      farmrpgItemId: '1536',
+      buddySlug: 'mariya-s-wheelbarrow',
     });
     expect(result.byCanonicalKey['goldfish prize']).toMatchObject({
       itemName: 'Goldfish Prize',
