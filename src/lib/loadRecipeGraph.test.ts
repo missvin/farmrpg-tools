@@ -114,7 +114,7 @@ fancy pipe,Fancy Pipe,1,Wood,wood,10,https://buddy.farm/i/fancy-pipe/,https://bu
     const recipeInputsCsv = readFileSync(join(process.cwd(), 'data', 'recipe_inputs.csv'), 'utf8');
     const graph = buildRecipeGraph(parseRecipesCsv(recipesCsv), parseRecipeInputsCsv(recipeInputsCsv));
 
-    expect(graph.recipes).toHaveLength(277);
+    expect(graph.recipes).toHaveLength(278);
     expect(graph.recipes.every((recipe) => recipe.inputs.length > 0)).toBe(true);
     expect(graph.byOutputCanonicalKey.valve.inputs.map((input) => input.itemName).sort()).toEqual([
       'Broken Pipe',
@@ -122,6 +122,16 @@ fancy pipe,Fancy Pipe,1,Wood,wood,10,https://buddy.farm/i/fancy-pipe/,https://bu
       'Hammer',
       'Red Dye',
       'Steel',
+    ]);
+    expect(graph.byOutputCanonicalKey['monarch butterfly']).toMatchObject({
+      outputItemName: 'Monarch Butterfly',
+      recipeType: 'craft',
+    });
+    expect(graph.byOutputCanonicalKey['monarch butterfly'].inputs).toEqual([
+      expect.objectContaining({ itemName: 'Caterpillar', quantity: 1 }),
+      expect.objectContaining({ itemName: 'Silk', quantity: 1 }),
+      expect.objectContaining({ itemName: 'Black Dye', quantity: 1 }),
+      expect.objectContaining({ itemName: 'Orange Butterfly', quantity: 1 }),
     ]);
     expect(graph.byOutputCanonicalKey['acorn pie']).toMatchObject({
       recipeType: 'cooking',

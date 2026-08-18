@@ -73,8 +73,8 @@ Glass Orb,glass orb,yes,,,,,`),
       return counts;
     }, {});
 
-    expect(result.entries.length).toBe(1478);
-    expect(masteryStatusCounts).toEqual({ unknown: 951, yes: 503, no: 24 });
+    expect(result.entries.length).toBe(1479);
+    expect(masteryStatusCounts).toEqual({ unknown: 951, yes: 504, no: 24 });
     expect(result.byCanonicalKey['acorn butter']).toMatchObject({
       itemName: 'Acorn Butter',
       masteryPossible: 'yes',
@@ -109,6 +109,13 @@ Glass Orb,glass orb,yes,,,,,`),
       masteryPossible: 'no',
       farmrpgItemId: '1536',
       buddySlug: 'mariya-s-wheelbarrow',
+    });
+    expect(result.byCanonicalKey['monarch butterfly']).toMatchObject({
+      itemName: 'Monarch Butterfly',
+      masteryPossible: 'yes',
+      farmrpgItemId: '1495',
+      buddySlug: 'monarch-butterfly',
+      sourceDatasets: ['buddy_item_evidence_cache', 'new_item_intake_2026_08_18', 'recipes.output'],
     });
     expect(result.byCanonicalKey['goldfish prize']).toMatchObject({
       itemName: 'Goldfish Prize',
