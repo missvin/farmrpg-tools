@@ -114,7 +114,7 @@ fancy pipe,Fancy Pipe,1,Wood,wood,10,https://buddy.farm/i/fancy-pipe/,https://bu
     const recipeInputsCsv = readFileSync(join(process.cwd(), 'data', 'recipe_inputs.csv'), 'utf8');
     const graph = buildRecipeGraph(parseRecipesCsv(recipesCsv), parseRecipeInputsCsv(recipeInputsCsv));
 
-    expect(graph.recipes).toHaveLength(275);
+    expect(graph.recipes).toHaveLength(277);
     expect(graph.recipes.every((recipe) => recipe.inputs.length > 0)).toBe(true);
     expect(graph.byOutputCanonicalKey.valve.inputs.map((input) => input.itemName).sort()).toEqual([
       'Broken Pipe',
@@ -138,6 +138,28 @@ fancy pipe,Fancy Pipe,1,Wood,wood,10,https://buddy.farm/i/fancy-pipe/,https://bu
       'Steel',
       'Moonstone',
       'Small Bolt',
+    ]);
+    expect(graph.byOutputCanonicalKey['christmas tree'].inputs.map((input) => [input.itemName, input.quantity])).toEqual([
+      ['Orange Ornament', 3],
+      ['Green Ornament', 3],
+      ['Red Ornament', 3],
+      ['Yellow Ornament', 3],
+      ['Blue Ornament', 3],
+      ['Purple Ornament', 3],
+      ['Pine Tree', 1],
+      ['Star', 1],
+    ]);
+    expect(graph.byOutputCanonicalKey['holiday wreath'].inputs.map((input) => [input.itemName, input.quantity])).toEqual([
+      ['Pine Cone', 6],
+      ['Red Berries', 6],
+      ['Orange Ornament', 3],
+      ['Green Ornament', 3],
+      ['Red Ornament', 3],
+      ['Yellow Ornament', 3],
+      ['Blue Ornament', 3],
+      ['Purple Ornament', 3],
+      ['Steel Wire', 1],
+      ['Pine Tree', 1],
     ]);
     expect(graph.byOutputCanonicalKey['pine shavings']).toMatchObject({
       outputItemName: 'Pine Shavings',
