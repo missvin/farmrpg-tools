@@ -165,6 +165,7 @@ describe('deriveTowerProgress', () => {
     const board = derived.items.find((item) => item.canonicalKey === 'board');
 
     expect(board).toMatchObject({
+      towerLevel: 205,
       requiredThreshold: 1_000_000,
       remainingToTarget: 850_000,
       masteryLevelLabel: 'MM',

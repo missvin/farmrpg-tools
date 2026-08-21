@@ -5,8 +5,16 @@ import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import { TowerPumpkinJuiceTargetPlanner } from '../components/TowerPumpkinJuiceTargetPlanner';
 import { deriveTowerProgress } from '../lib/deriveTowerProgress';
+import {
+  deriveTowerGameAreaNeeds,
+  type TowerGameAreaNeedGroup,
+} from '../lib/gameAreaNeedsPlanning';
 import { getItemIcon } from '../lib/itemIconManifest';
+import { loadDropRateReference, type DropRateReferenceData } from '../lib/loadDropRateReference';
 import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
+import { loadPetSourceReference, type PetSourceReferenceData } from '../lib/loadPetSourceReference';
+import { loadQuestReference, type QuestReferenceData } from '../lib/loadQuestReference';
+import { loadRecipeGraph, type RecipeGraph } from '../lib/loadRecipeGraph';
 import { loadTowerRequirements } from '../lib/loadTowerRequirements';
 import {
   createDefaultPumpkinJuicePlannerState,
@@ -91,6 +99,73 @@ function parseTowerTargetLevelInput(value: string): number | null {
   return Number.isInteger(numericValue) && numericValue > 0 ? numericValue : null;
 }
 
+function TowerGameAreaNeedsSection({ groups }: { groups: TowerGameAreaNeedGroup[] }) {
+  return (
+    <section className="page-card page-stack" aria-labelledby="tower-game-area-needs-title">
+      <div>
+        <h2 id="tower-game-area-needs-title">Remaining Tower Needs by Game Area</h2>
+        <p className="supporting-text">
+          Incomplete mastery requirements grouped by reviewed recipe, mastery-method, source, and pet evidence.
+        </p>
+      </div>
+
+      <div className="summary-grid">
+        {groups.map((group) => (
+          <div className="summary-grid__item" key={group.area}>
+            <h3 className="section-title">{group.label}</h3>
+            <p>
+              <strong>{group.rows.length.toLocaleString()}</strong> item{group.rows.length === 1 ? '' : 's'}
+            </p>
+            <p className="subtle-text">{formatCompactMastery(group.totalMasteryRemaining)} mastery remaining</p>
+          </div>
+        ))}
+      </div>
+
+      {groups.filter((group) => group.rows.length > 0).map((group) => (
+        <details className="tower-range-card" key={group.area}>
+          <summary className="tower-range-summary">
+            <span className="tower-range-summary__text">
+              <strong>{group.label}</strong>
+              <span className="subtle-text">
+                {group.rows.length.toLocaleString()} incomplete item{group.rows.length === 1 ? '' : 's'}
+              </span>
+            </span>
+            <strong>{formatCompactMastery(group.totalMasteryRemaining)} remaining</strong>
+          </summary>
+          <div className="table-scroll">
+            <table className="summary-table">
+              <thead>
+                <tr>
+                  <th scope="col">Tower level</th>
+                  <th scope="col">Item</th>
+                  <th scope="col">Requirement</th>
+                  <th scope="col">Current mastery</th>
+                  <th scope="col">Remaining</th>
+                  <th scope="col">PJs</th>
+                </tr>
+              </thead>
+              <tbody>
+                {group.rows.map((item) => (
+                  <tr key={`${group.area}-${item.canonicalKey}`}>
+                    <td>{item.towerLevel}</td>
+                    <td>
+                      <TowerProgressItemName canonicalKey={item.canonicalKey} itemName={item.itemName} />
+                    </td>
+                    <td>{formatRequirementLabel(item.requiredThreshold)}</td>
+                    <td>{item.currentMastery.toLocaleString()}</td>
+                    <td>{item.remainingToTarget.toLocaleString()}</td>
+                    <td>{formatPumpkinJuiceEstimate(item.pumpkinJuiceEstimate.totalPumpkinJuices)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      ))}
+    </section>
+  );
+}
+
 export function TowerProgressPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const targetCanonicalKey = searchParams.get('item')?.trim().toLowerCase() ?? null;
@@ -115,6 +190,10 @@ export function TowerProgressPage() {
     difficultyError: string | null;
     snapshot: Awaited<ReturnType<typeof getLatestSnapshot>>;
     derivedProgress: ReturnType<typeof deriveTowerProgress> | null;
+    recipeGraph: RecipeGraph | null;
+    dropRateReference: DropRateReferenceData | null;
+    petSourceReference: PetSourceReferenceData | null;
+    questReference: QuestReferenceData | null;
   }>({
     isLoading: true,
     snapshotError: null,
@@ -122,7 +201,29 @@ export function TowerProgressPage() {
     difficultyError: null,
     snapshot: null,
     derivedProgress: null,
+    recipeGraph: null,
+    dropRateReference: null,
+    petSourceReference: null,
+    questReference: null,
   });
+  const gameAreaNeeds = useMemo(() => {
+    if (!progressState.derivedProgress) {
+      return [];
+    }
+
+    return deriveTowerGameAreaNeeds(progressState.derivedProgress.remainingItems, {
+      recipeGraph: progressState.recipeGraph,
+      dropRateReference: progressState.dropRateReference,
+      petSourceReference: progressState.petSourceReference,
+      sourceHintsByCanonicalKey: progressState.questReference?.sourceHintsByCanonicalKey,
+    });
+  }, [
+    progressState.derivedProgress,
+    progressState.dropRateReference,
+    progressState.petSourceReference,
+    progressState.questReference,
+    progressState.recipeGraph,
+  ]);
 
   function updateTowerTargetSearchParam(value: string): void {
     const nextParams = new URLSearchParams(searchParams);
@@ -197,14 +298,29 @@ export function TowerProgressPage() {
             difficultyError: null,
             snapshot: null,
             derivedProgress: null,
+            recipeGraph: null,
+            dropRateReference: null,
+            petSourceReference: null,
+            questReference: null,
           });
           return;
         }
 
         try {
-          const [towerRequirementsData, masteryDifficultyData] = await Promise.all([
+          const [
+            towerRequirementsData,
+            masteryDifficultyData,
+            recipeGraph,
+            dropRateReference,
+            petSourceReference,
+            questReference,
+          ] = await Promise.all([
             loadTowerRequirements(),
             loadMasteryDifficulty(),
+            loadRecipeGraph().catch(() => null),
+            loadDropRateReference().catch(() => null),
+            loadPetSourceReference().catch(() => null),
+            loadQuestReference().catch(() => null),
           ]);
 
           if (!isMounted) {
@@ -220,6 +336,10 @@ export function TowerProgressPage() {
             derivedProgress: deriveTowerProgress(snapshot, towerRequirementsData, masteryDifficultyData, {
               maxTowerLevel: towerTargetLevel,
             }),
+            recipeGraph,
+            dropRateReference,
+            petSourceReference,
+            questReference,
           });
         } catch (error: unknown) {
           if (!isMounted) {
@@ -238,6 +358,10 @@ export function TowerProgressPage() {
             difficultyError,
             snapshot,
             derivedProgress: null,
+            recipeGraph: null,
+            dropRateReference: null,
+            petSourceReference: null,
+            questReference: null,
           });
         }
       })
@@ -253,6 +377,10 @@ export function TowerProgressPage() {
           difficultyError: null,
           snapshot: null,
           derivedProgress: null,
+          recipeGraph: null,
+          dropRateReference: null,
+          petSourceReference: null,
+          questReference: null,
         });
       });
 
@@ -335,6 +463,8 @@ export function TowerProgressPage() {
             onOwnedPumpkinJuiceInputChange={setOwnedPumpkinJuiceInput}
             onSaveOwnedPumpkinJuiceCount={handleSaveOwnedPumpkinJuiceCount}
           />
+
+          <TowerGameAreaNeedsSection groups={gameAreaNeeds} />
 
           <section className="page-card page-stack" aria-labelledby="tower-progress-difficulty-title">
             <div>

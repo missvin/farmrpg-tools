@@ -314,6 +314,11 @@ describe('TowerProgressPage', () => {
     expect(screen.getByText('Items left to GM')).toBeInTheDocument();
     expect(screen.getByText('Items left to MM')).toBeInTheDocument();
     expect(screen.getByText('Total mastery remaining')).toBeInTheDocument();
+    const gameAreaSection = screen.getByRole('heading', { name: 'Remaining Tower Needs by Game Area' }).closest('section');
+    const cropsBucket = within(gameAreaSection as HTMLElement).getByText('Crops', { selector: 'strong' }).closest('details');
+    expect(cropsBucket).not.toBeNull();
+    expect(within(cropsBucket as HTMLElement).getByText('Gold Cucumber')).toBeInTheDocument();
+    expect(within(cropsBucket as HTMLElement).getByText('301')).toBeInTheDocument();
     const difficultySection = screen.getByRole('heading', { name: 'Difficulty Breakdown' }).closest('section');
     const difficultyNineBucket = within(difficultySection as HTMLElement).getByRole('heading', { name: 'Difficulty 9' }).closest('details');
     const unratedBucket = within(difficultySection as HTMLElement).getByRole('heading', { name: 'Unrated' }).closest('details');

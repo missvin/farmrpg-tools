@@ -13,6 +13,7 @@ type DifficultyBucket = number | null;
 export type TowerProgressItem = {
   itemName: string;
   canonicalKey: string;
+  towerLevel: number;
   currentMastery: number;
   requiredThreshold: number;
   remainingToTarget: number;
@@ -88,6 +89,7 @@ type TowerRequirementEntry = TowerRequirementsData['entries'][number];
 type TowerProgressAccumulator = {
   itemName: string;
   canonicalKey: string;
+  towerLevel: number;
   requiredThreshold: number;
 };
 
@@ -169,10 +171,15 @@ function buildAggregatedTowerItems(towerEntries: TowerRequirementEntry[]): Tower
     const requiredThreshold = getTowerRequirementThreshold(entry.masteryLevelNeeded);
     const existing = byCanonicalKey.get(entry.canonicalKey);
 
-    if (!existing || requiredThreshold > existing.requiredThreshold) {
+    if (
+      !existing ||
+      requiredThreshold > existing.requiredThreshold ||
+      (requiredThreshold === existing.requiredThreshold && entry.towerLevel < existing.towerLevel)
+    ) {
       byCanonicalKey.set(entry.canonicalKey, {
         itemName: entry.itemName,
         canonicalKey: entry.canonicalKey,
+        towerLevel: entry.towerLevel,
         requiredThreshold,
       });
     }
@@ -245,6 +252,7 @@ export function deriveTowerProgress(
     const item: TowerProgressItem = {
       itemName: matchedDifficultyEntry?.itemName ?? aggregatedItem.itemName,
       canonicalKey: aggregatedItem.canonicalKey,
+      towerLevel: aggregatedItem.towerLevel,
       currentMastery,
       requiredThreshold: aggregatedItem.requiredThreshold,
       remainingToTarget,

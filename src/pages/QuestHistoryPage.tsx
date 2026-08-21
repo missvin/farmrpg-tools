@@ -1,16 +1,29 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
 import { loadAcquisitionPlannerInputState, type AcquisitionPlannerInputState } from '../lib/acquisitionPlannerState';
 import {
+  loadCraftingModifierState,
+  type UserCraftingModifierState,
+} from '../lib/craftingModifierState';
+import {
   loadDropRateAcquisitionSettings,
   type DropRateAcquisitionSettings,
 } from '../lib/dropRateAcquisitionSettings';
+import {
+  deriveQuestGameAreaNeeds,
+  deriveQuestMealNeeds,
+  type QuestGameAreaNeeds,
+  type QuestMealNeeds,
+} from '../lib/gameAreaNeedsPlanning';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { loadDropRateReference, type DropRateReferenceData } from '../lib/loadDropRateReference';
+import { loadMasteryDifficulty, type MasteryDifficultyData } from '../lib/loadMasteryDifficulty';
 import { loadPetSourceReference, type PetSourceReferenceData } from '../lib/loadPetSourceReference';
 import { loadQuestReference, type QuestReferenceData } from '../lib/loadQuestReference';
+import { loadRecipeGraph, type RecipeGraph } from '../lib/loadRecipeGraph';
 import {
   parseCompletedRequestsPaste,
   type CompletedRequestsPasteParseResult,
@@ -49,7 +62,10 @@ type QuestHistoryResourceState = {
   dropRateSettings: DropRateAcquisitionSettings;
   sourceRateState: SourceRateAssumptionsState;
   acquisitionState: AcquisitionPlannerInputState;
+  craftingModifierState: UserCraftingModifierState;
   petSourceReference: PetSourceReferenceData | null;
+  recipeGraph: RecipeGraph | null;
+  masteryDifficulty: MasteryDifficultyData | null;
   historyState: QuestHistoryState;
   questPlannerState: QuestPlannerState | null;
 };
@@ -466,6 +482,250 @@ function QuestAllocationScenario({
   );
 }
 
+function formatKnownQuantity(value: number | null): string {
+  return value === null ? 'Unknown' : formatNumber(value);
+}
+
+function QuestNamesDisclosure({ questNames }: { questNames: string[] }) {
+  return (
+    <details>
+      <summary>{questNames.length.toLocaleString()} quest{questNames.length === 1 ? '' : 's'}</summary>
+      <ul className="quest-warning-list">
+        {questNames.map((questName) => (
+          <li key={questName}>{questName}</li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
+function QuestGameAreaNeedsSection({ needs }: { needs: QuestGameAreaNeeds }) {
+  const detailedGroups = needs.groups.filter((group) => group.area !== 'meals' && group.rows.length > 0);
+
+  return (
+    <section className="page-card page-stack" aria-labelledby="quest-game-area-needs-title">
+      <div>
+        <h2 id="quest-game-area-needs-title">Outstanding Quest Needs by Game Area</h2>
+        <p className="supporting-text">
+          Known unfinished requirements grouped by reviewed recipe, mastery-method, source, and pet evidence.
+        </p>
+      </div>
+
+      <div className="summary-grid">
+        {needs.groups.map((group) => (
+          <div className="summary-grid__item" key={group.area}>
+            <h3 className="section-title">{group.label}</h3>
+            <p>
+              <strong>{group.rows.length.toLocaleString()}</strong> item type{group.rows.length === 1 ? '' : 's'}
+            </p>
+            <p className="subtle-text">{formatNumber(group.totalRequiredQuantity)} total quest items</p>
+          </div>
+        ))}
+      </div>
+
+      {detailedGroups.map((group) => {
+        const showStoredPets = group.area === 'pet_reliant';
+
+        return (
+          <details className="tower-range-card" key={group.area}>
+            <summary className="tower-range-summary">
+              <span className="tower-range-summary__text">
+                <strong>{group.label}</strong>
+                <span className="subtle-text">
+                  {group.rows.length.toLocaleString()} item type{group.rows.length === 1 ? '' : 's'}
+                </span>
+              </span>
+              <strong>{formatNumber(group.totalRequiredQuantity)} required</strong>
+            </summary>
+            <div className="table-scroll">
+              <table className="summary-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Required</th>
+                    <th scope="col">Inventory</th>
+                    {showStoredPets ? <th scope="col">Stored pets</th> : null}
+                    <th scope="col">Still needed</th>
+                    <th scope="col">Quests</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {group.rows.map((row) => (
+                    <tr key={`${group.area}-${row.canonicalKey}`}>
+                      <td>
+                        <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} />
+                      </td>
+                      <td>{formatNumber(row.requiredQuantity)}</td>
+                      <td>{formatKnownQuantity(row.currentInventoryQuantity)}</td>
+                      {showStoredPets ? <td>{formatKnownQuantity(row.storedPetQuantity)}</td> : null}
+                      <td>{formatKnownQuantity(row.missingQuantity)}</td>
+                      <td>
+                        <QuestNamesDisclosure questNames={row.questNames} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        );
+      })}
+
+      {needs.warnings.length > 0 ? (
+        <div>
+          <ul className="quest-warning-list">
+            {needs.warnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+          {!needs.hasCurrentInventory ? <Link to="/import-inventory">Import current inventory</Link> : null}
+          {!needs.hasStoredPetInventory && needs.groups.some((group) => group.area === 'pet_reliant' && group.rows.length > 0) ? (
+            <p>
+              <Link to="/import-pet-items">Import stored pet inventory</Link>
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function getIngredientPlanningStatus(reason: QuestMealNeeds['ingredientRows'][number]['unresolvedReason']): string {
+  switch (reason) {
+    case 'leaf_item':
+      return 'Direct source';
+    case 'cooking_recipe_not_expanded':
+      return 'Cooking input';
+    case 'excluded_recipe':
+      return 'Recipe excluded';
+    case 'auto_supplied':
+      return 'Auto-supplied';
+    case 'no_remaining_quantity':
+      return 'Covered';
+    case null:
+      return 'Craft inputs expanded';
+  }
+}
+
+function QuestMealNeedsSection({ needs }: { needs: QuestMealNeeds }) {
+  return (
+    <section className="page-card page-stack" aria-labelledby="quest-meal-needs-title">
+      <div>
+        <h2 id="quest-meal-needs-title">Meals for Unfinished Quests</h2>
+        <p className="supporting-text">
+          Direct meal requests use current inventory first. Ingredient planning covers only the meals still missing.
+        </p>
+      </div>
+
+      <dl className="compact-stat-grid">
+        <div>
+          <dt>Meal types</dt>
+          <dd>{needs.rows.length.toLocaleString()}</dd>
+        </div>
+        <div>
+          <dt>Required</dt>
+          <dd>{formatNumber(needs.totalRequiredQuantity)}</dd>
+        </div>
+        <div>
+          <dt>Inventory used</dt>
+          <dd>{formatKnownQuantity(needs.totalInventoryUsedQuantity)}</dd>
+        </div>
+        <div>
+          <dt>Still needed</dt>
+          <dd>{formatKnownQuantity(needs.totalMissingQuantity)}</dd>
+        </div>
+      </dl>
+
+      {needs.rows.length > 0 ? (
+        <div className="table-scroll">
+          <table className="summary-table">
+            <thead>
+              <tr>
+                <th scope="col">Meal</th>
+                <th scope="col">Required</th>
+                <th scope="col">Inventory</th>
+                <th scope="col">Still needed</th>
+                <th scope="col">Quests</th>
+              </tr>
+            </thead>
+            <tbody>
+              {needs.rows.map((row) => (
+                <tr key={row.canonicalKey}>
+                  <td>
+                    <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} />
+                  </td>
+                  <td>{formatNumber(row.requiredQuantity)}</td>
+                  <td>{formatKnownQuantity(row.currentInventoryQuantity)}</td>
+                  <td>{formatKnownQuantity(row.missingQuantity)}</td>
+                  <td>
+                    <QuestNamesDisclosure questNames={row.questNames} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="empty-state">No reviewed cooking outputs are required by known unfinished quests.</p>
+      )}
+
+      {needs.hasCurrentInventory && needs.ingredientRows.length > 0 ? (
+        <details className="tower-range-card">
+          <summary className="tower-range-summary">
+            <span className="tower-range-summary__text">
+              <strong>Ingredients for missing meals</strong>
+              <span className="subtle-text">Current inventory is spent once across the combined plan.</span>
+            </span>
+            <strong>{needs.ingredientRows.length.toLocaleString()} ingredient rows</strong>
+          </summary>
+          <div className="table-scroll">
+            <table className="summary-table">
+              <thead>
+                <tr>
+                  <th scope="col">Ingredient</th>
+                  <th scope="col">Gross need</th>
+                  <th scope="col">Inventory used</th>
+                  <th scope="col">Still needed</th>
+                  <th scope="col">Craft operations</th>
+                  <th scope="col">Driven by</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {needs.ingredientRows.map((row) => (
+                  <tr key={row.canonicalKey}>
+                    <td>
+                      <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} />
+                      {row.isDirectMealInput ? <p className="subtle-text">Direct meal input</p> : null}
+                    </td>
+                    <td>{formatNumber(row.grossRequiredQuantity)}</td>
+                    <td>{formatNumber(row.inventoryUsedQuantity)}</td>
+                    <td>{formatNumber(row.missingQuantity)}</td>
+                    <td>{formatNumber(row.requiredCraftOperations)}</td>
+                    <td>{row.mealNames.join(', ')}</td>
+                    <td>{getIngredientPlanningStatus(row.unresolvedReason)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      ) : null}
+
+      {needs.warnings.length > 0 ? (
+        <div>
+          <ul className="quest-warning-list">
+            {needs.warnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+          {!needs.hasCurrentInventory ? <Link to="/import-inventory">Import current inventory</Link> : null}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 function FutureDemandRow({ row }: { row: QuestFutureDemandRow }) {
   const icon = getItemIcon(row.canonicalKey);
 
@@ -682,7 +942,10 @@ export function QuestHistoryPage() {
     dropRateSettings: loadDropRateAcquisitionSettings(),
     sourceRateState: loadSourceRateAssumptionsState(),
     acquisitionState: loadAcquisitionPlannerInputState(),
+    craftingModifierState: loadCraftingModifierState(),
     petSourceReference: null,
+    recipeGraph: null,
+    masteryDifficulty: null,
     historyState: EMPTY_HISTORY_STATE,
     questPlannerState: null,
   });
@@ -696,16 +959,19 @@ export function QuestHistoryPage() {
 
     async function loadResources(): Promise<void> {
       try {
-        const [referenceData, dropRateReference, petSourceReference] = await Promise.all([
+        const [referenceData, dropRateReference, petSourceReference, recipeGraph, masteryDifficulty] = await Promise.all([
           loadQuestReference(),
           loadDropRateReference().catch(() => null),
           loadPetSourceReference().catch(() => null),
+          loadRecipeGraph().catch(() => null),
+          loadMasteryDifficulty().catch(() => null),
         ]);
         const historyState = loadQuestHistoryState();
         const questPlannerState = loadQuestPlannerState();
         const dropRateSettings = loadDropRateAcquisitionSettings();
         const sourceRateState = loadSourceRateAssumptionsState();
         const acquisitionState = loadAcquisitionPlannerInputState();
+        const craftingModifierState = loadCraftingModifierState();
 
         if (!isMounted) {
           return;
@@ -719,7 +985,10 @@ export function QuestHistoryPage() {
           dropRateSettings,
           sourceRateState,
           acquisitionState,
+          craftingModifierState,
           petSourceReference,
+          recipeGraph,
+          masteryDifficulty,
           historyState,
           questPlannerState,
         });
@@ -736,7 +1005,10 @@ export function QuestHistoryPage() {
           dropRateSettings: loadDropRateAcquisitionSettings(),
           sourceRateState: loadSourceRateAssumptionsState(),
           acquisitionState: loadAcquisitionPlannerInputState(),
+          craftingModifierState: loadCraftingModifierState(),
           petSourceReference: null,
+          recipeGraph: null,
+          masteryDifficulty: null,
           historyState: EMPTY_HISTORY_STATE,
           questPlannerState: null,
         });
@@ -783,6 +1055,50 @@ export function QuestHistoryPage() {
     resourcesState.petSourceReference,
     resourcesState.sourceRateState,
     scaryThresholdDays,
+  ]);
+  const gameAreaNeeds = useMemo(() => {
+    if (!planning || !resourcesState.referenceData) {
+      return null;
+    }
+
+    return deriveQuestGameAreaNeeds({
+      demandRows: planning.futureDemandRows,
+      acquisitionState: resourcesState.acquisitionState,
+      classificationSources: {
+        recipeGraph: resourcesState.recipeGraph,
+        dropRateReference: resourcesState.dropRateReference,
+        petSourceReference: resourcesState.petSourceReference,
+        masteryDifficulty: resourcesState.masteryDifficulty,
+        sourceHintsByCanonicalKey: resourcesState.referenceData.sourceHintsByCanonicalKey,
+      },
+    });
+  }, [
+    planning,
+    resourcesState.acquisitionState,
+    resourcesState.dropRateReference,
+    resourcesState.masteryDifficulty,
+    resourcesState.petSourceReference,
+    resourcesState.recipeGraph,
+    resourcesState.referenceData,
+  ]);
+  const mealNeeds = useMemo(() => {
+    if (!planning || !resourcesState.recipeGraph) {
+      return null;
+    }
+
+    return deriveQuestMealNeeds({
+      demandRows: planning.futureDemandRows,
+      acquisitionState: resourcesState.acquisitionState,
+      recipeGraph: resourcesState.recipeGraph,
+      modifierState: resourcesState.craftingModifierState,
+      isQuestHistoryPersonalized: resourcesState.historyState.imports.length > 0,
+    });
+  }, [
+    planning,
+    resourcesState.acquisitionState,
+    resourcesState.craftingModifierState,
+    resourcesState.historyState.imports.length,
+    resourcesState.recipeGraph,
   ]);
 
   function handlePreview(): void {
@@ -850,6 +1166,8 @@ export function QuestHistoryPage() {
           </section>
 
           <QuestHistoryDashboard historyState={resourcesState.historyState} planning={planning} />
+          {gameAreaNeeds ? <QuestGameAreaNeedsSection needs={gameAreaNeeds} /> : null}
+          {mealNeeds ? <QuestMealNeedsSection needs={mealNeeds} /> : null}
           {sourceBurden ? (
             <>
               <QuestScaryWatch
