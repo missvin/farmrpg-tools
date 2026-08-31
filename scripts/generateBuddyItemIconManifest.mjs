@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import {
   deriveBuddyIconManifest,
+  mergeBuddyIconManifestResults,
   toBuddyIconManifestCsv,
   toBuddyIconManifestJson,
   toBuddyIconManifestReviewCsv,
@@ -12,6 +13,7 @@ function parseArgs(argv) {
   const positional = [];
   const options = {
     outputDir: 'generated',
+    existingManifestPath: '',
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -19,6 +21,12 @@ function parseArgs(argv) {
 
     if (argument === '--output-dir') {
       options.outputDir = argv[index + 1] ?? options.outputDir;
+      index += 1;
+      continue;
+    }
+
+    if (argument === '--existing-manifest') {
+      options.existingManifestPath = argv[index + 1] ?? '';
       index += 1;
       continue;
     }
@@ -35,12 +43,12 @@ function parseArgs(argv) {
 
 function printUsage() {
   console.log(
-    'Usage: node scripts/generateBuddyItemIconManifest.mjs <buddy_item_icon_observations.csv> <buddy_item_icon_downloads.csv> [--output-dir <dir>]',
+    'Usage: node scripts/generateBuddyItemIconManifest.mjs <buddy_item_icon_observations.csv> <buddy_item_icon_downloads.csv> [--output-dir <dir>] [--existing-manifest <manifest.json>]',
   );
 }
 
 async function main() {
-  const { observationCsvPath, downloadCsvPath, outputDir } = parseArgs(process.argv.slice(2));
+  const { observationCsvPath, downloadCsvPath, outputDir, existingManifestPath } = parseArgs(process.argv.slice(2));
 
   if (!observationCsvPath || !downloadCsvPath) {
     printUsage();
@@ -59,6 +67,13 @@ async function main() {
   const manifestResult = await deriveBuddyIconManifest(observationCsvText, downloadCsvText, {
     repoRoot: process.cwd(),
   });
+  let outputResult = manifestResult;
+
+  if (existingManifestPath) {
+    const existingManifestText = await readFile(path.resolve(process.cwd(), existingManifestPath), 'utf8');
+    const existingManifest = JSON.parse(existingManifestText);
+    outputResult = mergeBuddyIconManifestResults(existingManifest, manifestResult);
+  }
 
   await mkdir(resolvedOutputDir, { recursive: true });
 
@@ -66,17 +81,17 @@ async function main() {
   const resultsCsvPath = path.join(resolvedOutputDir, 'buddy_item_icon_manifest.csv');
   const reviewCsvPath = path.join(resolvedOutputDir, 'buddy_item_icon_manifest_review.csv');
 
-  await writeFile(resultsJsonPath, toBuddyIconManifestJson(manifestResult), 'utf8');
-  await writeFile(resultsCsvPath, toBuddyIconManifestCsv(manifestResult), 'utf8');
-  await writeFile(reviewCsvPath, toBuddyIconManifestReviewCsv(manifestResult), 'utf8');
+  await writeFile(resultsJsonPath, toBuddyIconManifestJson(outputResult), 'utf8');
+  await writeFile(resultsCsvPath, toBuddyIconManifestCsv(outputResult), 'utf8');
+  await writeFile(reviewCsvPath, toBuddyIconManifestReviewCsv(outputResult), 'utf8');
 
   console.log(`Wrote ${resultsJsonPath}`);
   console.log(`Wrote ${resultsCsvPath}`);
   console.log(`Wrote ${reviewCsvPath}`);
-  console.log(`item_rows_processed: ${manifestResult.summary.itemRowsProcessed.toLocaleString()}`);
-  console.log(`clean_manifest_rows: ${manifestResult.summary.cleanManifestRowCount.toLocaleString()}`);
-  console.log(`shared_asset_reuse_rows: ${manifestResult.summary.sharedAssetReuseRowCount.toLocaleString()}`);
-  console.log(`review: ${manifestResult.summary.reviewCount.toLocaleString()}`);
+  console.log(`item_rows_processed: ${outputResult.results.length.toLocaleString()}`);
+  console.log(`clean_manifest_rows: ${outputResult.results.filter((result) => result.manifestStatus === 'ready').length.toLocaleString()}`);
+  console.log(`shared_asset_reuse_rows: ${outputResult.results.filter((result) => result.sharedAssetReuse).length.toLocaleString()}`);
+  console.log(`review: ${outputResult.reviewResults.length.toLocaleString()}`);
 }
 
 main().catch((error) => {

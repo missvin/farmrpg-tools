@@ -73,8 +73,8 @@ Glass Orb,glass orb,yes,,,,,`),
       return counts;
     }, {});
 
-    expect(result.entries.length).toBe(1479);
-    expect(masteryStatusCounts).toEqual({ unknown: 951, yes: 504, no: 24 });
+    expect(result.entries.length).toBe(1488);
+    expect(masteryStatusCounts).toEqual({ unknown: 958, yes: 506, no: 24 });
     expect(result.byCanonicalKey['acorn butter']).toMatchObject({
       itemName: 'Acorn Butter',
       masteryPossible: 'yes',
@@ -91,6 +91,16 @@ Glass Orb,glass orb,yes,,,,,`),
       masteryPossible: 'unknown',
       buddySlug: 'ancient-coin',
       sourceDatasets: ['buddy_item_evidence_cache'],
+    });
+    expect(result.byCanonicalKey["cid's spare pickaxe"]).toMatchObject({
+      itemName: "Cid's Spare Pickaxe",
+      masteryPossible: 'unknown',
+      buddySlug: 'cid-s-spare-pickaxe',
+    });
+    expect(result.byCanonicalKey['wooden footstool']).toMatchObject({
+      itemName: 'Wooden Footstool',
+      masteryPossible: 'yes',
+      sourceDatasets: ['buddy_item_evidence_cache', 'new_item_intake_2026_08_24', 'recipes.output'],
     });
     expect(result.byCanonicalKey['green shield']).toMatchObject({
       itemName: 'Green Shield',

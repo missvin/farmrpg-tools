@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   deriveBuddyIconManifest,
+  mergeBuddyIconManifestResults,
   parseBuddyIconDownloadCsv,
   toBuddyIconManifestCsv,
 } from '../../scripts/lib/buddyIconManifest.mjs';
@@ -31,6 +32,51 @@ describe('parseBuddyIconDownloadCsv', () => {
         localRelativePath: 'generated/item-icons/5885-b7d4ab025c3d.png',
       }),
     ]);
+  });
+});
+
+describe('mergeBuddyIconManifestResults', () => {
+  it('recomputes merged summaries and uses catalog-compatible canonical keys for new rows', () => {
+    const existingResult = {
+      itemName: 'Board',
+      canonicalKey: 'board',
+      manifestStatus: 'ready',
+      sharedAssetItemCount: 1,
+      sharedAssetReuse: false,
+      flags: [],
+    };
+    const newResult = {
+      itemName: "Cid's Spare Pickaxe",
+      canonicalKey: 'cid s spare pickaxe',
+      manifestStatus: 'ready',
+      sharedAssetItemCount: 1,
+      sharedAssetReuse: false,
+      flags: [],
+    };
+    const staleCidResult = {
+      ...newResult,
+      canonicalKey: 'cid s spare pickaxe',
+    };
+
+    const merged = mergeBuddyIconManifestResults(
+      { results: [existingResult, staleCidResult] },
+      { results: [newResult] },
+    );
+
+    expect(merged.results).toEqual([
+      existingResult,
+      expect.objectContaining({
+        itemName: "Cid's Spare Pickaxe",
+        canonicalKey: "cid's spare pickaxe",
+      }),
+    ]);
+    expect(merged.summary).toEqual(
+      expect.objectContaining({
+        itemRowsProcessed: 2,
+        cleanManifestRowCount: 2,
+        reviewCount: 0,
+      }),
+    );
   });
 });
 

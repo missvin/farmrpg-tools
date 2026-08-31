@@ -82,6 +82,32 @@ function uniqueList(values) {
   return [...new Set(values.filter(Boolean))];
 }
 
+function toCatalogCanonicalItemKey(value) {
+  return String(value ?? '')
+    .replace(/[\u2018\u2019\u201a\u201b\u2032]/gu, "'")
+    .replace(/[\u201c\u201d\u201e\u201f\u2033]/gu, '"')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/gu, ' ');
+}
+
+function summarizeBuddyIconManifestResults(results, itemRowsProcessed = results.length) {
+  const reviewResults = results.filter((result) => result.manifestStatus !== 'ready');
+  const cleanResults = results.filter((result) => result.manifestStatus === 'ready');
+
+  return {
+    itemRowsProcessed,
+    cleanManifestRowCount: cleanResults.length,
+    reviewCount: reviewResults.length,
+    sharedAssetReuseRowCount: cleanResults.filter((result) => result.sharedAssetReuse).length,
+    sharedAssetGroupCount: uniqueList(
+      cleanResults.filter((result) => result.sharedAssetItemCount > 1).map((result) => result.localRelativePath),
+    ).length,
+    extraDownloadRowCount: results.filter((result) => (result.flags ?? []).includes('extra_download_row')).length,
+    duplicateDownloadRowCount: results.filter((result) => (result.flags ?? []).includes('duplicate_download_row')).length,
+  };
+}
+
 async function fileExists(filePath) {
   try {
     await access(filePath);
@@ -274,17 +300,38 @@ export async function deriveBuddyIconManifest(observationCsvText, downloadCsvTex
   return {
     results,
     reviewResults,
-    summary: {
-      itemRowsProcessed: observationRows.length,
-      cleanManifestRowCount: cleanResults.length,
-      reviewCount: reviewResults.length,
-      sharedAssetReuseRowCount: cleanResults.filter((result) => result.sharedAssetReuse).length,
-      sharedAssetGroupCount: uniqueList(
-        cleanResults.filter((result) => result.sharedAssetItemCount > 1).map((result) => result.localRelativePath),
-      ).length,
-      extraDownloadRowCount: results.filter((result) => result.flags.includes('extra_download_row')).length,
-      duplicateDownloadRowCount: results.filter((result) => result.flags.includes('duplicate_download_row')).length,
-    },
+    summary: summarizeBuddyIconManifestResults(results, observationRows.length),
+  };
+}
+
+export function mergeBuddyIconManifestResults(existingManifest, manifestResult) {
+  const resultsByCanonicalKey = new Map(
+    (existingManifest.results ?? []).map((entry) => [entry.canonicalKey, entry]),
+  );
+
+  for (const result of manifestResult.results) {
+    const canonicalKey = toCatalogCanonicalItemKey(result.itemName);
+
+    for (const [existingKey, existingResult] of resultsByCanonicalKey) {
+      if (existingKey !== canonicalKey && toCatalogCanonicalItemKey(existingResult.itemName) === canonicalKey) {
+        resultsByCanonicalKey.delete(existingKey);
+      }
+    }
+
+    resultsByCanonicalKey.set(canonicalKey, {
+      ...result,
+      canonicalKey,
+    });
+  }
+
+  const results = [...resultsByCanonicalKey.values()].sort((left, right) =>
+    left.itemName.localeCompare(right.itemName),
+  );
+
+  return {
+    results,
+    reviewResults: results.filter((result) => result.manifestStatus !== 'ready'),
+    summary: summarizeBuddyIconManifestResults(results),
   };
 }
 
