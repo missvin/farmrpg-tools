@@ -229,11 +229,7 @@ export function parseRecipesCsv(csvText: string): RecipeRow[] {
     const recipeBookCanonicalKey = parseOptionalText(readField(values, headerIndex, 'recipe_book_canonical_key'));
     const cookingLevel = parseOptionalText(readField(values, headerIndex, 'cooking_level'));
     const baseTime = parseOptionalText(readField(values, headerIndex, 'base_time'));
-    const sourceBuddyUrl = parseRequiredText(
-      readField(values, headerIndex, 'source_buddy_url'),
-      'source_buddy_url',
-      `recipe "${outputItemName}"`,
-    );
+    const sourceBuddyUrl = parseOptionalText(readField(values, headerIndex, 'source_buddy_url')) ?? '';
 
     if (recipeType === 'cooking') {
       if (!recipeBookItemName || !recipeBookCanonicalKey || !cookingLevel || !baseTime) {

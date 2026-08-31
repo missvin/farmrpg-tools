@@ -56,6 +56,15 @@ missing recipe,Missing Recipe,1,Wood,wood,1,https://buddy.farm/i/missing-recipe/
     ).toThrow(/Broken recipe input reference/);
   });
 
+  it('allows a recipe sourced outside Buddy to omit a Buddy URL', () => {
+    const rows = parseRecipesCsv(`output_item_name,output_canonical_key,recipe_type,recipe_book_item_name,recipe_book_canonical_key,cooking_level,base_time,source_buddy_url,source_page_data_url,cache_file_name,parser_version,notes
+Workshop Item,workshop item,craft,,,,,,,,farmrpg-workshop-paste-v1,User-supplied Workshop paste.`);
+
+    expect(rows).toEqual([
+      expect.objectContaining({ outputCanonicalKey: 'workshop item', sourceBuddyUrl: '' }),
+    ]);
+  });
+
   it('fails on duplicate outputs, duplicate input orders, duplicate input pairs, and empty recipes', () => {
     expect(() =>
       buildRecipeGraph(
@@ -114,7 +123,7 @@ fancy pipe,Fancy Pipe,1,Wood,wood,10,https://buddy.farm/i/fancy-pipe/,https://bu
     const recipeInputsCsv = readFileSync(join(process.cwd(), 'data', 'recipe_inputs.csv'), 'utf8');
     const graph = buildRecipeGraph(parseRecipesCsv(recipesCsv), parseRecipeInputsCsv(recipeInputsCsv));
 
-    expect(graph.recipes).toHaveLength(278);
+    expect(graph.recipes).toHaveLength(312);
     expect(graph.recipes.every((recipe) => recipe.inputs.length > 0)).toBe(true);
     expect(graph.byOutputCanonicalKey.valve.inputs.map((input) => input.itemName).sort()).toEqual([
       'Broken Pipe',
