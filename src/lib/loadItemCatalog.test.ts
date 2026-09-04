@@ -74,7 +74,7 @@ Glass Orb,glass orb,yes,,,,,`),
     }, {});
 
     expect(result.entries.length).toBe(1551);
-    expect(masteryStatusCounts).toEqual({ unknown: 954, yes: 560, no: 37 });
+    expect(masteryStatusCounts).toEqual({ unknown: 952, yes: 562, no: 37 });
     expect(result.byCanonicalKey['acorn butter']).toMatchObject({
       itemName: 'Acorn Butter',
       masteryPossible: 'yes',
@@ -96,6 +96,14 @@ Glass Orb,glass orb,yes,,,,,`),
       itemName: "Cid's Spare Pickaxe",
       masteryPossible: 'no',
       buddySlug: 'cid-s-spare-pickaxe',
+    });
+    expect(result.byCanonicalKey['ruined ether drill']).toMatchObject({
+      itemName: 'Ruined Ether Drill',
+      masteryPossible: 'yes',
+    });
+    expect(result.byCanonicalKey['ruined ether hammer']).toMatchObject({
+      itemName: 'Ruined Ether Hammer',
+      masteryPossible: 'yes',
     });
     expect(result.byCanonicalKey['wooden footstool']).toMatchObject({
       itemName: 'Wooden Footstool',

@@ -84,5 +84,22 @@ describe('quest reference data', () => {
     expect(referenceData.questsByKey['pirates start arriving xvii']).toEqual(expect.objectContaining({
       nextQuestKeys: ['the masonry requires attention xviii'],
     }));
+    expect(referenceData.questsByKey['delving into charms']).toEqual(expect.objectContaining({
+      questName: 'Delving Into Charms',
+      questlineName: 'Delving Into Charms',
+      npc: 'Cid',
+      previousQuestKey: 'dig in iii',
+      nextQuestKeys: ['sprung forth i'],
+      coverageStatus: 'reviewed',
+    }));
+    expect(referenceData.requirementsByQuestKey['delving into charms']).toBeUndefined();
+    expect(referenceData.rewardsByQuestKey['delving into charms']).toEqual([
+      expect.objectContaining({
+        itemName: 'Spring Cave Charm',
+        quantity: 1,
+      }),
+    ]);
+    expect(referenceData.questsByKey['a better juice vi']?.coverageStatus).toBe('reviewed');
+    expect(referenceData.questsByKey['daily dairy vi']?.coverageStatus).toBe('reviewed');
   });
 });
