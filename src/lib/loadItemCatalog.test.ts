@@ -73,8 +73,8 @@ Glass Orb,glass orb,yes,,,,,`),
       return counts;
     }, {});
 
-    expect(result.entries.length).toBe(1526);
-    expect(masteryStatusCounts).toEqual({ unknown: 966, yes: 537, no: 23 });
+    expect(result.entries.length).toBe(1551);
+    expect(masteryStatusCounts).toEqual({ unknown: 968, yes: 560, no: 23 });
     expect(result.byCanonicalKey['acorn butter']).toMatchObject({
       itemName: 'Acorn Butter',
       masteryPossible: 'yes',
