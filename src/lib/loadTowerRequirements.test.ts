@@ -86,12 +86,13 @@ describe('parseTowerRequirementsCsv', () => {
     ).toThrow('Duplicate tower requirement slot detected for tower level 201 slot 1 in range 201-210.');
   });
 
-  it('includes the known 311-340 ranges in the canonical tower data file', () => {
+  it('includes the known 311-350 ranges in the canonical tower data file', () => {
     const csvText = readFileSync(resolve(process.cwd(), 'data/tower_requirements.csv'), 'utf8');
     const result = parseTowerRequirementsCsv(csvText);
     const rows311to320 = result.entries.filter((entry) => entry.towerLevel >= 311 && entry.towerLevel <= 320);
     const rows321to330 = result.entries.filter((entry) => entry.towerLevel >= 321 && entry.towerLevel <= 330);
     const rows331to340 = result.entries.filter((entry) => entry.towerLevel >= 331 && entry.towerLevel <= 340);
+    const rows341to350 = result.entries.filter((entry) => entry.towerLevel >= 341 && entry.towerLevel <= 350);
     const byLevel = rows311to320.reduce<Record<number, string[]>>((accumulator, entry) => {
       accumulator[entry.towerLevel] = [...(accumulator[entry.towerLevel] ?? []), entry.itemName];
       return accumulator;
@@ -104,13 +105,19 @@ describe('parseTowerRequirementsCsv', () => {
       accumulator[entry.towerLevel] = [...(accumulator[entry.towerLevel] ?? []), entry.itemName];
       return accumulator;
     }, {});
+    const byLevel341to350 = rows341to350.reduce<Record<number, string[]>>((accumulator, entry) => {
+      accumulator[entry.towerLevel] = [...(accumulator[entry.towerLevel] ?? []), entry.itemName];
+      return accumulator;
+    }, {});
 
     expect(rows311to320).toHaveLength(22);
     expect(rows321to330).toHaveLength(22);
     expect(rows331to340).toHaveLength(26);
+    expect(rows341to350).toHaveLength(30);
     expect(Object.keys(byLevel).map(Number)).toEqual([311, 312, 313, 314, 315, 316, 317, 318, 319, 320]);
     expect(Object.keys(byLevel321to330).map(Number)).toEqual([321, 322, 323, 324, 325, 326, 327, 328, 329, 330]);
     expect(Object.keys(byLevel331to340).map(Number)).toEqual([331, 332, 333, 334, 335, 336, 337, 338, 339, 340]);
+    expect(Object.keys(byLevel341to350).map(Number)).toEqual([341, 342, 343, 344, 345, 346, 347, 348, 349, 350]);
     expect(byLevel[311]).toEqual(['Bamboo Chair', 'Barbed Wire']);
     expect(byLevel[312]).toEqual(['Yellow Scarf', 'Fire Ant Farm']);
     expect(byLevel[313]).toEqual(['Step Ladder', 'Orange Shirt']);
@@ -141,5 +148,27 @@ describe('parseTowerRequirementsCsv', () => {
     expect(byLevel331to340[338]).toEqual(['Frost Shield', 'Mayonnaise', 'Orange Scarf']);
     expect(byLevel331to340[339]).toEqual(['Black Purse', 'Fancy Violin', 'Brown Bag']);
     expect(byLevel331to340[340]).toEqual(['White Purse', 'Yellow Dye', 'Purple Diary']);
+    expect(byLevel341to350[341]).toEqual(['Butter', 'Joyful Ring', 'Purple Butterfly']);
+    expect(byLevel341to350[342]).toEqual(['Pinecone Bird Feeder', 'Sail Cloth', 'Bamboo Chair']);
+    expect(byLevel341to350[343]).toEqual(['Gold Emerald Ring', 'Fancy Chair', 'Acid Extract']);
+    expect(byLevel341to350[344]).toEqual(['Mushroom Stew', 'Red Diary', 'Barbed Wire']);
+    expect(byLevel341to350[345]).toEqual(['Gold Carrot', 'Fancy Table', 'Bamboo Trellis']);
+    expect(byLevel341to350[346]).toEqual(["Re'taw Pail", 'Black Shield', 'Canoe']);
+    expect(byLevel341to350[347]).toEqual(['Gold Peas', 'Corn', 'White Dye']);
+    expect(byLevel341to350[348]).toEqual(['Engine', 'Ship Mast', 'Brown Bag']);
+    expect(byLevel341to350[349]).toEqual(['Sunflower Oil', 'Propeller Hat', 'Watermelon']);
+    expect(byLevel341to350[350]).toEqual(['Tie Dye Scarf', 'Crown of Clover', 'Steel Plate']);
+    expect(rows341to350.map((entry) => entry.masteryLevelNeeded)).toEqual([
+      'GM', 'GM', 'GM',
+      'GM', 'GM', 'MM',
+      'GM', 'GM', 'GM',
+      'GM', 'MM', 'MM',
+      'GM', 'GM', 'MM',
+      'GM', 'GM', 'MM',
+      'GM', 'MM', 'MM',
+      'GM', 'GM', 'MM',
+      'GM', 'MM', 'MM',
+      'MM', 'MM', 'MM',
+    ]);
   });
 });
