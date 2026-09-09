@@ -437,6 +437,7 @@ function estimatePreferredUnitQuantity(input: {
     direction: 'units_per_item',
     settings: input.settings,
     baseDropRate: input.row.baseDropRate,
+    sourceCanonicalKey: input.row.sourceCanonicalKey,
   });
 
   if (!conversion.calculable || conversion.rate <= 0) {
@@ -483,7 +484,13 @@ function deriveSourcePressure(input: {
       for (const row of matchingDropRateRows) {
         const preferredUnit = getPreferredDropRateUnit(row.sourceType, input.dropRateSettings);
         const unitBasis = preferredUnit
-          ? getDropRateUnitBasis(row.sourceType, preferredUnit, input.dropRateSettings, row.baseDropRate)
+          ? getDropRateUnitBasis(
+            row.sourceType,
+            preferredUnit,
+            input.dropRateSettings,
+            row.baseDropRate,
+            { sourceCanonicalKey: row.sourceCanonicalKey },
+          )
           : null;
         const estimatedUnitQuantity = preferredUnit
           ? estimatePreferredUnitQuantity({

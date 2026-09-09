@@ -27,6 +27,12 @@ describe('dropRateAcquisitionSettings', () => {
         fishing: 'large_nets',
         farming: 'crops',
       },
+      zoneExploringEffectiveness: [],
+      meals: {
+        quandaryChowderActive: false,
+        seaPincherSpecialActive: false,
+        seaPincherSpecialPercent: 10,
+      },
     });
   });
 
@@ -65,6 +71,38 @@ describe('dropRateAcquisitionSettings', () => {
         exploring: 'stamina',
         fishing: 'fish',
         farming: 'crops',
+      },
+      zoneExploringEffectiveness: [],
+      meals: {
+        quandaryChowderActive: false,
+        seaPincherSpecialActive: false,
+        seaPincherSpecialPercent: 10,
+      },
+    });
+  });
+
+  it('normalizes and deduplicates per-zone effectiveness plus optional meals', () => {
+    expect(normalizeDropRateAcquisitionSettings({
+      zoneExploringEffectiveness: [
+        { sourceName: 'Whispering Creek', effectivenessPercent: 25 },
+        { sourceName: '  Whispering Creek  ', effectivenessPercent: 150 },
+        { sourceName: '', effectivenessPercent: 10 },
+      ],
+      meals: {
+        quandaryChowderActive: true,
+        seaPincherSpecialActive: true,
+        seaPincherSpecialPercent: '12.5',
+      },
+    })).toMatchObject({
+      zoneExploringEffectiveness: [{
+        sourceName: 'Whispering Creek',
+        sourceCanonicalKey: 'whispering creek',
+        effectivenessPercent: 100,
+      }],
+      meals: {
+        quandaryChowderActive: true,
+        seaPincherSpecialActive: true,
+        seaPincherSpecialPercent: 12.5,
       },
     });
   });

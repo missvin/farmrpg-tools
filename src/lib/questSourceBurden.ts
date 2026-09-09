@@ -185,6 +185,7 @@ function buildDropRateOption(input: {
     direction: 'units_per_item',
     settings: input.dropRateSettings,
     baseDropRate: input.row.baseDropRate,
+    sourceCanonicalKey: input.row.sourceCanonicalKey,
   });
 
   if (!conversion.calculable || conversion.rate <= 0) {
@@ -196,6 +197,7 @@ function buildDropRateOption(input: {
     preferredUnit,
     input.dropRateSettings,
     input.row.baseDropRate,
+    { sourceCanonicalKey: input.row.sourceCanonicalKey },
   );
   const sourceUnitQuantity = input.remainingQuantity * conversion.rate;
   const dailyRate = getDailyRate(input.sourceRateState, preferredUnit, input.row.sourceName);

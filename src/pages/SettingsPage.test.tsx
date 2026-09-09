@@ -295,6 +295,14 @@ describe('SettingsPage', () => {
     await user.selectOptions(screen.getByLabelText('Exploring unit'), 'stamina');
     await user.selectOptions(screen.getByLabelText('Fishing unit'), 'fish');
     await user.selectOptions(screen.getByLabelText('Farming unit'), 'harvest_alls');
+    await user.click(screen.getByLabelText(/Quandary Chowder/));
+    await user.click(screen.getByLabelText(/Sea Pincher Special/));
+    await user.clear(screen.getByLabelText('Sea Pincher bonus %'));
+    await user.type(screen.getByLabelText('Sea Pincher bonus %'), '12');
+    await user.type(screen.getByLabelText('Exploring zone'), 'Whispering Creek');
+    await user.clear(screen.getByLabelText('Exploring Effectiveness %'));
+    await user.type(screen.getByLabelText('Exploring Effectiveness %'), '25');
+    await user.click(screen.getByRole('button', { name: 'Add or Update Zone' }));
     await user.click(screen.getByRole('button', { name: 'Save Drop Rate Settings' }));
 
     expect(await screen.findByText('Saved drop rate settings.')).toBeInTheDocument();
@@ -308,6 +316,16 @@ describe('SettingsPage', () => {
         fishing: 'fish',
         farming: 'harvest_alls',
       },
+      meals: {
+        quandaryChowderActive: true,
+        seaPincherSpecialActive: true,
+        seaPincherSpecialPercent: 12,
+      },
+      zoneExploringEffectiveness: [{
+        sourceName: 'Whispering Creek',
+        sourceCanonicalKey: 'whispering creek',
+        effectivenessPercent: 25,
+      }],
     });
   });
 

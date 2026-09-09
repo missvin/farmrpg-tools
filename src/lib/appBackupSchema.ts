@@ -349,6 +349,32 @@ function isValidDropRateAcquisitionSettings(
     return false;
   }
 
+  if (
+    value.zoneExploringEffectiveness !== undefined &&
+    (!Array.isArray(value.zoneExploringEffectiveness) || !value.zoneExploringEffectiveness.every((entry) => (
+      isRecord(entry) &&
+      typeof entry.sourceName === 'string' &&
+      entry.sourceName.length > 0 &&
+      typeof entry.sourceCanonicalKey === 'string' &&
+      entry.sourceCanonicalKey.length > 0 &&
+      isFiniteNonNegativeNumber(entry.effectivenessPercent) &&
+      entry.effectivenessPercent <= 100
+    )))
+  ) {
+    return false;
+  }
+
+  if (
+    value.meals !== undefined &&
+    (!isRecord(value.meals) ||
+      !isBoolean(value.meals.quandaryChowderActive) ||
+      !isBoolean(value.meals.seaPincherSpecialActive) ||
+      !isFiniteNonNegativeNumber(value.meals.seaPincherSpecialPercent) ||
+      value.meals.seaPincherSpecialPercent > 100)
+  ) {
+    return false;
+  }
+
   return (
     isBoolean(value.perks.ironDepotActive) &&
     isFiniteNonNegativeNumber(value.perks.wandererPercent) &&

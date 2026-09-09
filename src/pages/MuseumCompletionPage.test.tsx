@@ -1,9 +1,20 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { MUSEUM_COMPLETION_STATE_STORAGE_KEY } from '../lib/museumCompletionState';
+
+const { mockLoadRecipeGraph, mockLoadDropRateReference, mockLoadPetSourceReference } = vi.hoisted(() => ({
+  mockLoadRecipeGraph: vi.fn(),
+  mockLoadDropRateReference: vi.fn(),
+  mockLoadPetSourceReference: vi.fn(),
+}));
+
+vi.mock('../lib/loadRecipeGraph', () => ({ loadRecipeGraph: mockLoadRecipeGraph }));
+vi.mock('../lib/loadDropRateReference', () => ({ loadDropRateReference: mockLoadDropRateReference }));
+vi.mock('../lib/loadPetSourceReference', () => ({ loadPetSourceReference: mockLoadPetSourceReference }));
+
 import { MuseumCompletionPage } from './MuseumCompletionPage';
 
 const PERSONAL_MUSEUM_EXPORT = `Collection Progress
@@ -23,6 +34,30 @@ describe('MuseumCompletionPage', () => {
 
   it('previews museum completion, tracks reviewed missing items, and saves progress locally', async () => {
     const user = userEvent.setup();
+
+    mockLoadRecipeGraph.mockResolvedValue({
+      byOutputCanonicalKey: {
+        corn: { recipeType: 'craft', sourceBuddyUrl: 'https://buddy.farm/i/corn/' },
+      },
+    });
+    mockLoadDropRateReference.mockResolvedValue({
+      byTargetCanonicalKey: {
+        corn: [{
+          sourceName: 'Small Spring',
+          sourceCanonicalKey: 'small spring',
+          sourcePageUrl: 'https://buddy.farm/i/small-spring/',
+        }],
+      },
+    });
+    mockLoadPetSourceReference.mockResolvedValue({
+      byItemCanonicalKey: {
+        corn: [{
+          petName: 'Chicken',
+          petCanonicalKey: 'chicken',
+          sourceUrl: 'https://buddy.farm/pets/chicken/',
+        }],
+      },
+    });
 
     render(
       <MemoryRouter
@@ -50,6 +85,11 @@ describe('MuseumCompletionPage', () => {
     expect(within(progressSection as HTMLElement).getByRole('link', { name: 'Corn' })).toHaveAttribute(
       'href',
       '/items/corn',
+    );
+    expect(await within(progressSection as HTMLElement).findByText('How to get:', { exact: false })).toBeInTheDocument();
+    expect(within(progressSection as HTMLElement).getByRole('link', { name: 'Craft' })).toHaveAttribute(
+      'href',
+      'https://buddy.farm/i/corn/',
     );
     expect(within(progressSection as HTMLElement).getByText('1 unnamed missing slot')).toBeInTheDocument();
 

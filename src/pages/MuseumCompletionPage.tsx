@@ -13,12 +13,15 @@ import {
   type MuseumCompletionManualMissingEntry,
 } from '../lib/museumCompletionState';
 import { getItemIcon } from '../lib/itemIconManifest';
+import { loadDropRateReference, type DropRateReferenceData } from '../lib/loadDropRateReference';
 import { loadMuseumCompletionCanon, type MuseumCompletionCanonData } from '../lib/loadMuseumCompletionCanon';
 import {
   loadMuseumReviewedMissingItems,
   type MuseumReviewedMissingItem,
 } from '../lib/loadMuseumReviewedMissingItems';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
+import { loadPetSourceReference, type PetSourceReferenceData } from '../lib/loadPetSourceReference';
+import { loadRecipeGraph, type RecipeGraph } from '../lib/loadRecipeGraph';
 
 const PERSONAL_MUSEUM_PLACEHOLDER = `Collection Progress
 Crops (1 / 2)
@@ -47,7 +50,61 @@ function formatSavedAt(value: string | null): string {
   return parsedDate.toLocaleString();
 }
 
-function renderReviewedItem(item: MuseumCompletionManualMissingEntry) {
+type MuseumAcquisitionReference = {
+  recipeGraph: RecipeGraph | null;
+  dropRateReference: DropRateReferenceData | null;
+  petSourceReference: PetSourceReferenceData | null;
+};
+
+function renderAcquisitionContext(
+  item: MuseumCompletionManualMissingEntry,
+  reference: MuseumAcquisitionReference,
+) {
+  const recipe = reference.recipeGraph?.byOutputCanonicalKey[item.canonicalKey] ?? null;
+  const dropSources = reference.dropRateReference?.byTargetCanonicalKey[item.canonicalKey] ?? [];
+  const petSources = reference.petSourceReference?.byItemCanonicalKey[item.canonicalKey] ?? [];
+
+  if (!recipe && dropSources.length === 0 && petSources.length === 0) {
+    return null;
+  }
+
+  const uniqueDropSources = [...new Map(
+    dropSources.map((source) => [source.sourceCanonicalKey, source]),
+  ).values()];
+  const uniquePetSources = [...new Map(
+    petSources.map((source) => [source.petCanonicalKey, source]),
+  ).values()];
+
+  return (
+    <p className="subtle-text">
+      How to get:{' '}
+      {[
+        recipe ? (
+          <a key="recipe" href={recipe.sourceBuddyUrl} target="_blank" rel="noreferrer">
+            {recipe.recipeType === 'cooking' ? 'Cook' : 'Craft'}
+          </a>
+        ) : null,
+        ...uniqueDropSources.slice(0, 2).map((source) => (
+          <a key={`drop-${source.sourceCanonicalKey}`} href={source.sourcePageUrl} target="_blank" rel="noreferrer">
+            {source.sourceName}
+          </a>
+        )),
+        ...uniquePetSources.slice(0, 2).map((source) => (
+          <a key={`pet-${source.petCanonicalKey}`} href={source.sourceUrl} target="_blank" rel="noreferrer">
+            {source.petName} pet
+          </a>
+        )),
+      ].filter(Boolean).map((entry, index) => (
+        <span key={index}>{index > 0 ? ' · ' : ''}{entry}</span>
+      ))}
+    </p>
+  );
+}
+
+function renderReviewedItem(
+  item: MuseumCompletionManualMissingEntry,
+  reference: MuseumAcquisitionReference,
+) {
   const icon = getItemIcon(item.canonicalKey);
 
   return (
@@ -58,14 +115,18 @@ function renderReviewedItem(item: MuseumCompletionManualMissingEntry) {
         {item.slotCount > 1 ? `, ${item.slotCount.toLocaleString()} slots` : ''}
         {item.note ? ` - ${item.note}` : ''}
       </p>
+      {renderAcquisitionContext(item, reference)}
     </div>
   );
 }
 
-function renderNamedMissingItem(item: MuseumCompletionManualMissingEntry) {
+function renderNamedMissingItem(
+  item: MuseumCompletionManualMissingEntry,
+  reference: MuseumAcquisitionReference,
+) {
   return (
     <li key={item.id}>
-      {renderReviewedItem(item)}
+      {renderReviewedItem(item, reference)}
       <span>{item.slotCount > 1 ? `${item.slotCount.toLocaleString()} slots` : 'Missing'}</span>
     </li>
   );
@@ -93,6 +154,11 @@ export function MuseumCompletionPage() {
   const [manualNote, setManualNote] = useState('');
   const [canonData, setCanonData] = useState<MuseumCompletionCanonData | null>(null);
   const [reviewedMissingItems, setReviewedMissingItems] = useState<MuseumReviewedMissingItem[]>([]);
+  const [acquisitionReference, setAcquisitionReference] = useState<MuseumAcquisitionReference>({
+    recipeGraph: null,
+    dropRateReference: null,
+    petSourceReference: null,
+  });
   const [canonLoadMessage, setCanonLoadMessage] = useState<string | null>(null);
   const [parseMessage, setParseMessage] = useState<string | null>(
     savedState.personalMuseumText ? null : 'Paste your museum export to preview progress.',
@@ -121,6 +187,24 @@ export function MuseumCompletionPage() {
         setReviewedMissingItems([]);
         setCanonLoadMessage('Reviewed museum slot names could not be loaded; locally saved names still work.');
       });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    Promise.all([
+      loadRecipeGraph().catch(() => null),
+      loadDropRateReference().catch(() => null),
+      loadPetSourceReference().catch(() => null),
+    ]).then(([recipeGraph, dropRateReference, petSourceReference]) => {
+      if (isCurrent) {
+        setAcquisitionReference({ recipeGraph, dropRateReference, petSourceReference });
+      }
+    });
 
     return () => {
       isCurrent = false;
@@ -375,7 +459,7 @@ export function MuseumCompletionPage() {
           <ul className="data-list">
             {manualMissingItems.map((item) => (
               <li key={item.id}>
-                {renderReviewedItem(item)}
+                {renderReviewedItem(item, acquisitionReference)}
                 <button type="button" className="button" onClick={() => handleRemoveManualItem(item.id)}>
                   Remove
                 </button>
@@ -474,7 +558,9 @@ export function MuseumCompletionPage() {
               {progress.namedMissingItems.length === 0 ? (
                 <p className="empty-state">No reviewed missing item names yet.</p>
               ) : (
-                <ul className="data-list">{progress.namedMissingItems.map(renderNamedMissingItem)}</ul>
+                <ul className="data-list">
+                  {progress.namedMissingItems.map((item) => renderNamedMissingItem(item, acquisitionReference))}
+                </ul>
               )}
             </div>
 

@@ -377,6 +377,12 @@ function createDropRateAcquisitionSettingsFixture() {
       fishing: 'large_nets' as const,
       farming: 'crops' as const,
     },
+    zoneExploringEffectiveness: [],
+    meals: {
+      quandaryChowderActive: false,
+      seaPincherSpecialActive: false,
+      seaPincherSpecialPercent: 10,
+    },
   };
 }
 

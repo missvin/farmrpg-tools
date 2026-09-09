@@ -22,6 +22,11 @@ export type DropRateUnitConversionInput = {
   direction: DropRateDirection;
   settings: DropRateAcquisitionSettings;
   baseDropRate?: number | null;
+  sourceCanonicalKey?: string | null;
+};
+
+export type DropRateUnitContext = {
+  sourceCanonicalKey?: string | null;
 };
 
 export type DropRateUnitBasis = {
@@ -54,6 +59,7 @@ const LARGE_NET_BASE_FISH = 250;
 const LARGE_NET_REINFORCED_FISH = 400;
 const LARGE_NET_TRAWL_FISH = 500;
 const BUDDY_MATCHING_HARVEST_ALL_CROPS = 40;
+const QUANDARY_CHOWDER_MULTIPLIER = 1.1;
 
 const EXPLORING_UNITS = new Set<DropRateDisplayUnit>([
   'explores',
@@ -95,18 +101,25 @@ function getLargeNetFish(settings: DropRateAcquisitionSettings): number {
   return LARGE_NET_BASE_FISH;
 }
 
-function getAppleCiderSourceQuantity(settings: DropRateAcquisitionSettings): number {
+function getAppleCiderSourceQuantity(
+  settings: DropRateAcquisitionSettings,
+  sourceCanonicalKey?: string | null,
+): number {
   const explores = settings.perks.cinnamonSticksActive
     ? APPLE_CIDER_BUDDY_CINNAMON_EXPLORES
     : APPLE_CIDER_BUDDY_BASE_EXPLORES;
+  const zoneEffectiveness = settings.zoneExploringEffectiveness.find(
+    (entry) => entry.sourceCanonicalKey === sourceCanonicalKey,
+  )?.effectivenessPercent ?? 0;
 
-  return explores * APPLE_CIDER_DROP_RATE;
+  return explores * (1 + clampPercent(zoneEffectiveness) / 100) * APPLE_CIDER_DROP_RATE;
 }
 
 function getExploringUnitBasis(
   unit: DropRateDisplayUnit,
   settings: DropRateAcquisitionSettings,
   baseDropRate: number | null | undefined,
+  context?: DropRateUnitContext,
 ): DropRateUnitBasis | null {
   if (!EXPLORING_UNITS.has(unit)) {
     return null;
@@ -134,23 +147,23 @@ function getExploringUnitBasis(
       return {
         unit,
         label: 'Apple Cider',
-        sourceQuantity: getAppleCiderSourceQuantity(settings),
+        sourceQuantity: getAppleCiderSourceQuantity(settings, context?.sourceCanonicalKey),
       };
     case 'lemonades':
       return {
         unit,
         label: 'Lemonade',
-        sourceQuantity: settings.perks.lemonSqueezerActive
+        sourceQuantity: (settings.perks.lemonSqueezerActive
           ? LEMONADE_SQUEEZER_ITEMS
-          : LEMONADE_BASE_ITEMS,
+          : LEMONADE_BASE_ITEMS) * (settings.meals.quandaryChowderActive ? QUANDARY_CHOWDER_MULTIPLIER : 1),
       };
     case 'arnold_palmers':
       return {
         unit,
         label: 'Arnold Palmer',
-        sourceQuantity: settings.perks.lemonSqueezerActive
+        sourceQuantity: (settings.perks.lemonSqueezerActive
           ? ARNOLD_PALMER_SQUEEZER_ITEMS
-          : ARNOLD_PALMER_BASE_ITEMS,
+          : ARNOLD_PALMER_BASE_ITEMS) * (settings.meals.quandaryChowderActive ? QUANDARY_CHOWDER_MULTIPLIER : 1),
       };
     default:
       return null;
@@ -169,9 +182,25 @@ function getFishingUnitBasis(
     case 'fish':
       return { unit, label: 'fish', sourceQuantity: 1 };
     case 'fishing_nets':
-      return { unit, label: 'Fishing Net', sourceQuantity: FISHING_NET_FISH };
+      return {
+        unit,
+        label: 'Fishing Net',
+        sourceQuantity: FISHING_NET_FISH * (
+          settings.meals.seaPincherSpecialActive
+            ? 1 + clampPercent(settings.meals.seaPincherSpecialPercent) / 100
+            : 1
+        ),
+      };
     case 'large_nets':
-      return { unit, label: 'Large Net', sourceQuantity: getLargeNetFish(settings) };
+      return {
+        unit,
+        label: 'Large Net',
+        sourceQuantity: getLargeNetFish(settings) * (
+          settings.meals.seaPincherSpecialActive
+            ? 1 + clampPercent(settings.meals.seaPincherSpecialPercent) / 100
+            : 1
+        ),
+      };
     default:
       return null;
   }
@@ -242,11 +271,12 @@ export function getDropRateUnitBasis(
   unit: DropRateDisplayUnit,
   settings: DropRateAcquisitionSettings,
   baseDropRate?: number | null,
+  context?: DropRateUnitContext,
 ): DropRateUnitBasis | null {
   const normalizedSourceType = normalizeDropRateSourceType(sourceType);
 
   if (normalizedSourceType === 'explore') {
-    return getExploringUnitBasis(unit, settings, baseDropRate);
+    return getExploringUnitBasis(unit, settings, baseDropRate, context);
   }
 
   if (normalizedSourceType === 'fishing') {
@@ -268,12 +298,14 @@ export function convertDropRateUnit(
     input.fromUnit,
     input.settings,
     input.baseDropRate,
+    { sourceCanonicalKey: input.sourceCanonicalKey },
   );
   const toBasis = getDropRateUnitBasis(
     input.sourceType,
     input.toUnit,
     input.settings,
     input.baseDropRate,
+    { sourceCanonicalKey: input.sourceCanonicalKey },
   );
 
   if (!Number.isFinite(input.rate) || input.rate < 0) {

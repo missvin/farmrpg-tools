@@ -28,7 +28,9 @@ import type { AppBackupPayloadV1 } from '../lib/appBackupSchema';
 import { deriveFuturePetProductionForecast } from '../lib/deriveFuturePetProductionForecast';
 import {
   loadDropRateAcquisitionSettings,
+  removeZoneExploringEffectiveness,
   saveDropRateAcquisitionSettings,
+  upsertZoneExploringEffectiveness,
   type DropRateExploringUnit,
   type DropRateFarmingUnit,
   type DropRateFishingUnit,
@@ -61,6 +63,8 @@ export function SettingsPage() {
   const [dropRateSettings, setDropRateSettings] = useState(() => loadDropRateAcquisitionSettings());
   const [dropRateSettingsMessage, setDropRateSettingsMessage] = useState<string | null>(null);
   const [dropRateSettingsError, setDropRateSettingsError] = useState<string | null>(null);
+  const [dropRateZoneName, setDropRateZoneName] = useState('');
+  const [dropRateZoneEffectiveness, setDropRateZoneEffectiveness] = useState('0');
   const [sourceRateAssumptions, setSourceRateAssumptions] = useState(() => loadSourceRateAssumptionsState());
   const [sourceRateMessage, setSourceRateMessage] = useState<string | null>(null);
   const [sourceRateError, setSourceRateError] = useState<string | null>(null);
@@ -391,6 +395,32 @@ export function SettingsPage() {
         error instanceof Error ? error.message : 'Unable to save drop rate settings.',
       );
     }
+  }
+
+  function handleAddDropRateZone(): void {
+    const sourceName = dropRateZoneName.trim();
+    const effectivenessPercent = Number(dropRateZoneEffectiveness);
+
+    if (!sourceName) {
+      setDropRateSettingsMessage(null);
+      setDropRateSettingsError('Enter an exploring zone name.');
+      return;
+    }
+
+    if (!Number.isFinite(effectivenessPercent) || effectivenessPercent < 0 || effectivenessPercent > 100) {
+      setDropRateSettingsMessage(null);
+      setDropRateSettingsError('Exploring Effectiveness must be between 0 and 100%.');
+      return;
+    }
+
+    setDropRateSettings((current) => upsertZoneExploringEffectiveness(current, {
+      sourceName,
+      effectivenessPercent,
+    }));
+    setDropRateZoneName('');
+    setDropRateZoneEffectiveness('0');
+    setDropRateSettingsError(null);
+    setDropRateSettingsMessage(`${sourceName} will use ${effectivenessPercent}% Exploring Effectiveness after saving.`);
   }
 
   function handleUpdateSourceRate(sourceKey: string, label: string, unitLabel: string, rawValue: string): void {
@@ -814,6 +844,118 @@ export function SettingsPage() {
               <option value="harvest_alls">Harvest-Alls</option>
             </select>
           </div>
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <h3 className="section-title">Temporary meal assumptions</h3>
+          <p className="supporting-text">
+            Optional boosts apply only while the meal is active. Leave them off for an unboosted estimate.
+          </p>
+          <div className="summary-grid">
+            <label className="checkbox-field">
+              <input
+                type="checkbox"
+                checked={dropRateSettings.meals.quandaryChowderActive}
+                onChange={(event) => setDropRateSettings({
+                  ...dropRateSettings,
+                  meals: { ...dropRateSettings.meals, quandaryChowderActive: event.target.checked },
+                })}
+              />
+              <span>Quandary Chowder (+10% Lemonade / Arnold Palmer yield)</span>
+            </label>
+            <label className="checkbox-field">
+              <input
+                type="checkbox"
+                checked={dropRateSettings.meals.seaPincherSpecialActive}
+                onChange={(event) => setDropRateSettings({
+                  ...dropRateSettings,
+                  meals: { ...dropRateSettings.meals, seaPincherSpecialActive: event.target.checked },
+                })}
+              />
+              <span>Sea Pincher Special (Fishing Net / Large Net yield)</span>
+            </label>
+            <div className="page-stack page-stack--tight">
+              <label className="field-label" htmlFor="drop-rate-sea-pincher-percent">
+                Sea Pincher bonus %
+              </label>
+              <input
+                id="drop-rate-sea-pincher-percent"
+                className="text-input"
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                value={dropRateSettings.meals.seaPincherSpecialPercent}
+                disabled={!dropRateSettings.meals.seaPincherSpecialActive}
+                onChange={(event) => setDropRateSettings({
+                  ...dropRateSettings,
+                  meals: { ...dropRateSettings.meals, seaPincherSpecialPercent: Number(event.target.value) },
+                })}
+              />
+              <p className="subtle-text">Editable because the item description does not state the exact percentage.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="page-stack page-stack--tight">
+          <h3 className="section-title">Apple Cider by exploring zone</h3>
+          <p className="supporting-text">
+            Add each zone where your Exploring Effectiveness differs. Cider estimates for other zones stay at the
+            normal Cinnamon Sticks baseline.
+          </p>
+          <div className="summary-grid">
+            <div className="page-stack page-stack--tight">
+              <label className="field-label" htmlFor="drop-rate-zone-name">Exploring zone</label>
+              <input
+                id="drop-rate-zone-name"
+                className="text-input"
+                value={dropRateZoneName}
+                onChange={(event) => setDropRateZoneName(event.target.value)}
+                placeholder="e.g. Whispering Creek"
+              />
+            </div>
+            <div className="page-stack page-stack--tight">
+              <label className="field-label" htmlFor="drop-rate-zone-ee">Exploring Effectiveness %</label>
+              <input
+                id="drop-rate-zone-ee"
+                className="text-input"
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                value={dropRateZoneEffectiveness}
+                onChange={(event) => setDropRateZoneEffectiveness(event.target.value)}
+              />
+            </div>
+          </div>
+          <div className="button-row">
+            <button type="button" className="button button--secondary" onClick={handleAddDropRateZone}>
+              Add or Update Zone
+            </button>
+          </div>
+          {dropRateSettings.zoneExploringEffectiveness.length > 0 ? (
+            <ul className="data-list">
+              {dropRateSettings.zoneExploringEffectiveness.map((entry) => (
+                <li key={entry.sourceCanonicalKey}>
+                  <div>
+                    <strong>{entry.sourceName}</strong>
+                    <p className="subtle-text">{entry.effectivenessPercent}% Exploring Effectiveness</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="button button--secondary"
+                    onClick={() => setDropRateSettings((current) => (
+                      removeZoneExploringEffectiveness(current, entry.sourceCanonicalKey)
+                    ))}
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="empty-state">No per-zone Exploring Effectiveness saved.</p>
+          )}
         </div>
 
         <div className="button-row">

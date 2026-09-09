@@ -156,6 +156,7 @@ function getLargeNetsPerDropFromReference(input: {
       direction: 'units_per_item',
       settings: input.dropRateSettings,
       baseDropRate: row.baseDropRate,
+      sourceCanonicalKey: row.sourceCanonicalKey,
     });
 
     if (conversion.calculable && conversion.rate > 0) {

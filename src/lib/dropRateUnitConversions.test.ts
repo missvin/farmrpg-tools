@@ -36,6 +36,43 @@ describe('dropRateUnitConversions', () => {
     expect(getDropRateUnitBasis('explore', 'arnold_palmers', settings, 0.25)?.sourceQuantity).toBe(200);
   });
 
+  it('applies Apple Cider effectiveness only to its matching exploring zone', () => {
+    const settings = createDefaultDropRateAcquisitionSettings();
+    settings.zoneExploringEffectiveness = [{
+      sourceName: 'Whispering Creek',
+      sourceCanonicalKey: 'whispering creek',
+      effectivenessPercent: 25,
+    }];
+
+    expect(getDropRateUnitBasis(
+      'explore',
+      'apple_ciders',
+      settings,
+      0.25,
+      { sourceCanonicalKey: 'whispering creek' },
+    )?.sourceQuantity).toBe(625);
+    expect(getDropRateUnitBasis(
+      'explore',
+      'apple_ciders',
+      settings,
+      0.25,
+      { sourceCanonicalKey: 'misty forest' },
+    )?.sourceQuantity).toBe(500);
+  });
+
+  it('applies enabled meal boosts only to their relevant consumable units', () => {
+    const settings = createDefaultDropRateAcquisitionSettings();
+    settings.meals.quandaryChowderActive = true;
+    settings.meals.seaPincherSpecialActive = true;
+    settings.meals.seaPincherSpecialPercent = 10;
+
+    expect(getDropRateUnitBasis('explore', 'lemonades', settings)?.sourceQuantity).toBe(22);
+    expect(getDropRateUnitBasis('explore', 'arnold_palmers', settings)?.sourceQuantity).toBe(550);
+    expect(getDropRateUnitBasis('fishing', 'fishing_nets', settings)?.sourceQuantity).toBeCloseTo(11);
+    expect(getDropRateUnitBasis('fishing', 'large_nets', settings)?.sourceQuantity).toBeCloseTo(550);
+    expect(getDropRateUnitBasis('fishing', 'fish', settings)?.sourceQuantity).toBe(1);
+  });
+
   it('converts directional explore rates without hiding the rate meaning', () => {
     const settings = createDefaultDropRateAcquisitionSettings();
 

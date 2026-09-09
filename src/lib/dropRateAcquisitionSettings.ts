@@ -1,3 +1,5 @@
+import { normalizeName } from './normalizeItemKey';
+
 export const DROP_RATE_ACQUISITION_SETTINGS_STORAGE_KEY =
   'farmrpg-tools.dropRateAcquisitionSettings';
 
@@ -12,6 +14,12 @@ export type DropRateExploringUnit =
 export type DropRateFishingUnit = 'fish' | 'fishing_nets' | 'large_nets';
 
 export type DropRateFarmingUnit = 'crops' | 'seeds' | 'harvest_alls';
+
+export type DropRateZoneExploringEffectiveness = {
+  sourceName: string;
+  sourceCanonicalKey: string;
+  effectivenessPercent: number;
+};
 
 export type DropRateAcquisitionSettings = {
   schemaVersion: 1;
@@ -30,10 +38,17 @@ export type DropRateAcquisitionSettings = {
     fishing: DropRateFishingUnit;
     farming: DropRateFarmingUnit;
   };
+  zoneExploringEffectiveness: DropRateZoneExploringEffectiveness[];
+  meals: {
+    quandaryChowderActive: boolean;
+    seaPincherSpecialActive: boolean;
+    seaPincherSpecialPercent: number;
+  };
 };
 
 type PartialDropRateAcquisitionPerks = Partial<DropRateAcquisitionSettings['perks']>;
 type PartialDropRateAcquisitionUnits = Partial<DropRateAcquisitionSettings['units']>;
+type PartialDropRateAcquisitionMeals = Partial<DropRateAcquisitionSettings['meals']>;
 
 const EXPLORING_UNITS = new Set<DropRateExploringUnit>([
   'explores',
@@ -65,6 +80,12 @@ const DEFAULT_DROP_RATE_ACQUISITION_SETTINGS: DropRateAcquisitionSettings = {
     fishing: 'large_nets',
     farming: 'crops',
   },
+  zoneExploringEffectiveness: [],
+  meals: {
+    quandaryChowderActive: false,
+    seaPincherSpecialActive: false,
+    seaPincherSpecialPercent: 10,
+  },
 };
 
 function toBoolean(value: unknown, fallback = false): boolean {
@@ -79,6 +100,42 @@ function clampPercent(value: unknown, fallback = 0): number {
   }
 
   return Math.min(100, Math.max(0, numericValue));
+}
+
+function toCanonicalSourceKey(value: string): string {
+  return normalizeName(value);
+}
+
+function normalizeZoneExploringEffectiveness(value: unknown): DropRateZoneExploringEffectiveness[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const byCanonicalKey = new Map<string, DropRateZoneExploringEffectiveness>();
+
+  for (const entry of value) {
+    if (!entry || typeof entry !== 'object') {
+      continue;
+    }
+
+    const record = entry as Partial<DropRateZoneExploringEffectiveness>;
+    const sourceName = typeof record.sourceName === 'string' ? record.sourceName.trim() : '';
+    const sourceCanonicalKey = toCanonicalSourceKey(
+      typeof record.sourceCanonicalKey === 'string' ? record.sourceCanonicalKey : sourceName,
+    );
+
+    if (!sourceName || !sourceCanonicalKey) {
+      continue;
+    }
+
+    byCanonicalKey.set(sourceCanonicalKey, {
+      sourceName,
+      sourceCanonicalKey,
+      effectivenessPercent: clampPercent(record.effectivenessPercent),
+    });
+  }
+
+  return [...byCanonicalKey.values()].sort((left, right) => left.sourceName.localeCompare(right.sourceName));
 }
 
 function normalizeExploringUnit(value: unknown): DropRateExploringUnit {
@@ -125,6 +182,8 @@ export function normalizeDropRateAcquisitionSettings(value: unknown): DropRateAc
     record.perks && typeof record.perks === 'object' ? record.perks : {};
   const units: PartialDropRateAcquisitionUnits =
     record.units && typeof record.units === 'object' ? record.units : {};
+  const meals: PartialDropRateAcquisitionMeals =
+    record.meals && typeof record.meals === 'object' ? record.meals : {};
   const defaultSettings = createDefaultDropRateAcquisitionSettings();
 
   return {
@@ -165,7 +224,54 @@ export function normalizeDropRateAcquisitionSettings(value: unknown): DropRateAc
       fishing: normalizeFishingUnit(units.fishing),
       farming: normalizeFarmingUnit(units.farming),
     },
+    zoneExploringEffectiveness: normalizeZoneExploringEffectiveness(record.zoneExploringEffectiveness),
+    meals: {
+      quandaryChowderActive: toBoolean(
+        meals.quandaryChowderActive,
+        defaultSettings.meals.quandaryChowderActive,
+      ),
+      seaPincherSpecialActive: toBoolean(
+        meals.seaPincherSpecialActive,
+        defaultSettings.meals.seaPincherSpecialActive,
+      ),
+      seaPincherSpecialPercent: clampPercent(
+        meals.seaPincherSpecialPercent,
+        defaultSettings.meals.seaPincherSpecialPercent,
+      ),
+    },
   };
+}
+
+export function upsertZoneExploringEffectiveness(
+  settings: DropRateAcquisitionSettings,
+  input: { sourceName: string; effectivenessPercent: number },
+): DropRateAcquisitionSettings {
+  const sourceName = input.sourceName.trim();
+  const sourceCanonicalKey = toCanonicalSourceKey(sourceName);
+
+  if (!sourceName || !sourceCanonicalKey) {
+    return normalizeDropRateAcquisitionSettings(settings);
+  }
+
+  return normalizeDropRateAcquisitionSettings({
+    ...settings,
+    zoneExploringEffectiveness: [
+      ...settings.zoneExploringEffectiveness.filter((entry) => entry.sourceCanonicalKey !== sourceCanonicalKey),
+      { sourceName, sourceCanonicalKey, effectivenessPercent: input.effectivenessPercent },
+    ],
+  });
+}
+
+export function removeZoneExploringEffectiveness(
+  settings: DropRateAcquisitionSettings,
+  sourceCanonicalKey: string,
+): DropRateAcquisitionSettings {
+  return normalizeDropRateAcquisitionSettings({
+    ...settings,
+    zoneExploringEffectiveness: settings.zoneExploringEffectiveness.filter(
+      (entry) => entry.sourceCanonicalKey !== sourceCanonicalKey,
+    ),
+  });
 }
 
 export function loadDropRateAcquisitionSettings(storage?: Storage): DropRateAcquisitionSettings {
