@@ -62,6 +62,26 @@ function createAcquisitionPlannerStateFixture() {
         },
       ],
     },
+    pets: {
+      storedInventoryEntries: [],
+      futureProduction: {
+        enabled: true,
+        horizonDays: 1,
+        entries: [
+          {
+            canonicalItemKey: 'frost snapper shell',
+            itemName: 'Frost Snapper Shell',
+            petName: 'Seal',
+            petLevel: 9,
+            bonusPoints: 3,
+            seasonalActive: true,
+          },
+        ],
+        respectSeasonality: true,
+        offlineHoursCap: 24,
+        crunchyOmeletteActive: false,
+      },
+    },
   };
 }
 
@@ -284,6 +304,21 @@ describe('appBackupSchema', () => {
     expect(isSupportedAppBackupSchemaVersion(1)).toBe(true);
     expect(isSupportedAppBackupSchemaVersion(2)).toBe(false);
     expect(isAppBackupPayloadV1(payload)).toBe(true);
+  });
+
+  it('accepts legacy future pet entries without item bonus points', () => {
+    const acquisitionPlannerState = createAcquisitionPlannerStateFixture();
+    delete acquisitionPlannerState.pets.futureProduction.entries[0]?.bonusPoints;
+    const payload = createAppBackupPayload({
+      appVersion: '1.1.0',
+      exportedAt: '2026-03-21T09:00:00.000Z',
+      snapshots: [createSnapshot('snapshot-1')],
+      craftingModifierState: createDefaultCraftingModifierState(),
+      acquisitionPlannerState,
+      themePreference: 'light',
+    });
+
+    expect(validateAppBackupPayloadV1(payload).ok).toBe(true);
   });
 
   it('normalizes missing legacy snapshot summary fields during validation', () => {

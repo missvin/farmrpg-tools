@@ -225,6 +225,8 @@ function isValidFuturePetProductionEntry(value: unknown): boolean {
     typeof value.petName === 'string' &&
     value.petName.length > 0 &&
     isFiniteNonNegativeNumber(value.petLevel) &&
+    (value.bonusPoints === undefined ||
+      (isFiniteNonNegativeNumber(value.bonusPoints) && Number.isInteger(value.bonusPoints))) &&
     isBoolean(value.seasonalActive)
   );
 }

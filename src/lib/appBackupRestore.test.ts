@@ -325,11 +325,20 @@ function createAcquisitionPlannerStateFixture() {
     pets: {
       storedInventoryEntries: [],
       futureProduction: {
-        enabled: false,
-        horizonDays: 7,
-        entries: [],
+        enabled: true,
+        horizonDays: 1,
+        entries: [
+          {
+            canonicalItemKey: 'frost snapper shell',
+            itemName: 'Frost Snapper Shell',
+            petName: 'Seal',
+            petLevel: 9,
+            bonusPoints: 3,
+            seasonalActive: true,
+          },
+        ],
         respectSeasonality: true,
-        offlineHoursCap: 48,
+        offlineHoursCap: 24,
         crunchyOmeletteActive: false,
       },
     },

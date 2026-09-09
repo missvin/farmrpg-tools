@@ -1,4 +1,8 @@
-import { type AcquisitionFuturePetProductionEntryInput, type AcquisitionPlannerInputState } from './acquisitionPlannerState';
+import {
+  getPetBonusPointCapacity,
+  type AcquisitionFuturePetProductionEntryInput,
+  type AcquisitionPlannerInputState,
+} from './acquisitionPlannerState';
 import { findPetSourceReference, type PetSourceReferenceData } from './loadPetSourceReference';
 import { toCanonicalItemKey } from './normalizeItemKey';
 
@@ -16,6 +20,8 @@ export type FuturePetProductionForecastPetDetail = {
   availableItemPoolSize: number;
   baseQuantity: number;
   specialRuleMultiplier: number;
+  itemBonusPoints: number;
+  itemBonusMultiplier: number;
   collectionMultiplier: number;
   forecastQuantity: number;
   petSourceUnlockLevel: number | null;
@@ -107,8 +113,20 @@ export function deriveFuturePetProductionForecast(
     ? CRUNCHY_OMELETTE_COLLECTION_MULTIPLIER
     : 1;
   const entriesByCanonicalKey = new Map<string, FuturePetProductionForecastItem>();
+  const remainingBonusPointsByPetKey = new Map<string, number>();
 
   for (const entry of state.pets.futureProduction.entries) {
+    const canonicalPetKey = toCanonicalItemKey(entry.petName);
+    const currentCapacity = remainingBonusPointsByPetKey.get(canonicalPetKey) ?? 0;
+
+    remainingBonusPointsByPetKey.set(
+      canonicalPetKey,
+      Math.max(currentCapacity, getPetBonusPointCapacity(entry.petLevel)),
+    );
+  }
+
+  for (const entry of state.pets.futureProduction.entries) {
+    const canonicalPetKey = toCanonicalItemKey(entry.petName);
     const seasonallyAllowed =
       !state.pets.futureProduction.respectSeasonality || entry.seasonalActive;
     const { multiplier: specialRuleMultiplier, notes } = getSpecialRuleMultiplier(entry);
@@ -125,8 +143,31 @@ export function deriveFuturePetProductionForecast(
     const baseQuantity = seasonallyAllowed && unlockAllowed
       ? (entry.petLevel * forecastHours * FUTURE_PET_HOURLY_OUTPUT_PER_LEVEL) / availableItemPoolSize
       : 0;
-    const forecastQuantity = baseQuantity * specialRuleMultiplier * collectionMultiplier;
+    const requestedItemBonusPoints = entry.bonusPoints ?? 0;
+    const remainingBonusPoints = remainingBonusPointsByPetKey.get(canonicalPetKey) ?? 0;
+    const itemBonusPoints = Math.min(requestedItemBonusPoints, remainingBonusPoints);
+    const itemBonusMultiplier = 1 + itemBonusPoints;
+    const forecastQuantity = baseQuantity * specialRuleMultiplier * itemBonusMultiplier * collectionMultiplier;
     const appliedRuleNotes = [...notes];
+
+    remainingBonusPointsByPetKey.set(canonicalPetKey, remainingBonusPoints - itemBonusPoints);
+
+    if (itemBonusPoints > 0) {
+      appliedRuleNotes.push(
+        `${itemBonusPoints.toLocaleString()} pet item bonus point${itemBonusPoints === 1 ? '' : 's'} applied (${itemBonusMultiplier}x item output).`,
+      );
+    }
+
+    if (requestedItemBonusPoints > itemBonusPoints) {
+      const warningKey = `bonus-points:${canonicalPetKey}`;
+
+      if (!warningKeys.has(warningKey)) {
+        warnings.push(
+          `${entry.petName} has more assigned item bonus points than its level allows; excess points were ignored.`,
+        );
+        warningKeys.add(warningKey);
+      }
+    }
 
     if (petSourceReferenceLoaded && !petSourceReference) {
       const warningKey = `${entry.petName}:${entry.canonicalItemKey}`;
@@ -157,6 +198,8 @@ export function deriveFuturePetProductionForecast(
       availableItemPoolSize,
       baseQuantity,
       specialRuleMultiplier,
+      itemBonusPoints,
+      itemBonusMultiplier,
       collectionMultiplier,
       forecastQuantity,
       petSourceUnlockLevel: petSourceReference?.unlockLevel ?? null,

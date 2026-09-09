@@ -88,6 +88,7 @@ export type AcquisitionFuturePetProductionEntryInput = {
   itemName: string;
   petName: string;
   petLevel: number;
+  bonusPoints?: number;
   seasonalActive: boolean;
 };
 
@@ -219,6 +220,20 @@ function clampNonNegativeNumber(value: unknown, fallback = 0): number {
   }
 
   return numericValue;
+}
+
+function clampNonNegativeInteger(value: unknown, fallback = 0): number {
+  const numericValue = clampNonNegativeNumber(value, fallback);
+
+  return Number.isInteger(numericValue) ? numericValue : fallback;
+}
+
+export function getPetBonusPointCapacity(petLevel: number): number {
+  if (!Number.isFinite(petLevel)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.floor(petLevel) - 6);
 }
 
 function normalizeRecordOfCounts(value: unknown): Record<string, number> {
@@ -458,6 +473,10 @@ function normalizeFuturePetProductionEntry(value: unknown): AcquisitionFuturePet
     itemName,
     petName,
     petLevel,
+    bonusPoints: Math.min(
+      clampNonNegativeInteger(record.bonusPoints),
+      getPetBonusPointCapacity(petLevel),
+    ),
     seasonalActive: toBoolean(record.seasonalActive),
   };
 }
@@ -474,7 +493,7 @@ function normalizeFuturePetProductionEntries(value: unknown): AcquisitionFutureP
       }
 
       dedupedEntries.set(
-        `${normalizedEntry.petName.toLocaleLowerCase()}:${normalizedEntry.canonicalItemKey}`,
+        `${toCanonicalItemKey(normalizedEntry.petName)}:${normalizedEntry.canonicalItemKey}`,
         normalizedEntry,
       );
     }
@@ -501,6 +520,7 @@ function normalizeFuturePetProductionEntries(value: unknown): AcquisitionFutureP
       itemName: canonicalItemKey,
       petName: canonicalItemKey,
       petLevel,
+      bonusPoints: 0,
       seasonalActive: true,
     }))
     .sort((left, right) => {
@@ -891,8 +911,31 @@ export type UpdateFuturePetProductionEntryInput = {
   itemName: string;
   petName: string;
   petLevel: number;
+  bonusPoints?: number;
   seasonalActive: boolean;
 };
+
+export function getAssignedPetBonusPoints(
+  state: AcquisitionPlannerInputState,
+  petName: string,
+  excludedCanonicalItemKey?: string,
+): number {
+  const canonicalPetKey = toCanonicalItemKey(petName);
+  const canonicalExcludedItemKey = excludedCanonicalItemKey
+    ? toCanonicalItemKey(excludedCanonicalItemKey)
+    : null;
+
+  return state.pets.futureProduction.entries.reduce((total, entry) => {
+    if (
+      toCanonicalItemKey(entry.petName) !== canonicalPetKey ||
+      (canonicalExcludedItemKey && entry.canonicalItemKey === canonicalExcludedItemKey)
+    ) {
+      return total;
+    }
+
+    return total + (entry.bonusPoints ?? 0);
+  }, 0);
+}
 
 export function upsertFuturePetProductionEntryInput(
   state: AcquisitionPlannerInputState,
@@ -902,15 +945,29 @@ export function upsertFuturePetProductionEntryInput(
   const trimmedPetName = input.petName.trim();
   const canonicalItemKey = toCanonicalItemKey(trimmedItemName);
   const petLevel = clampNonNegativeNumber(input.petLevel, -1);
+  const bonusPoints = clampNonNegativeInteger(input.bonusPoints ?? 0, -1);
+  const assignedElsewhere = getAssignedPetBonusPoints(
+    state,
+    trimmedPetName,
+    canonicalItemKey,
+  );
+  const bonusPointCapacity = getPetBonusPointCapacity(petLevel);
 
-  if (canonicalItemKey.length === 0 || trimmedItemName.length === 0 || trimmedPetName.length === 0 || petLevel < 0) {
+  if (
+    canonicalItemKey.length === 0 ||
+    trimmedItemName.length === 0 ||
+    trimmedPetName.length === 0 ||
+    petLevel < 0 ||
+    bonusPoints < 0 ||
+    assignedElsewhere + bonusPoints > bonusPointCapacity
+  ) {
     return state;
   }
 
   const nextEntries = state.pets.futureProduction.entries.filter((entry) => {
     return !(
       entry.canonicalItemKey === canonicalItemKey &&
-      entry.petName.toLocaleLowerCase() === trimmedPetName.toLocaleLowerCase()
+      toCanonicalItemKey(entry.petName) === toCanonicalItemKey(trimmedPetName)
     );
   });
 
@@ -920,6 +977,7 @@ export function upsertFuturePetProductionEntryInput(
       itemName: trimmedItemName,
       petName: trimmedPetName,
       petLevel,
+      bonusPoints,
       seasonalActive: input.seasonalActive,
     });
   }
@@ -950,7 +1008,7 @@ export function removeFuturePetProductionEntryInput(
         entries: state.pets.futureProduction.entries.filter((entry) => {
           return !(
             entry.canonicalItemKey === toCanonicalItemKey(canonicalItemKey) &&
-            entry.petName.toLocaleLowerCase() === petName.trim().toLocaleLowerCase()
+            toCanonicalItemKey(entry.petName) === toCanonicalItemKey(petName)
           );
         }),
       },

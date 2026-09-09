@@ -6,8 +6,10 @@ import {
 } from '../components/InventoryImportPanels';
 import { PageIntro } from '../components/PageIntro';
 import {
+  getAssignedPetBonusPoints,
   getFuturePetProductionEntries,
   getOwnedNowItemInputs,
+  getPetBonusPointCapacity,
   loadAcquisitionPlannerInputState,
   removeFuturePetProductionEntryInput,
   removeOwnedNowItemInput,
@@ -32,9 +34,11 @@ import {
   type DropRateFishingUnit,
 } from '../lib/dropRateAcquisitionSettings';
 import {
+  findPetSourceReference,
   loadPetSourceReference,
   type PetSourceReferenceData,
 } from '../lib/loadPetSourceReference';
+import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 import {
   loadSourceRateAssumptionsState,
   removeCustomSourceRateAssumption,
@@ -87,6 +91,7 @@ export function SettingsPage() {
   const [futurePetItemName, setFuturePetItemName] = useState('');
   const [futurePetName, setFuturePetName] = useState('');
   const [futurePetLevel, setFuturePetLevel] = useState('1');
+  const [futurePetBonusPoints, setFuturePetBonusPoints] = useState('0');
   const [futurePetSeasonalActive, setFuturePetSeasonalActive] = useState(true);
   const [futurePetMessage, setFuturePetMessage] = useState<string | null>(null);
   const [futurePetError, setFuturePetError] = useState<string | null>(null);
@@ -110,6 +115,8 @@ export function SettingsPage() {
   const futurePetForecast = deriveFuturePetProductionForecast(acquisitionPlannerState, {
     petSourceReference,
   });
+  const futurePetLevelForDisplay = Math.max(0, Math.floor(Number(futurePetLevel) || 0));
+  const futurePetBonusPointCapacity = getPetBonusPointCapacity(futurePetLevelForDisplay);
 
   useEffect(() => {
     let cancelled = false;
@@ -240,6 +247,7 @@ export function SettingsPage() {
 
   function handleSaveFuturePetEntry(): void {
     const normalizedPetLevel = Number(futurePetLevel);
+    const normalizedBonusPoints = Number(futurePetBonusPoints);
     const warnings: string[] = [];
 
     if (futurePetItemName.trim().length === 0) {
@@ -263,11 +271,56 @@ export function SettingsPage() {
       return;
     }
 
+    if (!Number.isInteger(normalizedBonusPoints) || normalizedBonusPoints < 0) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError('Enter a non-negative whole number of item bonus points.');
+      return;
+    }
+
+    const canonicalItemKey = toCanonicalItemKey(futurePetItemName);
+    const assignedElsewhere = getAssignedPetBonusPoints(
+      acquisitionPlannerState,
+      futurePetName,
+      canonicalItemKey,
+    );
+    const bonusPointCapacity = getPetBonusPointCapacity(normalizedPetLevel);
+
+    if (assignedElsewhere + normalizedBonusPoints > bonusPointCapacity) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError(
+        `${futurePetName.trim()} has ${bonusPointCapacity.toLocaleString()} item bonus point${bonusPointCapacity === 1 ? '' : 's'} at level ${Math.floor(normalizedPetLevel).toLocaleString()}; ${assignedElsewhere.toLocaleString()} already assigned elsewhere.`,
+      );
+      return;
+    }
+
+    if (normalizedBonusPoints > 0 && !petSourceReference) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError('Local pet-source coverage must load before assigning item bonus points.');
+      return;
+    }
+
+    if (
+      normalizedBonusPoints > 0 &&
+      petSourceReference &&
+      !findPetSourceReference(petSourceReference, futurePetName, canonicalItemKey)
+    ) {
+      setFuturePetMessage(null);
+      setFuturePetWarnings([]);
+      setFuturePetError(
+        `${futurePetItemName.trim()} is not in the reviewed item pool for ${futurePetName.trim()}, so bonus points were not saved.`,
+      );
+      return;
+    }
+
     try {
       const nextState = upsertFuturePetProductionEntryInput(acquisitionPlannerState, {
         itemName: futurePetItemName,
         petName: futurePetName,
         petLevel: normalizedPetLevel,
+        bonusPoints: normalizedBonusPoints,
         seasonalActive: futurePetSeasonalActive,
       });
       const savedState = saveAcquisitionPlannerInputState(nextState);
@@ -296,6 +349,7 @@ export function SettingsPage() {
       setFuturePetItemName('');
       setFuturePetName('');
       setFuturePetLevel('1');
+      setFuturePetBonusPoints('0');
       setFuturePetSeasonalActive(true);
     } catch (error) {
       setFuturePetMessage(null);
@@ -1185,6 +1239,26 @@ export function SettingsPage() {
           />
         </div>
 
+        <div className="page-stack page-stack--tight">
+          <label className="field-label" htmlFor="future-pet-bonus-points">
+            Item bonus points
+          </label>
+          <input
+            id="future-pet-bonus-points"
+            className="text-input"
+            type="number"
+            min="0"
+            step="1"
+            value={futurePetBonusPoints}
+            onChange={(event) => {
+              setFuturePetBonusPoints(event.target.value);
+            }}
+          />
+          <span className="subtle-text">
+            {`Level ${futurePetLevelForDisplay.toLocaleString()} provides ${futurePetBonusPointCapacity.toLocaleString()} total assignable ${futurePetBonusPointCapacity === 1 ? 'point' : 'points'}.`}
+          </span>
+        </div>
+
         <label className="checkbox-field">
           <input
             type="checkbox"
@@ -1209,8 +1283,10 @@ export function SettingsPage() {
         <p className="supporting-text">
           This estimate uses <strong>{futurePetForecast.forecastHours.toLocaleString()}</strong> forecast hours from
           the current horizon and offline-cap assumptions. Pet output is divided across the level item pool
-          (4 before level 3, 8 before level 6, then 12), and Crunchy Omelette applies only as an explicit
-          collection-time multiplier when checked.
+          (4 before level 3, 8 before level 6, then 12). Each level above 6 provides one assignable item bonus
+          point, and each assigned point adds one extra copy when that item is found. The item multiplier is
+          applied before the explicit Crunchy Omelette collection multiplier. Pet item points also work with
+          Pet Treat collections, but Pet Treat quantities are not currently modeled by this forecast.
         </p>
 
         {petSourceReferenceError ? (
@@ -1227,6 +1303,7 @@ export function SettingsPage() {
                 <th scope="col">Pet</th>
                 <th scope="col">Item</th>
                 <th scope="col">Level</th>
+                <th scope="col">Item points</th>
                 <th scope="col">Seasonal active</th>
                 <th scope="col">Action</th>
               </tr>
@@ -1237,6 +1314,7 @@ export function SettingsPage() {
                   <td>{entry.petName}</td>
                   <td>{entry.itemName}</td>
                   <td>{entry.petLevel.toLocaleString()}</td>
+                  <td>{(entry.bonusPoints ?? 0).toLocaleString()}</td>
                   <td>{entry.seasonalActive ? 'Yes' : 'No'}</td>
                   <td>
                     <button

@@ -5,10 +5,12 @@ import {
   ACQUISITION_PLANNER_STATE_STORAGE_KEY,
   clearAcquisitionPlannerInputState,
   createDefaultAcquisitionPlannerInputState,
+  getAssignedPetBonusPoints,
   getCurrentInventoryItemInputs,
   getResolvedAcquisitionSharedAssumptions,
   getFuturePetProductionEntries,
   getOwnedNowItemInputs,
+  getPetBonusPointCapacity,
   getStoredPetInventoryItemInputs,
   loadAcquisitionPlannerInputState,
   normalizeAcquisitionPlannerInputState,
@@ -561,6 +563,7 @@ describe('acquisitionPlannerState', () => {
         itemName: 'Honey',
         petName: 'Owl',
         petLevel: 6,
+        bonusPoints: 0,
         seasonalActive: true,
       },
     ]);
@@ -595,6 +598,7 @@ describe('acquisitionPlannerState', () => {
               itemName: 'honey',
               petName: 'honey',
               petLevel: 3,
+              bonusPoints: 0,
               seasonalActive: true,
             },
           ],
@@ -604,5 +608,40 @@ describe('acquisitionPlannerState', () => {
         },
       },
     });
+  });
+
+  it('validates per-item bonus points against the total unlocked by the pet level', () => {
+    expect(getPetBonusPointCapacity(6)).toBe(0);
+    expect(getPetBonusPointCapacity(9)).toBe(3);
+
+    const initialState = createDefaultAcquisitionPlannerInputState();
+    const withShellPoints = upsertFuturePetProductionEntryInput(initialState, {
+      itemName: 'Frost Snapper Shell',
+      petName: 'Seal',
+      petLevel: 9,
+      bonusPoints: 2,
+      seasonalActive: true,
+    });
+    const overAllocated = upsertFuturePetProductionEntryInput(withShellPoints, {
+      itemName: 'Large Net',
+      petName: 'Seal',
+      petLevel: 9,
+      bonusPoints: 2,
+      seasonalActive: true,
+    });
+    const fullyAllocated = upsertFuturePetProductionEntryInput(withShellPoints, {
+      itemName: 'Large Net',
+      petName: 'Seal',
+      petLevel: 9,
+      bonusPoints: 1,
+      seasonalActive: true,
+    });
+
+    expect(overAllocated).toBe(withShellPoints);
+    expect(getAssignedPetBonusPoints(fullyAllocated, 'Seal')).toBe(3);
+    expect(getFuturePetProductionEntries(fullyAllocated)).toEqual([
+      expect.objectContaining({ itemName: 'Frost Snapper Shell', bonusPoints: 2 }),
+      expect.objectContaining({ itemName: 'Large Net', bonusPoints: 1 }),
+    ]);
   });
 });

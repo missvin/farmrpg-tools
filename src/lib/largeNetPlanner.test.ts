@@ -90,6 +90,7 @@ describe('buildLargeNetPlanner', () => {
               itemName: 'Frost Snapper Shell',
               petName: 'Seal',
               petLevel: 9,
+              bonusPoints: 3,
               seasonalActive: true,
             },
           ],
@@ -124,10 +125,10 @@ describe('buildLargeNetPlanner', () => {
       storedPetInventoryQuantity: 5730,
       effectiveStoredPetInventoryQuantity: 8595,
       immediateQuantity: 9110,
-      dailyPetQuantity: 27,
+      dailyPetQuantity: 108,
       remainingAfterImmediateQuantity: 5890,
     });
-    expect(result.targets[0]?.soloDays).toBeCloseTo(71.2, 1);
+    expect(result.targets[0]?.soloDays).toBeCloseTo(36, 1);
   });
 
   it('applies Crunchy Omelette to stored pet inventory when no separate collection multiplier is entered', () => {

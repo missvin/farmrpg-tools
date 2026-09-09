@@ -57,7 +57,8 @@ function createSupplyState(): AcquisitionPlannerInputState {
             canonicalItemKey: 'wood',
             itemName: 'Wood',
             petName: 'Test Pet',
-            petLevel: 6,
+            petLevel: 7,
+            bonusPoints: 1,
             seasonalActive: true,
           },
         ],
@@ -78,8 +79,8 @@ describe('deriveAvailableSupplyPool', () => {
 
     expect(pool.byCanonicalKey.wood).toMatchObject({
       itemName: 'Wood',
-      derivedQuantity: 37,
-      effectiveQuantity: 37,
+      derivedQuantity: 53,
+      effectiveQuantity: 53,
       overrideQuantity: null,
     });
     expect(pool.byCanonicalKey.wood.breakdowns.map((entry) => entry.sourceKey)).toEqual([
@@ -89,6 +90,9 @@ describe('deriveAvailableSupplyPool', () => {
       'stored_pet_inventory',
       'future_pet_production',
     ]);
+    expect(pool.byCanonicalKey.wood.breakdowns.at(-1)?.notes).toContain(
+      '1 assigned pet item bonus point applied.',
+    );
   });
 
   it('lets a manual override replace effective supply while preserving derived supply detail', () => {
@@ -105,7 +109,7 @@ describe('deriveAvailableSupplyPool', () => {
     });
 
     expect(pool.byCanonicalKey.wood).toMatchObject({
-      derivedQuantity: 37,
+      derivedQuantity: 53,
       effectiveQuantity: 12,
       overrideQuantity: 12,
     });
@@ -131,7 +135,7 @@ describe('deriveAvailableSupplyPool', () => {
       ],
     });
 
-    expect(pool.byCanonicalKey.wood.effectiveQuantity).toBe(57);
+    expect(pool.byCanonicalKey.wood.effectiveQuantity).toBe(73);
     expect(pool.byCanonicalKey.wood.breakdowns.at(-1)).toMatchObject({
       sourceKey: 'openable_contents',
       label: 'Openable Contents',

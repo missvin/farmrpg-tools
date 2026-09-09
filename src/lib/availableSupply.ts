@@ -239,6 +239,10 @@ export function deriveAvailableSupplyPool(input: DeriveAvailableSupplyPoolInput)
 
     if (futurePetForecast.enabled) {
       for (const entry of futurePetForecast.entries) {
+        const assignedBonusPoints = entry.petDetails.reduce((total, detail) => {
+          return total + detail.itemBonusPoints;
+        }, 0);
+
         addBreakdown(itemsByCanonicalKey, {
           canonicalKey: entry.canonicalItemKey,
           itemName: entry.itemName,
@@ -247,7 +251,10 @@ export function deriveAvailableSupplyPool(input: DeriveAvailableSupplyPoolInput)
           quantity: entry.forecastQuantity,
           notes: [
             `${entry.sourcePetCount.toLocaleString()} pet${entry.sourcePetCount === 1 ? '' : 's'} over ${futurePetForecast.forecastHours.toLocaleString()} forecast hours.`,
-          ],
+            assignedBonusPoints > 0
+              ? `${assignedBonusPoints.toLocaleString()} assigned pet item bonus point${assignedBonusPoints === 1 ? '' : 's'} applied.`
+              : '',
+          ].filter(Boolean),
         });
       }
     }

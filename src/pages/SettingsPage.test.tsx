@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   ACQUISITION_PLANNER_STATE_STORAGE_KEY,
@@ -75,6 +75,10 @@ vi.mock('../lib/localItemReferenceLookup', () => ({
 }));
 
 import { SettingsPage } from './SettingsPage';
+
+const PET_SOURCE_REFERENCE_CSV = `pet_name,pet_canonical_key,item_name,item_canonical_key,unlock_level,source_url,page_data_url,pet_availability,coverage_status,notes
+Seal,seal,Frost Snapper Shell,frost snapper shell,6,https://buddy.farm/i/frost-snapper-shell/,https://buddy.farm/page-data/i/frost-snapper-shell/page-data.json,normal,reviewed,
+Owl,owl,Honey,honey,1,https://buddy.farm/i/honey/,https://buddy.farm/page-data/i/honey/page-data.json,normal,reviewed,`;
 
 function createBackupPayload() {
   return createAppBackupPayload({
@@ -164,6 +168,10 @@ describe('SettingsPage', () => {
         entries: [],
       },
     });
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      text: async () => PET_SOURCE_REFERENCE_CSV,
+    }));
     window.localStorage.removeItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY);
     window.localStorage.removeItem(DROP_RATE_ACQUISITION_SETTINGS_STORAGE_KEY);
     window.localStorage.removeItem(SOURCE_RATE_ASSUMPTIONS_STORAGE_KEY);
@@ -525,5 +533,60 @@ describe('SettingsPage', () => {
       ],
     });
     expect(screen.getByText('36')).toBeInTheDocument();
+  });
+
+  it('saves reviewed pet item bonus points and reflects their multiplier in forecast output', async () => {
+    const user = userEvent.setup();
+
+    render(<SettingsPage />);
+
+    await waitFor(() => {
+      expect(globalThis.fetch).toHaveBeenCalledWith('/data/pet_source_reference.csv');
+    });
+    await user.click(screen.getByLabelText('Enable future pet production forecast'));
+    await user.clear(screen.getByLabelText('Forecast horizon (days)'));
+    await user.type(screen.getByLabelText('Forecast horizon (days)'), '1');
+    await user.clear(screen.getByLabelText('Offline hours cap'));
+    await user.type(screen.getByLabelText('Offline hours cap'), '24');
+    await user.click(screen.getByRole('button', { name: 'Save Future Pet Forecast Settings' }));
+
+    await user.type(screen.getByLabelText('Pet name'), 'Seal');
+    await user.type(screen.getByLabelText('Produced item name'), 'Frost Snapper Shell');
+    await user.clear(screen.getByLabelText('Pet level'));
+    await user.type(screen.getByLabelText('Pet level'), '9');
+    await user.clear(screen.getByLabelText('Item bonus points'));
+    await user.type(screen.getByLabelText('Item bonus points'), '3');
+    await user.click(screen.getByRole('button', { name: 'Save Future Pet Entry' }));
+
+    expect(await screen.findByText('Saved Seal -> Frost Snapper Shell for future pet production forecasting.')).toBeInTheDocument();
+    expect(loadAcquisitionPlannerInputState().pets.futureProduction.entries).toEqual([
+      expect.objectContaining({
+        canonicalItemKey: 'frost snapper shell',
+        petName: 'Seal',
+        petLevel: 9,
+        bonusPoints: 3,
+      }),
+    ]);
+    expect(screen.getByText('72')).toBeInTheDocument();
+  });
+
+  it('rejects bonus points for an item outside the reviewed pool for that pet', async () => {
+    const user = userEvent.setup();
+
+    render(<SettingsPage />);
+
+    await waitFor(() => {
+      expect(globalThis.fetch).toHaveBeenCalledWith('/data/pet_source_reference.csv');
+    });
+    await user.type(screen.getByLabelText('Pet name'), 'Seal');
+    await user.type(screen.getByLabelText('Produced item name'), 'Large Net');
+    await user.clear(screen.getByLabelText('Pet level'));
+    await user.type(screen.getByLabelText('Pet level'), '9');
+    await user.clear(screen.getByLabelText('Item bonus points'));
+    await user.type(screen.getByLabelText('Item bonus points'), '1');
+    await user.click(screen.getByRole('button', { name: 'Save Future Pet Entry' }));
+
+    expect(await screen.findByText('Large Net is not in the reviewed item pool for Seal, so bonus points were not saved.')).toBeInTheDocument();
+    expect(loadAcquisitionPlannerInputState().pets.futureProduction.entries).toEqual([]);
   });
 });

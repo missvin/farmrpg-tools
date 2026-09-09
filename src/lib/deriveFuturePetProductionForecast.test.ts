@@ -279,8 +279,89 @@ describe('deriveFuturePetProductionForecast', () => {
     expect(result.entries[0]?.petDetails[0]).toMatchObject({
       availableItemPoolSize: 12,
       baseQuantity: 18,
+      itemBonusPoints: 0,
+      itemBonusMultiplier: 1,
       petSourceUnlockLevel: 6,
     });
+  });
+
+  it('applies level 7+ item bonus points once before the separate collection multiplier', () => {
+    const state = normalizeAcquisitionPlannerInputState({
+      pets: {
+        futureProduction: {
+          enabled: true,
+          horizonDays: 1,
+          offlineHoursCap: 24,
+          respectSeasonality: true,
+          crunchyOmeletteActive: true,
+          entries: [
+            {
+              canonicalItemKey: 'frost snapper shell',
+              itemName: 'Frost Snapper Shell',
+              petName: 'Seal',
+              petLevel: 9,
+              bonusPoints: 3,
+              seasonalActive: true,
+            },
+          ],
+        },
+      },
+    });
+
+    const result = deriveFuturePetProductionForecast(state, {
+      petSourceReference: createPetSourceReference(),
+    });
+
+    expect(result.entries[0]?.forecastQuantity).toBe(18 * 4 * CRUNCHY_OMELETTE_COLLECTION_MULTIPLIER);
+    expect(result.entries[0]?.petDetails[0]).toMatchObject({
+      baseQuantity: 18,
+      itemBonusPoints: 3,
+      itemBonusMultiplier: 4,
+      collectionMultiplier: CRUNCHY_OMELETTE_COLLECTION_MULTIPLIER,
+      forecastQuantity: 108,
+    });
+    expect(result.entries[0]?.petDetails[0]?.appliedRuleNotes).toContain(
+      '3 pet item bonus points applied (4x item output).',
+    );
+  });
+
+  it('ignores excess bonus points from malformed saved state instead of overcounting production', () => {
+    const state = normalizeAcquisitionPlannerInputState({
+      pets: {
+        futureProduction: {
+          enabled: true,
+          horizonDays: 1,
+          offlineHoursCap: 24,
+          respectSeasonality: true,
+          crunchyOmeletteActive: false,
+          entries: [
+            {
+              canonicalItemKey: 'frost snapper shell',
+              itemName: 'Frost Snapper Shell',
+              petName: 'Seal',
+              petLevel: 9,
+              bonusPoints: 2,
+              seasonalActive: true,
+            },
+            {
+              canonicalItemKey: 'large net',
+              itemName: 'Large Net',
+              petName: 'Seal',
+              petLevel: 9,
+              bonusPoints: 2,
+              seasonalActive: true,
+            },
+          ],
+        },
+      },
+    });
+
+    const result = deriveFuturePetProductionForecast(state);
+
+    expect(result.entries.map((entry) => entry.petDetails[0]?.itemBonusPoints)).toEqual([2, 1]);
+    expect(result.warnings).toContain(
+      'Seal has more assigned item bonus points than its level allows; excess points were ignored.',
+    );
   });
 
   it('warns but still estimates from the level pool when pet-source coverage is missing', () => {
