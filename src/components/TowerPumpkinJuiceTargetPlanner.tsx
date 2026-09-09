@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import type { DerivedTowerProgress } from '../lib/deriveTowerProgress';
 
 type TowerPumpkinJuiceTargetPlannerProps = {
@@ -53,11 +55,16 @@ export function TowerPumpkinJuiceTargetPlanner({
 
   return (
     <section className="page-card page-stack" aria-labelledby="tower-pj-target-planner-title">
-      <div>
-        <h2 id="tower-pj-target-planner-title">Pumpkin Juice Target Planner</h2>
-        <p className="supporting-text">
-          Estimate Pumpkin Juice still needed {targetScope}, using each item's highest required Tower target in scope.
-        </p>
+      <div className="section-heading-row">
+        <div>
+          <h2 id="tower-pj-target-planner-title">Pumpkin Juice Target Planner</h2>
+          <p className="supporting-text">
+            Estimate Pumpkin Juice still needed {targetScope}, using each item's highest required Tower target in scope.
+          </p>
+        </div>
+        <Link className="button button--secondary" to="/tower-pj-history">
+          View PJ history
+        </Link>
       </div>
 
       <div className="inline-control-row" aria-label="Tower target selector">

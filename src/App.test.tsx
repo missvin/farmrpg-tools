@@ -183,6 +183,7 @@ describe('App shell', () => {
     expect(await screen.findByRole('link', { name: 'Craft Material Matrix' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Target Planner' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Large Net Planner' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Tower PJ History' })).toBeVisible();
     expect(screen.queryByRole('link', { name: 'Import Mastery' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Data' }));
@@ -496,5 +497,22 @@ describe('App shell', () => {
     );
 
     expect(await screen.findByRole('heading', { name: 'Tower Items by Difficulty' })).toBeInTheDocument();
+  });
+
+  it('renders Tower PJ History through the app shell', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={['/tower-pj-history']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('Loading page')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Tower PJ History' })).toBeInTheDocument();
   });
 });

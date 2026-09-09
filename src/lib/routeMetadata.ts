@@ -25,6 +25,7 @@ export type RouteToolId =
   | 'sorted'
   | 'tower'
   | 'towerProgress'
+  | 'towerPumpkinJuiceHistory'
   | 't300RaceStory'
   | 'towerReferenceMaintenance'
   | 'ratingSourceWorkbench'
@@ -346,6 +347,17 @@ export const routeToolMetadata: RouteToolMetadata[] = [
     visibility: 'user-facing',
     dataRequirements: ['mastery-snapshot', 'reference-data'],
     compatibilityPaths: ['/goals/tower-progress'],
+  },
+  {
+    id: 'towerPumpkinJuiceHistory',
+    path: '/tower-pj-history',
+    label: 'Tower PJ History',
+    description: 'Pumpkin Juice needed for selected Tower targets across saved mastery snapshots.',
+    aliases: ['tower pj history', 'pumpkin juice history', 'tower history', 'pj over time'],
+    iaGroup: 'planning',
+    visibility: 'user-facing',
+    dataRequirements: ['mastery-snapshot', 'reference-data'],
+    compatibilityPaths: [],
   },
   {
     id: 't300RaceStory',

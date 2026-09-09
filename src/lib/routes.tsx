@@ -72,6 +72,11 @@ const TowerPage = lazy(() => import('../pages/TowerPage').then((module) => ({ de
 const TowerProgressPage = lazy(() =>
   import('../pages/TowerProgressPage').then((module) => ({ default: module.TowerProgressPage })),
 );
+const TowerPumpkinJuiceHistoryPage = lazy(() =>
+  import('../pages/TowerPumpkinJuiceHistoryPage').then((module) => ({
+    default: module.TowerPumpkinJuiceHistoryPage,
+  })),
+);
 const T300RaceStoryPage = lazy(() =>
   import('../pages/T300RaceStoryPage').then((module) => ({ default: module.T300RaceStoryPage })),
 );
@@ -141,6 +146,7 @@ export const appRoutes: AppRoute[] = [
   appRoute('sorted', <SortedPage />),
   appRoute('tower', <TowerPage />),
   appRoute('towerProgress', <TowerProgressPage />),
+  appRoute('towerPumpkinJuiceHistory', <TowerPumpkinJuiceHistoryPage />),
   appRoute('t300RaceStory', <T300RaceStoryPage />),
   appRoute('towerReferenceMaintenance', <TowerReferenceMaintenancePage />),
   appRoute('ratingSourceWorkbench', <RatingSourceWorkbenchPage />),
@@ -186,6 +192,7 @@ export const navigationSections: NavigationSection[] = [
       navigationItem('craftMaterialMatrix'),
       navigationItem('targetPlanner'),
       navigationItem('largeNetPlanner'),
+      navigationItem('towerPumpkinJuiceHistory'),
     ],
   },
   {

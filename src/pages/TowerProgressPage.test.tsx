@@ -446,6 +446,10 @@ describe('TowerProgressPage', () => {
 
     const summarySection = screen.getByRole('heading', { name: 'Pumpkin Juice Target Planner' }).closest('section');
     expect(summarySection).not.toBeNull();
+    expect(within(summarySection as HTMLElement).getByRole('link', { name: 'View PJ history' })).toHaveAttribute(
+      'href',
+      '/tower-pj-history',
+    );
     expect(within(summarySection as HTMLElement).queryByText(/Unmatched tower items/i)).not.toBeInTheDocument();
     expect(within(summarySection as HTMLElement).queryByText(/mastery difficulty data/i)).not.toBeInTheDocument();
     expect(
