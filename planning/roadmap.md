@@ -123,14 +123,14 @@ Completed quest exports become useful planning data: you can review imports, see
   - dynamic craft-material and Tower color matrix views
   - farm-building production assumptions and item-goal source integration
   - Tower cutoff Pumpkin Juice planning and item-goal source relevance cleanup
-  - per-zone Apple Cider effectiveness, opt-in acquisition meal modifiers, and named Museum-item source context
+  - per-zone Apple Cider effectiveness and opt-in acquisition meal modifiers
 - Reference maintenance and history usability
   - repeatable cache-first new-item intake with a reviewed June 2026 promotion batch
   - readable Item Velocity dates and historical point tooltips
   - reusable price-check paste normalization as the foundation for later trade-value features
 
 User-facing story:
-The app now behaves as a goal-and-item workbench rather than a loose collection of tools, while preserving familiar routes and local data. Item planning reaches more source types and player-specific modifiers, named Museum gaps point to known acquisition routes, new reference items have a repeatable review path, and historical progress is easier to inspect.
+The app now behaves as a goal-and-item workbench rather than a loose collection of tools, while preserving familiar routes and local data. Item planning reaches more source types and player-specific modifiers, new reference items have a repeatable review path, and historical progress is easier to inspect.
 
 ## Later
 
@@ -140,6 +140,7 @@ The app now behaves as a goal-and-item workbench rather than a loose collection 
   - explicit currency-conversion assumptions and local inventory valuation
   - optional dated price history after the current-price workflow proves useful
 - Focused planning follow-ups
+  - acquisition context for named missing Museum items
   - Tower method filtering when method metadata is trustworthy enough
 - Trust, performance, and workflow polish
   - alternate rating-source selection after reviewed ClientCoin rows are populated
