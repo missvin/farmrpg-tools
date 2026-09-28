@@ -19,6 +19,7 @@ import {
   saveDropRateAcquisitionSettings,
 } from './dropRateAcquisitionSettings';
 import { validateAppBackupPayloadV1, type AppBackupPayloadV1 } from './appBackupSchema';
+import { clearTowerProductionRates, loadTowerProductionRates, saveTowerProductionRates } from './towerProductionRates';
 import {
   clearMasteryRaceCountsState,
   loadMasteryRaceCountsState,
@@ -114,6 +115,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   const currentSnapshotVelocityPreferences = loadSnapshotVelocityPreferences();
   const currentSourceRateAssumptionsState = loadSourceRateAssumptionsState();
   const currentBuildingProductionState = loadBuildingProductionState();
+  const currentTowerProductionRates = loadTowerProductionRates();
   const currentThemePreference = readStoredAppTheme();
 
   try {
@@ -203,6 +205,12 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
       clearBuildingProductionState();
     }
 
+    if (payload.state.preferences.towerProductionRates) {
+      saveTowerProductionRates(payload.state.preferences.towerProductionRates);
+    } else {
+      clearTowerProductionRates();
+    }
+
     if (payload.state.preferences.themePreference) {
       persistAppTheme(payload.state.preferences.themePreference);
     } else {
@@ -224,6 +232,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     saveSnapshotVelocityPreferences(currentSnapshotVelocityPreferences);
     saveSourceRateAssumptionsState(currentSourceRateAssumptionsState);
     saveBuildingProductionState(currentBuildingProductionState);
+    saveTowerProductionRates(currentTowerProductionRates);
 
     if (currentThemePreference) {
       persistAppTheme(currentThemePreference);

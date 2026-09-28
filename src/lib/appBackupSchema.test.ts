@@ -285,6 +285,7 @@ describe('appBackupSchema', () => {
           snapshotVelocityPreferences,
           sourceRateAssumptionsState,
           buildingProductionState,
+          towerProductionRates: null,
           themePreference: 'dark',
         },
       },
@@ -829,4 +830,20 @@ describe('appBackupSchema', () => {
       message: 'The backup file contains malformed building production assumptions.',
     });
   });
+  it('validates optional Tower production rates while accepting older backups without them', () => {
+    const base = createAppBackupPayload({
+      appVersion: '1.1.0', exportedAt: '2026-09-28T12:00:00.000Z', snapshots: [],
+      craftingModifierState: null, acquisitionPlannerState: null, themePreference: null,
+    });
+    expect(validateAppBackupPayloadV1(base).ok).toBe(true);
+    const withRates = { ...base, state: { ...base.state, preferences: {
+      ...base.state.preferences, towerProductionRates: { schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200 },
+    } } };
+    expect(validateAppBackupPayloadV1(withRates).ok).toBe(true);
+    const invalid = { ...withRates, state: { ...withRates.state, preferences: {
+      ...withRates.state.preferences, towerProductionRates: { schemaVersion: 1, steelPerHour: 0, steelWirePerHour: 200 },
+    } } };
+    expect(validateAppBackupPayloadV1(invalid)).toMatchObject({ ok: false, code: 'invalid_tower_production_rates' });
+  });
+
 });

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { clearTowerProductionRates, loadTowerProductionRates } from './towerProductionRates';
 
 const {
   mockReplaceSnapshots,
@@ -700,6 +701,26 @@ describe('appBackupRestore', () => {
     expect(mockClearSourceRateAssumptionsState).not.toHaveBeenCalled();
     expect(mockClearBuildingProductionState).not.toHaveBeenCalled();
     expect(mockClearStoredAppTheme).not.toHaveBeenCalled();
+  });
+
+  it('restores separate Tower rates and clears them when an older backup has no rate field', async () => {
+    const previous = loadTowerProductionRates();
+    try {
+      const withRates = createBackupPayload();
+      withRates.state.preferences.towerProductionRates = { schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200 };
+      await restoreAppBackupPayload(withRates);
+      expect(loadTowerProductionRates()).toEqual(withRates.state.preferences.towerProductionRates);
+
+      const older = createBackupPayload();
+      delete older.state.preferences.towerProductionRates;
+      await restoreAppBackupPayload(older);
+      expect(loadTowerProductionRates()).toEqual({ schemaVersion: 1, steelPerHour: null, steelWirePerHour: null });
+    } finally {
+      clearTowerProductionRates();
+      if (previous.steelPerHour !== null || previous.steelWirePerHour !== null) {
+        localStorage.setItem('farmrpg-tools.towerProductionRates.v1', JSON.stringify(previous));
+      }
+    }
   });
 
   it('clears nullable preference categories when the backup payload omits them', async () => {

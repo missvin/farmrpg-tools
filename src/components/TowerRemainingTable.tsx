@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from 'react';
 import { ItemProfileLink } from './ItemProfileLink';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { sortTowerRemainingRows, type TowerRemainingRow, type TowerRemainingSort } from '../lib/towerRemainingRows';
@@ -13,6 +13,7 @@ import { DEFAULT_TOWER_MATERIAL_KEYS, matchesTowerMaterials, towerMaterialChoice
 import type { RecipeGraph } from '../lib/loadRecipeGraph';
 import type { DropRateReferenceData } from '../lib/loadDropRateReference';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
+import { createDefaultTowerProductionRates, loadTowerProductionRates, saveTowerProductionRates } from '../lib/towerProductionRates';
 
 const columns: Array<[TowerRemainingSort, string]> = [
   ['level', 'Level'], ['item', 'Item'], ['tier', 'Tier'], ['remaining', 'Remaining'], ['pj', 'PJ remaining'],
@@ -36,6 +37,28 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
   const choices = useMemo(() => towerMaterialChoices(recipeGraph), [recipeGraph]);
   const [modifierState] = useState(() => loadCraftingModifierState());
   const [fishingSettings] = useState(() => loadDropRateAcquisitionSettings());
+  const [productionRates, setProductionRates] = useState(() => {
+    try { return loadTowerProductionRates(); } catch { return createDefaultTowerProductionRates(); }
+  });
+  const [steelRateInput, setSteelRateInput] = useState(() => productionRates.steelPerHour?.toString() ?? '');
+  const [wireRateInput, setWireRateInput] = useState(() => productionRates.steelWirePerHour?.toString() ?? '');
+  const [rateMessage, setRateMessage] = useState('');
+  function saveRates(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const parse = (value: string) => value.trim() === '' ? null : Number(value);
+    const steelPerHour = parse(steelRateInput);
+    const steelWirePerHour = parse(wireRateInput);
+    if ([steelPerHour, steelWirePerHour].some((rate) => rate !== null && (!Number.isFinite(rate) || rate <= 0))) {
+      setRateMessage('Enter a positive hourly rate, or leave it blank when unknown.');
+      return;
+    }
+    try {
+      setProductionRates(saveTowerProductionRates({ schemaVersion: 1, steelPerHour, steelWirePerHour }));
+      setRateMessage('Hourly rates saved.');
+    } catch {
+      setRateMessage('Unable to save rates in this browser.');
+    }
+  }
   const estimateSources = useMemo(() => ({ recipeGraph, dropRateReference, modifierState, fishingSettings }), [recipeGraph, dropRateReference, modifierState, fishingSettings]);
   const modifierTotals = getCraftingModifierTotals(modifierState);
   const recipePolicy = useMemo(() => getCraftingPlanningPolicy(modifierState), [modifierState]);
@@ -117,6 +140,19 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
       </details>
       <details className="tower-estimate-assumptions"><summary>Assumptions · Resource Saver {(modifierTotals.totalResourceSaverPercent * 100).toLocaleString()}% · Mastery bonus {(modifierTotals.totalMasteryBonusPercent * 100).toLocaleString()}%</summary>
         <p className="subtle-text">Total needed from current mastery to each row’s target. Inventory is not subtracted. Rows are independent estimates; do not add them together.</p>
+        <form onSubmit={saveRates} className="page-stack page-stack--tight">
+          <p className="subtle-text">Steel and Steel Wire are separate Steelworks outputs. Enter your effective production of each per hour; their time estimates are separate and should not be added.</p>
+          <div className="summary-grid">
+            <label className="field-label">Steel per hour
+              <input className="text-input" type="number" min="0" step="any" value={steelRateInput} onChange={(event) => setSteelRateInput(event.target.value)} placeholder="Unknown" />
+            </label>
+            <label className="field-label">Steel Wire per hour
+              <input className="text-input" type="number" min="0" step="any" value={wireRateInput} onChange={(event) => setWireRateInput(event.target.value)} placeholder="Unknown" />
+            </label>
+          </div>
+          <div className="button-row"><button type="submit" className="button button--primary">Save production rates</button></div>
+          {rateMessage ? <p role="status" className="subtle-text">{rateMessage}</p> : null}
+        </form>
         <p className="subtle-text">Iron Depot {modifierState.planning.ironDepotActive ? 'on' : 'off'} · Excluded recipes {modifierState.planning.includeExcludedRecipes ? 'included' : 'excluded'} · <Link to="/ingredient-demand#ingredient-demand-controls-title">Edit crafting assumptions</Link></p>
         <p className="subtle-text">Fishing Trawl {fishingSettings.perks.fishingTrawlActive ? 'on' : 'off'} · Reinforced Netting {fishingSettings.perks.reinforcedNettingActive ? 'on' : 'off'} · Sea Pincher {fishingSettings.meals.seaPincherSpecialActive ? `${fishingSettings.meals.seaPincherSpecialPercent}%` : 'off'} · <Link to="/settings#settings-drop-rate-title">Fishing settings</Link></p>
       </details>
@@ -166,7 +202,7 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
                   </td>
                   <td className="tower-remaining-number">{row.pumpkinJuices === null ? <span className="subtle-text">Needs baseline</span> : row.pumpkinJuices.toLocaleString()}</td>
                   <td><div className="tower-material-icons">{displayedMaterials(row.canonicalKey).map((material) =>
-                    <TowerMaterialDetail key={material.canonicalKey} material={material} row={row} sources={estimateSources} showInlineAmount={showMaterialAmounts} />
+                    <TowerMaterialDetail key={material.canonicalKey} material={material} row={row} sources={estimateSources} productionRates={productionRates} showInlineAmount={showMaterialAmounts} />
                   )}{!row.materialNames?.length ? <span className="subtle-text">—</span> : null}</div></td>
                 </tr>
               );

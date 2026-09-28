@@ -5,6 +5,7 @@ import type { DropRateReferenceData, DropRateReferenceEntry } from './loadDropRa
 import { createDefaultCraftingModifierState } from './craftingModifierState';
 import { getCraftingPlanningPolicy } from './craftingPlanningPolicy';
 
+// Synthetic recipe graph for recursive matching; Steel Wire does not consume Steel in canonical data.
 export function materialTestGraph(): RecipeGraph {
   const recipes = Object.entries({ 'propeller hat': ['Steel Wire', 'Leather', 'Red Dye'], 'steel wire': ['Steel'], steel: ['Iron'], board: ['Twine'], twine: ['Board'] })
     .map(([key, inputs]): RecipeNode => ({ outputCanonicalKey: key, outputItemName: key,

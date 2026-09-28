@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { MasterySnapshot } from './storage/masterySnapshots';
+import { clearTowerProductionRates, saveTowerProductionRates } from './towerProductionRates';
 
 const {
   mockListSnapshots,
@@ -460,6 +461,7 @@ describe('appBackupExport', () => {
   });
 
   afterEach(() => {
+    clearTowerProductionRates();
     vi.restoreAllMocks();
   });
 
@@ -501,6 +503,7 @@ describe('appBackupExport', () => {
     mockLoadSourceRateAssumptionsState.mockReturnValue(sourceRateAssumptionsState);
     mockLoadBuildingProductionState.mockReturnValue(buildingProductionState);
     mockReadStoredAppTheme.mockReturnValue('dark');
+    saveTowerProductionRates({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200 });
 
     const payload = await buildCurrentAppBackupPayload({
       exportedAt: '2026-03-21T10:30:00.000Z',
@@ -525,6 +528,7 @@ describe('appBackupExport', () => {
     expect(payload.state.preferences.snapshotVelocityPreferences).toEqual(snapshotVelocityPreferences);
     expect(payload.state.preferences.sourceRateAssumptionsState).toEqual(sourceRateAssumptionsState);
     expect(payload.state.preferences.buildingProductionState).toEqual(buildingProductionState);
+    expect(payload.state.preferences.towerProductionRates).toEqual({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200 });
     expect(payload.state.preferences.themePreference).toBe('dark');
   });
 

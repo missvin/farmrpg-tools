@@ -67,6 +67,50 @@ describe('Tower remaining requirements', () => {
     expect(materialCell.querySelector('.tower-material-quantity')).not.toBeInTheDocument();
   });
 
+  it('shows independent saved Steel and Steel Wire hours on icons and inline amounts', async () => {
+    const previous = localStorage.getItem('farmrpg-tools.towerProductionRates.v1');
+    const user = userEvent.setup();
+    const wire = { ...recipes[2], outputCanonicalKey: 'steel wire', outputItemName: 'Steel Wire',
+      inputs: ['Iron', 'Stone', 'Carbon Sphere'].map((itemName, inputOrder) => ({
+        itemName, canonicalKey: itemName.toLowerCase(), inputOrder, quantity: 1,
+      })) };
+    const hat = { ...recipes[0], inputs: [...recipes[0].inputs, {
+      itemName: 'Steel Wire', canonicalKey: 'steel wire', inputOrder: 2, quantity: 1,
+    }] };
+    const wireRecipes = [hat, ...recipes, wire].filter((recipe, index) => index !== 1);
+    const wireGraph = { ...graph, recipes: wireRecipes, craftRecipes: wireRecipes,
+      byOutputCanonicalKey: Object.fromEntries(wireRecipes.map((recipe) => [recipe.outputCanonicalKey, recipe])) };
+    try {
+      localStorage.removeItem('farmrpg-tools.towerProductionRates.v1');
+      const view = render(<MemoryRouter><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={wireGraph} /></MemoryRouter>);
+      await user.click(screen.getByText(/Assumptions · Resource Saver/));
+      await user.type(screen.getByLabelText('Steel per hour'), '1000');
+      await user.type(screen.getByLabelText('Steel Wire per hour'), '3000');
+      await user.click(screen.getByRole('button', { name: 'Save production rates' }));
+      expect(screen.getByRole('status')).toHaveTextContent('Hourly rates saved');
+      const gm = within(screen.getByRole('table')).getByRole('row', { name: /301 Propeller Hat/ });
+      const steel = within(gm).getByRole('link', { name: 'Steel', exact: true });
+      const steelWire = within(gm).getByRole('link', { name: 'Steel Wire', exact: true });
+      await user.hover(steel);
+      expect(screen.getByRole('tooltip')).toHaveTextContent('18 hours at 1,000/hour');
+      await user.unhover(steel);
+      await user.hover(steelWire);
+      expect(screen.getByRole('tooltip')).toHaveTextContent('6 hours at 3,000/hour');
+      expect(steelWire).toHaveAttribute('href', '/items/steel%20wire');
+      await user.click(screen.getByRole('checkbox', { name: 'Show material amounts inline' }));
+      const materialCell = within(gm).getAllByRole('cell')[5];
+      expect(materialCell).toHaveTextContent('18,000 · 18h');
+      expect(materialCell).toHaveTextContent('18,000 · 6h');
+      view.unmount();
+      expect(JSON.parse(localStorage.getItem('farmrpg-tools.towerProductionRates.v1')!)).toMatchObject({
+        steelPerHour: 1000, steelWirePerHour: 3000,
+      });
+    } finally {
+      if (previous === null) localStorage.removeItem('farmrpg-tools.towerProductionRates.v1');
+      else localStorage.setItem('farmrpg-tools.towerProductionRates.v1', previous);
+    }
+  });
+
   it('uses the row tier in a compact material tooltip', async () => {
     const user = userEvent.setup();
     render(<MemoryRouter><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} /></MemoryRouter>);
