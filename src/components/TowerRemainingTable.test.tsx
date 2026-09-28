@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useNavigate, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
@@ -39,6 +39,13 @@ function NavigationProbe() {
 }
 
 describe('Tower remaining requirements', () => {
+  it('uses the row tier in a compact material tooltip', async () => {
+    const user = userEvent.setup();
+    render(<MemoryRouter><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} /></MemoryRouter>);
+    await user.hover(within(screen.getByRole('table')).getAllByRole('link', { name: 'Steel', exact: true })[1]);
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Steel: 918,000 remaining for this MM');
+    expect(screen.getByRole('tooltip')).not.toHaveTextContent('Crafting total with saved modifiers');
+  });
   it('uses saved recipe policy for material icons and filtering, including explicit opt-in', async () => {
     const user = userEvent.setup();
     const policyRecipes = [
@@ -60,8 +67,8 @@ describe('Tower remaining requirements', () => {
       saveCraftingModifierState(state);
       render(<MemoryRouter initialEntries={['/tower-progress?material=emberstone']}><TowerRemainingTable rows={policyRows} targetItem={null} targetLevel={null} recipeGraph={policyGraph} /></MemoryRouter>);
       expect(within(screen.getByRole('table')).getByRole('link', { name: 'Veggie Juice' })).toBeInTheDocument();
-      await user.click(screen.getByRole('button', { name: 'Emberstone needed for Veggie Juice T308 GM' }));
-      expect(screen.getByRole('tooltip')).toHaveTextContent('128,748 total needed');
+      await user.hover(within(screen.getByRole('table')).getByRole('link', { name: 'Emberstone' }));
+      expect(screen.getByRole('tooltip')).toHaveTextContent('128,748 remaining for this GM');
     } finally {
       if (previous === null) localStorage.removeItem(CRAFTING_MODIFIER_STATE_STORAGE_KEY);
       else localStorage.setItem(CRAFTING_MODIFIER_STATE_STORAGE_KEY, previous);
@@ -75,21 +82,21 @@ describe('Tower remaining requirements', () => {
     await user.click(screen.getByRole('button', { name: 'Propeller Hat T301 later requirement' }));
     expect(screen.getByRole('tooltip')).toHaveTextContent('MM at T340 (beyond this cutoff)');
     await user.keyboard('{Escape}');
-    const detail = screen.getByRole('button', { name: 'Steel needed for Propeller Hat T301 GM' });
-    await user.click(detail);
-    expect(screen.getByRole('tooltip')).toHaveTextContent('Steel: 18,000 total needed');
-    expect(screen.getByRole('tooltip')).toHaveTextContent('These values cover GM only');
-    expect(detail).toHaveAttribute('aria-expanded', 'true');
-    fireEvent.scroll(window);
-    expect(screen.getByRole('tooltip')).toHaveTextContent('18,000 total needed');
     const icon = within(screen.getByRole('table')).getByRole('link', { name: 'Steel', exact: true });
+    expect(screen.queryByRole('button', { name: /Steel needed for/ })).not.toBeInTheDocument();
+    await user.hover(icon);
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Steel: 18,000 remaining for this GM');
+    expect(screen.getByRole('tooltip')).not.toHaveTextContent('mastery remaining');
+    fireEvent.scroll(window);
+    expect(screen.getByRole('tooltip')).toHaveTextContent('18,000 remaining for this GM');
     expect(icon).toHaveAttribute('href', '/items/steel');
     expect(icon).toHaveAttribute('aria-describedby');
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-    await user.tab({ shift: true });
+    await user.unhover(icon);
+    act(() => icon.focus());
     expect(icon).toHaveFocus();
-    expect(screen.getByRole('tooltip')).toHaveTextContent('18,000 total needed');
+    expect(screen.getByRole('tooltip')).toHaveTextContent('18,000 remaining for this GM');
     await user.click(screen.getByText(/Assumptions · Resource Saver/));
     expect(screen.getByRole('link', { name: 'Edit crafting assumptions' })).toHaveAttribute('href', '/ingredient-demand#ingredient-demand-controls-title');
     expect(screen.getByRole('link', { name: 'Fishing settings' })).toHaveAttribute('href', '/settings#settings-drop-rate-title');

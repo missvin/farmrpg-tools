@@ -1511,6 +1511,7 @@ a {
   box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
 .tower-mastery-tooltip--open { display: block; }
+.tower-material-tooltip { width: max-content; max-width: min(300px, calc(100vw - 16px)); }
 .tower-remaining-heading h1 { margin: 0; font-size: 1.6rem; }
 .tower-secondary-view > summary { cursor: pointer; color: var(--color-next-border); padding: 0.5rem 0; }
 .tower-view-link { border: 0; background: transparent; color: var(--color-next-border); font: inherit; text-decoration: underline; cursor: pointer; padding: 0.4rem 0; }
@@ -1532,7 +1533,6 @@ a {
 .tower-material-icon-link strong { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .tower-remaining-table th:last-child { text-align: left; }
 .tower-material-detail { display: inline-flex; align-items: center; }
-.tower-material-detail-button { border: 1px solid var(--color-next-border); border-radius: 50%; background: transparent; color: var(--color-next-border); cursor: pointer; padding: 0; width: 22px; height: 22px; font-size: 0.8rem; }
 .tower-detail-line { display: block; margin-top: 0.4rem; }
 .tower-estimate-assumptions { margin: 0.5rem 0; font-size: 0.85rem; }
 .tower-estimate-assumptions summary { cursor: pointer; color: var(--color-next-border); }

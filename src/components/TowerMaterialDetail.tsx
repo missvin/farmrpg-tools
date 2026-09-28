@@ -39,13 +39,9 @@ export function TowerMaterialDetail({ material, row, sources }: { material: Towe
     onMouseLeave={(event) => { if (!event.currentTarget.contains(document.activeElement)) setPosition(null); }}
     onFocus={(event) => open(event.currentTarget)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setPosition(null); }}>
     <ItemProfileLink {...material} iconSrc={icon ?? null} className={icon ? 'tower-material-icon-link' : undefined} describedBy={id} />
-    <button className="tower-material-detail-button" aria-label={`${material.itemName} needed for ${row.itemName} T${row.towerLevel} ${row.masteryLevelNeeded}`}
-      aria-describedby={id} aria-expanded={Boolean(position)} onClick={(event) => open(event.currentTarget)}>i</button>
-    <span id={id} role="tooltip" hidden={!position} className={`tower-mastery-tooltip${position ? ' tower-mastery-tooltip--open' : ''}`} style={position ?? undefined}>
-      <strong>{material.itemName}: {estimate?.quantity === null || !estimate ? 'Estimate unavailable' : `${Math.ceil(estimate.quantity).toLocaleString()} total needed`}</strong>
-      <span className="tower-detail-line">{row.itemName} · T{row.towerLevel} {row.masteryLevelNeeded}{row.laterRequirement ? '*' : ''} · {row.remainingToRequirement.toLocaleString()} mastery remaining</span>
-      <span className="tower-detail-line">{estimate?.note}</span>
-      {row.laterRequirement ? <span className="tower-detail-line">* More needed later for {row.laterRequirement.tier} at T{row.laterRequirement.towerLevel}{row.laterRequirement.beyondCutoff ? ' (beyond this cutoff)' : ''}. These values cover {row.masteryLevelNeeded} only.</span> : null}
+    <span id={id} role="tooltip" hidden={!position} className={`tower-mastery-tooltip tower-material-tooltip${position ? ' tower-mastery-tooltip--open' : ''}`} style={position ?? undefined}>
+      <strong>{material.itemName}: {estimate?.quantity === null || !estimate ? 'Estimate unavailable' : `${Math.ceil(estimate.quantity).toLocaleString()} remaining for this ${row.masteryLevelNeeded}`}</strong>
+      {estimate?.quantity === null ? <span className="tower-detail-line">{estimate.note}</span> : null}
     </span>
   </span>;
 }
