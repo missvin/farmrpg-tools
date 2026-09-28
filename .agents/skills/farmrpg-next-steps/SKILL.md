@@ -41,15 +41,18 @@ Keep retrieval bounded. Do not default to code audits, external research, builds
 
 ## Readout
 
-Aim for roughly 400–650 words, shorter when the evidence is simple. Organize naturally around:
+Default to roughly 200–350 words. Make the answer scannable at a glance: short bold labels, compact bullets, and a small table when comparing parallel options. Expand only when Rebecca asks or a consequential ambiguity requires it.
 
-1. **Where things stand:** up to three outcome-focused bullets, including relevant unfinished or dirty work.
-2. **Recommended next move:** one item or bounded step, its payoff, why now, readiness, and the first useful stopping point. Include backlog ID and title when present.
-3. **Natural cluster:** related work and necessary order, distinguishing required work from optional extensions. A single item can be enough; never pad a cluster.
-4. **A plan worth revisiting:** original ambition, foundations already delivered, and the smallest useful remaining milestone.
-5. **Worth deferring:** only meaningful exclusions or blockers, with a brief reason.
+Use this presentation pattern, adapting or omitting sections rather than filling them mechanically:
 
-Merge overlapping sections and omit empty ones. Keep evidence near the recommendation using backlog IDs or relevant file/chat references; explain whether readiness comes from planning records or implementation inspection. Briefly disclose material retrieval gaps. Avoid routine lists of inspected files, validation boilerplate, or field-note status.
+- **Start here — BL-###: title.** Lead with the recommended next move. Follow with up to three short bullets: **Payoff**, **Readiness / why now**, and **First useful stop**. Keep each to one sentence and make the recommendation understandable without opening a link.
+- **Recent progress.** Up to three one-line bullets about shipped outcomes and relevant unfinished or dirty work. Do not repeat the recommendation.
+- **Also worth considering.** When there are multiple meaningful options, use a compact table with columns **Work**, **Payoff / useful stop**, and **Readiness**. Limit it to about three rows. Include a natural cluster and an older plan worth revisiting when evidence supports them; they can be the same row. Use plain titles alongside IDs, show only essential ordering, and mark optional extensions briefly. With only one alternative, use a bullet instead of a table.
+- **Defer for now.** Include only real blockers or meaningful exclusions, usually as one or two short bullets. Omit this label if the table already covers them.
+
+Keep ordinary paragraphs to two short sentences at most. Avoid nested lists, long table cells, repeated explanations, and dense strings of backlog IDs. Do not turn every option into a miniature essay. A single item can be a valid cluster; never invent options or an older opportunity for visual balance.
+
+Preserve the decision-making essentials: one recommendation, its payoff and readiness, a useful stopping point, and the scope of any related work. Keep evidence near the relevant item using a backlog ID or file/chat link. State planning-supported versus implementation-verified readiness once when it applies to the whole readout, rather than repeating a disclaimer for every row. Put any material retrieval limitation in one short closing sentence. Omit routine files-inspected lists, validation boilerplate, and field-note status.
 
 End with a concrete, non-executed handoff for the recommended first step:
 

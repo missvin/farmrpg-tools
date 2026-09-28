@@ -134,11 +134,6 @@ The app now behaves as a goal-and-item workbench rather than a loose collection 
 
 ## Later
 
-- Trade-price and valuation workflow
-  - reviewed giveable/tradeable item tagging
-  - compact item-page trade-price context
-  - explicit currency-conversion assumptions and local inventory valuation
-  - optional dated price history after the current-price workflow proves useful
 - Focused planning follow-ups
   - acquisition context for named missing Museum items
   - Tower method filtering when method metadata is trustworthy enough
@@ -153,6 +148,10 @@ The app now behaves as a goal-and-item workbench rather than a loose collection 
 
 ## Icebox
 
+- Trade-price and valuation workflow (`BL-297`, `BL-299`–`BL-303`)
+  - deferred 2026-09-28 at user request because another tool covers the need better
+  - giveable tagging, item-page prices, currency conversion, inventory valuation, and price history remain deferred unless explicitly revived
+  - the pasted price-check parser (`BL-298`) remains shipped
 - Community process features
   - community feature request intake
   - community voting workflow
