@@ -224,7 +224,7 @@ export async function deriveBuddyIconManifest(observationCsvText, downloadCsvTex
     const manifestStatus = reviewNotes.length === 0 ? 'ready' : 'review_needed';
     results.push({
       itemName: observationRow.itemName,
-      canonicalKey: observationRow.canonicalKey,
+      canonicalKey: toCatalogCanonicalItemKey(observationRow.itemName),
       generatedBuddySlug: observationRow.generatedBuddySlug,
       candidateBuddyUrl: observationRow.candidateBuddyUrl,
       pageTitle: observationRow.pageTitle ?? null,
@@ -251,7 +251,7 @@ export async function deriveBuddyIconManifest(observationCsvText, downloadCsvTex
 
     results.push({
       itemName: downloadRow.itemName,
-      canonicalKey: downloadRow.canonicalKey,
+      canonicalKey: toCatalogCanonicalItemKey(downloadRow.itemName),
       generatedBuddySlug: downloadRow.generatedBuddySlug,
       candidateBuddyUrl: downloadRow.candidateBuddyUrl,
       pageTitle: null,
@@ -274,7 +274,7 @@ export async function deriveBuddyIconManifest(observationCsvText, downloadCsvTex
   for (const duplicateDownloadRow of duplicateDownloadRows) {
     results.push({
       itemName: duplicateDownloadRow.itemName,
-      canonicalKey: duplicateDownloadRow.canonicalKey,
+      canonicalKey: toCatalogCanonicalItemKey(duplicateDownloadRow.itemName),
       generatedBuddySlug: duplicateDownloadRow.generatedBuddySlug,
       candidateBuddyUrl: duplicateDownloadRow.candidateBuddyUrl,
       pageTitle: null,

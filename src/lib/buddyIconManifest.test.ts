@@ -81,6 +81,29 @@ describe('mergeBuddyIconManifestResults', () => {
 });
 
 describe('deriveBuddyIconManifest', () => {
+  it('derives app-compatible keys from item names containing smart punctuation', async () => {
+    const repoRoot = await createTempDir();
+    const localRelativePath = 'generated/item-icons/retaw.png';
+    await mkdir(path.join(repoRoot, 'generated', 'item-icons'), { recursive: true });
+    await writeFile(path.join(repoRoot, localRelativePath), 'png-bytes');
+
+    const result = await deriveBuddyIconManifest(
+      [
+        'item_name,canonical_key,generated_buddy_slug,candidate_buddy_url,page_title,extraction_status,observation_status,icon_url,icon_pathname,icon_filename,icon_asset_key,farmrpg_item_id_candidate,flags,notes',
+        'Re’taw Pail,re taw pail,re-taw-pail,https://buddy.farm/i/re-taw-pail/,Re’taw Pail,icon_found,observed,https://farmrpg.com/img/items/retaw.png,/img/items/retaw.png,retaw.png,retaw,,,',
+      ].join('\n'),
+      [
+        'item_name,canonical_key,generated_buddy_slug,candidate_buddy_url,icon_url,icon_pathname,icon_filename,icon_asset_key,farmrpg_item_id_candidate,cache_status,http_status,cache_filename,local_relative_path,flags,notes',
+        `Re’taw Pail,re taw pail,re-taw-pail,https://buddy.farm/i/re-taw-pail/,https://farmrpg.com/img/items/retaw.png,/img/items/retaw.png,retaw.png,retaw,,existing,200,retaw.png,${localRelativePath},,`,
+      ].join('\n'),
+      { repoRoot },
+    );
+
+    expect(result.results).toEqual([
+      expect.objectContaining({ canonicalKey: "re'taw pail", manifestStatus: 'ready', localRelativePath }),
+    ]);
+  });
+
   it('builds clean manifest rows from observed icon metadata and cached download outputs', async () => {
     const repoRoot = await createTempDir();
     const localRelativePath = 'generated/item-icons/5885-b7d4ab025c3d.png';
