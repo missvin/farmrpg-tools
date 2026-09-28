@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { DerivedTowerProgress } from '../lib/deriveTowerProgress';
 
 type TowerPumpkinJuiceTargetPlannerProps = {
+  showTargetControls?: boolean;
   derivedProgress: DerivedTowerProgress;
   targetLevel: number | null;
   targetLevelInput: string;
@@ -34,6 +35,7 @@ function formatTargetScope(targetLevel: number | null): string {
 }
 
 export function TowerPumpkinJuiceTargetPlanner({
+  showTargetControls = true,
   derivedProgress,
   targetLevel,
   targetLevelInput,
@@ -67,7 +69,7 @@ export function TowerPumpkinJuiceTargetPlanner({
         </Link>
       </div>
 
-      <div className="inline-control-row" aria-label="Tower target selector">
+      {showTargetControls ? <div className="inline-control-row" aria-label="Tower target selector">
         <span className="field-label">Tower target</span>
         <div className="segmented-control" role="group" aria-label="Tower target presets">
           <button
@@ -98,7 +100,7 @@ export function TowerPumpkinJuiceTargetPlanner({
           placeholder="All"
           onChange={(event) => onTargetLevelInputChange(event.target.value)}
         />
-      </div>
+      </div> : null}
 
       <dl className="summary-grid">
         <div className="summary-grid__item">

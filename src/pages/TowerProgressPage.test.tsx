@@ -308,20 +308,20 @@ describe('TowerProgressPage', () => {
     renderTowerProgressPage();
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'Tower Items by Difficulty' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Tower — remaining items' })).toBeInTheDocument();
     });
 
     expect(screen.getByText('Items left to GM')).toBeInTheDocument();
     expect(screen.getByText('Items left to MM')).toBeInTheDocument();
     expect(screen.getByText('Total mastery remaining')).toBeInTheDocument();
-    const gameAreaSection = screen.getByRole('heading', { name: 'Remaining Tower Needs by Game Area' }).closest('section');
+    const gameAreaSection = screen.getByRole('heading', { name: 'Remaining Tower Needs by Game Area', hidden: true }).closest('section');
     const cropsBucket = within(gameAreaSection as HTMLElement).getByText('Crops', { selector: 'strong' }).closest('details');
     expect(cropsBucket).not.toBeNull();
     expect(within(cropsBucket as HTMLElement).getByText('Gold Cucumber')).toBeInTheDocument();
     expect(within(cropsBucket as HTMLElement).getByText('301')).toBeInTheDocument();
-    const difficultySection = screen.getByRole('heading', { name: 'Difficulty Breakdown' }).closest('section');
-    const difficultyNineBucket = within(difficultySection as HTMLElement).getByRole('heading', { name: 'Difficulty 9' }).closest('details');
-    const unratedBucket = within(difficultySection as HTMLElement).getByRole('heading', { name: 'Unrated' }).closest('details');
+    const difficultySection = screen.getByRole('heading', { name: 'Difficulty Breakdown', hidden: true }).closest('section');
+    const difficultyNineBucket = within(difficultySection as HTMLElement).getByRole('heading', { name: 'Difficulty 9', hidden: true }).closest('details');
+    const unratedBucket = within(difficultySection as HTMLElement).getByRole('heading', { name: 'Unrated', hidden: true }).closest('details');
 
     expect(difficultyNineBucket).not.toBeNull();
     expect(unratedBucket).not.toBeNull();
@@ -334,15 +334,11 @@ describe('TowerProgressPage', () => {
     expect(within(difficultyNineBucket as HTMLElement).getByText('GM')).toBeInTheDocument();
 
     const remainingItemsSection = screen.getByRole('heading', { name: 'Remaining Tower Items' }).closest('section');
-    const boardItem = within(remainingItemsSection as HTMLElement).getByText('Board').closest('li');
+    const boardItem = within(remainingItemsSection as HTMLElement).getByText('Board').closest('tr');
     expect(boardItem).not.toBeNull();
-    expect(within(boardItem as HTMLElement).getByText('150,000 / 1,000,000')).toBeInTheDocument();
-    expect(within(boardItem as HTMLElement).getByText('Target: MM (1M)')).toBeInTheDocument();
-    expect(screen.getByLabelText('Board progress')).toBeInTheDocument();
-    expect(within(boardItem as HTMLElement).getByLabelText('Details for Board')).toHaveAttribute(
-      'title',
-      'Notes: Passive',
-    );
+    expect(within(boardItem as HTMLElement).getByText('850,000')).toBeInTheDocument();
+    expect(within(boardItem as HTMLElement).getByText('MM')).toBeInTheDocument();
+    expect(within(boardItem as HTMLElement).getByRole('button', { name: /mastery details/ })).toHaveAttribute('aria-describedby');
     expect(within(boardItem as HTMLElement).queryByText('Method: Crafting')).not.toBeInTheDocument();
     expect(within(boardItem as HTMLElement).queryByText('Notes: Passive')).not.toBeInTheDocument();
   });
@@ -441,12 +437,12 @@ describe('TowerProgressPage', () => {
     renderTowerProgressPage();
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'Tower Items by Difficulty' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Tower — remaining items' })).toBeInTheDocument();
     });
 
-    const summarySection = screen.getByRole('heading', { name: 'Pumpkin Juice Target Planner' }).closest('section');
+    const summarySection = screen.getByRole('heading', { name: 'Pumpkin Juice Target Planner', hidden: true }).closest('section');
     expect(summarySection).not.toBeNull();
-    expect(within(summarySection as HTMLElement).getByRole('link', { name: 'View PJ history' })).toHaveAttribute(
+    expect(within(summarySection as HTMLElement).getByRole('link', { name: 'View PJ history', hidden: true })).toHaveAttribute(
       'href',
       '/tower-pj-history',
     );
@@ -461,7 +457,7 @@ describe('TowerProgressPage', () => {
     expect(within(remainingItemsSection as HTMLElement).queryByText('No difficulty rating yet.')).not.toBeInTheDocument();
     expect(
       within(remainingItemsSection as HTMLElement).getByText(
-        'Not in your latest import yet. Get at least 1 mastery and import again to estimate Pumpkin Juice.',
+        'Not in latest import',
       ),
     ).toBeInTheDocument();
   });
@@ -558,7 +554,7 @@ describe('TowerProgressPage', () => {
 
     renderTowerProgressPage();
 
-    const difficultySection = await screen.findByRole('heading', { name: 'Difficulty Breakdown' });
+    const difficultySection = await screen.findByRole('heading', { name: 'Difficulty Breakdown', hidden: true });
     const difficultyOneBucket = within(difficultySection.closest('section') as HTMLElement)
       .getByRole('heading', { name: 'Difficulty 1' })
       .closest('details');
@@ -573,7 +569,7 @@ describe('TowerProgressPage', () => {
 
     renderTowerProgressPage(['/tower-progress?through=300']);
 
-    await screen.findByRole('heading', { name: 'Pumpkin Juice Target Planner' });
+    await screen.findByRole('heading', { name: 'Pumpkin Juice Target Planner', hidden: true });
 
     expect(screen.getByDisplayValue('300')).toBeInTheDocument();
     expect(screen.getByText('Pumpkin Juice needed through Tower 300')).toBeInTheDocument();

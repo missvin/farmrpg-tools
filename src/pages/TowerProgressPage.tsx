@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
-import { PageIntro } from '../components/PageIntro';
+import { TowerRemainingTable } from '../components/TowerRemainingTable';
+import { deriveTowerRemainingRows, type TowerRemainingRow } from '../lib/towerRemainingRows';
 import { TowerPumpkinJuiceTargetPlanner } from '../components/TowerPumpkinJuiceTargetPlanner';
 import { deriveTowerProgress } from '../lib/deriveTowerProgress';
 import {
@@ -49,29 +50,13 @@ function toCompletePercent(total: number, remaining: number): number {
 }
 
 function formatRequirementLabel(requiredThreshold: number): string {
-  if (requiredThreshold === 10_000) {
-    return 'M (10k)';
-  }
-
-  if (requiredThreshold === 100_000) {
-    return 'GM (100k)';
-  }
-
+  if (requiredThreshold === 10_000) return 'M (10k)';
+  if (requiredThreshold === 100_000) return 'GM (100k)';
   return 'MM (1M)';
 }
 
 function formatPumpkinJuiceEstimate(totalPumpkinJuices: number | null): string {
   return totalPumpkinJuices === null ? 'Needs baseline mastery first' : totalPumpkinJuices.toLocaleString();
-}
-
-function buildItemTooltip(notes: string | null): string | null {
-  const parts: string[] = [];
-
-  if (notes) {
-    parts.push(`Notes: ${notes}`);
-  }
-
-  return parts.length > 0 ? parts.join('\n') : null;
 }
 
 function TowerProgressItemName({ canonicalKey, itemName }: { canonicalKey: string; itemName: string }) {
@@ -84,10 +69,6 @@ function TowerProgressItemName({ canonicalKey, itemName }: { canonicalKey: strin
   );
 }
 
-function getTowerProgressItemElementId(canonicalKey: string): string {
-  return `tower-progress-item-${canonicalKey.replace(/[^a-z0-9]+/gi, '-')}`;
-}
-
 function parseTowerTargetLevelInput(value: string): number | null {
   const trimmedValue = value.trim();
 
@@ -97,6 +78,14 @@ function parseTowerTargetLevelInput(value: string): number | null {
 
   const numericValue = Number(trimmedValue);
   return Number.isInteger(numericValue) && numericValue > 0 ? numericValue : null;
+}
+
+function openSecondaryView(id: string): void {
+  const panel = document.getElementById(id);
+  if (panel instanceof HTMLDetailsElement) {
+    panel.open = true;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function TowerGameAreaNeedsSection({ groups }: { groups: TowerGameAreaNeedGroup[] }) {
@@ -190,6 +179,7 @@ export function TowerProgressPage() {
     difficultyError: string | null;
     snapshot: Awaited<ReturnType<typeof getLatestSnapshot>>;
     derivedProgress: ReturnType<typeof deriveTowerProgress> | null;
+    requirementRows: TowerRemainingRow[];
     recipeGraph: RecipeGraph | null;
     dropRateReference: DropRateReferenceData | null;
     petSourceReference: PetSourceReferenceData | null;
@@ -201,6 +191,7 @@ export function TowerProgressPage() {
     difficultyError: null,
     snapshot: null,
     derivedProgress: null,
+    requirementRows: [],
     recipeGraph: null,
     dropRateReference: null,
     petSourceReference: null,
@@ -298,6 +289,7 @@ export function TowerProgressPage() {
             difficultyError: null,
             snapshot: null,
             derivedProgress: null,
+            requirementRows: [],
             recipeGraph: null,
             dropRateReference: null,
             petSourceReference: null,
@@ -333,6 +325,7 @@ export function TowerProgressPage() {
             towerError: null,
             difficultyError: null,
             snapshot,
+            requirementRows: deriveTowerRemainingRows(snapshot, towerRequirementsData, towerTargetLevel),
             derivedProgress: deriveTowerProgress(snapshot, towerRequirementsData, masteryDifficultyData, {
               maxTowerLevel: towerTargetLevel,
             }),
@@ -358,6 +351,7 @@ export function TowerProgressPage() {
             difficultyError,
             snapshot,
             derivedProgress: null,
+            requirementRows: [],
             recipeGraph: null,
             dropRateReference: null,
             petSourceReference: null,
@@ -377,6 +371,7 @@ export function TowerProgressPage() {
           difficultyError: null,
           snapshot: null,
           derivedProgress: null,
+          requirementRows: [],
           recipeGraph: null,
           dropRateReference: null,
           petSourceReference: null,
@@ -389,29 +384,10 @@ export function TowerProgressPage() {
     };
   }, [towerTargetLevel]);
 
-  useEffect(() => {
-    if (!targetCanonicalKey || !progressState.derivedProgress) {
-      return undefined;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      document
-        .getElementById(getTowerProgressItemElementId(targetCanonicalKey))
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 0);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [progressState.derivedProgress, targetCanonicalKey]);
 
   return (
-    <div className="page-stack">
-      <PageIntro
-        title="Tower Items by Difficulty"
-        description="See the unique Tower items still left to GM or MM from your latest saved snapshot, using each item's highest required target."
-        storageKey="tower-progress"
-      />
+    <div className="page-stack tower-progress-page">
+      <header className="tower-remaining-heading"><h1>Tower — remaining items</h1></header>
 
       {progressState.isLoading ? (
         <p className="empty-state">Loading latest snapshot, tower requirements, and mastery difficulty data...</p>
@@ -425,6 +401,7 @@ export function TowerProgressPage() {
         <section className="page-card page-stack">
           <h2>No Saved Snapshot</h2>
           <p className="empty-state">Import a mastery export first to view tower progress planning data.</p>
+          <Link to="/import">Import mastery</Link>
         </section>
       ) : null}
 
@@ -449,7 +426,24 @@ export function TowerProgressPage() {
 
             return (
               <>
+          <div className="tower-remaining-toolbar">
+            <label className="field-label" htmlFor="tower-through-level">Through level</label>
+            <input id="tower-through-level" className="text-input text-input--short" type="number" min="1" step="1"
+              value={targetLevelInput} placeholder="All" onChange={(event) => handleTargetLevelInputChange(event.target.value)} />
+            <button className="button" onClick={handleSelectAllKnownTowerLevels}>All known</button>
+            <button className="button" onClick={() => handleSelectTowerPreset(300)}>T300</button>
+            <button className="tower-view-link" onClick={() => openSecondaryView('tower-activity-panel')}>By activity</button>
+            <button className="tower-view-link" onClick={() => openSecondaryView('tower-difficulty-panel')}>By difficulty</button>
+            <button className="tower-view-link" onClick={() => openSecondaryView('tower-pj-panel')}>PJ planner</button>
+            <Link to="/tower">By level groups</Link>
+            <Link to="/tower-pj-history">PJ history</Link>
+          </div>
+          <TowerRemainingTable rows={progressState.requirementRows} targetItem={targetCanonicalKey}
+            targetLevel={parseTowerTargetLevelInput(searchParams.get('level') ?? '')} />
+          <details id="tower-pj-panel" className="tower-secondary-view">
+            <summary>PJ planner</summary>
           <TowerPumpkinJuiceTargetPlanner
+            showTargetControls={false}
             derivedProgress={derivedProgress}
             targetLevel={towerTargetLevel}
             targetLevelInput={targetLevelInput}
@@ -464,7 +458,13 @@ export function TowerProgressPage() {
             onSaveOwnedPumpkinJuiceCount={handleSaveOwnedPumpkinJuiceCount}
           />
 
-          <TowerGameAreaNeedsSection groups={gameAreaNeeds} />
+          </details>
+          <details id="tower-activity-panel" className="tower-secondary-view">
+            <summary>By activity</summary>
+            <TowerGameAreaNeedsSection groups={gameAreaNeeds} />
+          </details>
+          <details id="tower-difficulty-panel" className="tower-secondary-view">
+            <summary>By difficulty</summary>
 
           <section className="page-card page-stack" aria-labelledby="tower-progress-difficulty-title">
             <div>
@@ -562,89 +562,9 @@ export function TowerProgressPage() {
               })}
             </div>
           </section>
+          </details>
 
-          <section className="page-card page-stack" aria-labelledby="tower-progress-items-title">
-            <div>
-              <h2 id="tower-progress-items-title">Remaining Tower Items</h2>
-              <p className="supporting-text">
-                Each item appears once at the highest Tower mastery tier it still needs.
-              </p>
-            </div>
 
-            {progressState.derivedProgress.remainingItems.length === 0 ? (
-              <p className="empty-state">All unique Tower planning items are complete in the latest snapshot.</p>
-            ) : (
-              <ul className="progress-list">
-                {progressState.derivedProgress.remainingItems.map((item) => (
-                  <li
-                    key={item.canonicalKey}
-                    id={getTowerProgressItemElementId(item.canonicalKey)}
-                    className={`progress-list__item${
-                      item.canonicalKey === targetCanonicalKey ? ' progress-list__item--highlight' : ''
-                    }`}
-                  >
-                    {(() => {
-                      const tooltipText = buildItemTooltip(item.notes);
-
-                      return (
-                        <>
-                    <div className="progress-list__header">
-                      <div className="progress-list__title-row">
-                        <TowerProgressItemName canonicalKey={item.canonicalKey} itemName={item.itemName} />
-                        {tooltipText ? (
-                          <span
-                            className="progress-list__tooltip"
-                            title={tooltipText}
-                            aria-label={`Details for ${item.itemName}`}
-                          >
-                            Details
-                          </span>
-                        ) : null}
-                      </div>
-                      <span>{item.currentMastery.toLocaleString()} / {item.requiredThreshold.toLocaleString()}</span>
-                    </div>
-                    <p className="progress-list__meta">
-                      <span>{item.difficultyLabel}</span>
-                      {' | '}
-                      <span>Target: {formatRequirementLabel(item.requiredThreshold)}</span>
-                      {' | '}
-                      <span>
-                        PJs: {formatPumpkinJuiceEstimate(item.pumpkinJuiceEstimate.totalPumpkinJuices)}
-                      </span>
-                      {item.pumpkinJuiceEstimate.nextPumpkinJuiceGain ? (
-                        <>
-                          {' | '}
-                          <span>Next PJ: +{item.pumpkinJuiceEstimate.nextPumpkinJuiceGain.toLocaleString()}</span>
-                        </>
-                      ) : null}
-                    </p>
-                    <div
-                      className="progress-list__progress-cell"
-                      style={
-                        {
-                          '--progress-list-fill': `${Math.max(0, Math.min(100, item.progressPercent))}%`,
-                        } as CSSProperties
-                      }
-                      aria-label={`${item.itemName} progress`}
-                    >
-                      <span className="progress-list__progress-label">
-                        {formatPercent(item.progressPercent)} complete | {item.remainingToTarget.toLocaleString()} remaining
-                      </span>
-                    </div>
-                    {!item.matchedSnapshotRow ? (
-                      <p className="progress-list__notes">
-                        Not in your latest import yet. Get at least 1 mastery and import again to estimate Pumpkin
-                        Juice.
-                      </p>
-                    ) : null}
-                        </>
-                      );
-                    })()}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
               </>
             );
           })()}

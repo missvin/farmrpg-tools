@@ -166,7 +166,7 @@ describe('App shell', () => {
     await user.click(screen.getByRole('button', { name: 'Goals' }));
     expect(await screen.findByRole('link', { name: 'Goals' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Mastery Goals' })).toBeVisible();
-    expect(await screen.findByRole('link', { name: 'Tower' })).toBeVisible();
+    expect(screen.getAllByRole('link', { name: 'Tower' }).map((link) => link.getAttribute('href'))).toEqual(['/tower-progress', '/tower']);
     expect(await screen.findByRole('link', { name: 'Tower Items by Difficulty' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Quest Planner' })).toBeVisible();
     expect(await screen.findByRole('link', { name: 'Museum Completion' })).toBeVisible();
@@ -496,7 +496,7 @@ describe('App shell', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('heading', { name: 'Tower Items by Difficulty' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Tower — remaining items' })).toBeInTheDocument();
   });
 
   it('renders Tower PJ History through the app shell', async () => {

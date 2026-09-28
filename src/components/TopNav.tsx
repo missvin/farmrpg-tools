@@ -61,6 +61,10 @@ export function TopNav() {
   return (
     <nav aria-label="Primary" ref={navRef}>
       <ul className="top-nav-menu-list">
+        <li><NavLink to="/tower-progress" className={({ isActive }) =>
+          `top-nav-menu__summary tower-direct-link${isActive ? ' top-nav-menu__summary--active' : ''}`}>
+          Tower
+        </NavLink></li>
         {navigationSections.map((section) => (
           <li key={section.title}>
             <div className={`top-nav-menu${section.title === 'Advanced' ? ' top-nav-menu--advanced' : ''}`}>
