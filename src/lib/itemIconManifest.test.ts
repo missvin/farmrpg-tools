@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildItemIconLookup, type ItemIconManifestEntry } from './itemIconManifest';
+import { buildItemIconLookup, getItemIcon, type ItemIconManifestEntry } from './itemIconManifest';
+import { toCanonicalItemKey } from './normalizeItemKey';
 
 describe('buildItemIconLookup', () => {
+  it('includes the four reviewed Tower item icons', () => {
+    for (const itemName of ["Re'taw Pail", 'Acid Extract', 'Joyful Ring', 'Pinecone Bird Feeder']) {
+      expect(getItemIcon(toCanonicalItemKey(itemName))?.src, itemName).toBeTruthy();
+    }
+  });
+
   it('maps ready manifest rows to bundled local icon assets by canonical key', () => {
     const entries: ItemIconManifestEntry[] = [
       {
