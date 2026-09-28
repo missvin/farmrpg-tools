@@ -439,6 +439,7 @@ export function TowerProgressPage() {
             <Link to="/tower-pj-history">PJ history</Link>
           </div>
           <TowerRemainingTable rows={progressState.requirementRows} targetItem={targetCanonicalKey}
+            recipeGraph={progressState.recipeGraph} dropRateReference={progressState.dropRateReference}
             targetLevel={parseTowerTargetLevelInput(searchParams.get('level') ?? '')} />
           <details id="tower-pj-panel" className="tower-secondary-view">
             <summary>PJ planner</summary>

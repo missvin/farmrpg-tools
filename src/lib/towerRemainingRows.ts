@@ -6,8 +6,9 @@ import { estimatePumpkinJuiceForTarget } from './pumpkinJuiceEstimator';
 export type TowerRemainingRow = TowerRequirementStatusRow & {
   progressPercent: number;
   pumpkinJuices: number | null;
+  materialNames?: string[];
 };
-export type TowerRemainingSort = 'level' | 'item' | 'tier' | 'remaining' | 'pj';
+export type TowerRemainingSort = 'level' | 'item' | 'tier' | 'remaining' | 'pj' | 'materials';
 
 export function deriveTowerRemainingRows(
   snapshot: MasterySnapshot,
@@ -44,6 +45,7 @@ export function sortTowerRemainingRows(
         case 'tier': comparison = a.requiredThreshold - b.requiredThreshold; break;
         case 'remaining': comparison = a.remainingToRequirement - b.remainingToRequirement; break;
         case 'pj': comparison = (a.pumpkinJuices ?? 0) - (b.pumpkinJuices ?? 0); break;
+        case 'materials': comparison = (a.materialNames ?? []).join('\u0000').localeCompare((b.materialNames ?? []).join('\u0000')); break;
       }
     }
     return comparison * (descending ? -1 : 1)

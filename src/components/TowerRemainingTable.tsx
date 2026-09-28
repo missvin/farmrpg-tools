@@ -2,20 +2,45 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { ItemProfileLink } from './ItemProfileLink';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { sortTowerRemainingRows, type TowerRemainingRow, type TowerRemainingSort } from '../lib/towerRemainingRows';
+import { useSearchParams } from 'react-router-dom';
+import { TowerMaterialFilters } from './TowerMaterialFilters';
+import { DEFAULT_TOWER_MATERIAL_KEYS, matchesTowerMaterials, towerMaterialChoices, towerMaterialKeys } from '../lib/towerMaterials';
+import type { RecipeGraph } from '../lib/loadRecipeGraph';
+import type { DropRateReferenceData } from '../lib/loadDropRateReference';
+import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 
 const columns: Array<[TowerRemainingSort, string]> = [
   ['level', 'Level'], ['item', 'Item'], ['tier', 'Tier'], ['remaining', 'Remaining'], ['pj', 'PJ remaining'],
+  ['materials', 'Key materials'],
 ];
 
 function rowId(row: TowerRemainingRow): string {
   return `tower-remaining-${row.towerLevel}-${row.slotIndex}`;
 }
 
-export function TowerRemainingTable({ rows, targetItem, targetLevel }: {
+export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph = null, dropRateReference = null }: {
   rows: TowerRemainingRow[];
   targetItem: string | null;
   targetLevel: number | null;
+  recipeGraph?: RecipeGraph | null;
+  dropRateReference?: DropRateReferenceData | null;
 }) {
+  const [params, setParams] = useSearchParams();
+  const selected = [...new Set(params.getAll('material').map(toCanonicalItemKey).filter(Boolean))];
+  const mode = params.get('materialMatch') === 'all' ? 'all' : 'any';
+  const choices = useMemo(() => towerMaterialChoices(recipeGraph), [recipeGraph]);
+  const relationships = useMemo(() => new Map(rows.map((row) => [row.canonicalKey,
+    towerMaterialKeys(row.canonicalKey, recipeGraph, dropRateReference)])), [rows, recipeGraph, dropRateReference]);
+  function updateMaterials(keys: string[], match: 'any' | 'all') {
+    const next = new URLSearchParams(params);
+    next.delete('material'); next.delete('materialMatch');
+    keys.forEach((key) => next.append('material', key));
+    if (match === 'all') next.set('materialMatch', match);
+    setParams(next);
+  }
+  const displayedMaterials = (key: string) => choices.filter((material) =>
+    (selected.length ? selected : DEFAULT_TOWER_MATERIAL_KEYS).includes(material.canonicalKey)
+      && relationships.get(key)?.has(material.canonicalKey));
   const [incompleteOnly, setIncompleteOnly] = useState(true);
   const [sort, setSort] = useState<TowerRemainingSort>('level');
   const [descending, setDescending] = useState(false);
@@ -47,9 +72,11 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel }: {
   const target = rows.find((row) => row.canonicalKey === targetItem
     && (targetLevel === null || row.towerLevel === targetLevel));
   // Explicit item links may reveal an achieved row without changing the normal default.
-  const visibleRows = useMemo(() => sortTowerRemainingRows(
-    rows.filter((row) => !incompleteOnly || !row.achieved || row === target), sort, descending,
-  ), [rows, incompleteOnly, sort, descending, target]);
+  const visibleRows = sortTowerRemainingRows(
+    rows.filter((row) => (!incompleteOnly || !row.achieved || row === target)
+      && matchesTowerMaterials(relationships.get(row.canonicalKey) ?? new Set(), selected, mode))
+      .map((row) => ({ ...row, materialNames: displayedMaterials(row.canonicalKey).map((material) => material.itemName) })), sort, descending,
+  );
   const nextLevel = Math.min(...rows.filter((row) => !row.achieved).map((row) => row.towerLevel));
 
   useEffect(() => {
@@ -68,6 +95,9 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel }: {
           Incomplete only
         </label>
       </div>
+      <TowerMaterialFilters choices={choices} selected={selected} mode={mode} onChange={updateMaterials} />
+      {!recipeGraph || !dropRateReference ? <p className="subtle-text">Some material references are unavailable; matches may be incomplete.</p> : null}
+      {selected.some((key) => !choices.some((choice) => choice.canonicalKey === key)) ? <p className="subtle-text">A selected material is not in the available reference. Clear filters to see all requirements.</p> : null}
       <p className="subtle-text" aria-live="polite">
         {visibleRows.length.toLocaleString()} requirements shown
         {Number.isFinite(nextLevel) ? ` · Next: T${nextLevel}` : ' · All requirements complete'}
@@ -88,7 +118,7 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel }: {
               const id = rowId(row);
               const detail = `${row.itemName}: Current ${row.currentMastery.toLocaleString()} · Target ${row.requiredThreshold.toLocaleString()} · Remaining ${row.remainingToRequirement.toLocaleString()} · Complete ${row.progressPercent.toFixed(1)}%`;
               return (
-                <tr key={id} id={id} className={row === target ? 'tower-remaining-row--target' : row.towerLevel === nextLevel ? 'tower-remaining-row--next' : undefined}>
+                <tr key={id} id={id} className={target && id === rowId(target) ? 'tower-remaining-row--target' : row.towerLevel === nextLevel ? 'tower-remaining-row--next' : undefined}>
                   <td>{row.towerLevel}</td>
                   <td><ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} iconSrc={getItemIcon(row.canonicalKey)?.src ?? null} />
                     {!row.matchedSnapshotRow ? <span className="subtle-text tower-remaining-warning">Not in latest import</span> : null}
@@ -109,12 +139,17 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel }: {
                       style={expandedDetail?.id === id ? { left: expandedDetail.left, top: expandedDetail.top } : undefined}>{detail}</span>
                   </td>
                   <td className="tower-remaining-number">{row.pumpkinJuices === null ? <span className="subtle-text">Needs baseline</span> : row.pumpkinJuices.toLocaleString()}</td>
+                  <td><div className="tower-material-icons">{displayedMaterials(row.canonicalKey).map((material) => {
+                    const icon = getItemIcon(material.canonicalKey)?.src;
+                    return <span key={material.canonicalKey} title={material.itemName}><ItemProfileLink {...material} iconSrc={icon ?? null}
+                      className={icon ? 'tower-material-icon-link' : undefined} /></span>;
+                  })}{!row.materialNames?.length ? <span className="subtle-text">—</span> : null}</div></td>
                 </tr>
               );
             })}</tbody>
           </table>
         </div>
-      ) : <p className="empty-state">All Tower requirements in this range are complete. Uncheck Incomplete only to see them.</p>}
+      ) : <p className="empty-state">{selected.length ? 'No requirements match these materials. Change your selections or Clear filters.' : 'All Tower requirements in this range are complete. Uncheck Incomplete only to see them.'}</p>}
     </section>
   );
 }
