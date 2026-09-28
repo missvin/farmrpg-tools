@@ -422,7 +422,7 @@ function buildScopeResult(
   scope: IngredientBurdenGoalScope,
   rootGoals: IngredientBurdenRootGoal[],
   unresolvedGoals: IngredientBurdenUnresolvedGoal[],
-  input: RecursiveIngredientBurdenInput,
+  input: Pick<RecursiveIngredientBurdenInput, 'recipeGraph' | 'modifierState'>,
   itemNameLookup: Record<string, string>,
   craftRecipeTopologicalOrder: string[],
   planningPolicy: CraftingPlanningPolicy,
@@ -573,6 +573,26 @@ function aggregateAcrossScopes(
       entriesByKey[entry.canonicalKey] = entry;
       return entriesByKey;
     }, {});
+}
+
+// Quantity-only entry point for adapters with an already resolved mastery/acquisition target.
+// Uses the same topological aggregation, rounding, and recipe policies as mastery burden.
+export function calculateCraftIngredientDemand(input: {
+  recipeGraph: RecipeGraph;
+  modifierState: UserCraftingModifierState;
+  goals: Array<{ canonicalKey: string; itemName: string; desiredEffectiveOutput: number }>;
+}): IngredientBurdenScopeResult {
+  const policy = getCraftingPlanningPolicy(input.modifierState);
+  const roots: IngredientBurdenRootGoal[] = input.goals.map((goal, index) => {
+    if (policy.excludedCraftRecipeOutputKeys.has(goal.canonicalKey)) throw new Error('Recipe excluded by saved planning policy.');
+    const calculation = calculateCraftRecipeRequiredCraftCount({ ...input, outputCanonicalKey: goal.canonicalKey, desiredEffectiveOutput: goal.desiredEffectiveOutput });
+    if (!('requiredCraftCount' in calculation.result)) throw new Error('Craft count unavailable.');
+    return { goalId: `target:${index}`, scope: 'Tower', outputCanonicalKey: goal.canonicalKey,
+      outputItemName: goal.itemName, currentMastery: 0, targetMastery: 0, remainingMastery: 0,
+      desiredEffectiveOutput: goal.desiredEffectiveOutput, requiredCraftOperations: calculation.result.requiredCraftCount,
+      towerTarget: null, towerRequirementRows: [] };
+  });
+  return buildScopeResult('Tower', roots, [], input, buildItemNameLookup(input.recipeGraph), validateAcyclicCraftRecipeGraph(input.recipeGraph), policy);
 }
 
 export function calculateRecursiveIngredientBurden(

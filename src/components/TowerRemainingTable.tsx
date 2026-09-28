@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { ItemProfileLink } from './ItemProfileLink';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { sortTowerRemainingRows, type TowerRemainingRow, type TowerRemainingSort } from '../lib/towerRemainingRows';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import { TowerMaterialDetail } from './TowerMaterialDetail';
+import { loadCraftingModifierState } from '../lib/craftingModifierState';
+import { loadDropRateAcquisitionSettings } from '../lib/dropRateAcquisitionSettings';
+import { getCraftingModifierTotals } from '../lib/craftingMasteryEngine';
 import { TowerMaterialFilters } from './TowerMaterialFilters';
 import { DEFAULT_TOWER_MATERIAL_KEYS, matchesTowerMaterials, towerMaterialChoices, towerMaterialKeys } from '../lib/towerMaterials';
 import type { RecipeGraph } from '../lib/loadRecipeGraph';
@@ -29,6 +33,10 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
   const selected = [...new Set(params.getAll('material').map(toCanonicalItemKey).filter(Boolean))];
   const mode = params.get('materialMatch') === 'all' ? 'all' : 'any';
   const choices = useMemo(() => towerMaterialChoices(recipeGraph), [recipeGraph]);
+  const [modifierState] = useState(() => loadCraftingModifierState());
+  const [fishingSettings] = useState(() => loadDropRateAcquisitionSettings());
+  const estimateSources = useMemo(() => ({ recipeGraph, dropRateReference, modifierState, fishingSettings }), [recipeGraph, dropRateReference, modifierState, fishingSettings]);
+  const modifierTotals = getCraftingModifierTotals(modifierState);
   const relationships = useMemo(() => new Map(rows.map((row) => [row.canonicalKey,
     towerMaterialKeys(row.canonicalKey, recipeGraph, dropRateReference)])), [rows, recipeGraph, dropRateReference]);
   function updateMaterials(keys: string[], match: 'any' | 'all') {
@@ -44,11 +52,11 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
   const [incompleteOnly, setIncompleteOnly] = useState(true);
   const [sort, setSort] = useState<TowerRemainingSort>('level');
   const [descending, setDescending] = useState(false);
-  const [expandedDetail, setExpandedDetail] = useState<{ id: string; left: number; top: number } | null>(null);
+  const [expandedDetail, setExpandedDetail] = useState<{ id: string; left: number; top?: number; bottom?: number } | null>(null);
   function showDetail(id: string, button: HTMLButtonElement) {
     const rect = button.getBoundingClientRect();
     setExpandedDetail({ id, left: Math.max(8, Math.min(rect.left, window.innerWidth - 308)),
-      top: rect.bottom + 110 > window.innerHeight ? Math.max(8, rect.top - 110) : rect.bottom - 1 });
+      ...(rect.bottom + 200 > window.innerHeight ? { bottom: window.innerHeight - rect.top } : { top: rect.bottom - 1 }) });
   }
   useEffect(() => {
     if (!expandedDetail) return;
@@ -96,6 +104,11 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
         </label>
       </div>
       <TowerMaterialFilters choices={choices} selected={selected} mode={mode} onChange={updateMaterials} />
+      <details className="tower-estimate-assumptions"><summary>Assumptions · Resource Saver {(modifierTotals.totalResourceSaverPercent * 100).toLocaleString()}% · Mastery bonus {(modifierTotals.totalMasteryBonusPercent * 100).toLocaleString()}%</summary>
+        <p className="subtle-text">Total needed from current mastery to each row’s target. Inventory is not subtracted. Rows are independent estimates; do not add them together.</p>
+        <p className="subtle-text">Iron Depot {modifierState.planning.ironDepotActive ? 'on' : 'off'} · Excluded recipes {modifierState.planning.includeExcludedRecipes ? 'included' : 'excluded'} · <Link to="/ingredient-demand#ingredient-demand-controls-title">Edit crafting assumptions</Link></p>
+        <p className="subtle-text">Fishing Trawl {fishingSettings.perks.fishingTrawlActive ? 'on' : 'off'} · Reinforced Netting {fishingSettings.perks.reinforcedNettingActive ? 'on' : 'off'} · Sea Pincher {fishingSettings.meals.seaPincherSpecialActive ? `${fishingSettings.meals.seaPincherSpecialPercent}%` : 'off'} · <Link to="/settings#settings-drop-rate-title">Fishing settings</Link></p>
+      </details>
       {!recipeGraph || !dropRateReference ? <p className="subtle-text">Some material references are unavailable; matches may be incomplete.</p> : null}
       {selected.some((key) => !choices.some((choice) => choice.canonicalKey === key)) ? <p className="subtle-text">A selected material is not in the available reference. Clear filters to see all requirements.</p> : null}
       <p className="subtle-text" aria-live="polite">
@@ -116,14 +129,16 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
             ))}</tr></thead>
             <tbody>{visibleRows.map((row) => {
               const id = rowId(row);
-              const detail = `${row.itemName}: Current ${row.currentMastery.toLocaleString()} · Target ${row.requiredThreshold.toLocaleString()} · Remaining ${row.remainingToRequirement.toLocaleString()} · Complete ${row.progressPercent.toFixed(1)}%`;
+              const detail = `${row.itemName}: Current ${row.currentMastery.toLocaleString()} · Target ${row.requiredThreshold.toLocaleString()} · Remaining ${row.remainingToRequirement.toLocaleString()} · Complete ${row.progressPercent.toFixed(1)}%${row.laterRequirement ? ` · * More needed later for ${row.laterRequirement.tier} at T${row.laterRequirement.towerLevel}${row.laterRequirement.beyondCutoff ? ' (beyond this cutoff)' : ''}. Mastery, PJ, and materials here cover GM only.` : ''}`;
               return (
                 <tr key={id} id={id} className={target && id === rowId(target) ? 'tower-remaining-row--target' : row.towerLevel === nextLevel ? 'tower-remaining-row--next' : undefined}>
                   <td>{row.towerLevel}</td>
                   <td><ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} iconSrc={getItemIcon(row.canonicalKey)?.src ?? null} />
                     {!row.matchedSnapshotRow ? <span className="subtle-text tower-remaining-warning">Not in latest import</span> : null}
                   </td>
-                  <td>{row.masteryLevelNeeded}</td>
+                  <td>{row.laterRequirement ? <button className="tower-sort" aria-label={`${row.itemName} T${row.towerLevel} later requirement`} aria-describedby={`${id}-detail`}
+                    onMouseEnter={(event) => showDetail(id, event.currentTarget)} onFocus={(event) => showDetail(id, event.currentTarget)}
+                    onBlur={() => setExpandedDetail(null)} onMouseLeave={() => setExpandedDetail(null)} onClick={(event) => showDetail(id, event.currentTarget)}>{row.masteryLevelNeeded}*</button> : row.masteryLevelNeeded}</td>
                   <td className={`tower-percent-cell tower-remaining-cell${row.achieved ? ' tower-percent-cell--complete' : ''}`}
                     onMouseLeave={(event) => { if (!event.currentTarget.contains(document.activeElement)) setExpandedDetail(null); }}
                     style={{ '--tower-percent-fill': `${row.progressPercent}%` } as CSSProperties}>
@@ -136,14 +151,12 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
                       {row.remainingToRequirement.toLocaleString()}
                     </button>
                     <span id={`${id}-detail`} role="tooltip" hidden={expandedDetail?.id !== id} className={`tower-mastery-tooltip${expandedDetail?.id === id ? ' tower-mastery-tooltip--open' : ''}`}
-                      style={expandedDetail?.id === id ? { left: expandedDetail.left, top: expandedDetail.top } : undefined}>{detail}</span>
+                      style={expandedDetail?.id === id ? { left: expandedDetail.left, top: expandedDetail.top, bottom: expandedDetail.bottom } : undefined}>{detail}</span>
                   </td>
                   <td className="tower-remaining-number">{row.pumpkinJuices === null ? <span className="subtle-text">Needs baseline</span> : row.pumpkinJuices.toLocaleString()}</td>
-                  <td><div className="tower-material-icons">{displayedMaterials(row.canonicalKey).map((material) => {
-                    const icon = getItemIcon(material.canonicalKey)?.src;
-                    return <span key={material.canonicalKey} title={material.itemName}><ItemProfileLink {...material} iconSrc={icon ?? null}
-                      className={icon ? 'tower-material-icon-link' : undefined} /></span>;
-                  })}{!row.materialNames?.length ? <span className="subtle-text">—</span> : null}</div></td>
+                  <td><div className="tower-material-icons">{displayedMaterials(row.canonicalKey).map((material) =>
+                    <TowerMaterialDetail key={material.canonicalKey} material={material} row={row} sources={estimateSources} />
+                  )}{!row.materialNames?.length ? <span className="subtle-text">—</span> : null}</div></td>
                 </tr>
               );
             })}</tbody>

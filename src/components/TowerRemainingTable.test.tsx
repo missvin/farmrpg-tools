@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useNavigate, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
@@ -38,6 +38,33 @@ function NavigationProbe() {
 }
 
 describe('Tower remaining requirements', () => {
+  it('shows row-specific material details, later targets beyond cutoff, and linked saved assumptions', async () => {
+    const user = userEvent.setup();
+    const cutoffRows = deriveTowerRemainingRows(snapshot, requirements, 303);
+    render(<MemoryRouter><TowerRemainingTable rows={cutoffRows} targetItem={null} targetLevel={null} recipeGraph={graph} /></MemoryRouter>);
+    expect(screen.getByText('GM*')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Propeller Hat T301 later requirement' }));
+    expect(screen.getByRole('tooltip')).toHaveTextContent('MM at T340 (beyond this cutoff)');
+    await user.keyboard('{Escape}');
+    const detail = screen.getByRole('button', { name: 'Steel needed for Propeller Hat T301 GM' });
+    await user.click(detail);
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Steel: 18,000 total needed');
+    expect(screen.getByRole('tooltip')).toHaveTextContent('These values cover GM only');
+    expect(detail).toHaveAttribute('aria-expanded', 'true');
+    fireEvent.scroll(window);
+    expect(screen.getByRole('tooltip')).toHaveTextContent('18,000 total needed');
+    const icon = within(screen.getByRole('table')).getByRole('link', { name: 'Steel', exact: true });
+    expect(icon).toHaveAttribute('href', '/items/steel');
+    expect(icon).toHaveAttribute('aria-describedby');
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+    await user.tab({ shift: true });
+    expect(icon).toHaveFocus();
+    expect(screen.getByRole('tooltip')).toHaveTextContent('18,000 total needed');
+    await user.click(screen.getByText(/Assumptions · Resource Saver/));
+    expect(screen.getByRole('link', { name: 'Edit crafting assumptions' })).toHaveAttribute('href', '/ingredient-demand#ingredient-demand-controls-title');
+    expect(screen.getByRole('link', { name: 'Fishing settings' })).toHaveAttribute('href', '/settings#settings-drop-rate-title');
+  });
   it('filters Any/All, limits row icons, sorts materials, and restores URL selections through back and Clear', async () => {
     const user = userEvent.setup();
     render(<MemoryRouter initialEntries={['/tower-progress?through=350']}><NavigationProbe /><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} /></MemoryRouter>);

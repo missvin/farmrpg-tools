@@ -7,6 +7,7 @@ export type TowerRemainingRow = TowerRequirementStatusRow & {
   progressPercent: number;
   pumpkinJuices: number | null;
   materialNames?: string[];
+  laterRequirement?: { towerLevel: number; tier: string; beyondCutoff: boolean };
 };
 export type TowerRemainingSort = 'level' | 'item' | 'tier' | 'remaining' | 'pj' | 'materials';
 
@@ -19,6 +20,12 @@ export function deriveTowerRemainingRows(
     .filter((row) => through === null || row.towerLevel <= through)
     .map((row) => ({
       ...row,
+      laterRequirement: (() => {
+        const later = requirements.entries.filter((entry) => entry.canonicalKey === row.canonicalKey
+          && entry.towerLevel > row.towerLevel && entry.masteryLevelNeeded === 'MM' && row.masteryLevelNeeded === 'GM')
+          .sort((a, b) => a.towerLevel - b.towerLevel)[0];
+        return later ? { towerLevel: later.towerLevel, tier: later.masteryLevelNeeded, beyondCutoff: through !== null && later.towerLevel > through } : undefined;
+      })(),
       progressPercent: Math.max(0, Math.min(100, row.currentMastery / row.requiredThreshold * 100)),
       pumpkinJuices: estimatePumpkinJuiceForTarget({
         itemName: row.itemName,

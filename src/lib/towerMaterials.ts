@@ -18,7 +18,7 @@ export function towerMaterialChoices(graph: RecipeGraph | null): TowerMaterial[]
     .sort((a, b) => a.itemName.localeCompare(b.itemName));
 }
 
-// Relationship adapter only: quantities and saved acquisition assumptions belong to BL-344.
+// Relationship adapter only; towerMaterialEstimates resolves supported quantities separately.
 export function towerMaterialKeys(root: string, graph: RecipeGraph | null, sources: DropRateReferenceData | null): Set<string> {
   const result = new Set<string>();
   const visited = new Set<string>();

@@ -7,6 +7,7 @@ type ItemProfileLinkProps = {
   itemName: string;
   iconSrc?: string | null;
   className?: string;
+  describedBy?: string;
 };
 
 export function ItemProfileLink({
@@ -14,6 +15,7 @@ export function ItemProfileLink({
   itemName,
   iconSrc = null,
   className,
+  describedBy,
 }: ItemProfileLinkProps) {
   const classes = ['item-profile-link', className].filter(Boolean).join(' ');
   const to = toItemProfilePath(canonicalKey);
@@ -28,14 +30,14 @@ export function ItemProfileLink({
 
   if (!inRouter) {
     return (
-      <a className={classes} href={to}>
+      <a className={classes} href={to} aria-describedby={describedBy}>
         {content}
       </a>
     );
   }
 
   return (
-    <Link className={classes} to={to}>
+    <Link className={classes} to={to} aria-describedby={describedBy}>
       {content}
     </Link>
   );

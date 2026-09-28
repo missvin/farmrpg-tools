@@ -1504,6 +1504,7 @@ a {
   font-variant-numeric: tabular-nums;
 }
 .tower-mastery-tooltip {
+  box-sizing: border-box;
   display: none; position: fixed; z-index: 50;
   width: min(300px, 70vw); padding: 0.6rem; border: 1px solid var(--color-border-strong);
   background: var(--color-surface); color: var(--color-text); font-size: 0.85rem;
@@ -1530,6 +1531,11 @@ a {
 .tower-material-icon-link { position: relative; }
 .tower-material-icon-link strong { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .tower-remaining-table th:last-child { text-align: left; }
+.tower-material-detail { display: inline-flex; align-items: center; }
+.tower-material-detail-button { border: 1px solid var(--color-next-border); border-radius: 50%; background: transparent; color: var(--color-next-border); cursor: pointer; padding: 0; width: 22px; height: 22px; font-size: 0.8rem; }
+.tower-detail-line { display: block; margin-top: 0.4rem; }
+.tower-estimate-assumptions { margin: 0.5rem 0; font-size: 0.85rem; }
+.tower-estimate-assumptions summary { cursor: pointer; color: var(--color-next-border); }
 
 .tower-item-cell {
   display: flex;
