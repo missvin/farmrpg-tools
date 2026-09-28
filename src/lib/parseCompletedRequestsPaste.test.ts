@@ -10,6 +10,37 @@ function readFixture(filename: string): string {
 }
 
 describe('parseCompletedRequestsPaste', () => {
+  it('preserves wrapped titles and completed requests with an unnamed NPC', () => {
+    const result = parseCompletedRequestsPaste(`Completed Requests (3)
+Pleasantly Arbitrating Misconstrued
+Relational Affronts, Troubles Skirted XIII
+Request from Borgen
+Completed on 2025-06-30 12:32:41
+4,117 players (0.34%) have completed
+check
+Curious Postal Note III
+Request from
+Completed on 2024-10-22 14:24:41
+17,442 players (1.45%) have completed
+check
+Make Life Take
+The Lemons Back!
+Request from Star Meerif - Side Request
+Completed on 2024-05-29 16:50:20
+80,475 players (6.71%) have completed
+check
+Consume a meal`);
+    expect(result.summary.completedRowsCount).toBe(3);
+    expect(result.warnings).toEqual([]);
+    expect(result.completedRequests.map((row) => row.questName)).toEqual([
+      'Pleasantly Arbitrating Misconstrued Relational Affronts, Troubles Skirted XIII',
+      'Curious Postal Note III',
+      'Make Life Take The Lemons Back!',
+    ]);
+    expect(result.completedRequests[1]).toMatchObject({ npc: null, playerCount: 17442 });
+    expect(result.completedRequests[2]).toMatchObject({ npc: 'Star Meerif', requestKind: 'side' });
+  });
+
   it('parses completed request rows from the focused fixture', () => {
     const result = parseCompletedRequestsPaste(readFixture('completedRequests.focused.sample.txt'));
 

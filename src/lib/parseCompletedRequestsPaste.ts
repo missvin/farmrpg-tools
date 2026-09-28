@@ -82,13 +82,13 @@ function parseReportedCompletedCount(line: string): number | null {
 }
 
 function parseRequestFromLine(value: string): { npc: string | null; requestKind: CompletedRequestKind } | null {
-  const match = /^Request from\s+(.+?)(?:\s+-\s+(Main Quest|Side Request))?$/i.exec(value.trim());
+  const match = /^Request from(?:\s+(.+?))?(?:\s+-\s+(Main Quest|Side Request))?$/i.exec(value.trim());
 
   if (!match) {
     return null;
   }
 
-  const npc = match[1].trim() || null;
+  const npc = match[1]?.trim() || null;
   const rawKind = match[2]?.toLowerCase() ?? null;
   const requestKind = rawKind === 'main quest' ? 'main' : rawKind === 'side request' ? 'side' : null;
 
@@ -146,7 +146,12 @@ export function parseCompletedRequestsPaste(rawText: string): CompletedRequestsP
       continue;
     }
 
-    const questName = lines[index - 1] === 'check' ? '' : (lines[index - 1] ?? '');
+    let titleStart = index - 1;
+    while (titleStart > startIndex + 1 && lines[titleStart - 1] !== 'check'
+      && !/have completed$/i.test(lines[titleStart - 1])) {
+      titleStart -= 1;
+    }
+    const questName = lines[index - 1] === 'check' ? '' : lines.slice(titleStart, index).join(' ');
     const completedAtLine = lines[index + 1] ?? '';
     const populationLine = lines[index + 2] ?? '';
     const completedAt = parseCompletedAt(completedAtLine);
@@ -176,6 +181,7 @@ export function parseCompletedRequestsPaste(rawText: string): CompletedRequestsP
       playerCount,
       completionPercent,
     });
+    index += 2;
   }
 
   return {
