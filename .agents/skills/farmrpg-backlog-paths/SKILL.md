@@ -1,133 +1,44 @@
 ---
 name: farmrpg-backlog-paths
-description: Planning-only backlog path recommendation workflow for the FarmRPG local-first planning tool. Use when Codex should compare multiple coherent implementation paths, recommend three possible paths for the next 5-10 backlog items, sequence a mini-release or product increment, audit path tradeoffs, or help decide what Rebecca should work on next without editing files or implementing code.
+description: Read-only comparison and sequencing of coherent FarmRPG backlog directions. Use to compare product outcomes, explore path tradeoffs, or sequence a chosen direction into useful increments. Use farmrpg-next-steps for a general project reset and first recommendation; use farmrpg-tools-next-slice for implementation.
 ---
 
 # FarmRPG Backlog Paths
 
-Use this skill to recommend coherent backlog paths, not single next items. Stay planning-only unless the user explicitly asks for follow-up backlog edits after the recommendation.
+Compare coherent directions or sequence the direction Rebecca has selected. Normally offer two or three genuine alternatives when comparison is requested; offer fewer when the backlog supports fewer. A chosen direction needs a sequence, not invented competing paths. There is no required number of items per path.
 
-## Start-Up Read
+This workflow is strictly read-only: no backlog edits, field notes, memory writes, file changes, commits, deployments, chat messages, or automatic implementation. Any authorized follow-up intake or implementation is a separate workflow after the readout.
 
-Read the standard planning core before recommending paths:
+## Ground the Paths
 
-- `AGENTS.md`
-- `planning/decisions.md`
-- `planning/roadmap.md`
-- `planning/architecture.md`
-- `planning/backlog.csv`
+- Read `AGENTS.md`, relevant sections of `planning/decisions.md` and `planning/roadmap.md`, and a compact projection of `planning/backlog.csv`. Read `planning/architecture.md` when compatibility or architecture affects a path.
+- Read [shared readiness guidance](../farmrpg-next-steps/references/readiness.md) before assessing candidates. Distinguish **Ready**, **Needs a decision**, **Needs evidence/data**, and **Blocked**, naming the actual gap.
+- Retrieve full candidate rows, parents, children, dependency rows, and relevant linked notes. Trace prerequisites far enough to justify the proposed sequence, including textual dependencies and non-code gates.
+- Use umbrellas to recover the product outcome and shipped rows as existing foundations. Recommend actionable children rather than broad umbrella tasks. Keep icebox work out unless Rebecca explicitly asks to revisit it.
+- Use `planning/positioning.md` only as a secondary tie-breaker. Respect any supplied path or focus instead of reselecting unrelated work.
 
-Then keep retrieval targeted:
+Keep investigation bounded. Prefer planning records over code inspection. Allow a narrow source check when a concrete uncertainty would change the recommendation; label unverified readiness honestly. Do not default to code audits, builds, external research, broad reference-data reads, or generated/cache inspection. If deeper investigation is needed, identify the gap and propose it as a separate next step.
 
-- Inspect relevant backlog parents, child rows, dependency rows, priorities, effort, target versions, and notes.
-- Read relevant roadmap sections for milestone/story fit.
-- Read other planning/spec docs only when a candidate path needs them.
-- Use `planning/positioning.md` only as a secondary tie-breaker when multiple paths are otherwise reasonable.
+## Build Useful Paths
 
-## Low-Usage Defaults
+- Group work around a recognizable player outcome, a necessary foundation, or a useful product increment. Do not fill a path with unrelated priorities or optional cleanup.
+- Sequence executable prerequisites before dependents. Show prerequisites outside the path as blockers; show included prerequisites as part of the work rather than implying the whole path is ready immediately.
+- Explain the first visible payoff, the smallest useful stopping point, and what additional work unlocks. A short path or one-item milestone can be valid.
+- Separate required work from optional polish, history, or later extensions. Include manual checkpoints only when user evidence or decisions actually affect safe continuation.
+- Compare player value, readiness, effort to a useful result, and completion or unlocking of work. Do not use arbitrary numerical scores, unsupported delivery estimates, or raw priority order as a substitute for judgment.
+- Flag stale metadata or missing work without editing it. Any proposed new item is **not yet backlogged** and requires intake before implementation.
 
-Default to low-usage pathing. Recommend coherent work paths from backlog and planning docs; do not audit code to choose paths unless the user explicitly asks.
+## Readout and Handoff
 
-- Read only the minimum context needed: planning core, candidate rows, direct dependency rows, and relevant roadmap snippets.
-- Do not inspect implementation files unless a path cannot be understood from planning docs.
-- Do not inspect `dist/`, `generated/`, `probe-output/`, `node_modules/`, large CSV/JSON files, cache artifacts, generated manifests, or old probe outputs unless explicitly needed and approved.
-- Use metadata, file names, headers, row counts, and targeted searches instead of opening full data or generated files.
-- Prefer grouping existing backlog rows over auditing code or inventing new work.
-- Before broad investigation, repo-wide searches, generated/cache inspection, large-file reads, subagent fan-out, or expensive commands, explain why it is necessary and ask for approval.
-- If scope expands beyond path recommendation, stop and report options instead of continuing.
+For each path, give its name and outcome, ordered backlog IDs and titles, readiness and outside prerequisites, first payoff and stopping point, optional extensions, and material tradeoffs. Explain why the grouping is coherent without repeating the same rationale in several sections.
 
-Known failing command guardrail:
+When comparing, recommend the strongest path if evidence supports a choice. When sequencing a selected direction, focus on its order and checkpoints. Do not force three alternatives or a minimum item count. Distinguish planning-supported readiness from implementation verified through inspection.
 
-- Do not repeatedly try command patterns that have already failed in the session.
-- If a required command is narrow, read-only, output-bounded, and belongs to a command class already known to hit `CryptUnprotectData failed` in this environment, run it with escalation from the start instead of spending a sandbox failure first.
-- This applies only to small named file reads, targeted `Import-Csv` projections with selected rows/columns, and small git status/rev-parse checks that are genuinely needed.
-- Do not use this lane for broad reads, raw large-file reads, repo-wide searches, generated/cache/probe-output inspection, full build/test/lint, package installs, network/Vercel actions, writes, staging, commits, pushes, or destructive commands; explain and ask first or avoid the command.
-- Prefer targeted snippets, status filters, row projections, selected columns, and bounded output. Do not raw-read `planning/backlog.csv` or other large files just because escalation is available.
-- If an unknown command fails with a known sandbox/environment error such as `CryptUnprotectData failed`, stop and report the failure instead of retrying multiple variants.
+Keep the final readout focused on the decision. Omit routine files-inspected lists, field-note status, and app-test boilerplate. Include material evidence limitations or conflicting records where they affect the choice.
 
-## Path Selection
+End with one or both relevant handoff options, without executing them:
 
-Recommend three coherent implementation paths by default. Each path should usually contain 3-7 backlog items; use up to 10 only when the items are small and tightly related.
+- **Start small:** `$farmrpg-tools-next-slice` for the first actionable ID and its bounded outcome.
+- **Implement the selected path:** `$farmrpg-tools-next-slice` with the exact ordered IDs, useful stopping points, and genuine decision/evidence checkpoints.
 
-Optimize for:
-
-- cohesive product outcomes over arbitrary batches
-- dependency-valid sequencing using `BL-###` tokens
-- actionable child rows over broad umbrella rows
-- visible user value, durable foundations, or clear mini-release shape
-- reliable next-slice execution if Rebecca chooses a path
-
-Avoid:
-
-- listing the highest-priority rows without a story
-- mixing unrelated medium-priority work into a fake path
-- recommending broad mega-tasks as implementation items
-- inspecting implementation files when backlog and planning docs are enough
-- rewriting roadmap strategy during a path recommendation
-- creating backlog rows unless the user explicitly asks for backlog intake
-- including `shipped` or `icebox` rows except as context
-
-Good path themes include:
-
-- quick visible win
-- foundation-first
-- public/shared-user readiness
-- item/icon/reference enrichment
-- target-planning MVP
-- UX trust and explainability
-
-## Path Output
-
-For each recommended path, include:
-
-- path name
-- product outcome
-- ordered backlog items
-- why this path is coherent
-- what it unlocks
-- tradeoffs or risks
-- ambiguity or manual-check points
-- recommended testing/checkpoint strategy
-- when to stop or pause
-- suggested first item if the path is selected
-
-Distinguish implementation order from optional cleanup or hygiene. If a cleanup item is useful but not required for the path's outcome, label it as optional.
-
-## Blockers And Checkpoints
-
-Flag manual blockers only when Rebecca must provide data, make a product decision, or test something before implementation can safely continue.
-
-Recommend user-test checkpoints when a path is best validated in batches instead of after every row. Keep checkpoints practical, such as "after the first visible page lands" or "before moving from resolver work into linking every page."
-
-## Handoff To Implementation
-
-Do not implement from this skill. If Rebecca chooses a path, hand off to `$farmrpg-tools-next-slice` with the path name and ordered backlog items.
-
-Suggested handoff wording:
-
-```text
-Use $farmrpg-tools-next-slice to implement Path 1 in order, pausing on ambiguity.
-```
-
-The implementation skill should follow the selected path instead of choosing a different next item.
-
-## Field Notes
-
-Append to `C:\Users\liqui\Documents\codex-post-notes\field-notes.md` only when the pathing work reveals a genuinely reusable workflow, product, planning, or engineering lesson. Do not add field notes for routine backlog review.
-
-If a warranted note cannot be written, include `Field note not written` in the final readout with the exact ready-to-paste note text.
-
-## Final Readout
-
-End with a concise planning readout that includes:
-
-- files changed, normally none
-- scope reviewed: files, rows, and sections inspected
-- three recommended paths
-- which path looks strongest and why, if the evidence supports a recommendation
-- manual blockers or recommended user-test checkpoints, only when real
-- suggested first item for each path
-- field-note status
-- next reasonable backlog item plus short justification
-
-Do not include app tests/lint/build unless files were changed in a follow-up planning edit.
+For an unbacklogged opportunity, route first to `$farmrpg-backlog-intake`. For an unresolved gate, name the decision or evidence task instead of implying implementation is ready. A recommendation does not authorize execution of any slice or path.
