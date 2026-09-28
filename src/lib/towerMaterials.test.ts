@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { matchesTowerMaterials, towerMaterialChoices, towerMaterialKeys } from './towerMaterials';
 import type { RecipeGraph, RecipeNode } from './loadRecipeGraph';
 import type { DropRateReferenceData, DropRateReferenceEntry } from './loadDropRateReference';
+import { createDefaultCraftingModifierState } from './craftingModifierState';
+import { getCraftingPlanningPolicy } from './craftingPlanningPolicy';
 
 export function materialTestGraph(): RecipeGraph {
   const recipes = Object.entries({ 'propeller hat': ['Steel Wire', 'Leather', 'Red Dye'], 'steel wire': ['Steel'], steel: ['Iron'], board: ['Twine'], twine: ['Board'] })
@@ -12,6 +14,24 @@ export function materialTestGraph(): RecipeGraph {
 }
 
 describe('Tower material relationships', () => {
+  it('stops excluded recipe expansion but keeps the intermediate and honors opt-in and alternate paths', () => {
+    const graph = materialTestGraph();
+    const excluded = { ...graph.recipes[0], outputCanonicalKey: 'unpolished shimmer stone', outputItemName: 'Unpolished Shimmer Stone',
+      inputs: [{ itemName: 'Emberstone', canonicalKey: 'emberstone', inputOrder: 1, quantity: 1 }] };
+    graph.byOutputCanonicalKey['unpolished shimmer stone'] = excluded;
+    graph.byOutputCanonicalKey['propeller hat'].inputs.push({ itemName: 'Unpolished Shimmer Stone', canonicalKey: 'unpolished shimmer stone', inputOrder: 4, quantity: 1 });
+    const state = createDefaultCraftingModifierState();
+    const keys = towerMaterialKeys('propeller hat', graph, null, getCraftingPlanningPolicy(state));
+    expect(keys.has('unpolished shimmer stone')).toBe(true);
+    expect(keys.has('emberstone')).toBe(false);
+    expect(matchesTowerMaterials(keys, ['emberstone'], 'any')).toBe(false);
+    expect(matchesTowerMaterials(keys, ['steel', 'emberstone'], 'all')).toBe(false);
+    state.planning.includeExcludedRecipes = true;
+    expect(towerMaterialKeys('propeller hat', graph, null, getCraftingPlanningPolicy(state)).has('emberstone')).toBe(true);
+    state.planning.includeExcludedRecipes = false;
+    graph.byOutputCanonicalKey['propeller hat'].inputs.push({ itemName: 'Emberstone', canonicalKey: 'emberstone', inputOrder: 5, quantity: 1 });
+    expect(towerMaterialKeys('propeller hat', graph, null, getCraftingPlanningPolicy(state)).has('emberstone')).toBe(true);
+  });
   it('finds nested and intermediate materials, deduplicates paths, and terminates cycles', () => {
     const graph = materialTestGraph();
     expect([...towerMaterialKeys('propeller hat', graph, null)].sort()).toEqual(['iron', 'leather', 'red dye', 'steel', 'steel wire']);

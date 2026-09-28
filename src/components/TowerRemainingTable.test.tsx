@@ -7,6 +7,7 @@ import { deriveTowerRemainingRows, sortTowerRemainingRows } from '../lib/towerRe
 import type { TowerRequirementEntry } from '../lib/loadTowerRequirements';
 import type { MasterySnapshot } from '../lib/storage/masterySnapshots';
 import type { RecipeGraph, RecipeNode } from '../lib/loadRecipeGraph';
+import { CRAFTING_MODIFIER_STATE_STORAGE_KEY, createDefaultCraftingModifierState, saveCraftingModifierState } from '../lib/craftingModifierState';
 
 const snapshot: MasterySnapshot = {
   snapshotId: 'tower-test', createdAt: '2026-09-28', rawText: '',
@@ -38,6 +39,34 @@ function NavigationProbe() {
 }
 
 describe('Tower remaining requirements', () => {
+  it('uses saved recipe policy for material icons and filtering, including explicit opt-in', async () => {
+    const user = userEvent.setup();
+    const policyRecipes = [
+      { ...recipes[0], outputCanonicalKey: 'veggie juice', outputItemName: 'Veggie Juice', inputs: [{ canonicalKey: 'unpolished shimmer stone', itemName: 'Unpolished Shimmer Stone', inputOrder: 1, quantity: 4 }] },
+      { ...recipes[0], outputCanonicalKey: 'unpolished shimmer stone', outputItemName: 'Unpolished Shimmer Stone', inputs: [{ canonicalKey: 'emberstone', itemName: 'Emberstone', inputOrder: 1, quantity: 1 }] },
+    ];
+    const policyGraph = { ...graph, recipes: policyRecipes, craftRecipes: policyRecipes, byOutputCanonicalKey: Object.fromEntries(policyRecipes.map((r) => [r.outputCanonicalKey, r])) };
+    const policyRows = deriveTowerRemainingRows({ ...snapshot, masteryByItem: { 'veggie juice': 67813 } }, { entries: [requirement(308, 'Veggie Juice', 'GM')], byCanonicalKey: {} }, null);
+    const previous = localStorage.getItem(CRAFTING_MODIFIER_STATE_STORAGE_KEY);
+    const state = createDefaultCraftingModifierState();
+    try {
+      saveCraftingModifierState(state);
+      const view = render(<MemoryRouter><TowerRemainingTable rows={policyRows} targetItem={null} targetLevel={null} recipeGraph={policyGraph} /></MemoryRouter>);
+      expect(within(screen.getByRole('table')).queryByRole('link', { name: 'Emberstone' })).not.toBeInTheDocument();
+      await user.click(screen.getByRole('checkbox', { name: 'Filter by Emberstone' }));
+      expect(screen.getByText(/No requirements match/)).toBeInTheDocument();
+      view.unmount();
+      state.planning.includeExcludedRecipes = true;
+      saveCraftingModifierState(state);
+      render(<MemoryRouter initialEntries={['/tower-progress?material=emberstone']}><TowerRemainingTable rows={policyRows} targetItem={null} targetLevel={null} recipeGraph={policyGraph} /></MemoryRouter>);
+      expect(within(screen.getByRole('table')).getByRole('link', { name: 'Veggie Juice' })).toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Emberstone needed for Veggie Juice T308 GM' }));
+      expect(screen.getByRole('tooltip')).toHaveTextContent('128,748 total needed');
+    } finally {
+      if (previous === null) localStorage.removeItem(CRAFTING_MODIFIER_STATE_STORAGE_KEY);
+      else localStorage.setItem(CRAFTING_MODIFIER_STATE_STORAGE_KEY, previous);
+    }
+  });
   it('shows row-specific material details, later targets beyond cutoff, and linked saved assumptions', async () => {
     const user = userEvent.setup();
     const cutoffRows = deriveTowerRemainingRows(snapshot, requirements, 303);

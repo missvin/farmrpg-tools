@@ -2,6 +2,8 @@ import type { RecipeGraph } from './loadRecipeGraph';
 import type { DropRateReferenceData } from './loadDropRateReference';
 import { normalizeDropRateSourceType } from './dropRateUnitConversions';
 import { toCanonicalItemKey } from './normalizeItemKey';
+import { getCraftingPlanningPolicy, type CraftingPlanningPolicy } from './craftingPlanningPolicy';
+import { createDefaultCraftingModifierState } from './craftingModifierState';
 
 export type TowerMaterial = { canonicalKey: string; itemName: string };
 export const COMMON_TOWER_MATERIALS = ['Steel', 'Steel Wire', 'Corn', 'Large Net', 'Twine', 'Oak', 'Cloth', 'Small Bolt', 'Emberstone', 'Leather'];
@@ -19,13 +21,15 @@ export function towerMaterialChoices(graph: RecipeGraph | null): TowerMaterial[]
 }
 
 // Relationship adapter only; towerMaterialEstimates resolves supported quantities separately.
-export function towerMaterialKeys(root: string, graph: RecipeGraph | null, sources: DropRateReferenceData | null): Set<string> {
+export function towerMaterialKeys(root: string, graph: RecipeGraph | null, sources: DropRateReferenceData | null,
+  policy: CraftingPlanningPolicy = getCraftingPlanningPolicy(createDefaultCraftingModifierState())): Set<string> {
   const result = new Set<string>();
   const visited = new Set<string>();
   function visit(key: string) {
     if (visited.has(key)) return;
     visited.add(key);
-    for (const input of graph?.byOutputCanonicalKey[key]?.inputs ?? []) {
+    // Keep the required intermediate, but do not expand a deliberately excluded recipe.
+    for (const input of policy.excludedCraftRecipeOutputKeys.has(key) ? [] : graph?.byOutputCanonicalKey[key]?.inputs ?? []) {
       result.add(input.canonicalKey);
       visit(input.canonicalKey);
     }

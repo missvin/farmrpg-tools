@@ -7,6 +7,7 @@ import { TowerMaterialDetail } from './TowerMaterialDetail';
 import { loadCraftingModifierState } from '../lib/craftingModifierState';
 import { loadDropRateAcquisitionSettings } from '../lib/dropRateAcquisitionSettings';
 import { getCraftingModifierTotals } from '../lib/craftingMasteryEngine';
+import { getCraftingPlanningPolicy } from '../lib/craftingPlanningPolicy';
 import { TowerMaterialFilters } from './TowerMaterialFilters';
 import { DEFAULT_TOWER_MATERIAL_KEYS, matchesTowerMaterials, towerMaterialChoices, towerMaterialKeys } from '../lib/towerMaterials';
 import type { RecipeGraph } from '../lib/loadRecipeGraph';
@@ -37,8 +38,9 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
   const [fishingSettings] = useState(() => loadDropRateAcquisitionSettings());
   const estimateSources = useMemo(() => ({ recipeGraph, dropRateReference, modifierState, fishingSettings }), [recipeGraph, dropRateReference, modifierState, fishingSettings]);
   const modifierTotals = getCraftingModifierTotals(modifierState);
+  const recipePolicy = useMemo(() => getCraftingPlanningPolicy(modifierState), [modifierState]);
   const relationships = useMemo(() => new Map(rows.map((row) => [row.canonicalKey,
-    towerMaterialKeys(row.canonicalKey, recipeGraph, dropRateReference)])), [rows, recipeGraph, dropRateReference]);
+    towerMaterialKeys(row.canonicalKey, recipeGraph, dropRateReference, recipePolicy)])), [rows, recipeGraph, dropRateReference, recipePolicy]);
   function updateMaterials(keys: string[], match: 'any' | 'all') {
     const next = new URLSearchParams(params);
     next.delete('material'); next.delete('materialMatch');

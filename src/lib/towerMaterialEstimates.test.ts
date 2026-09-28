@@ -5,6 +5,8 @@ import { estimateTowerMaterial, type TowerEstimateSources } from './towerMateria
 import type { RecipeGraph, RecipeNode } from './loadRecipeGraph';
 import type { TowerRemainingRow } from './towerRemainingRows';
 import type { DropRateReferenceEntry } from './loadDropRateReference';
+import { towerMaterialKeys } from './towerMaterials';
+import { getCraftingPlanningPolicy } from './craftingPlanningPolicy';
 
 function graphFrom(inputs: Record<string, Array<[string, number]>>): RecipeGraph {
   const recipes = Object.entries(inputs).map(([key, items]): RecipeNode => ({ outputItemName: key, outputCanonicalKey: key,
@@ -23,6 +25,22 @@ function sources(): TowerEstimateSources {
 }
 
 describe('Tower target material estimates', () => {
+  it('keeps the Veggie Juice chain consistent with excluded and enabled Shimmer Stone crafting', () => {
+    const input = sources();
+    input.recipeGraph = graphFrom({ 'veggie juice': [['glass bottle', 1], ['twine', 2]], 'glass bottle': [['glass orb', 1], ['stone', 1]],
+      'glass orb': [['shimmer stone', 2], ['stone', 1]], 'shimmer stone': [['unpolished shimmer stone', 2]],
+      'unpolished shimmer stone': [['emberstone', 1], ['sandstone', 1]] });
+    const keys = () => towerMaterialKeys('veggie juice', input.recipeGraph, null, getCraftingPlanningPolicy(input.modifierState));
+    expect(keys().has('emberstone')).toBe(false);
+    expect(keys().has('unpolished shimmer stone')).toBe(true);
+    expect(estimateTowerMaterial(row('veggie juice'), 'unpolished shimmer stone', input).quantity).toBe(400);
+    expect(estimateTowerMaterial(row('veggie juice'), 'twine', input).quantity).toBe(200);
+    expect(estimateTowerMaterial(row('veggie juice'), 'emberstone', input)).toMatchObject({ quantity: null, note: expect.stringContaining('intentionally excluded') });
+    expect(estimateTowerMaterial(row('veggie juice'), 'emberstone', input).note).toContain('unpolished shimmer stone');
+    input.modifierState.planning.includeExcludedRecipes = true;
+    expect(keys().has('emberstone')).toBe(true);
+    expect(estimateTowerMaterial(row('veggie juice'), 'emberstone', input).quantity).toBe(400);
+  });
   it('combines repeated paths before expanding intermediates, without inventory or cross-row allocation', () => {
     const input = sources();
     expect(estimateTowerMaterial(row(), 'wire', input).quantity).toBe(100);
@@ -49,7 +67,8 @@ describe('Tower target material estimates', () => {
     input.recipeGraph = graphFrom({ hat: [['steel', 1]], steel: [['hat', 1]] });
     expect(estimateTowerMaterial(row(), 'steel', input).quantity).toBeNull();
     input.recipeGraph = graphFrom({ hat: [['steel', 1], ['magna core', 1]], 'magna core': [['steel', 2]] });
-    expect(estimateTowerMaterial(row(), 'steel', input).quantity).toBeNull();
+    expect(estimateTowerMaterial(row(), 'steel', input).quantity).toBe(100);
+    expect(estimateTowerMaterial(row('magna core'), 'steel', input).note).toContain('intentionally excluded');
     input.modifierState.planning.includeExcludedRecipes = true;
     expect(estimateTowerMaterial(row(), 'steel', input).quantity).toBe(300);
     input.recipeGraph.byOutputCanonicalKey.hat.recipeType = 'cooking';
