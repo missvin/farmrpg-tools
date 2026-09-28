@@ -1522,11 +1522,28 @@ a {
 .tower-material-filters { min-width: 0; margin: 0.65rem 0; padding: 0.5rem 0.65rem; border: 1px solid var(--color-border); border-radius: 0.4rem; }
 .tower-material-filters legend { font-weight: 700; }
 .tower-material-options, .tower-material-actions, .tower-material-icons { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 0.85rem; }
-.tower-material-option { display: inline-flex; align-items: center; gap: 0.25rem; }
-.tower-material-option .item-profile-link { gap: 0.25rem; font-size: 0.85rem; }
-.tower-material-option .item-icon { width: 24px; height: 24px; }
-.tower-material-option input, .tower-material-filters .checkbox-label input { accent-color: var(--color-next-border); width: 18px; height: 18px; }
+.tower-material-chip { position: relative; display: inline-flex; align-items: center; gap: 0.45rem; min-height: 44px; box-sizing: border-box; padding: 0.25rem 0.75rem; border: 1px solid var(--color-border-strong); border-radius: 999px; background: var(--color-surface); color: var(--color-text-strong); cursor: pointer; font-size: 0.9rem; }
+.tower-material-chip input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.tower-material-chip .item-icon { width: 28px; height: 28px; }
+.tower-material-chip:hover { border-color: var(--color-next-border); }
+.tower-material-chip:has(input:checked), .tower-material-chip[data-partial] { border-color: var(--color-next-border); background: color-mix(in srgb, var(--color-next-border) 20%, var(--color-surface)); }
+.tower-material-chip:has(input:focus-visible) { outline: 2px solid var(--color-next-border); outline-offset: 3px; }
+.tower-chip-check { width: 1em; color: var(--color-next-border); font-weight: 700; visibility: hidden; }
+.tower-material-chip:has(input:checked) .tower-chip-check, .tower-material-chip[data-partial] .tower-chip-check { visibility: visible; }
+.tower-dye-stack { position: relative; flex: 0 0 36px; width: 36px; height: 34px; }
+.tower-dye-stack img { position: absolute; width: 25px; height: 25px; }
+.tower-dye-stack img:nth-child(1) { top: 0; left: 6px; }
+.tower-dye-stack img:nth-child(2) { bottom: 0; left: 0; }
+.tower-dye-stack img:nth-child(3) { bottom: 0; right: 0; }
+.tower-remaining .checkbox-label { cursor: pointer; min-height: 36px; }
+.tower-remaining .checkbox-label input { width: 20px; height: 20px; accent-color: var(--color-next-border); color-scheme: light dark; }
 .tower-material-actions { margin-top: 0.5rem; align-items: baseline; }
+.tower-material-match { display: inline-flex; border: 1px solid var(--color-border-strong); border-radius: 0.6rem; overflow: hidden; }
+.tower-material-match label { position: relative; cursor: pointer; }
+.tower-material-match input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.tower-material-match span { display: block; padding: 0.45rem 0.9rem; }
+.tower-material-match input:checked + span { background: color-mix(in srgb, var(--color-next-border) 25%, var(--color-surface)); color: var(--color-text-strong); box-shadow: inset 0 0 0 1px var(--color-next-border); }
+.tower-material-match input:focus-visible + span { outline: 2px solid var(--color-next-border); outline-offset: -3px; }
 .tower-material-actions details { flex-basis: 100%; }
 .tower-material-actions summary { cursor: pointer; color: var(--color-next-border); }
 .tower-material-actions details[open] { padding-bottom: 0.4rem; }

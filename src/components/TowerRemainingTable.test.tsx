@@ -145,7 +145,7 @@ describe('Tower remaining requirements', () => {
     expect(within(bodyRows()[0]).getByRole('link', { name: 'Steel' })).toHaveAttribute('href', '/items/steel');
     await user.click(screen.getByRole('checkbox', { name: 'Filter by Twine' }));
     expect(bodyRows()).toHaveLength(3);
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Material matching' }), 'all');
+    await user.click(screen.getByRole('radio', { name: 'All' }));
     expect(screen.getByText(/No requirements match/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Back' }));
     expect(bodyRows()).toHaveLength(3);
@@ -158,7 +158,9 @@ describe('Tower remaining requirements', () => {
   it('supports dye group overrides and Fishing Net only through searchable Other materials', async () => {
     const user = userEvent.setup();
     render(<MemoryRouter><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} /></MemoryRouter>);
-    await user.click(screen.getByRole('checkbox', { name: 'Dyes', exact: true }));
+    const dyeChip = screen.getByRole('checkbox', { name: 'Dyes', exact: true }).closest('label')!;
+    expect(dyeChip.querySelectorAll('.tower-dye-stack img')).toHaveLength(3);
+    await user.click(dyeChip);
     expect(within(screen.getByRole('table')).getAllByRole('row')).toHaveLength(3);
     await user.click(screen.getByText('Dye colors', { selector: 'summary' }));
     await user.click(screen.getByRole('checkbox', { name: 'Filter by Red Dye' }));
@@ -167,14 +169,14 @@ describe('Tower remaining requirements', () => {
     await user.click(screen.getByText('Other materials', { selector: 'summary' }));
     await user.type(screen.getByRole('searchbox', { name: 'Search materials' }), 'fishing net');
     expect(screen.getByRole('checkbox', { name: 'Filter by Fishing Net' })).not.toBeChecked();
-    expect(screen.getByRole('link', { name: 'Fishing Net' })).toHaveAttribute('href', '/items/fishing%20net');
+    expect(screen.getByRole('checkbox', { name: 'Filter by Fishing Net' }).closest('label')).toHaveTextContent('Fishing Net');
   });
 
   it('restores deep-linked material selection and retains linked text for an ingredient without an icon', () => {
     const missingRecipe = { ...recipes[0], inputs: [{ itemName: 'Test Material', canonicalKey: 'test material', inputOrder: 0, quantity: 1 }] };
     const missingGraph = { ...graph, recipes: [missingRecipe], byOutputCanonicalKey: { 'propeller hat': missingRecipe } };
     render(<MemoryRouter initialEntries={['/tower-progress?material=test+material&materialMatch=all']}><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={missingGraph} /></MemoryRouter>);
-    expect(screen.getByRole('combobox', { name: 'Material matching' })).toHaveValue('all');
+    expect(screen.getByRole('radio', { name: 'All' })).toBeChecked();
     const links = within(screen.getByRole('table')).getAllByRole('link', { name: 'Test Material' });
     expect(links).toHaveLength(2);
     expect(links[0]).toHaveTextContent('Test Material');

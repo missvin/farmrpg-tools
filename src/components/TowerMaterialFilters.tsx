@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { ItemProfileLink } from './ItemProfileLink';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { COMMON_TOWER_MATERIALS, TOWER_DYES, type TowerMaterial } from '../lib/towerMaterials';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
@@ -15,24 +14,36 @@ export function TowerMaterialFilters({ choices, selected, mode, onChange }: {
   const other = choices.filter((choice) => !commonKeys.includes(choice.canonicalKey) && !dyeKeys.includes(choice.canonicalKey));
   const results = other.filter((choice) => choice.itemName.toLowerCase().includes(search.trim().toLowerCase()));
   function option(material: TowerMaterial) {
-    return <span className="tower-material-option" key={material.canonicalKey}>
+    const icon = getItemIcon(material.canonicalKey)?.src;
+    return <label className="tower-material-chip" key={material.canonicalKey}>
       <input type="checkbox" aria-label={`Filter by ${material.itemName}`} checked={selected.includes(material.canonicalKey)}
         onChange={(event) => onChange(event.target.checked ? [...selected, material.canonicalKey] : selected.filter((key) => key !== material.canonicalKey), mode)} />
-      <ItemProfileLink {...material} iconSrc={getItemIcon(material.canonicalKey)?.src ?? null} />
-    </span>;
+      {icon ? <img className="item-icon" src={icon} alt="" /> : null}
+      <span>{material.itemName}</span><span className="tower-chip-check" aria-hidden="true">✓</span>
+    </label>;
   }
   return <fieldset className="tower-material-filters">
     <legend>Filter by material</legend>
     <div className="tower-material-options">
       {COMMON_TOWER_MATERIALS.map((itemName) => option({ itemName, canonicalKey: toCanonicalItemKey(itemName) }))}
-      <label className="checkbox-label"><input type="checkbox" checked={dyeCount === dyeKeys.length}
+      <label className="tower-material-chip" data-partial={dyeCount > 0 && dyeCount < dyeKeys.length || undefined}><input type="checkbox" aria-label="Dyes" checked={dyeCount === dyeKeys.length}
         ref={(input) => { if (input) input.indeterminate = dyeCount > 0 && dyeCount < dyeKeys.length; }}
-        onChange={() => onChange(dyeCount === dyeKeys.length ? selected.filter((key) => !dyeKeys.includes(key)) : [...new Set([...selected, ...dyeKeys])], mode)} />Dyes</label>
+        onChange={() => onChange(dyeCount === dyeKeys.length ? selected.filter((key) => !dyeKeys.includes(key)) : [...new Set([...selected, ...dyeKeys])], mode)} />
+        <span className="tower-dye-stack" aria-hidden="true">{['Purple Dye', 'Red Dye', 'Yellow Dye'].map((name) => {
+          const icon = getItemIcon(toCanonicalItemKey(name))?.src;
+          return icon ? <img key={name} src={icon} alt="" /> : null;
+        })}</span>
+        <span>Dyes{dyeCount > 0 && dyeCount < dyeKeys.length ? ` · ${dyeCount}` : ''}</span>
+        <span className="tower-chip-check" aria-hidden="true">{dyeCount > 0 && dyeCount < dyeKeys.length ? '−' : '✓'}</span>
+      </label>
     </div>
     <div className="tower-material-actions">
-      <label>Match <select aria-label="Material matching" value={mode} onChange={(event) => onChange(selected, event.target.value as 'any' | 'all')}>
-        <option value="any">Any</option><option value="all">All</option>
-      </select></label>
+      <span>Match</span><div className="tower-material-match" role="radiogroup" aria-label="Material matching">
+        {(['any', 'all'] as const).map((value) => <label key={value}>
+          <input type="radio" name="tower-material-match" checked={mode === value} onChange={() => onChange(selected, value)} />
+          <span>{value === 'any' ? 'Any' : 'All'}</span>
+        </label>)}
+      </div>
       <button className="tower-view-link" onClick={() => { setSearch(''); onChange([], 'any'); }}>Clear</button>
       <span className="subtle-text">{selected.length ? `${selected.length} selected` : 'All requirements · common icons'}</span>
       <details><summary>Dye colors</summary><div className="tower-material-options">
