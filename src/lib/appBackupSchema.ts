@@ -4,6 +4,7 @@ import {
   type BuildingProductionState,
 } from './buildingProductionState';
 import type { UserCraftingModifierState } from './craftingModifierState';
+import { isValidTowerProductionRates, type TowerProductionRates } from './towerProductionRates';
 import type { DropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
 import type { MasteryRaceCountsState } from './masteryRaceCounts';
 import type { MuseumCompletionState } from './museumCompletionState';
@@ -55,6 +56,7 @@ export type AppBackupStateV1 = {
     snapshotVelocityPreferences?: SnapshotVelocityPreferences | null;
     sourceRateAssumptionsState?: SourceRateAssumptionsState | null;
     buildingProductionState?: BuildingProductionState | null;
+    towerProductionRates?: TowerProductionRates | null;
     themePreference: AppTheme | null;
   };
 };
@@ -87,6 +89,7 @@ export type CreateAppBackupPayloadInput = {
   snapshotVelocityPreferences?: SnapshotVelocityPreferences | null;
   sourceRateAssumptionsState?: SourceRateAssumptionsState | null;
   buildingProductionState?: BuildingProductionState | null;
+  towerProductionRates?: TowerProductionRates | null;
   themePreference: AppTheme | null;
 };
 
@@ -122,7 +125,8 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_unknown_item_evidence_state'
   | 'invalid_snapshot_velocity_preferences'
   | 'invalid_source_rate_assumptions_state'
-  | 'invalid_building_production_state';
+  | 'invalid_building_production_state'
+  | 'invalid_tower_production_rates';
 
 export type AppBackupPayloadValidationResult =
   | { ok: true; payload: AppBackupPayloadV1 }
@@ -687,6 +691,7 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
           snapshotVelocityPreferences: input.snapshotVelocityPreferences ?? null,
           sourceRateAssumptionsState: input.sourceRateAssumptionsState ?? null,
           buildingProductionState: input.buildingProductionState ?? null,
+          towerProductionRates: input.towerProductionRates ?? null,
           themePreference: input.themePreference,
         },
       },
@@ -990,6 +995,11 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       code: 'invalid_building_production_state',
       message: 'The backup file contains malformed building production assumptions.',
     };
+  }
+
+  const towerProductionRates = value.state.preferences.towerProductionRates;
+  if (towerProductionRates !== undefined && towerProductionRates !== null && !isValidTowerProductionRates(towerProductionRates)) {
+    return { ok: false, code: 'invalid_tower_production_rates', message: 'The backup file contains malformed Tower production rates.' };
   }
 
   return {
