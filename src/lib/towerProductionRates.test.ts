@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  createDefaultTowerProductionRates, estimateTowerProductionHours, isValidTowerProductionRates,
+  createDefaultTowerProductionRates, estimateTowerProductionHours, formatTowerProductionHours, isValidTowerProductionRates,
   loadTowerProductionRates, normalizeTowerProductionRates, saveTowerProductionRates,
 } from './towerProductionRates';
 
@@ -27,5 +27,13 @@ describe('Tower production rates', () => {
     expect(estimateTowerProductionHours(100, null)).toBeNull();
     expect(estimateTowerProductionHours(null, 100)).toBeNull();
     expect(estimateTowerProductionHours(0, 100)).toBe(0);
+  });
+
+  it('uses days and remainder hours only above 24 hours', () => {
+    expect(formatTowerProductionHours(0)).toBe('0h');
+    expect(formatTowerProductionHours(24)).toBe('24h');
+    expect(formatTowerProductionHours(25)).toBe('1d 1h');
+    expect(formatTowerProductionHours(48)).toBe('2d 0h');
+    expect(formatTowerProductionHours(49)).toBe('2d 1h');
   });
 });

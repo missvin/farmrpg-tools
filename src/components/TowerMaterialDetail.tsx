@@ -4,7 +4,7 @@ import { getItemIcon } from '../lib/itemIconManifest';
 import { estimateTowerMaterial, type TowerEstimateSources } from '../lib/towerMaterialEstimates';
 import type { TowerMaterial } from '../lib/towerMaterials';
 import type { TowerRemainingRow } from '../lib/towerRemainingRows';
-import { estimateTowerProductionHours, type TowerProductionRates } from '../lib/towerProductionRates';
+import { estimateTowerProductionHours, formatTowerProductionHours, type TowerProductionRates } from '../lib/towerProductionRates';
 
 export function TowerMaterialDetail({ material, row, sources, productionRates, showInlineAmount = false }: {
   material: TowerMaterial; row: TowerRemainingRow; sources: TowerEstimateSources;
@@ -50,12 +50,12 @@ export function TowerMaterialDetail({ material, row, sources, productionRates, s
     {showInlineAmount ? <span className="tower-material-quantity">
       <span className="sr-only">{material.itemName} remaining for this {row.masteryLevelNeeded}: </span>
       {estimate?.quantity === null || !estimate ? 'Unavailable' : Math.ceil(estimate.quantity).toLocaleString()}
-      {showHours && estimate?.quantity !== null && estimate ? <span> · {hours === null ? 'hours unknown' : `${hours.toLocaleString()}h`}</span> : null}
+      {showHours && estimate?.quantity !== null && estimate ? <span> · {hours === null ? 'hours unknown' : formatTowerProductionHours(hours)}</span> : null}
     </span> : null}
     <span id={id} role="tooltip" hidden={!position} className={`tower-mastery-tooltip tower-material-tooltip${position ? ' tower-mastery-tooltip--open' : ''}`} style={position ?? undefined}>
       <strong>{material.itemName}: {estimate?.quantity === null || !estimate ? 'Estimate unavailable' : `${Math.ceil(estimate.quantity).toLocaleString()} remaining for this ${row.masteryLevelNeeded}`}</strong>
       {showHours && estimate?.quantity !== null && estimate ? <span className="tower-detail-line">
-        {hours === null ? 'Set an hourly rate to estimate time.' : `~${hours.toLocaleString()} hours at ${hourlyRate?.toLocaleString()}/hour; material times are separate.`}
+        {hours === null ? 'Set an hourly rate to estimate time.' : `~${hours > 24 ? formatTowerProductionHours(hours) : `${hours.toLocaleString()} hours`} at ${hourlyRate?.toLocaleString()}/hour; material times are separate.`}
       </span> : null}
       {estimate?.quantity === null ? <span className="tower-detail-line">{estimate.note}</span> : null}
     </span>

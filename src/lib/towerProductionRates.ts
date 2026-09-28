@@ -60,3 +60,9 @@ export function estimateTowerProductionHours(quantity: number | null, rate: numb
   if (quantity === null || !Number.isFinite(quantity) || quantity < 0 || rate === null || !Number.isFinite(rate) || rate <= 0) return null;
   return Math.ceil(quantity / rate);
 }
+
+export function formatTowerProductionHours(hours: number): string {
+  if (hours <= 24) return `${hours.toLocaleString()}h`;
+  const days = Math.floor(hours / 24);
+  return `${days.toLocaleString()}d ${hours % 24}h`;
+}
