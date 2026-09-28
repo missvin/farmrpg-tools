@@ -6,7 +6,7 @@ import { getCraftingPlanningPolicy, type CraftingPlanningPolicy } from './crafti
 import { createDefaultCraftingModifierState } from './craftingModifierState';
 
 export type TowerMaterial = { canonicalKey: string; itemName: string };
-export const COMMON_TOWER_MATERIALS = ['Steel', 'Steel Wire', 'Corn', 'Large Net', 'Twine', 'Oak', 'Cloth', 'Small Bolt', 'Emberstone', 'Leather'];
+export const COMMON_TOWER_MATERIALS = ['Steel', 'Steel Wire', 'Corn', 'Bamboo', 'Large Net', 'Twine', 'Oak', 'Cloth', 'Small Bolt', 'Emberstone', 'Leather'];
 export const TOWER_DYES = ['Black', 'Blue', 'Brown', 'Green', 'Orange', 'Purple', 'Red', 'White', 'Yellow'].map((color) => `${color} Dye`);
 export const DEFAULT_TOWER_MATERIAL_KEYS = [...COMMON_TOWER_MATERIALS, ...TOWER_DYES].map(toCanonicalItemKey);
 

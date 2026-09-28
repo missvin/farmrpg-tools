@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { matchesTowerMaterials, towerMaterialChoices, towerMaterialKeys } from './towerMaterials';
+import { DEFAULT_TOWER_MATERIAL_KEYS, matchesTowerMaterials, towerMaterialChoices, towerMaterialKeys } from './towerMaterials';
 import type { RecipeGraph, RecipeNode } from './loadRecipeGraph';
 import type { DropRateReferenceData, DropRateReferenceEntry } from './loadDropRateReference';
 import { createDefaultCraftingModifierState } from './craftingModifierState';
@@ -14,6 +14,10 @@ export function materialTestGraph(): RecipeGraph {
 }
 
 describe('Tower material relationships', () => {
+  it('makes Bamboo a default visible and selectable material', () => {
+    expect(DEFAULT_TOWER_MATERIAL_KEYS).toContain('bamboo');
+    expect(towerMaterialChoices(null)).toContainEqual({ canonicalKey: 'bamboo', itemName: 'Bamboo' });
+  });
   it('stops excluded recipe expansion but keeps the intermediate and honors opt-in and alternate paths', () => {
     const graph = materialTestGraph();
     const excluded = { ...graph.recipes[0], outputCanonicalKey: 'unpolished shimmer stone', outputItemName: 'Unpolished Shimmer Stone',
