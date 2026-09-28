@@ -5,13 +5,15 @@ import { estimateTowerMaterial, type TowerEstimateSources } from '../lib/towerMa
 import type { TowerMaterial } from '../lib/towerMaterials';
 import type { TowerRemainingRow } from '../lib/towerRemainingRows';
 
-export function TowerMaterialDetail({ material, row, sources }: { material: TowerMaterial; row: TowerRemainingRow; sources: TowerEstimateSources }) {
+export function TowerMaterialDetail({ material, row, sources, showInlineAmount = false }: {
+  material: TowerMaterial; row: TowerRemainingRow; sources: TowerEstimateSources; showInlineAmount?: boolean;
+}) {
   const id = useId();
   const anchor = useRef<HTMLElement | null>(null);
   const [position, setPosition] = useState<{ left: number; top?: number; bottom?: number } | null>(null);
   const isOpen = Boolean(position);
-  const estimate = useMemo(() => isOpen ? estimateTowerMaterial(row, material.canonicalKey, sources) : null,
-    [isOpen, row, material.canonicalKey, sources]); // Calculate only when details are requested.
+  const estimate = useMemo(() => isOpen || showInlineAmount ? estimateTowerMaterial(row, material.canonicalKey, sources) : null,
+    [isOpen, showInlineAmount, row, material.canonicalKey, sources]); // Calculate only when details or inline amounts are requested.
   const icon = getItemIcon(material.canonicalKey)?.src;
   function open(element: HTMLElement) {
     anchor.current = element;
@@ -39,6 +41,10 @@ export function TowerMaterialDetail({ material, row, sources }: { material: Towe
     onMouseLeave={(event) => { if (!event.currentTarget.contains(document.activeElement)) setPosition(null); }}
     onFocus={(event) => open(event.currentTarget)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setPosition(null); }}>
     <ItemProfileLink {...material} iconSrc={icon ?? null} className={icon ? 'tower-material-icon-link' : undefined} describedBy={id} />
+    {showInlineAmount ? <span className="tower-material-quantity">
+      <span className="sr-only">{material.itemName} remaining for this {row.masteryLevelNeeded}: </span>
+      {estimate?.quantity === null || !estimate ? 'Unavailable' : Math.ceil(estimate.quantity).toLocaleString()}
+    </span> : null}
     <span id={id} role="tooltip" hidden={!position} className={`tower-mastery-tooltip tower-material-tooltip${position ? ' tower-mastery-tooltip--open' : ''}`} style={position ?? undefined}>
       <strong>{material.itemName}: {estimate?.quantity === null || !estimate ? 'Estimate unavailable' : `${Math.ceil(estimate.quantity).toLocaleString()} remaining for this ${row.masteryLevelNeeded}`}</strong>
       {estimate?.quantity === null ? <span className="tower-detail-line">{estimate.note}</span> : null}

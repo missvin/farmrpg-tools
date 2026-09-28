@@ -52,6 +52,8 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
     (selected.length ? selected : DEFAULT_TOWER_MATERIAL_KEYS).includes(material.canonicalKey)
       && relationships.get(key)?.has(material.canonicalKey));
   const [incompleteOnly, setIncompleteOnly] = useState(true);
+  const [materialsOpen, setMaterialsOpen] = useState(true);
+  const [showMaterialAmounts, setShowMaterialAmounts] = useState(false);
   const [sort, setSort] = useState<TowerRemainingSort>('level');
   const [descending, setDescending] = useState(false);
   const [expandedDetail, setExpandedDetail] = useState<{ id: string; left: number; top?: number; bottom?: number } | null>(null);
@@ -105,7 +107,14 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
           Incomplete only
         </label>
       </div>
-      <TowerMaterialFilters choices={choices} selected={selected} mode={mode} onChange={updateMaterials} />
+      <details className="tower-material-panel" open={materialsOpen} onToggle={(event) => setMaterialsOpen(event.currentTarget.open)}>
+        <summary>Materials <span className="subtle-text">· {selected.length ? `${selected.length} selected · ${mode === 'all' ? 'All' : 'Any'}` : 'All requirements'}</span></summary>
+        <label className="checkbox-label tower-material-amount-toggle">
+          <input type="checkbox" checked={showMaterialAmounts} onChange={(event) => setShowMaterialAmounts(event.target.checked)} />
+          Show material amounts inline
+        </label>
+        <TowerMaterialFilters choices={choices} selected={selected} mode={mode} onChange={updateMaterials} />
+      </details>
       <details className="tower-estimate-assumptions"><summary>Assumptions · Resource Saver {(modifierTotals.totalResourceSaverPercent * 100).toLocaleString()}% · Mastery bonus {(modifierTotals.totalMasteryBonusPercent * 100).toLocaleString()}%</summary>
         <p className="subtle-text">Total needed from current mastery to each row’s target. Inventory is not subtracted. Rows are independent estimates; do not add them together.</p>
         <p className="subtle-text">Iron Depot {modifierState.planning.ironDepotActive ? 'on' : 'off'} · Excluded recipes {modifierState.planning.includeExcludedRecipes ? 'included' : 'excluded'} · <Link to="/ingredient-demand#ingredient-demand-controls-title">Edit crafting assumptions</Link></p>
@@ -157,7 +166,7 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
                   </td>
                   <td className="tower-remaining-number">{row.pumpkinJuices === null ? <span className="subtle-text">Needs baseline</span> : row.pumpkinJuices.toLocaleString()}</td>
                   <td><div className="tower-material-icons">{displayedMaterials(row.canonicalKey).map((material) =>
-                    <TowerMaterialDetail key={material.canonicalKey} material={material} row={row} sources={estimateSources} />
+                    <TowerMaterialDetail key={material.canonicalKey} material={material} row={row} sources={estimateSources} showInlineAmount={showMaterialAmounts} />
                   )}{!row.materialNames?.length ? <span className="subtle-text">—</span> : null}</div></td>
                 </tr>
               );

@@ -1516,6 +1516,9 @@ a {
 .tower-secondary-view > summary { cursor: pointer; color: var(--color-next-border); padding: 0.5rem 0; }
 .tower-view-link { border: 0; background: transparent; color: var(--color-next-border); font: inherit; text-decoration: underline; cursor: pointer; padding: 0.4rem 0; }
 .tower-remaining-table { min-width: 470px; }
+.tower-material-panel > summary { cursor: pointer; color: var(--color-next-border); font-weight: 700; }
+.tower-material-panel > summary .subtle-text { font-weight: 400; }
+.tower-material-amount-toggle { display: inline-flex; margin: 0.55rem 0 0; }
 .tower-material-filters { min-width: 0; margin: 0.65rem 0; padding: 0.5rem 0.65rem; border: 1px solid var(--color-border); border-radius: 0.4rem; }
 .tower-material-filters legend { font-weight: 700; }
 .tower-material-options, .tower-material-actions, .tower-material-icons { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 0.85rem; }
@@ -1532,7 +1535,8 @@ a {
 .tower-material-icon-link { position: relative; }
 .tower-material-icon-link strong { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .tower-remaining-table th:last-child { text-align: left; }
-.tower-material-detail { display: inline-flex; align-items: center; }
+.tower-material-detail { display: inline-flex; align-items: center; gap: 0.2rem; }
+.tower-material-quantity { font-size: 0.78rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .tower-detail-line { display: block; margin-top: 0.4rem; }
 .tower-estimate-assumptions { margin: 0.5rem 0; font-size: 0.85rem; }
 .tower-estimate-assumptions summary { cursor: pointer; color: var(--color-next-border); }

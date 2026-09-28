@@ -39,6 +39,34 @@ function NavigationProbe() {
 }
 
 describe('Tower remaining requirements', () => {
+  it('collapses material controls and optionally shows row-target amounts beside linked icons', async () => {
+    const user = userEvent.setup();
+    render(<MemoryRouter><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} /></MemoryRouter>);
+    const panel = document.querySelector<HTMLDetailsElement>('.tower-material-panel')!;
+    expect(panel).toHaveAttribute('open');
+    const gmRow = within(screen.getByRole('table')).getByRole('row', { name: /301 Propeller Hat/ });
+    const materialCell = within(gmRow).getAllByRole('cell')[5];
+    expect(within(materialCell).getByRole('link', { name: 'Steel' })).toHaveAttribute('href', '/items/steel');
+    expect(materialCell.querySelector('.tower-material-quantity')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('checkbox', { name: 'Show material amounts inline' }));
+    expect(materialCell.querySelector('.tower-material-quantity')).toHaveTextContent('18,000');
+    expect(within(materialCell).getByRole('link', { name: 'Steel' })).toHaveAttribute('href', '/items/steel');
+    const mmCell = within(screen.getByRole('row', { name: /340 Propeller Hat/ })).getAllByRole('cell')[5];
+    expect(mmCell.querySelector('.tower-material-quantity')).toHaveTextContent('918,000');
+    const unknownCell = within(screen.getByRole('row', { name: /303 Gold Flier/ })).getAllByRole('cell')[5];
+    expect(unknownCell.querySelector('.tower-material-quantity')).toHaveTextContent('Unavailable');
+    await user.click(screen.getByRole('checkbox', { name: 'Filter by Steel', exact: true }));
+    expect(panel.querySelector('summary')).toHaveTextContent('1 selected · Any');
+    await user.click(panel.querySelector('summary')!);
+    expect(panel).not.toHaveAttribute('open');
+    expect(materialCell.querySelector('.tower-material-quantity')).toHaveTextContent('18,000');
+    await user.click(panel.querySelector('summary')!);
+    expect(panel).toHaveAttribute('open');
+    await user.click(screen.getByRole('checkbox', { name: 'Show material amounts inline' }));
+    expect(materialCell.querySelector('.tower-material-quantity')).not.toBeInTheDocument();
+  });
+
   it('uses the row tier in a compact material tooltip', async () => {
     const user = userEvent.setup();
     render(<MemoryRouter><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} /></MemoryRouter>);

@@ -22,7 +22,7 @@ export function TowerMaterialFilters({ choices, selected, mode, onChange }: {
     </span>;
   }
   return <fieldset className="tower-material-filters">
-    <legend>Materials</legend>
+    <legend>Filter by material</legend>
     <div className="tower-material-options">
       {COMMON_TOWER_MATERIALS.map((itemName) => option({ itemName, canonicalKey: toCanonicalItemKey(itemName) }))}
       <label className="checkbox-label"><input type="checkbox" checked={dyeCount === dyeKeys.length}
