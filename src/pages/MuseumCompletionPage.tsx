@@ -19,6 +19,11 @@ import {
   type MuseumReviewedMissingItem,
 } from '../lib/loadMuseumReviewedMissingItems';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
+import {
+  deriveMuseumAcquisitionSources,
+  loadMuseumAcquisitionReferences,
+  type MuseumAcquisitionReferences,
+} from '../lib/museumAcquisitionContext';
 
 const PERSONAL_MUSEUM_PLACEHOLDER = `Collection Progress
 Crops (1 / 2)
@@ -62,10 +67,28 @@ function renderReviewedItem(item: MuseumCompletionManualMissingEntry) {
   );
 }
 
-function renderNamedMissingItem(item: MuseumCompletionManualMissingEntry) {
+function renderNamedMissingItem(item: MuseumCompletionManualMissingEntry, references: MuseumAcquisitionReferences | null) {
+  const sources = references && item.slotCount === 1
+    ? deriveMuseumAcquisitionSources(item.canonicalKey, references)
+    : [];
   return (
     <li key={item.id}>
-      {renderReviewedItem(item)}
+      <div>
+        {renderReviewedItem(item)}
+        {item.slotCount > 1 ? (
+          <p className="subtle-text">Open item details to review this group.</p>
+        ) : !references ? (
+          <p className="subtle-text">Loading local sources…</p>
+        ) : sources.length === 0 ? (
+          <p className="subtle-text">No local source information yet.</p>
+        ) : (
+          <details className="advanced-details">
+            <summary className="advanced-details__summary">How to get it · {sources.length} local {sources.length === 1 ? 'source' : 'sources'}</summary>
+            <ul>{sources.map((source) => <li key={source}>{source}</li>)}</ul>
+            <p className="subtle-text">Open the item page for recipe details and acquisition estimates.</p>
+          </details>
+        )}
+      </div>
       <span>{item.slotCount > 1 ? `${item.slotCount.toLocaleString()} slots` : 'Missing'}</span>
     </li>
   );
@@ -92,6 +115,7 @@ export function MuseumCompletionPage() {
   const [manualSlotCount, setManualSlotCount] = useState('1');
   const [manualNote, setManualNote] = useState('');
   const [canonData, setCanonData] = useState<MuseumCompletionCanonData | null>(null);
+  const [acquisitionReferences, setAcquisitionReferences] = useState<MuseumAcquisitionReferences | null>(null);
   const [reviewedMissingItems, setReviewedMissingItems] = useState<MuseumReviewedMissingItem[]>([]);
   const [canonLoadMessage, setCanonLoadMessage] = useState<string | null>(null);
   const [parseMessage, setParseMessage] = useState<string | null>(
@@ -101,6 +125,10 @@ export function MuseumCompletionPage() {
 
   useEffect(() => {
     let isCurrent = true;
+
+    loadMuseumAcquisitionReferences().then((references) => {
+      if (isCurrent) setAcquisitionReferences(references);
+    });
 
     Promise.all([loadMuseumCompletionCanon(), loadMuseumReviewedMissingItems()])
       .then(([loadedCanonData, loadedReviewedMissingItems]) => {
@@ -471,10 +499,13 @@ export function MuseumCompletionPage() {
 
             <div className="page-stack">
               <h3 className="section-title">Named Missing Items</h3>
+              {acquisitionReferences?.incomplete ? (
+                <p className="subtle-text" role="status">Some local sources could not be loaded. Available sources and item links still work.</p>
+              ) : null}
               {progress.namedMissingItems.length === 0 ? (
                 <p className="empty-state">No reviewed missing item names yet.</p>
               ) : (
-                <ul className="data-list">{progress.namedMissingItems.map(renderNamedMissingItem)}</ul>
+                <ul className="data-list">{progress.namedMissingItems.map((item) => renderNamedMissingItem(item, acquisitionReferences))}</ul>
               )}
             </div>
 

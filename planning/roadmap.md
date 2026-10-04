@@ -120,6 +120,7 @@ Completed quest exports become useful planning data: you can review imports, see
   - Home, Goals, Items, and Data entry surfaces connect existing workflows without removing pages
   - route metadata and action-oriented search aliases provide consistent labels and discovery
 - Focused planning expansion
+  - acquisition context for named missing Museum items (`BL-189`)
   - dynamic craft-material and Tower color matrix views
   - farm-building production assumptions and item-goal source integration
   - Tower cutoff Pumpkin Juice planning and item-goal source relevance cleanup
@@ -135,7 +136,6 @@ The app now behaves as a goal-and-item workbench rather than a loose collection 
 ## Later
 
 - Focused planning follow-ups
-  - acquisition context for named missing Museum items
   - Tower method filtering when method metadata is trustworthy enough
 - Trust, performance, and workflow polish
   - alternate rating-source selection after reviewed ClientCoin rows are populated
