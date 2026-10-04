@@ -73,8 +73,11 @@ Glass Orb,glass orb,yes,,,,,`),
       return counts;
     }, {});
 
-    expect(result.entries.length).toBe(1551);
-    expect(masteryStatusCounts).toEqual({ unknown: 952, yes: 562, no: 37 });
+    expect(result.entries.length).toBe(1556);
+    expect(masteryStatusCounts).toEqual({ unknown: 952, yes: 562, no: 42 });
+    for (const key of ['pie machine', "bag of re'taw", 'gold mega trout', 'mega trout', 'tree of life statue']) {
+      expect(result.byCanonicalKey[key]).toMatchObject({ masteryPossible: 'no' });
+    }
     expect(result.byCanonicalKey['acorn butter']).toMatchObject({
       itemName: 'Acorn Butter',
       masteryPossible: 'yes',
