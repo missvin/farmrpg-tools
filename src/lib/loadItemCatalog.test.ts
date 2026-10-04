@@ -73,8 +73,13 @@ Glass Orb,glass orb,yes,,,,,`),
       return counts;
     }, {});
 
-    expect(result.entries.length).toBe(1556);
-    expect(masteryStatusCounts).toEqual({ unknown: 952, yes: 562, no: 42 });
+    expect(result.entries.length).toBe(1574);
+    expect(masteryStatusCounts).toEqual({ unknown: 908, yes: 607, no: 59 });
+    expect(result.byCanonicalKey['magna core']).toMatchObject({ masteryPossible: 'no' });
+    for (const key of ['compass', 'mega lamprey shark', 'purple ghost crab', 'bird skull 01']) {
+      expect(result.byCanonicalKey[key]).toMatchObject({ masteryPossible: 'yes' });
+    }
+    expect(result.byCanonicalKey['pillow case 02']).toMatchObject({ masteryPossible: 'no', farmrpgItemId: null });
     for (const key of ['pie machine', "bag of re'taw", 'gold mega trout', 'mega trout', 'tree of life statue']) {
       expect(result.byCanonicalKey[key]).toMatchObject({ masteryPossible: 'no' });
     }
