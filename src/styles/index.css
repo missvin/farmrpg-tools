@@ -3740,3 +3740,12 @@ a {
     transition: none;
   }
 }
+
+/* Inactive workspaces retain calculator input without taking up page space. */
+.item-profile-view[hidden] { display: none; }
+.item-profile-view-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.item-profile-view-nav button[aria-pressed="true"] {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}

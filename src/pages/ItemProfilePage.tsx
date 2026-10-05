@@ -1356,6 +1356,7 @@ function ItemGoalCalculatorSection({
 export function ItemProfilePage() {
   const { canonicalKey: canonicalKeyParam } = useParams();
   const canonicalKey = decodeItemProfileParam(canonicalKeyParam);
+  const [activeView, setActiveView] = useState<'overview' | 'get-more' | 'use-it'>('overview');
   const [acquisitionState, setAcquisitionState] = useState<AcquisitionPlannerInputState>(() => {
     try {
       return loadAcquisitionPlannerInputState();
@@ -1666,6 +1667,19 @@ export function ItemProfilePage() {
             </details> : null}
           </section>
 
+          <nav className="item-profile-view-nav" aria-label="Item page views">
+            {([
+              ['overview', 'Overview'],
+              ['get-more', 'Get more'],
+              ['use-it', 'Use it'],
+            ] as const).map(([view, label]) => (
+              <button key={view} type="button" aria-pressed={activeView === view}
+                aria-controls={`item-view-${view}`} onClick={() => setActiveView(view)}>
+                {label}
+              </button>
+            ))}
+          </nav>
+          <div id="item-view-overview" className="page-stack item-profile-view" role="region" aria-label="Overview" hidden={activeView !== 'overview'}>
           <section className="page-card page-stack" aria-labelledby="item-profile-recipe-title">
             <h2 id="item-profile-recipe-title">Made From</h2>
             {profile.directRecipe ? (
@@ -1681,70 +1695,6 @@ export function ItemProfilePage() {
               <p className="empty-state">No direct recipe found in local recipe data.</p>
             )}
           </section>
-
-          <section className="page-card page-stack" aria-labelledby="item-profile-burden-title">
-            <div>
-              <h2 id="item-profile-burden-title">Materials Needed</h2>
-              <p className="supporting-text">
-                Estimated recipe materials for each mastery or Tower target, using your saved crafting settings.
-              </p>
-            </div>
-            {burdenTargets.length > 0 ? (
-              <details className="advanced-details">
-                <summary>Show material estimates</summary>
-                <div className="item-burden-grid">
-                  {burdenTargets.map((target) => (
-                    <ItemBurdenTargetCard key={target.scope} target={target} />
-                  ))}
-                </div>
-              </details>
-            ) : (
-              <p className="empty-state">Import a mastery snapshot to estimate recursive material needs.</p>
-            )}
-          </section>
-
-          {resourcesState.resources?.recipeGraph ? (
-            <ItemMaterialSinkPanel
-              profile={profile}
-              recipeGraph={resourcesState.resources.recipeGraph}
-              towerRequirementsData={resourcesState.resources.towerRequirementsData}
-              snapshot={resourcesState.resources.snapshot}
-            />
-          ) : null}
-
-          <section className="page-card page-stack" aria-labelledby="item-profile-used-in-title">
-            <h2 id="item-profile-used-in-title">Used In</h2>
-            {profile.usedInRecipes.length > 0 ? (
-              <ul className="data-list data-list--clickable">
-                {profile.usedInRecipes.map((recipe) => (
-                  <UsedInRecipeRow key={recipe.outputCanonicalKey} recipe={recipe} />
-                ))}
-              </ul>
-            ) : (
-              <p className="empty-state">No local recipes use this item directly.</p>
-            )}
-          </section>
-
-          {acquisitionContext ? (
-            <ItemAcquisitionContextSection context={acquisitionContext} profile={profile} />
-          ) : null}
-
-          <ItemQuestFutureDemandPanel demand={questFutureDemand} />
-
-          {resourcesState.resources?.recipeGraph ? (
-            <ItemGoalCalculatorSection
-              profile={profile}
-              acquisitionState={acquisitionState}
-              modifierState={modifierState}
-              recipeGraph={resourcesState.resources.recipeGraph}
-              petSourceReference={resourcesState.resources.petSourceReference}
-              openableContentsReference={resourcesState.resources.openableContentsReference}
-              wishingWellReference={resourcesState.resources.wishingWellReference}
-              buildingProductionReference={resourcesState.resources.buildingProductionReference}
-              buildingProductionState={buildingProductionState}
-              setBuildingProductionState={setBuildingProductionState}
-            />
-          ) : null}
 
           <section className="page-card page-stack" aria-labelledby="item-profile-links-title">
             <h2 id="item-profile-links-title">Open In</h2>
@@ -1771,6 +1721,75 @@ export function ItemProfilePage() {
               </Link>
             </div>
           </section>
+          </div>
+          <div id="item-view-get-more" className="page-stack item-profile-view" role="region" aria-label="Get more" hidden={activeView !== 'get-more'}>
+          {resourcesState.resources?.recipeGraph ? (
+            <ItemGoalCalculatorSection
+              profile={profile}
+              acquisitionState={acquisitionState}
+              modifierState={modifierState}
+              recipeGraph={resourcesState.resources.recipeGraph}
+              petSourceReference={resourcesState.resources.petSourceReference}
+              openableContentsReference={resourcesState.resources.openableContentsReference}
+              wishingWellReference={resourcesState.resources.wishingWellReference}
+              buildingProductionReference={resourcesState.resources.buildingProductionReference}
+              buildingProductionState={buildingProductionState}
+              setBuildingProductionState={setBuildingProductionState}
+            />
+          ) : null}
+
+          <section className="page-card page-stack" aria-labelledby="item-profile-burden-title">
+            <div>
+              <h2 id="item-profile-burden-title">Materials Needed</h2>
+              <p className="supporting-text">
+                Estimated recipe materials for each mastery or Tower target, using your saved crafting settings.
+              </p>
+            </div>
+            {burdenTargets.length > 0 ? (
+              <details className="advanced-details">
+                <summary>Show material estimates</summary>
+                <div className="item-burden-grid">
+                  {burdenTargets.map((target) => (
+                    <ItemBurdenTargetCard key={target.scope} target={target} />
+                  ))}
+                </div>
+              </details>
+            ) : (
+              <p className="empty-state">Import a mastery snapshot to estimate recursive material needs.</p>
+            )}
+          </section>
+
+          {acquisitionContext ? (
+            <ItemAcquisitionContextSection context={acquisitionContext} profile={profile} />
+          ) : null}
+
+          </div>
+          <div id="item-view-use-it" className="page-stack item-profile-view" role="region" aria-label="Use it" hidden={activeView !== 'use-it'}>
+          {resourcesState.resources?.recipeGraph ? (
+            <ItemMaterialSinkPanel
+              profile={profile}
+              recipeGraph={resourcesState.resources.recipeGraph}
+              towerRequirementsData={resourcesState.resources.towerRequirementsData}
+              snapshot={resourcesState.resources.snapshot}
+            />
+          ) : null}
+
+          <section className="page-card page-stack" aria-labelledby="item-profile-used-in-title">
+            <h2 id="item-profile-used-in-title">Used In</h2>
+            {profile.usedInRecipes.length > 0 ? (
+              <ul className="data-list data-list--clickable">
+                {profile.usedInRecipes.map((recipe) => (
+                  <UsedInRecipeRow key={recipe.outputCanonicalKey} recipe={recipe} />
+                ))}
+              </ul>
+            ) : (
+              <p className="empty-state">No local recipes use this item directly.</p>
+            )}
+          </section>
+
+          <ItemQuestFutureDemandPanel demand={questFutureDemand} />
+
+          </div>
         </>
       ) : null}
     </div>

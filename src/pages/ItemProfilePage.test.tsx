@@ -358,6 +358,8 @@ describe('ItemProfilePage', () => {
       '/icons/glass-orb.png',
     );
 
+    expect(screen.queryByRole('heading', { name: 'Goal Calculator' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Get more' }));
     const burdenSection = screen.getByRole('heading', { name: 'Materials Needed' }).closest('section');
     expect(burdenSection).not.toBeNull();
     expect(within(burdenSection as HTMLElement).getByText('To GM')).toBeInTheDocument();
@@ -365,6 +367,9 @@ describe('ItemProfilePage', () => {
     expect(within(burdenSection as HTMLElement).getAllByRole('link', { name: /Glass Orb/ }).length).toBeGreaterThan(0);
     expect(within(burdenSection as HTMLElement).getAllByText('100,000').length).toBeGreaterThan(0);
     expect(within(burdenSection as HTMLElement).queryByText('4,500,000')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Use it' }));
+    expect(screen.queryByRole('heading', { name: 'Made From' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Red Dye' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Used In' })).toBeInTheDocument();
 
     const sinkSection = screen.getByRole('heading', { name: 'Tower Craft Sinks' }).closest('section');
@@ -383,6 +388,7 @@ describe('ItemProfilePage', () => {
       '/items/red%20cloak',
     );
 
+    await user.click(screen.getByRole('button', { name: 'Get more' }));
     const acquisitionSection = screen.getByRole('heading', { name: 'Acquisition' }).closest('section');
     expect(acquisitionSection).not.toBeNull();
     expect(within(acquisitionSection as HTMLElement).getByText('Needed by Material Planner')).toBeInTheDocument();
@@ -395,6 +401,11 @@ describe('ItemProfilePage', () => {
     expect(within(goalSection as HTMLElement).getByText('Mastery remaining')).toBeInTheDocument();
     expect(within(goalSection as HTMLElement).getByText('After waiting')).toBeInTheDocument();
     expect(within(goalSection as HTMLElement).getByLabelText('Wait days')).toHaveValue(7);
+    await user.clear(within(goalSection as HTMLElement).getByLabelText('Wait days'));
+    await user.type(within(goalSection as HTMLElement).getByLabelText('Wait days'), '12');
+    await user.click(screen.getByRole('button', { name: 'Overview' }));
+    await user.click(screen.getByRole('button', { name: 'Get more' }));
+    expect(within(goalSection as HTMLElement).getByLabelText('Wait days')).toHaveValue(12);
     expect(within(goalSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);
   });
 
