@@ -19,7 +19,9 @@ export function getItemPageTargets(profile: ItemProfile, masterable: boolean): I
     });
     targets.push({ id: 'custom-mastery', label: 'Custom mastery', mode: 'mastery', amount: 1_000_000 });
   }
-  targets.push({ id: 'custom-quantity', label: 'Custom total quantity', mode: 'quantity', amount: 10_000 });
+  const quantity: ItemPageTarget = { id: 'custom-quantity', label: 'Custom total quantity', mode: 'quantity', amount: 10_000 };
+  if (targets.length === 1 && targets[0].id === 'custom-mastery') targets.unshift(quantity);
+  else targets.push(quantity);
   return targets;
 }
 

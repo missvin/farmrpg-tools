@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
-import { PageIntro } from '../components/PageIntro';
 import { buildItemPageMaterialRows, getItemPageTargets, getVisibleItemPageMaterials, type ItemPageTarget } from '../lib/itemPagePlanning';
 import {
   createDefaultAcquisitionPlannerInputState,
@@ -1221,12 +1220,8 @@ export function ItemProfilePage() {
   ]);
 
   return (
-    <div className="page-stack">
-      <PageIntro
-        title="Item Profile"
-        description="Open one item to see its mastery progress, Tower need, Pumpkin Juice estimate, and recipe context."
-        storageKey="item-profile"
-      />
+    <div className="page-stack item-profile-page">
+      <details className="item-page-help"><summary>About item pages</summary><p>Review saved progress, plan how to get more, and compare uses. Inventory and queues are saved values.</p></details>
 
       {resourcesState.isLoading ? <p className="empty-state">Loading local item profile data...</p> : null}
 
@@ -1267,7 +1262,7 @@ export function ItemProfilePage() {
               >
                 <span className="item-mastery-progress__label">{nextMilestone ? `Remaining to ${nextMilestone.label}` : 'Mastery'}</span>
                 <strong>
-                  {!profile.matchedSnapshotRow ? 'Not in latest import' : nextMilestone ? formatMastery(nextMilestone.targetMastery - profile.currentMastery) : 'MM complete'}
+                  {!masterable ? (masteryEligibility === 'no' ? 'Not masterable' : 'Eligibility not recorded') : !profile.matchedSnapshotRow ? 'Not in latest import' : nextMilestone ? formatMastery(nextMilestone.targetMastery - profile.currentMastery) : 'MM complete'}
                 </strong>
                 <span className="subtle-text">{formatMastery(profile.currentMastery)} / 1,000,000</span>
                 <span className="subtle-text">
@@ -1352,8 +1347,8 @@ export function ItemProfilePage() {
             <h2 id="item-profile-recipe-title">Made From</h2>
             {profile.directRecipe ? (
               <>
-                <p className="supporting-text">{formatRecipeType(profile.directRecipe.recipeType)} recipe</p>
-                <ul className="data-list data-list--clickable">
+                <span className="subtle-text">Per {profile.directRecipe.recipeType === 'craft' ? 'craft' : 'cook'}</span>
+                <ul className="data-list data-list--clickable item-overview-recipe">
                   {profile.directRecipe.inputs.map((input) => (
                     <RecipeInputRow key={`${input.inputOrder}-${input.canonicalKey}`} input={input} />
                   ))}
@@ -1364,6 +1359,13 @@ export function ItemProfilePage() {
             )}
           </section>
 
+          {effectiveTarget ? <section className="page-card item-overview-plan" aria-label="Quick plan">
+            <ItemTargetControl target={effectiveTarget} options={targetOptions} onSelect={setSelectedTargetId} onAmount={setCustomAmount} />
+            <span>{formatPlannerQuantity(Math.max(0, effectiveTarget.amount - (effectiveTarget.mode === 'mastery' ? profile.currentMastery : savedInventory?.inventoryCount ?? 0)))} {effectiveTarget.mode === 'mastery' ? 'mastery remaining' : 'remaining after saved inventory'}</span>
+            <button className="button button--primary" type="button" onClick={() => setActiveView('get-more')}>Plan materials</button>
+          </section> : null}
+          {resourcesState.resources?.buildingProductionReference?.byOutputCanonicalKey[profile.canonicalKey]?.map(process => <p className="item-saved-production" key={process.productionKey}>{process.buildingName}: saved queue <strong>{formatPlannerQuantity(buildingProductionState.queuedOutputByCanonicalKey[profile.canonicalKey] ?? 0)}</strong> {profile.itemName} · reference processing {process.outputQuantity} per {process.processingMinutes} min, before saved perks. <span className="subtle-text">Saved values; not live production.</span></p>)}
+          <details className="item-secondary-links"><summary>More tools</summary>
           <section className="page-card page-stack" aria-labelledby="item-profile-links-title">
             <h2 id="item-profile-links-title">Open In</h2>
             <div className="quick-link-grid">
@@ -1389,6 +1391,7 @@ export function ItemProfilePage() {
               </Link>
             </div>
           </section>
+          </details>
           </div>
           <div id="item-view-get-more" className="page-stack item-profile-view" role="region" aria-label="Get more" hidden={activeView !== 'get-more'}>
           {resourcesState.resources?.recipeGraph && effectiveTarget ? (

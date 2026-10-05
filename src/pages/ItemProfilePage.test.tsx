@@ -363,7 +363,7 @@ describe('ItemProfilePage', () => {
     const materialTable = screen.getByRole('table', { name: 'Material plan' });
     expect(within(materialTable).getByRole('link', { name: /Glass Orb/ })).toHaveAttribute('href', '/items/glass%20orb');
     expect(screen.queryByRole('heading', { name: 'Materials Needed' })).not.toBeInTheDocument();
-    expect(screen.getByLabelText('Planning target')).toHaveValue('tower-100000');
+    expect(screen.getByRole('combobox', { name: 'Planning target' })).toHaveValue('tower-100000');
     await user.click(screen.getByRole('button', { name: 'Expand all' }));
     expect(screen.getByRole('button', { name: 'Collapse all' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Collapse all' }));
@@ -400,10 +400,20 @@ describe('ItemProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Get more' }));
     expect(within(goalSection as HTMLElement).getByLabelText('Wait days')).toHaveValue(12);
     expect(within(goalSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);
-    await user.selectOptions(screen.getByLabelText('Planning target'), 'custom-quantity');
-    await user.clear(screen.getByLabelText('Total quantity'));
-    await user.type(screen.getByLabelText('Total quantity'), '12');
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Planning target' }), 'custom-quantity');
+    await user.clear(within(goalSection as HTMLElement).getByLabelText('Total quantity'));
+    await user.type(within(goalSection as HTMLElement).getByLabelText('Total quantity'), '12');
     expect(screen.getByText(/Quantity target:/)).toBeInTheDocument();
+  });
+
+  it('hands the Overview target to the material planner', async () => {
+    mockResources(); const user = userEvent.setup();
+    render(<MemoryRouter initialEntries={['/items/red%20dye']}><Routes><Route path="/items/:canonicalKey" element={<ItemProfilePage />} /></Routes></MemoryRouter>);
+    await screen.findByRole('heading', { name: 'Red Dye' });
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Planning target' }), 'mastery-1000000');
+    await user.click(screen.getByRole('button', { name: 'Plan materials' }));
+    expect(screen.getByRole('combobox', { name: 'Planning target' })).toHaveValue('mastery-1000000');
+    expect(screen.getByRole('table', { name: 'Material plan' })).toBeInTheDocument();
   });
 
   it('marks completed Tower targets clearly', async () => {
@@ -470,7 +480,7 @@ describe('ItemProfilePage', () => {
     });
     expect(screen.getByText(/not in the current local reference data/i)).toBeInTheDocument();
     expect(screen.getByText('Saved inventory: Not recorded')).toBeInTheDocument();
-    expect(screen.getByText('Not in latest import')).toBeInTheDocument();
+    expect(screen.getByText('Eligibility not recorded')).toBeInTheDocument();
   });
 
   it('shows saved inventory and chooses the earliest unfinished Tower target over a later MM target', async () => {

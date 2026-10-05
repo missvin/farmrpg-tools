@@ -10,7 +10,7 @@ describe('item page planning presentation', () => {
     const profile = resolveItemProfile({ canonicalKey: 'unknown' });
     expect(getItemPageTargets(profile, false).map(target => target.id)).toEqual(['custom-quantity']);
     expect(getItemPageTargets(profile, true)[0].amount).toBe(10_000);
-    expect(getItemPageTargets({ ...profile, currentMastery: 1_000_000 }, true)[0].id).toBe('custom-mastery');
+    expect(getItemPageTargets({ ...profile, currentMastery: 1_000_000 }, true)[0].id).toBe('custom-quantity');
   });
 
   it('retains shared engine totals once when expanding converging ingredient paths', () => {

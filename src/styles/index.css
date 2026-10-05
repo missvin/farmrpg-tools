@@ -3762,3 +3762,36 @@ a {
 .item-detail-toggle { font-size: .75rem; padding: .15rem .4rem; margin: .2rem 0 0 .4rem; }
 .item-material-details { margin: .35rem 0 .7rem .75rem; padding-left: .65rem; border-left: 2px solid var(--color-border); }
 @media (max-width: 480px) { .item-material-table__row { gap: .25rem; font-size: .8rem; grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); } .item-material-table__row img { width: 20px; height: 20px; } .item-quick-plan label { width: 100%; } }
+
+.item-profile-page { gap: .65rem; }
+.item-profile-page .page-card { padding: .75rem 1rem; }
+.item-profile-page .page-intro { padding: .35rem .75rem; }
+.item-profile-page .page-intro h1 { font-size: 1rem; margin: 0; }
+.item-profile-page .page-intro__toggle { font-size: .8rem; padding: .25rem .5rem; }
+.item-profile-page .page-intro__description { font-size: .8rem; margin: .25rem 0 0; }
+.item-profile-page h2 { font-size: 1.1rem; margin: 0; }
+.item-profile-page .page-stack { gap: .5rem; }
+.item-profile-page .item-mastery-progress { padding: .5rem .65rem; gap: .1rem; font-size: .85rem; }
+.item-profile-page .item-mastery-progress__track { display: none; }
+.item-profile-page .item-profile-header { gap: .7rem; }
+.item-profile-page .data-list { margin: 0; }
+.item-profile-page .data-list > li { padding: .25rem .4rem; }
+.item-profile-page .recipe-link-row__icon { width: 24px; height: 24px; }
+.item-overview-plan { display: flex; flex-wrap: wrap; align-items: end; gap: .65rem; }
+.item-saved-production { margin: 0; font-size: .85rem; }
+.item-secondary-links > summary { cursor: pointer; font-size: .9rem; }
+.item-secondary-links .page-card { margin-top: .5rem; }
+.item-profile-page .item-goal-source-grid { display: block; }
+.item-profile-page .item-goal-source-card { padding: .4rem 0; border: 0; background: none; }
+@media (max-width: 480px) { .item-profile-page .page-card { padding: .65rem; } .item-overview-plan > * { max-width: 100%; } .item-profile-page .item-profile-header { grid-template-columns: minmax(0, 1fr); } }
+
+.item-profile-page .recipe-link-row { padding: .3rem .4rem; gap: .5rem; }
+.item-profile-page .recipe-link-row .item-icon { width: 24px; height: 24px; }
+.item-profile-page .item-overview-recipe { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .2rem .5rem; }
+.item-profile-page .item-overview-recipe > li { padding: 0; border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0; }
+.item-profile-page .item-profile-status { gap: .25rem; }
+.item-profile-page .item-profile-header__identity { gap: .65rem; font-size: .9rem; }
+.item-profile-page .item-profile-next-tower { font-size: .85rem; }
+@media (max-width: 480px) { .item-profile-page .item-overview-recipe { grid-template-columns: minmax(0, 1fr); } }
+
+@media (min-width: 900px) { .item-profile-page .item-overview-recipe { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
