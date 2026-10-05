@@ -358,15 +358,15 @@ describe('ItemProfilePage', () => {
       '/icons/glass-orb.png',
     );
 
-    expect(screen.queryByRole('heading', { name: 'Goal Calculator' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Plan materials' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Get more' }));
-    const burdenSection = screen.getByRole('heading', { name: 'Materials Needed' }).closest('section');
-    expect(burdenSection).not.toBeNull();
-    expect(within(burdenSection as HTMLElement).getByText('To GM')).toBeInTheDocument();
-    expect(within(burdenSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);
-    expect(within(burdenSection as HTMLElement).getAllByRole('link', { name: /Glass Orb/ }).length).toBeGreaterThan(0);
-    expect(within(burdenSection as HTMLElement).getAllByText('100,000').length).toBeGreaterThan(0);
-    expect(within(burdenSection as HTMLElement).queryByText('4,500,000')).not.toBeInTheDocument();
+    const materialTable = screen.getByRole('table', { name: 'Material plan' });
+    expect(within(materialTable).getByRole('link', { name: /Glass Orb/ })).toHaveAttribute('href', '/items/glass%20orb');
+    expect(screen.queryByRole('heading', { name: 'Materials Needed' })).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Planning target')).toHaveValue('tower-100000');
+    await user.click(screen.getByRole('button', { name: 'Expand all' }));
+    expect(screen.getByRole('button', { name: 'Collapse all' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Collapse all' }));
     await user.click(screen.getByRole('button', { name: 'Use it' }));
     expect(screen.queryByRole('heading', { name: 'Made From' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Red Dye' })).toBeInTheDocument();
@@ -389,17 +389,10 @@ describe('ItemProfilePage', () => {
     );
 
     await user.click(screen.getByRole('button', { name: 'Get more' }));
-    const acquisitionSection = screen.getByRole('heading', { name: 'Acquisition' }).closest('section');
-    expect(acquisitionSection).not.toBeNull();
-    expect(within(acquisitionSection as HTMLElement).getByText('Needed by Material Planner')).toBeInTheDocument();
-    expect(within(acquisitionSection as HTMLElement).getByText('1')).toBeInTheDocument();
-    expect(within(acquisitionSection as HTMLElement).getByRole('link', { name: /Open Acquisition Breakdown/ }))
-      .toHaveAttribute('href', '/acquisition-breakdown?item=red+dye');
-
-    const goalSection = screen.getByRole('heading', { name: 'Goal Calculator' }).closest('section');
+    const goalSection = screen.getByRole('heading', { name: 'Plan materials' }).closest('section');
     expect(goalSection).not.toBeNull();
-    expect(within(goalSection as HTMLElement).getByText('Mastery remaining')).toBeInTheDocument();
-    expect(within(goalSection as HTMLElement).getByText('After waiting')).toBeInTheDocument();
+    expect(within(goalSection as HTMLElement).getByText(/Mastery remaining:/)).toBeInTheDocument();
+    expect(within(goalSection as HTMLElement).getByText(/After waiting 7 days/)).toBeInTheDocument();
     expect(within(goalSection as HTMLElement).getByLabelText('Wait days')).toHaveValue(7);
     await user.clear(within(goalSection as HTMLElement).getByLabelText('Wait days'));
     await user.type(within(goalSection as HTMLElement).getByLabelText('Wait days'), '12');
@@ -407,6 +400,10 @@ describe('ItemProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Get more' }));
     expect(within(goalSection as HTMLElement).getByLabelText('Wait days')).toHaveValue(12);
     expect(within(goalSection as HTMLElement).getAllByText('50,000').length).toBeGreaterThan(0);
+    await user.selectOptions(screen.getByLabelText('Planning target'), 'custom-quantity');
+    await user.clear(screen.getByLabelText('Total quantity'));
+    await user.type(screen.getByLabelText('Total quantity'), '12');
+    expect(screen.getByText(/Quantity target:/)).toBeInTheDocument();
   });
 
   it('marks completed Tower targets clearly', async () => {

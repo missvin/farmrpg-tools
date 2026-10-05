@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
 import { PageIntro } from '../components/PageIntro';
+import { buildItemPageMaterialRows, getItemPageTargets, getVisibleItemPageMaterials, type ItemPageTarget } from '../lib/itemPagePlanning';
 import {
   createDefaultAcquisitionPlannerInputState,
   loadAcquisitionPlannerInputState,
@@ -29,12 +30,7 @@ import { classifyCraftMaterialMatrixRow } from '../lib/craftMaterialMatrixFamili
 import {
   buildItemGoalCalculatorResult,
   type ItemGoalCalculatorResult,
-  type ItemGoalMode,
 } from '../lib/itemGoalCalculator';
-import {
-  deriveItemAcquisitionContext,
-  type ItemAcquisitionContext,
-} from '../lib/itemAcquisitionContext';
 import { decodeItemProfileParam, toItemProfilePath } from '../lib/itemProfileRoutes';
 import { getItemIcon } from '../lib/itemIconManifest';
 import { resolveItemProfile, type ItemProfile, type ItemProfileTowerTarget } from '../lib/itemProfileResolver';
@@ -60,15 +56,6 @@ import {
 import { loadQuestHistoryState, type QuestHistoryState } from '../lib/questHistoryState';
 import { loadQuestPlannerState, type QuestPlannerState } from '../lib/questPlannerState';
 import {
-  calculateRecursiveIngredientBurden,
-  type IngredientBurdenEntry,
-  type IngredientBurdenGoalScope,
-  type IngredientBurdenRootGoal,
-  type IngredientBurdenUnresolvedGoal,
-  type RecursiveIngredientBurdenResult,
-} from '../lib/recursiveIngredientBurden';
-import {
-  type TowerRequirementEntry,
   loadTowerRequirements,
   type TowerRequirementsData,
 } from '../lib/loadTowerRequirements';
@@ -92,19 +79,6 @@ type ItemProfileResources = {
 type MasteryMilestone = {
   label: 'M' | 'GM' | 'MM';
   targetMastery: number;
-};
-
-type ItemBurdenTargetEntry = Pick<IngredientBurdenEntry, 'canonicalKey' | 'itemName' | 'isCraftable'> & {
-  requiredEffectiveOutput: number;
-};
-
-type ItemBurdenTarget = {
-  scope: IngredientBurdenGoalScope;
-  label: string;
-  rootGoal: IngredientBurdenRootGoal | null;
-  unresolvedGoal: IngredientBurdenUnresolvedGoal | null;
-  entries: ItemBurdenTargetEntry[];
-  isComplete: boolean;
 };
 
 const MASTERY_MILESTONES: MasteryMilestone[] = [
@@ -222,103 +196,8 @@ function isTowerTargetComplete(profile: ItemProfile, towerTarget: ItemProfileTow
   return profile.currentMastery >= towerTarget.requiredThreshold;
 }
 
-function formatBurdenReason(reason: IngredientBurdenUnresolvedGoal['reason']): string {
-  switch (reason) {
-    case 'not_craft_recipe':
-      return 'This item is not a craft recipe in local recipe data.';
-    case 'missing_recipe':
-      return 'No local recipe was found for this item.';
-    case 'excluded_recipe_policy':
-      return 'This recipe is excluded by your saved crafting assumptions.';
-  }
-}
-
-function getIngredientEntriesForRootGoal(
-  burdenResult: RecursiveIngredientBurdenResult,
-  scope: IngredientBurdenGoalScope,
-  rootGoal: IngredientBurdenRootGoal,
-): ItemBurdenTargetEntry[] {
-  return Object.values(burdenResult.scopeResults[scope].ingredientBurdenByCanonicalKey)
-    .filter((entry) => entry.canonicalKey !== rootGoal.outputCanonicalKey)
-    .map((entry) => {
-      const contribution = entry.contributions.find((candidate) => candidate.rootGoalId === rootGoal.goalId);
-
-      return contribution
-        ? {
-            canonicalKey: entry.canonicalKey,
-            itemName: entry.itemName,
-            isCraftable: entry.isCraftable,
-            requiredEffectiveOutput: contribution.requiredEffectiveOutput,
-          }
-        : null;
-    })
-    .filter((entry): entry is ItemBurdenTargetEntry => entry !== null)
-    .sort((left, right) => {
-      if (right.requiredEffectiveOutput !== left.requiredEffectiveOutput) {
-        return right.requiredEffectiveOutput - left.requiredEffectiveOutput;
-      }
-
-      return left.itemName.localeCompare(right.itemName);
-    });
-}
-
-function buildBurdenTargets(
-  profile: ItemProfile,
-  burdenResult: RecursiveIngredientBurdenResult | null,
-): ItemBurdenTarget[] {
-  if (!burdenResult) {
-    return [];
-  }
-
-  const masteryTargets = MASTERY_MILESTONES.map((milestone) => ({
-    scope: milestone.label,
-    label: `To ${milestone.label}`,
-    targetMastery: milestone.targetMastery,
-  }));
-  const towerTarget = profile.towerTarget
-    ? [
-        {
-          scope: 'Tower' as const,
-          label: 'To finish Tower need',
-          targetMastery: profile.towerTarget.requiredThreshold,
-        },
-      ]
-    : [];
-
-  return [...masteryTargets, ...towerTarget].map((target) => {
-    const scopeResult = burdenResult.scopeResults[target.scope];
-    const rootGoal =
-      scopeResult.rootGoals.find((goal) => goal.outputCanonicalKey === profile.canonicalKey) ?? null;
-    const unresolvedGoal =
-      scopeResult.unresolvedGoals.find((goal) => goal.outputCanonicalKey === profile.canonicalKey) ?? null;
-
-    return {
-      scope: target.scope,
-      label: target.label,
-      rootGoal,
-      unresolvedGoal,
-      entries: rootGoal ? getIngredientEntriesForRootGoal(burdenResult, target.scope, rootGoal) : [],
-      isComplete: profile.currentMastery >= target.targetMastery,
-    };
-  });
-}
-
-function getFirstTowerEntry(profile: ItemProfile): TowerRequirementEntry | null {
-  return (
-    profile.towerTargets
-      .flatMap((target) => target.entries)
-      .sort((left, right) => {
-        if (left.towerLevel !== right.towerLevel) {
-          return left.towerLevel - right.towerLevel;
-        }
-
-        return left.slotIndex - right.slotIndex;
-      })[0] ?? null
-  );
-}
-
 function getTowerRequirementsPath(profile: ItemProfile): string {
-  const firstEntry = getFirstTowerEntry(profile);
+  const firstEntry = profile.towerTargets.flatMap(target => target.entries).sort((a, b) => a.towerLevel - b.towerLevel)[0];
 
   if (!firstEntry) {
     return '/tower';
@@ -338,14 +217,6 @@ function getTowerProgressPath(profile: ItemProfile): string {
   });
 
   return `/tower-progress?${searchParams.toString()}`;
-}
-
-function getAcquisitionBreakdownPath(profile: ItemProfile): string {
-  const searchParams = new URLSearchParams({
-    item: profile.canonicalKey,
-  });
-
-  return `/acquisition-breakdown?${searchParams.toString()}`;
 }
 
 function getCraftMaterialMatrixPath(profile: ItemProfile): string {
@@ -501,126 +372,6 @@ function ItemMaterialSinkPanel({
   );
 }
 
-function ItemBurdenTargetCard({ target }: { target: ItemBurdenTarget }) {
-  if (target.isComplete) {
-    return (
-      <div className="item-burden-card">
-        <h3>{target.label}</h3>
-        <p className="status-pill">Complete</p>
-      </div>
-    );
-  }
-
-  if (target.unresolvedGoal) {
-    return (
-      <div className="item-burden-card">
-        <h3>{target.label}</h3>
-        <p className="empty-state">{formatBurdenReason(target.unresolvedGoal.reason)}</p>
-      </div>
-    );
-  }
-
-  if (!target.rootGoal) {
-    return (
-      <div className="item-burden-card">
-        <h3>{target.label}</h3>
-        <p className="empty-state">No recursive material estimate is needed for this target.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="item-burden-card">
-      <h3>{target.label}</h3>
-      <dl className="compact-stat-grid">
-        <div>
-          <dt>Craft operations</dt>
-          <dd>{formatMastery(target.rootGoal.requiredCraftOperations)}</dd>
-        </div>
-        <div>
-          <dt>Mastery left</dt>
-          <dd>{formatMastery(target.rootGoal.remainingMastery)}</dd>
-        </div>
-      </dl>
-      {target.entries.length > 0 ? (
-        <details className="item-burden-card__details">
-          <summary>Show materials</summary>
-          <ul className="data-list data-list--clickable">
-            {target.entries.map((entry) => {
-              const icon = getItemIcon(entry.canonicalKey);
-
-              return (
-                <li key={entry.canonicalKey}>
-                  <div className="recipe-link-row">
-                    <ItemProfileLink
-                      canonicalKey={entry.canonicalKey}
-                      itemName={entry.itemName}
-                      iconSrc={icon?.src}
-                    />
-                    <strong>{formatMastery(entry.requiredEffectiveOutput)}</strong>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </details>
-      ) : (
-        <p className="empty-state">No additional recipe inputs found for this target.</p>
-      )}
-    </div>
-  );
-}
-
-function ItemAcquisitionContextSection({
-  context,
-  profile,
-}: {
-  context: ItemAcquisitionContext;
-  profile: ItemProfile;
-}) {
-  return (
-    <section className="page-card page-stack" aria-labelledby="item-profile-acquisition-title">
-      <div>
-        <h2 id="item-profile-acquisition-title">Acquisition</h2>
-        <p className="supporting-text">
-          Saved source context for this item, with detailed source comparison kept in Acquisition Breakdown.
-        </p>
-      </div>
-
-      <dl className="summary-grid">
-        <div className="summary-grid__item">
-          <dt>Needed by Material Planner</dt>
-          <dd>{context.requiredQuantity === null ? 'Not currently needed' : formatMastery(context.requiredQuantity)}</dd>
-        </div>
-        <div className="summary-grid__item">
-          <dt>Saved sources</dt>
-          <dd>{formatMastery(context.totalSavedQuantity)}</dd>
-          <p className="subtle-text">
-            {formatMastery(context.immediateSavedQuantity)} now
-            {context.futurePetQuantity > 0 ? `, ${formatMastery(context.futurePetQuantity)} from future pets` : ''}
-          </p>
-        </div>
-        <div className="summary-grid__item">
-          <dt>Known drop sources</dt>
-          <dd>{context.dropRateSourceCount.toLocaleString()}</dd>
-        </div>
-      </dl>
-
-      {context.hasBreakdownTarget ? (
-        <Link className="quick-link-card" to={getAcquisitionBreakdownPath(profile)}>
-          <span className="quick-link-card__title">Open Acquisition Breakdown</span>
-          <span className="quick-link-card__description">Compare ways to get this item.</span>
-        </Link>
-      ) : (
-        <p className="empty-state">
-          Acquisition Breakdown focuses on items needed by the current material plan, so this item is not selectable
-          there yet.
-        </p>
-      )}
-    </section>
-  );
-}
-
 function ItemGoalSupplyBreakdownList({ result }: { result: ItemGoalCalculatorResult }) {
   const targetSummary = result.plannerResult.targetSummaries[0];
   const breakdowns = targetSummary?.row?.supply?.breakdowns ?? [];
@@ -646,52 +397,12 @@ function ItemGoalSupplyBreakdownList({ result }: { result: ItemGoalCalculatorRes
   );
 }
 
-function ItemGoalDemandList({
-  result,
-  targetCanonicalKey,
-}: {
-  result: ItemGoalCalculatorResult;
-  targetCanonicalKey: string;
-}) {
-  const rows = result.plannerResult.rows
-    .filter((row) => row.canonicalKey !== targetCanonicalKey)
-    .filter((row) => row.grossRequiredQuantity > 0)
-    .slice(0, 8);
-
-  if (rows.length === 0) {
-    return <p className="empty-state">No recursive recipe demand was found for this item goal.</p>;
-  }
-
-  return (
-    <ul className="data-list data-list--clickable">
-      {rows.map((row) => {
-        const icon = getItemIcon(row.canonicalKey);
-
-        return (
-          <li key={row.canonicalKey}>
-            <div className="recipe-link-row">
-              <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} iconSrc={icon?.src} />
-              <span>
-                <strong>{formatPlannerQuantity(row.remainingQuantity)} left</strong>
-                <span className="subtle-text">
-                  {' '}
-                  {formatPlannerQuantity(row.grossRequiredQuantity)} needed before saved supply
-                </span>
-              </span>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
 function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
   const hasPetSources = result.petSources.length > 0 || result.referencePetSources.length > 0;
 
   return (
     <div className="item-goal-source-grid">
-      <div className="item-goal-source-card">
+      {result.openableSources.length > 0 ? <div className="item-goal-source-card">
         <h3>Openables</h3>
         {result.openableSources.length > 0 ? (
           <ul className="data-list">
@@ -713,9 +424,8 @@ function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
         ) : (
           <p className="empty-state">No reviewed openable contents are available for this item from saved containers.</p>
         )}
-      </div>
-
-      <div className="item-goal-source-card">
+      </div> : null}
+      {hasPetSources ? <div className="item-goal-source-card">
         <h3>Pets</h3>
         {hasPetSources ? (
           <ul className="data-list data-list--clickable">
@@ -759,9 +469,8 @@ function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
         ) : (
           <p className="empty-state">No reviewed or saved future pet path matches this item goal yet.</p>
         )}
-      </div>
-
-      <div className="item-goal-source-card">
+      </div> : null}
+      {result.wishingWellSources.length > 0 ? <div className="item-goal-source-card">
         <h3>Wishing Well</h3>
         {result.wishingWellSources.length > 0 ? (
           <ul className="data-list data-list--clickable">
@@ -791,9 +500,8 @@ function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
         ) : (
           <p className="empty-state">No reviewed Wishing Well path is available for this item yet.</p>
         )}
-      </div>
-
-      <div className="item-goal-source-card">
+      </div> : null}
+      {result.buildingSources.length > 0 ? <div className="item-goal-source-card">
         <h3>Buildings</h3>
         {result.buildingSources.length > 0 ? (
           <ul className="data-list data-list--clickable">
@@ -844,7 +552,7 @@ function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
         ) : (
           <p className="empty-state">No timed building production path is available for this item yet.</p>
         )}
-      </div>
+      </div> : null}
     </div>
   );
 }
@@ -923,7 +631,7 @@ function ItemQuestFutureDemandPanel({ demand }: { demand: QuestFutureDemandRow |
 }
 
 function ItemGoalWaitProjectionRows({ result }: { result: ItemGoalCalculatorResult }) {
-  const rows = result.waitProjection.activeRemainingRows.slice(0, 8);
+  const rows = result.waitProjection.activeRemainingRows;
 
   if (rows.length === 0) {
     return <p className="empty-state">No active remainder is projected after these wait-day assumptions.</p>;
@@ -953,6 +661,43 @@ function ItemGoalWaitProjectionRows({ result }: { result: ItemGoalCalculatorResu
   );
 }
 
+function ItemTargetControl({ target, options, onSelect, onAmount }: {
+  target: ItemPageTarget; options: ItemPageTarget[]; onSelect: (id: string) => void; onAmount: (amount: number) => void;
+}) {
+  return <div className="item-quick-plan">
+    <label>Planning target<select className="text-input" value={target.id} onChange={event => onSelect(event.target.value)}>{options.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}</select></label>
+    {target.id.startsWith('custom-') ? <label>{target.mode === 'mastery' ? 'Target mastery' : 'Total quantity'}<input className="text-input" type="number" min="0" value={target.amount} onChange={event => onAmount(Math.max(0, Number(event.target.value)))} /></label> : null}
+  </div>;
+}
+
+function ItemCompactSources({ result, canonicalKey, itemName, dropRateReference, recipeGraph }: {
+  result: ItemGoalCalculatorResult; canonicalKey: string; itemName: string; dropRateReference: DropRateReferenceData | null; recipeGraph: RecipeGraph;
+}) {
+  const filtered = { ...result,
+    openableSources: result.openableSources.filter(source => source.entry.contentCanonicalKey === canonicalKey),
+    petSources: result.petSources.filter(source => source.canonicalKey === canonicalKey),
+    referencePetSources: result.referencePetSources.filter(source => source.canonicalKey === canonicalKey),
+    wishingWellSources: result.wishingWellSources.filter(source => source.entry.rewardCanonicalKey === canonicalKey),
+    buildingSources: result.buildingSources.filter(source => source.outputCanonicalKey === canonicalKey || source.finalCanonicalKey === canonicalKey),
+  };
+  const drops = [...new Map((dropRateReference?.byTargetCanonicalKey[canonicalKey] ?? []).map(source => [source.sourceName + source.sourceType, source])).values()];
+  const recipe = recipeGraph.byOutputCanonicalKey[canonicalKey];
+  const groups = [
+    { name: 'Openables', count: filtered.openableSources.length, estimate: filtered.openableSources.reduce((sum, source) => sum + source.projectedContentQuantity, 0), key: 'openableSources' as const },
+    { name: 'Pets', count: filtered.petSources.length + filtered.referencePetSources.length, estimate: filtered.petSources.reduce((sum, source) => sum + source.forecastQuantity, 0) + filtered.referencePetSources.reduce((sum, source) => sum + source.forecastQuantity, 0), key: 'petSources' as const },
+    { name: 'Wishing Well', count: filtered.wishingWellSources.length, estimate: filtered.wishingWellSources.reduce((sum, source) => sum + source.expectedDailyQuantity, 0), key: 'wishingWellSources' as const },
+    { name: 'Buildings', count: filtered.buildingSources.length, estimate: null, key: 'buildingSources' as const },
+  ];
+  return <div className="item-compact-sources" aria-label={itemName + ' sources'}>
+    {recipe ? <details><summary>{recipe.recipeType === 'craft' ? 'Craft' : 'Cook'} {itemName}</summary><ul className="item-compact-list">{recipe.inputs.map(input => <li key={input.canonicalKey}><ItemProfileLink canonicalKey={input.canonicalKey} itemName={input.itemName} /> <span>×{input.quantity.toLocaleString()}</span></li>)}</ul>{recipe.sourceBuddyUrl ? <a href={recipe.sourceBuddyUrl} target="_blank" rel="noreferrer">Recipe evidence</a> : null}</details> : null}
+    {drops.map(source => <details key={source.sourceName + source.sourceType}><summary>{source.sourceName} · {source.sourceType}</summary><p className="subtle-text">Reference rate: {source.rawRate.toLocaleString()}. This is reference coverage, not a net or consumable budget.</p><a href={source.sourcePageUrl} target="_blank" rel="noreferrer">Source evidence</a></details>)}
+    {groups.filter(group => group.count > 0).map(group => <details key={group.name}><summary>{group.name} · {group.count} path{group.count === 1 ? '' : 's'}{group.estimate !== null ? ' · ' + formatPlannerQuantity(group.estimate) + (group.name === 'Wishing Well' ? ' expected/day' : group.name === 'Pets' ? ' projected' : ' available from owned containers') : ''}</summary>
+      <ItemGoalSourceRows result={{ ...filtered, openableSources: group.key === 'openableSources' ? filtered.openableSources : [], petSources: group.key === 'petSources' ? filtered.petSources : [], referencePetSources: group.key === 'petSources' ? filtered.referencePetSources : [], wishingWellSources: group.key === 'wishingWellSources' ? filtered.wishingWellSources : [], buildingSources: group.key === 'buildingSources' ? filtered.buildingSources : [] }} />
+    </details>)}
+    {!recipe && drops.length === 0 && !groups.some(group => group.count > 0) ? <p className="empty-state">No supported source path recorded for {itemName}.</p> : null}
+  </div>;
+}
+
 function ItemGoalCalculatorSection({
   profile,
   acquisitionState,
@@ -964,7 +709,13 @@ function ItemGoalCalculatorSection({
   buildingProductionReference,
   buildingProductionState,
   setBuildingProductionState,
+  target, targetOptions, setSelectedTargetId, setCustomAmount, dropRateReference,
 }: {
+  target: ItemPageTarget;
+  targetOptions: ItemPageTarget[];
+  setSelectedTargetId: (id: string) => void;
+  setCustomAmount: (amount: number) => void;
+  dropRateReference: DropRateReferenceData | null;
   profile: ItemProfile;
   acquisitionState: AcquisitionPlannerInputState;
   modifierState: UserCraftingModifierState;
@@ -976,10 +727,11 @@ function ItemGoalCalculatorSection({
   buildingProductionState: BuildingProductionState;
   setBuildingProductionState: (state: BuildingProductionState) => void;
 }) {
-  const defaultMasteryTarget = getNextMasteryMilestone(profile.currentMastery)?.targetMastery ?? 1_000_000;
-  const [goalMode, setGoalMode] = useState<ItemGoalMode>('mastery');
-  const [targetMastery, setTargetMastery] = useState(defaultMasteryTarget);
-  const [targetQuantity, setTargetQuantity] = useState(10_000);
+  const goalMode = target.mode;
+  const targetMastery = target.amount;
+  const targetQuantity = target.amount;
+  const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set());
+  const [expandAll, setExpandAll] = useState(false);
   const [waitDays, setWaitDays] = useState(acquisitionState.pets.futureProduction.horizonDays);
   const [includeOpenables, setIncludeOpenables] = useState(true);
   const [crunchyOmeletteActive, setCrunchyOmeletteActive] = useState(false);
@@ -988,9 +740,7 @@ function ItemGoalCalculatorSection({
   const [wishingWellRewardMultiplier, setWishingWellRewardMultiplier] = useState(1);
   const [referencePetLevelOverrides, setReferencePetLevelOverrides] = useState<Record<string, number>>({});
 
-  useEffect(() => {
-    setTargetMastery(defaultMasteryTarget);
-  }, [defaultMasteryTarget, profile.canonicalKey]);
+  useEffect(() => { setExpandedKeys(new Set()); setExpandAll(false); }, [profile.canonicalKey, target.id, target.amount]);
 
   const result = useMemo(() => {
     return buildItemGoalCalculatorResult({
@@ -1073,80 +823,15 @@ function ItemGoalCalculatorSection({
 
   return (
     <section className="page-card page-stack" aria-labelledby="item-goal-calculator-title">
-      <div>
-        <h2 id="item-goal-calculator-title">Goal Calculator</h2>
-        <p className="supporting-text">
-          Plan a mastery or quantity target with saved inventory, openables, pet forecasts, recipes, and reviewed Wishing
-          Well paths.
-        </p>
-      </div>
-
-      <dl className="summary-grid">
-        <div className="summary-grid__item">
-          <dt>{goalLabel}</dt>
-          <dd>{formatPlannerQuantity(result.desiredQuantity)}</dd>
-        </div>
-        <div className="summary-grid__item">
-          <dt>Counted supply</dt>
-          <dd>{formatPlannerQuantity(result.totalAvailableQuantity)}</dd>
-          {countedSupplyNotes.length > 0 ? <p className="subtle-text">{countedSupplyNotes.join(', ')}</p> : null}
-        </div>
-        <div className="summary-grid__item">
-          <dt>Remaining</dt>
-          <dd>{formatPlannerQuantity(result.remainingQuantity)}</dd>
-        </div>
-        <div className="summary-grid__item">
-          <dt>After waiting</dt>
-          <dd>{formatPlannerQuantity(result.waitProjection.projectedRemainingQuantity)}</dd>
-          <p className="subtle-text">
-            {result.waitProjection.waitDays.toLocaleString()} day{result.waitProjection.waitDays === 1 ? '' : 's'}
-          </p>
-        </div>
-        <div className="summary-grid__item">
-          <dt>Wishing Well EV</dt>
-          <dd>{formatPlannerQuantity(result.expectedWishingWellQuantityPerDay)} / day</dd>
-        </div>
-      </dl>
-
+      <h2 id="item-goal-calculator-title">Plan materials</h2>
+      <ItemCompactSources result={result} canonicalKey={profile.canonicalKey} itemName={profile.itemName} dropRateReference={dropRateReference} recipeGraph={recipeGraph} />
+      <ItemTargetControl target={target} options={targetOptions} onSelect={setSelectedTargetId} onAmount={setCustomAmount} />
+      <p className="item-plan-summary">{goalLabel}: <strong>{formatPlannerQuantity(result.desiredQuantity)}</strong> · Counted supply: <strong>{formatPlannerQuantity(result.totalAvailableQuantity)}</strong> · Shortfall: <strong>{formatPlannerQuantity(result.remainingQuantity)}</strong></p>
+      {countedSupplyNotes.length > 0 ? <p className="subtle-text">{countedSupplyNotes.join(', ')}</p> : null}
+      <p className="subtle-text">After waiting {waitDays} days: {formatPlannerQuantity(result.waitProjection.projectedRemainingQuantity)} remaining. Future supply is a projection.</p>
       <details className="advanced-details">
         <summary>Adjust assumptions</summary>
         <div className="item-goal-controls">
-          <label>
-            Goal kind
-            <select
-              className="text-input"
-              value={goalMode}
-              onChange={(event) => setGoalMode(event.target.value as ItemGoalMode)}
-            >
-              <option value="mastery">Mastery target</option>
-              <option value="quantity">Total quantity</option>
-            </select>
-          </label>
-          {goalMode === 'mastery' ? (
-            <label>
-              Target mastery
-              <input
-                className="text-input"
-                type="number"
-                min="0"
-                step="1000"
-                value={targetMastery}
-                onChange={(event) => setTargetMastery(Number(event.target.value))}
-              />
-            </label>
-          ) : (
-            <label>
-              Target quantity
-              <input
-                className="text-input"
-                type="number"
-                min="0"
-                step="1"
-                value={targetQuantity}
-                onChange={(event) => setTargetQuantity(Number(event.target.value))}
-              />
-            </label>
-          )}
           <label>
             Wait days
             <input
@@ -1340,15 +1025,23 @@ function ItemGoalCalculatorSection({
         <ItemGoalSupplyBreakdownList result={result} />
       </details>
 
-      <details className="advanced-details">
-        <summary>Show recipe demand</summary>
-        <ItemGoalDemandList result={result} targetCanonicalKey={profile.canonicalKey} />
-      </details>
-
-      <details className="advanced-details">
-        <summary>Show source paths</summary>
-        <ItemGoalSourceRows result={result} />
-      </details>
+      <div className="section-heading-row"><h3>Ingredients</h3><button className="button" type="button" onClick={() => { setExpandAll(!(expandAll || expandedKeys.size > 0)); setExpandedKeys(new Set()); }}>{expandAll || expandedKeys.size > 0 ? 'Collapse all' : 'Expand all'}</button></div>
+      <div className="item-material-table" role="table" aria-label="Material plan">
+        <div className="item-material-table__row item-material-table__head" role="row"><span role="columnheader">Ingredient</span><span role="columnheader">Needed</span><span role="columnheader">Counted supply</span><span role="columnheader">Shortfall</span></div>
+        {getVisibleItemPageMaterials(buildItemPageMaterialRows(result.plannerResult, recipeGraph, profile.canonicalKey), expandedKeys, expandAll).map(entry => (
+          <div key={entry.row.canonicalKey} className="item-material-entry">
+            <div className="item-material-table__row" role="row">
+              <span role="cell"><ItemProfileLink canonicalKey={entry.row.canonicalKey} itemName={entry.row.itemName} iconSrc={getItemIcon(entry.row.canonicalKey)?.src} />
+                {!entry.direct ? <small className="subtle-text">Whole-plan total · used by {entry.parentKeys.map(key => result.plannerResult.rowsByCanonicalKey[key]?.itemName ?? key).join(', ')}</small> : null}
+                <button className="button item-detail-toggle" type="button" aria-expanded={expandAll || expandedKeys.has(entry.row.canonicalKey)} onClick={() => { if (expandAll) { setExpandAll(false); setExpandedKeys(new Set()); } else setExpandedKeys(keys => { const next = new Set(keys); if (next.has(entry.row.canonicalKey)) next.delete(entry.row.canonicalKey); else next.add(entry.row.canonicalKey); return next; }); }}>Details</button>
+              </span>
+              <span role="cell">{formatPlannerQuantity(entry.row.grossRequiredQuantity)}</span><span role="cell">{formatPlannerQuantity(entry.row.availableUsedQuantity)}</span><strong role="cell">{formatPlannerQuantity(entry.row.remainingQuantity)}</strong>
+            </div>
+            {expandAll || expandedKeys.has(entry.row.canonicalKey) ? <div className="item-material-details"><ItemCompactSources result={result} canonicalKey={entry.row.canonicalKey} itemName={entry.row.itemName} dropRateReference={dropRateReference} recipeGraph={recipeGraph} /></div> : null}
+          </div>
+        ))}
+      </div>
+      {result.plannerResult.rows.length <= 1 ? <p className="empty-state">No ingredient demand for this target. Check available sources above.</p> : null}
     </section>
   );
 }
@@ -1357,6 +1050,8 @@ export function ItemProfilePage() {
   const { canonicalKey: canonicalKeyParam } = useParams();
   const canonicalKey = decodeItemProfileParam(canonicalKeyParam);
   const [activeView, setActiveView] = useState<'overview' | 'get-more' | 'use-it'>('overview');
+  const [selectedTargetId, setSelectedTargetId] = useState('');
+  const [customAmount, setCustomAmount] = useState(10_000);
   const [acquisitionState, setAcquisitionState] = useState<AcquisitionPlannerInputState>(() => {
     try {
       return loadAcquisitionPlannerInputState();
@@ -1494,45 +1189,18 @@ export function ItemProfilePage() {
     });
   }, [canonicalKey, resourcesState.resources]);
 
+  const masteryEligibility = resourcesState.resources?.itemCatalog?.byCanonicalKey[canonicalKey ?? '']?.masteryPossible;
+  const masterable = masteryEligibility === 'yes' || (masteryEligibility !== 'no' && Boolean(profile?.matchedSnapshotRow || profile?.towerTargets.length));
+  const targetOptions = profile ? getItemPageTargets(profile, masterable) : [];
+  const selectedTarget = targetOptions.find(target => target.id === selectedTargetId) ?? targetOptions[0];
+  const effectiveTarget = selectedTarget ? { ...selectedTarget, amount: selectedTarget.id.startsWith('custom-') ? customAmount : selectedTarget.amount } : null;
+  useEffect(() => { setSelectedTargetId(''); setCustomAmount(10_000); setActiveView('overview'); }, [canonicalKey]);
   const icon = profile ? getItemIcon(profile.canonicalKey) : null;
   const nextMilestone = profile ? getNextMasteryMilestone(profile.currentMastery) : null;
   const savedInventory = acquisitionState.inventory.entries.find((entry) => entry.canonicalItemKey === profile?.canonicalKey);
   const nextTowerTarget = profile ? [...profile.towerTargets]
     .filter((target) => !isTowerTargetComplete(profile, target))
     .sort((left, right) => (left.levels[0] ?? Infinity) - (right.levels[0] ?? Infinity))[0] ?? null : null;
-  const burdenResult = useMemo(() => {
-    if (
-      !profile ||
-      !resourcesState.resources?.snapshot ||
-      !resourcesState.resources.recipeGraph ||
-      !resourcesState.resources.towerRequirementsData
-    ) {
-      return null;
-    }
-
-    return calculateRecursiveIngredientBurden({
-      snapshot: resourcesState.resources.snapshot,
-      recipeGraph: resourcesState.resources.recipeGraph,
-      modifierState,
-      towerRequirementsData: resourcesState.resources.towerRequirementsData,
-    });
-  }, [modifierState, profile, resourcesState.resources]);
-  const burdenTargets = useMemo(() => (profile ? buildBurdenTargets(profile, burdenResult) : []), [
-    burdenResult,
-    profile,
-  ]);
-  const acquisitionContext = useMemo(() => {
-    if (!profile) {
-      return null;
-    }
-
-    return deriveItemAcquisitionContext({
-      canonicalKey: profile.canonicalKey,
-      acquisitionState,
-      burdenResult,
-      dropRateReference: resourcesState.resources?.dropRateReference ?? null,
-    });
-  }, [acquisitionState, burdenResult, profile, resourcesState.resources?.dropRateReference]);
   const questFutureDemand = useMemo(() => {
     if (!profile || !resourcesState.resources?.questReferenceData || !resourcesState.resources.questHistoryState) {
       return null;
@@ -1723,8 +1391,14 @@ export function ItemProfilePage() {
           </section>
           </div>
           <div id="item-view-get-more" className="page-stack item-profile-view" role="region" aria-label="Get more" hidden={activeView !== 'get-more'}>
-          {resourcesState.resources?.recipeGraph ? (
+          {resourcesState.resources?.recipeGraph && effectiveTarget ? (
             <ItemGoalCalculatorSection
+              key={profile.canonicalKey}
+              target={effectiveTarget}
+              targetOptions={targetOptions}
+              setSelectedTargetId={setSelectedTargetId}
+              setCustomAmount={setCustomAmount}
+              dropRateReference={resourcesState.resources.dropRateReference}
               profile={profile}
               acquisitionState={acquisitionState}
               modifierState={modifierState}
@@ -1736,31 +1410,6 @@ export function ItemProfilePage() {
               buildingProductionState={buildingProductionState}
               setBuildingProductionState={setBuildingProductionState}
             />
-          ) : null}
-
-          <section className="page-card page-stack" aria-labelledby="item-profile-burden-title">
-            <div>
-              <h2 id="item-profile-burden-title">Materials Needed</h2>
-              <p className="supporting-text">
-                Estimated recipe materials for each mastery or Tower target, using your saved crafting settings.
-              </p>
-            </div>
-            {burdenTargets.length > 0 ? (
-              <details className="advanced-details">
-                <summary>Show material estimates</summary>
-                <div className="item-burden-grid">
-                  {burdenTargets.map((target) => (
-                    <ItemBurdenTargetCard key={target.scope} target={target} />
-                  ))}
-                </div>
-              </details>
-            ) : (
-              <p className="empty-state">Import a mastery snapshot to estimate recursive material needs.</p>
-            )}
-          </section>
-
-          {acquisitionContext ? (
-            <ItemAcquisitionContextSection context={acquisitionContext} profile={profile} />
           ) : null}
 
           </div>
