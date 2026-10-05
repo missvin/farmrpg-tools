@@ -2,6 +2,20 @@ import type { ItemProfile } from './itemProfileResolver';
 import type { ItemGoalMode } from './itemGoalCalculator';
 import type { RecipeGraph } from './loadRecipeGraph';
 import type { TargetOutputPlannerItemRow, TargetOutputPlannerResult } from './targetOutputPlannerEngine';
+import { deriveItemGoalBuildingSources } from './buildingProductionCalculator';
+import type { ItemGoalCalculatorResult } from './itemGoalCalculator';
+import type { BuildingProductionState } from './buildingProductionState';
+import type { BuildingProductionReferenceData } from './loadBuildingProductionReference';
+
+export function withItemPageIngredientBuildingSources(result: ItemGoalCalculatorResult, reference: BuildingProductionReferenceData | null, state: BuildingProductionState): ItemGoalCalculatorResult {
+  const sources = new Map(result.buildingSources.map(source => [source.sourceKey, source]));
+  result.plannerResult.rows.forEach(row => {
+    deriveItemGoalBuildingSources({ targetCanonicalKey: row.canonicalKey, targetItemName: row.itemName,
+      targetRemainingQuantity: row.remainingQuantity, buildingProductionReference: reference, buildingProductionState: state,
+      supplyPool: result.supplyPool }).forEach(source => sources.set(source.sourceKey, source));
+  });
+  return { ...result, buildingSources: [...sources.values()] };
+}
 
 export type ItemPageTarget = { id: string; label: string; mode: ItemGoalMode; amount: number };
 

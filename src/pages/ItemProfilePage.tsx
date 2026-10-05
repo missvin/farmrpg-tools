@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
-import { buildItemPageMaterialRows, getItemPageTargets, getVisibleItemPageMaterials, type ItemPageTarget } from '../lib/itemPagePlanning';
+import { buildItemPageMaterialRows, getItemPageTargets, getVisibleItemPageMaterials, withItemPageIngredientBuildingSources, type ItemPageTarget } from '../lib/itemPagePlanning';
 import {
   createDefaultAcquisitionPlannerInputState,
   loadAcquisitionPlannerInputState,
@@ -23,9 +23,7 @@ import {
 } from '../lib/craftingModifierState';
 import {
   deriveCraftMaterialMatrix,
-  type CraftMaterialMatrixRow,
 } from '../lib/craftMaterialMatrix';
-import { classifyCraftMaterialMatrixRow } from '../lib/craftMaterialMatrixFamilies';
 import {
   buildItemGoalCalculatorResult,
   type ItemGoalCalculatorResult,
@@ -45,7 +43,7 @@ import {
 } from '../lib/loadOpenableContentsReference';
 import { loadPetSourceReference, type PetSourceReferenceData } from '../lib/loadPetSourceReference';
 import { loadQuestReference, type QuestReferenceData } from '../lib/loadQuestReference';
-import { loadRecipeGraph, type RecipeGraph, type RecipeInput, type RecipeNode } from '../lib/loadRecipeGraph';
+import { loadRecipeGraph, type RecipeGraph, type RecipeInput } from '../lib/loadRecipeGraph';
 import { loadWishingWellReference, type WishingWellReferenceData } from '../lib/loadWishingWellReference';
 import {
   deriveQuestHistoryPlanningAnalytics,
@@ -150,9 +148,6 @@ function formatTowerLevelForTarget(target: ItemProfileTowerTarget): string {
   return `${target.masteryLevelLabel} at ${formatTowerLevels(target.levels)}`;
 }
 
-function formatRecipeType(recipeType: string): string {
-  return recipeType === 'cooking' ? 'Cooking' : 'Crafting';
-}
 
 function getMasteryMilestonePercent(currentMastery: number): number {
   const mastery = Math.max(0, currentMastery);
@@ -242,133 +237,28 @@ function RecipeInputRow({ input }: { input: RecipeInput }) {
   );
 }
 
-function UsedInRecipeRow({ recipe }: { recipe: RecipeNode }) {
-  const icon = getItemIcon(recipe.outputCanonicalKey);
-
-  return (
-    <li>
-      <Link className="recipe-link-row" to={toItemProfilePath(recipe.outputCanonicalKey)}>
-        <span className="recipe-link-row__item">
-          {icon ? <img className="item-icon" src={icon.src} alt="" aria-hidden="true" loading="lazy" /> : null}
-          <span>
-            <strong>{recipe.outputItemName}</strong>
-            <span className="subtle-text">{formatRecipeType(recipe.recipeType)} recipe</span>
-          </span>
-        </span>
-        <span className="subtle-text">
-          {recipe.inputs.length.toLocaleString()} input{recipe.inputs.length === 1 ? '' : 's'}
-        </span>
-      </Link>
-    </li>
-  );
-}
-
-function compareMaterialSinkRows(left: CraftMaterialMatrixRow, right: CraftMaterialMatrixRow): number {
-  const leftUnfinished = left.towerTargets.some((target) => !target.achieved);
-  const rightUnfinished = right.towerTargets.some((target) => !target.achieved);
-
-  if (leftUnfinished !== rightUnfinished) {
-    return leftUnfinished ? -1 : 1;
-  }
-
-  const leftLevel = left.towerTargets.flatMap((target) => target.levels)[0] ?? Number.POSITIVE_INFINITY;
-  const rightLevel = right.towerTargets.flatMap((target) => target.levels)[0] ?? Number.POSITIVE_INFINITY;
-
-  if (leftLevel !== rightLevel) {
-    return leftLevel - rightLevel;
-  }
-
-  return left.outputItemName.localeCompare(right.outputItemName);
-}
-
-function formatMaterialSinkTarget(row: CraftMaterialMatrixRow): string {
-  const target = row.towerTargets.find((towerTarget) => !towerTarget.achieved) ?? row.towerTargets[0] ?? null;
-
-  if (!target) {
-    return 'No Tower target';
-  }
-
-  const status = target.achieved ? 'done' : `${formatMastery(target.remainingToRequirement)} left`;
-  return `${target.masteryLevelNeeded} L${target.levels.join(', ')} Ã‚Â· ${status}`;
-}
-
-function ItemMaterialSinkPanel({
-  profile,
-  recipeGraph,
-  towerRequirementsData,
-  snapshot,
-}: {
-  profile: ItemProfile;
-  recipeGraph: RecipeGraph;
-  towerRequirementsData: TowerRequirementsData | null;
-  snapshot: MasterySnapshot | null;
+function ItemUsesPanel({ profile, recipeGraph, towerRequirementsData, snapshot, questDemand }: {
+  profile: ItemProfile; recipeGraph: RecipeGraph; towerRequirementsData: TowerRequirementsData | null; snapshot: MasterySnapshot | null; questDemand: QuestFutureDemandRow | null;
 }) {
-  const rows = useMemo(
-    () =>
-      deriveCraftMaterialMatrix({
-        seedCanonicalKeys: [profile.canonicalKey],
-        recipeGraph,
-        towerRequirementsData,
-        snapshot,
-        maxDepth: 1,
-      }).rows
-        .filter((row) => row.towerRelevant)
-        .sort(compareMaterialSinkRows),
-    [profile.canonicalKey, recipeGraph, snapshot, towerRequirementsData],
-  );
-  const previewRows = rows.slice(0, 6);
-
-  return (
-    <section className="page-card page-stack" aria-labelledby="item-profile-material-sinks-title">
-      <div className="section-heading-row">
-        <div>
-          <h2 id="item-profile-material-sinks-title">Tower Craft Sinks</h2>
-          <p className="supporting-text">Tower-relevant downstream crafts that use this item directly or one step away.</p>
-        </div>
-        <Link className="button button--secondary" to={getCraftMaterialMatrixPath(profile)}>
-          Open Matrix
-        </Link>
-      </div>
-
-      {previewRows.length > 0 ? (
-        <details className="advanced-details">
-          <summary>Show Tower craft sinks</summary>
-          <ul className="data-list data-list--clickable">
-            {previewRows.map((row) => {
-              const icon = getItemIcon(row.outputCanonicalKey);
-              const family = classifyCraftMaterialMatrixRow(row);
-
-              return (
-                <li key={`${row.outputCanonicalKey}-${row.pathType}`}>
-                  <div className="recipe-link-row">
-                    <ItemProfileLink
-                      canonicalKey={row.outputCanonicalKey}
-                      itemName={row.outputItemName}
-                      iconSrc={icon?.src}
-                    />
-                    <span>
-                      <strong>{formatMaterialSinkTarget(row)}</strong>
-                      <span className="subtle-text">
-                        {' '}
-                        {family.label}; {formatMastery(row.consumedSeedQuantity)} {profile.itemName} per output
-                      </span>
-                    </span>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-          {rows.length > previewRows.length ? (
-            <p className="supporting-text">
-              Showing {previewRows.length.toLocaleString()} of {rows.length.toLocaleString()} Tower-relevant sinks.
-            </p>
-          ) : null}
-        </details>
-      ) : (
-        <p className="empty-state">No Tower-relevant craft sinks found for this item in local recipe data.</p>
-      )}
-    </section>
-  );
+  const [filter, setFilter] = useState<'tower' | 'quests' | 'recipes'>('tower');
+  const [includeCompleted, setIncludeCompleted] = useState(false);
+  const rows = useMemo(() => deriveCraftMaterialMatrix({ seedCanonicalKeys: [profile.canonicalKey], recipeGraph, towerRequirementsData, snapshot, maxDepth: 1 }).rows, [profile.canonicalKey, recipeGraph, towerRequirementsData, snapshot]);
+  const towerRows = rows.flatMap(row => row.towerTargets.filter(target => includeCompleted || !target.achieved).map(target => ({ row, target })))
+    .sort((a, b) => Math.min(...a.target.levels) - Math.min(...b.target.levels) || a.row.outputItemName.localeCompare(b.row.outputItemName));
+  return <section className="page-card page-stack" aria-labelledby="item-uses-title">
+    <div className="section-heading-row"><h2 id="item-uses-title">Use {profile.itemName}</h2><details><summary>More tools</summary><Link className="button" to={getCraftMaterialMatrixPath(profile)}>Open Matrix</Link></details></div>
+    <div className="button-row" aria-label="Use filters">{([['tower', 'Tower'], ['quests', 'Quests'], ['recipes', 'All recipes']] as const).map(([value, label]) => <button className={'button' + (filter === value ? ' button--active' : '')} type="button" key={value} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}</button>)}</div>
+    {filter === 'tower' ? <>
+      <label className="checkbox-label"><input type="checkbox" checked={includeCompleted} onChange={event => setIncludeCompleted(event.target.checked)} /> Include completed targets</label>
+      {towerRows.length ? <ul className="item-compact-list item-use-list">{towerRows.map(({row, target}) => <li key={row.outputCanonicalKey + row.pathType + target.requiredThreshold}>
+        <ItemProfileLink canonicalKey={row.outputCanonicalKey} itemName={row.outputItemName} iconSrc={getItemIcon(row.outputCanonicalKey)?.src} />
+        <span>T{target.levels.join(', T')} · {target.masteryLevelNeeded} · {target.achieved ? 'Complete' : formatMastery(target.remainingToRequirement) + ' mastery left'}<small className="subtle-text">{formatMastery(target.currentMastery)} / {formatMastery(target.requiredThreshold)}</small></span>
+        <details><summary>Requirement details</summary><span>{formatMastery(row.consumedSeedQuantity)} {profile.itemName} per output{row.pathType === 'one_step_downstream' ? ' via an intermediate' : ''}; before crafting modifiers.</span></details>
+      </li>)}</ul> : <p className="empty-state">No {includeCompleted ? '' : 'unfinished '}Tower craft uses found in supported recipe paths.</p>}
+    </> : filter === 'quests' ? <ItemQuestFutureDemandPanel demand={questDemand} /> : <>
+      {profile.usedInRecipes.length ? <ul className="item-compact-list item-use-list">{profile.usedInRecipes.map(recipe => <li key={recipe.outputCanonicalKey}><ItemProfileLink canonicalKey={recipe.outputCanonicalKey} itemName={recipe.outputItemName} iconSrc={getItemIcon(recipe.outputCanonicalKey)?.src} /><span>{recipe.inputs.filter(input => input.canonicalKey === profile.canonicalKey).reduce((sum, input) => sum + input.quantity, 0)} per {recipe.recipeType === 'craft' ? 'craft' : 'cook'}</span></li>)}</ul> : <p className="empty-state">No recorded recipes use this item directly.</p>}
+    </>}
+  </section>;
 }
 
 function ItemGoalSupplyBreakdownList({ result }: { result: ItemGoalCalculatorResult }) {
@@ -557,76 +447,11 @@ function ItemGoalSourceRows({ result }: { result: ItemGoalCalculatorResult }) {
 }
 
 function ItemQuestFutureDemandPanel({ demand }: { demand: QuestFutureDemandRow | null }) {
-  return (
-    <section className="page-card page-stack" aria-labelledby="item-profile-quest-demand-title">
-      <div>
-        <h2 id="item-profile-quest-demand-title">Future Quest Demand</h2>
-        <p className="supporting-text">
-          Known unfinished reviewed quest requirements, using saved quest history and manual Quest Planner state.
-        </p>
-      </div>
-      {demand ? (
-        <>
-          <dl className="summary-grid">
-            <div className="summary-grid__item">
-              <dt>Total known demand</dt>
-              <dd>{formatPlannerQuantity(demand.totalQuantity)}</dd>
-            </div>
-            <div className="summary-grid__item">
-              <dt>Unfinished quests</dt>
-              <dd>{demand.questCount.toLocaleString()}</dd>
-            </div>
-            <div className="summary-grid__item">
-              <dt>Scopes</dt>
-              <dd>
-                {demand.scopes.map((scope) => getQuestFutureDemandScopeLabel(scope.scope)).join(', ')}
-              </dd>
-            </div>
-          </dl>
-          <details className="advanced-details">
-            <summary>Show quest requirements</summary>
-            <ul className="data-list">
-              {demand.requirements.slice(0, 12).map((requirement) => (
-                <li key={`${requirement.questKey}:${requirement.scope}`}>
-                  <div className="recipe-link-row">
-                    <span>
-                      <strong>{requirement.questName}</strong>
-                      <span className="subtle-text"> {requirement.questlineName}</span>
-                    </span>
-                    <span>
-                      {formatPlannerQuantity(requirement.quantity)} needed Ã‚Â·{' '}
-                      {getQuestFutureDemandScopeLabel(requirement.scope)}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </details>
-          {demand.sourceHints.length > 0 ? (
-            <details className="advanced-details">
-              <summary>Show reviewed source hints</summary>
-              <ul className="data-list data-list--clickable">
-                {demand.sourceHints.slice(0, 8).map((sourceHint) => (
-                  <li key={`${sourceHint.sourceCanonicalKey}:${sourceHint.sourceType}`}>
-                    <div className="recipe-link-row">
-                      <ItemProfileLink
-                        canonicalKey={sourceHint.sourceCanonicalKey}
-                        itemName={sourceHint.sourceName}
-                        iconSrc={getItemIcon(sourceHint.sourceCanonicalKey)?.src ?? null}
-                      />
-                      <span>{sourceHint.sourceType}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          ) : null}
-        </>
-      ) : (
-        <p className="empty-state">No unfinished reviewed quest requirements currently need this item.</p>
-      )}
-    </section>
-  );
+  if (!demand) return <p className="empty-state">No unfinished quest demand recorded for this item. Coverage depends on saved quest history and reviewed requirements.</p>;
+  return <div className="page-stack"><p className="item-plan-summary">{formatPlannerQuantity(demand.totalQuantity)} required across {demand.questCount} quests · {demand.scopes.map(scope => getQuestFutureDemandScopeLabel(scope.scope)).join(', ')}</p>
+    <ul className="item-compact-list">{demand.requirements.map(requirement => <li key={requirement.questKey + requirement.scope}><details><summary>{requirement.questName} · {formatPlannerQuantity(requirement.quantity)}</summary><span>{requirement.questlineName} · {getQuestFutureDemandScopeLabel(requirement.scope)}</span></details></li>)}</ul>
+    {demand.sourceHints.length ? <details><summary>Source hints</summary><ul className="item-compact-list">{demand.sourceHints.map(hint => <li key={hint.sourceCanonicalKey + hint.sourceType}><ItemProfileLink canonicalKey={hint.sourceCanonicalKey} itemName={hint.sourceName} /><span>{hint.sourceType}</span></li>)}</ul></details> : null}
+  </div>;
 }
 
 function ItemGoalWaitProjectionRows({ result }: { result: ItemGoalCalculatorResult }) {
@@ -669,8 +494,8 @@ function ItemTargetControl({ target, options, onSelect, onAmount }: {
   </div>;
 }
 
-function ItemCompactSources({ result, canonicalKey, itemName, dropRateReference, recipeGraph }: {
-  result: ItemGoalCalculatorResult; canonicalKey: string; itemName: string; dropRateReference: DropRateReferenceData | null; recipeGraph: RecipeGraph;
+function ItemCompactSources({ result, canonicalKey, itemName, dropRateReference, recipeGraph, openableContentsReference }: {
+  result: ItemGoalCalculatorResult; canonicalKey: string; itemName: string; dropRateReference: DropRateReferenceData | null; recipeGraph: RecipeGraph; openableContentsReference: OpenableContentsReferenceData | null;
 }) {
   const filtered = { ...result,
     openableSources: result.openableSources.filter(source => source.entry.contentCanonicalKey === canonicalKey),
@@ -679,6 +504,7 @@ function ItemCompactSources({ result, canonicalKey, itemName, dropRateReference,
     wishingWellSources: result.wishingWellSources.filter(source => source.entry.rewardCanonicalKey === canonicalKey),
     buildingSources: result.buildingSources.filter(source => source.outputCanonicalKey === canonicalKey || source.finalCanonicalKey === canonicalKey),
   };
+  const unownedOpenables = (openableContentsReference?.byContentCanonicalKey[canonicalKey] ?? []).filter(entry => !filtered.openableSources.some(source => source.entry.openableCanonicalKey === entry.openableCanonicalKey));
   const drops = [...new Map((dropRateReference?.byTargetCanonicalKey[canonicalKey] ?? []).map(source => [source.sourceName + source.sourceType, source])).values()];
   const recipe = recipeGraph.byOutputCanonicalKey[canonicalKey];
   const groups = [
@@ -689,11 +515,12 @@ function ItemCompactSources({ result, canonicalKey, itemName, dropRateReference,
   ];
   return <div className="item-compact-sources" aria-label={itemName + ' sources'}>
     {recipe ? <details><summary>{recipe.recipeType === 'craft' ? 'Craft' : 'Cook'} {itemName}</summary><ul className="item-compact-list">{recipe.inputs.map(input => <li key={input.canonicalKey}><ItemProfileLink canonicalKey={input.canonicalKey} itemName={input.itemName} /> <span>×{input.quantity.toLocaleString()}</span></li>)}</ul>{recipe.sourceBuddyUrl ? <a href={recipe.sourceBuddyUrl} target="_blank" rel="noreferrer">Recipe evidence</a> : null}</details> : null}
+    {unownedOpenables.map(entry => <details key={'known-' + entry.openableCanonicalKey}><summary>{entry.openableItemName} · {entry.quantityPerOpen.toLocaleString()} {entry.quantityKind === 'expected' ? 'expected' : ''} per open</summary><p className="subtle-text">Reviewed container source; no contents from this path are counted in the selected plan. Add owned containers in saved acquisition inputs to include them.</p><ItemProfileLink canonicalKey={entry.openableCanonicalKey} itemName={entry.openableItemName} /></details>)}
     {drops.map(source => <details key={source.sourceName + source.sourceType}><summary>{source.sourceName} · {source.sourceType}</summary><p className="subtle-text">Reference rate: {source.rawRate.toLocaleString()}. This is reference coverage, not a net or consumable budget.</p><a href={source.sourcePageUrl} target="_blank" rel="noreferrer">Source evidence</a></details>)}
     {groups.filter(group => group.count > 0).map(group => <details key={group.name}><summary>{group.name} · {group.count} path{group.count === 1 ? '' : 's'}{group.estimate !== null ? ' · ' + formatPlannerQuantity(group.estimate) + (group.name === 'Wishing Well' ? ' expected/day' : group.name === 'Pets' ? ' projected' : ' available from owned containers') : ''}</summary>
       <ItemGoalSourceRows result={{ ...filtered, openableSources: group.key === 'openableSources' ? filtered.openableSources : [], petSources: group.key === 'petSources' ? filtered.petSources : [], referencePetSources: group.key === 'petSources' ? filtered.referencePetSources : [], wishingWellSources: group.key === 'wishingWellSources' ? filtered.wishingWellSources : [], buildingSources: group.key === 'buildingSources' ? filtered.buildingSources : [] }} />
     </details>)}
-    {!recipe && drops.length === 0 && !groups.some(group => group.count > 0) ? <p className="empty-state">No supported source path recorded for {itemName}.</p> : null}
+    {!recipe && drops.length === 0 && unownedOpenables.length === 0 && !groups.some(group => group.count > 0) ? <p className="empty-state">No supported source path recorded for {itemName}.</p> : null}
   </div>;
 }
 
@@ -742,7 +569,7 @@ function ItemGoalCalculatorSection({
   useEffect(() => { setExpandedKeys(new Set()); setExpandAll(false); }, [profile.canonicalKey, target.id, target.amount]);
 
   const result = useMemo(() => {
-    return buildItemGoalCalculatorResult({
+    return withItemPageIngredientBuildingSources(buildItemGoalCalculatorResult({
       itemName: profile.itemName,
       canonicalKey: profile.canonicalKey,
       currentMastery: profile.currentMastery,
@@ -766,7 +593,7 @@ function ItemGoalCalculatorSection({
         wishingWellRewardMultiplier,
         referencePetLevelOverrides,
       },
-    });
+    }), buildingProductionReference, buildingProductionState);
   }, [
     acquisitionState,
     crunchyOmeletteActive,
@@ -791,7 +618,7 @@ function ItemGoalCalculatorSection({
     wishingWellThrowsPerDay,
   ]);
   const goalLabel = goalMode === 'mastery' ? 'Mastery remaining' : 'Quantity target';
-  const allWarnings = [...result.warnings, ...result.waitProjection.warnings];
+  const allWarnings = [...new Set([...result.warnings, ...result.waitProjection.warnings, ...(goalMode === 'mastery' && !profile.matchedSnapshotRow ? ['No imported mastery baseline for this item; this estimate starts from zero.'] : [])])];
   const countedSupplyNotes = [
     result.openableQuantity > 0 ? `${formatPlannerQuantity(result.openableQuantity)} from openables` : '',
     result.storedPetInventoryQuantity > 0
@@ -801,7 +628,7 @@ function ItemGoalCalculatorSection({
       ? `${formatPlannerQuantity(result.effectiveStoredPetInventoryQuantity)} after Crunchy`
       : '',
     result.waitProjection.futurePetQuantity > 0
-      ? `${formatPlannerQuantity(result.waitProjection.futurePetQuantity)} future pets`
+      ? `${formatPlannerQuantity(result.waitProjection.futurePetQuantity)} projected pet supply across this plan`
       : '',
   ].filter(Boolean);
   const hasAntlerAssumption =
@@ -823,13 +650,14 @@ function ItemGoalCalculatorSection({
   return (
     <section className="page-card page-stack" aria-labelledby="item-goal-calculator-title">
       <h2 id="item-goal-calculator-title">Plan materials</h2>
-      <ItemCompactSources result={result} canonicalKey={profile.canonicalKey} itemName={profile.itemName} dropRateReference={dropRateReference} recipeGraph={recipeGraph} />
+      <ItemCompactSources result={result} canonicalKey={profile.canonicalKey} itemName={profile.itemName} dropRateReference={dropRateReference} recipeGraph={recipeGraph} openableContentsReference={openableContentsReference} />
       <ItemTargetControl target={target} options={targetOptions} onSelect={setSelectedTargetId} onAmount={setCustomAmount} />
       <p className="item-plan-summary">{goalLabel}: <strong>{formatPlannerQuantity(result.desiredQuantity)}</strong> · Counted supply: <strong>{formatPlannerQuantity(result.totalAvailableQuantity)}</strong> · Shortfall: <strong>{formatPlannerQuantity(result.remainingQuantity)}</strong></p>
       {countedSupplyNotes.length > 0 ? <p className="subtle-text">{countedSupplyNotes.join(', ')}</p> : null}
       <p className="subtle-text">After waiting {waitDays} days: {formatPlannerQuantity(result.waitProjection.projectedRemainingQuantity)} remaining. Future supply is a projection.</p>
       <details className="advanced-details">
         <summary>Adjust assumptions</summary>
+        <p className="subtle-text">Saved crafting settings: Resource Saver {(result.plannerResult.problem.modifierTotals.totalResourceSaverPercent * 100).toLocaleString()}% · Mastery bonus {(result.plannerResult.problem.modifierTotals.totalMasteryBonusPercent * 100).toLocaleString()}%. {modifierState.planning.ironDepotActive ? 'Iron Depot on.' : 'Iron Depot off.'}</p>
         <div className="item-goal-controls">
           <label>
             Wait days
@@ -1034,9 +862,9 @@ function ItemGoalCalculatorSection({
                 {!entry.direct ? <small className="subtle-text">Whole-plan total · used by {entry.parentKeys.map(key => result.plannerResult.rowsByCanonicalKey[key]?.itemName ?? key).join(', ')}</small> : null}
                 <button className="button item-detail-toggle" type="button" aria-expanded={expandAll || expandedKeys.has(entry.row.canonicalKey)} onClick={() => { if (expandAll) { setExpandAll(false); setExpandedKeys(new Set()); } else setExpandedKeys(keys => { const next = new Set(keys); if (next.has(entry.row.canonicalKey)) next.delete(entry.row.canonicalKey); else next.add(entry.row.canonicalKey); return next; }); }}>Details</button>
               </span>
-              <span role="cell">{formatPlannerQuantity(entry.row.grossRequiredQuantity)}</span><span role="cell">{formatPlannerQuantity(entry.row.availableUsedQuantity)}</span><strong role="cell">{formatPlannerQuantity(entry.row.remainingQuantity)}</strong>
+              <span role="cell">{formatPlannerQuantity(entry.row.grossRequiredQuantity)}</span><span role="cell">{formatPlannerQuantity(entry.row.availableUsedQuantity)}{entry.row.supply?.breakdowns.some(part => part.timing === 'future' && part.quantity > 0) ? <small className="subtle-text">Includes projected supply</small> : null}</span><strong role="cell">{formatPlannerQuantity(entry.row.remainingQuantity)}</strong>
             </div>
-            {expandAll || expandedKeys.has(entry.row.canonicalKey) ? <div className="item-material-details"><ItemCompactSources result={result} canonicalKey={entry.row.canonicalKey} itemName={entry.row.itemName} dropRateReference={dropRateReference} recipeGraph={recipeGraph} /></div> : null}
+            {expandAll || expandedKeys.has(entry.row.canonicalKey) ? <div className="item-material-details"><ItemCompactSources result={result} canonicalKey={entry.row.canonicalKey} itemName={entry.row.itemName} dropRateReference={dropRateReference} recipeGraph={recipeGraph} openableContentsReference={openableContentsReference} /></div> : null}
           </div>
         ))}
       </div>
@@ -1417,30 +1245,7 @@ export function ItemProfilePage() {
 
           </div>
           <div id="item-view-use-it" className="page-stack item-profile-view" role="region" aria-label="Use it" hidden={activeView !== 'use-it'}>
-          {resourcesState.resources?.recipeGraph ? (
-            <ItemMaterialSinkPanel
-              profile={profile}
-              recipeGraph={resourcesState.resources.recipeGraph}
-              towerRequirementsData={resourcesState.resources.towerRequirementsData}
-              snapshot={resourcesState.resources.snapshot}
-            />
-          ) : null}
-
-          <section className="page-card page-stack" aria-labelledby="item-profile-used-in-title">
-            <h2 id="item-profile-used-in-title">Used In</h2>
-            {profile.usedInRecipes.length > 0 ? (
-              <ul className="data-list data-list--clickable">
-                {profile.usedInRecipes.map((recipe) => (
-                  <UsedInRecipeRow key={recipe.outputCanonicalKey} recipe={recipe} />
-                ))}
-              </ul>
-            ) : (
-              <p className="empty-state">No local recipes use this item directly.</p>
-            )}
-          </section>
-
-          <ItemQuestFutureDemandPanel demand={questFutureDemand} />
-
+            {resourcesState.resources?.recipeGraph ? <ItemUsesPanel key={profile.canonicalKey} profile={profile} recipeGraph={resourcesState.resources.recipeGraph} towerRequirementsData={resourcesState.resources.towerRequirementsData} snapshot={resourcesState.resources.snapshot} questDemand={questFutureDemand} /> : <p className="empty-state">Recipe use coverage is unavailable.</p>}
           </div>
         </>
       ) : null}

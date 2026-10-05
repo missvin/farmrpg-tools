@@ -370,24 +370,15 @@ describe('ItemProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Use it' }));
     expect(screen.queryByRole('heading', { name: 'Made From' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Red Dye' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Used In' })).toBeInTheDocument();
-
-    const sinkSection = screen.getByRole('heading', { name: 'Tower Craft Sinks' }).closest('section');
-    expect(sinkSection).not.toBeNull();
-    expect(within(sinkSection as HTMLElement).getByRole('link', { name: 'Open Matrix' })).toHaveAttribute(
-      'href',
-      '/craft-material-matrix?seed=red+dye',
-    );
-    expect(within(sinkSection as HTMLElement).getByText('Show Tower craft sinks')).toBeInTheDocument();
-    expect(within(sinkSection as HTMLElement).getByRole('link', { name: /Red Shirt/ })).toHaveAttribute(
-      'href',
-      '/items/red%20shirt',
-    );
-    expect(within(sinkSection as HTMLElement).getByRole('link', { name: /Red Cloak/ })).toHaveAttribute(
-      'href',
-      '/items/red%20cloak',
-    );
-
+    const uses = screen.getByRole('heading', { name: 'Use Red Dye' }).closest('section')!;
+    expect(within(uses).getByRole('button', { name: 'Tower', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    expect(within(uses).getByRole('link', { name: /Red Shirt/ })).toHaveAttribute('href', '/items/red%20shirt');
+    await user.click(within(uses).getByRole('button', { name: 'Quests', exact: true }));
+    expect(within(uses).getByText(/No unfinished quest demand recorded/)).toBeInTheDocument();
+    await user.click(within(uses).getByRole('button', { name: 'All recipes' }));
+    expect(within(uses).getByRole('link', { name: /Red Shirt/ })).toBeInTheDocument();
+    await user.click(within(uses).getByRole('button', { name: 'Tower', exact: true }));
+    await user.click(within(uses).getByLabelText('Include completed targets'));
     await user.click(screen.getByRole('button', { name: 'Get more' }));
     const goalSection = screen.getByRole('heading', { name: 'Plan materials' }).closest('section');
     expect(goalSection).not.toBeNull();
@@ -414,6 +405,16 @@ describe('ItemProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Plan materials' }));
     expect(screen.getByRole('combobox', { name: 'Planning target' })).toHaveValue('mastery-1000000');
     expect(screen.getByRole('table', { name: 'Material plan' })).toBeInTheDocument();
+  });
+
+  it('defaults to quantity without mastery evidence or with explicit non-masterable metadata', async () => {
+    mockResources(); getLatestSnapshotMock.mockResolvedValue(null);
+    loadItemCatalogMock.mockResolvedValue({ entries: [], byCanonicalKey: { 'red dye': { canonicalKey: 'red dye', itemName: 'Red Dye', masteryPossible: 'no' } } });
+    render(<MemoryRouter initialEntries={['/items/red%20dye']}><Routes><Route path="/items/:canonicalKey" element={<ItemProfilePage />} /></Routes></MemoryRouter>);
+    await screen.findByRole('heading', { name: 'Red Dye' });
+    expect(screen.getByRole('combobox', { name: 'Planning target' })).toHaveValue('custom-quantity');
+    expect(screen.getByText('Not masterable')).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Custom mastery' })).not.toBeInTheDocument();
   });
 
   it('marks completed Tower targets clearly', async () => {

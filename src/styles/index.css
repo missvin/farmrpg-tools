@@ -3795,3 +3795,11 @@ a {
 @media (max-width: 480px) { .item-profile-page .item-overview-recipe { grid-template-columns: minmax(0, 1fr); } }
 
 @media (min-width: 900px) { .item-profile-page .item-overview-recipe { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.item-use-list li { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: .15rem .65rem; border-bottom: 1px solid var(--color-border); padding: .4rem 0; }
+.item-use-list li > details { grid-column: 1 / -1; font-size: .85rem; }
+.item-use-list small { display: block; }
+.item-use-list .item-icon { width: 24px; height: 24px; }
+.item-profile-page .item-profile-header__identity > div { min-width: 0; }
+.item-profile-page .item-quick-plan { min-width: 0; }
+.item-profile-page .item-quick-plan .text-input { width: 100%; }
