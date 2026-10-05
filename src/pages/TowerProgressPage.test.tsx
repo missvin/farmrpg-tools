@@ -576,6 +576,45 @@ describe('TowerProgressPage', () => {
     expect(screen.queryByText('Gold Cucumber')).not.toBeInTheDocument();
   });
 
+  it('updates the top PJ total for shortcuts and manual cutoffs without double-counting repeated item targets', async () => {
+    const user = userEvent.setup();
+    setupTowerCutoffMocks();
+    const snapshot = await getLatestSnapshotMock();
+    snapshot.masteryByItem.board = 50_000;
+    const requirements = await loadTowerRequirementsMock();
+    requirements.entries[0].towerLevel = 350;
+    requirements.entries.push({ ...requirements.entries[0], towerLevel: 250, masteryLevelNeeded: 'GM' });
+    renderTowerProgressPage();
+
+    const summary = await screen.findByRole('group', { name: 'PJ remaining' });
+    expect(within(summary).getByText('40 Pumpkin Juice')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'T300' }));
+    await waitFor(() => expect(within(screen.getByRole('group', { name: 'PJ remaining' })).getByText('8 Pumpkin Juice')).toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'T300' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'T310' })).toBeInTheDocument();
+
+    const input = screen.getByLabelText('Through level');
+    await user.clear(input);
+    await user.type(input, '330');
+    await waitFor(() => expect(within(screen.getByRole('group', { name: 'PJ remaining' })).getByText('16 Pumpkin Juice')).toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'T330' })).toHaveAttribute('aria-pressed', 'true');
+    await user.click(screen.getByRole('checkbox', { name: 'Incomplete only' }));
+    expect(within(screen.getByRole('group', { name: 'PJ remaining' })).getByText('16 Pumpkin Juice')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'T350' }));
+    await waitFor(() => expect(within(screen.getByRole('group', { name: 'PJ remaining' })).getByText('40 Pumpkin Juice')).toBeInTheDocument());
+  });
+
+  it('labels the top total as partial when an item needs baseline mastery', async () => {
+    setupTowerCutoffMocks();
+    const snapshot = await getLatestSnapshotMock();
+    snapshot.masteryByItem['gold cucumber'] = 0;
+    renderTowerProgressPage();
+    const summary = await screen.findByRole('group', { name: 'PJ remaining' });
+    expect(within(summary).getByText('PJ remaining · partial total')).toBeInTheDocument();
+    expect(within(summary).getByText('Excludes 1 item needing baseline mastery.')).toBeInTheDocument();
+    expect(within(summary).getByText('20 Pumpkin Juice')).toBeInTheDocument();
+  });
+
   it('switches between all-known and T300 Pumpkin Juice target scopes', async () => {
     const user = userEvent.setup();
     setupTowerCutoffMocks();

@@ -160,6 +160,14 @@ export function TowerProgressPage() {
   const targetCanonicalKey = searchParams.get('item')?.trim().toLowerCase() ?? null;
   const [targetLevelInput, setTargetLevelInput] = useState(() => searchParams.get('through') ?? '');
   const towerTargetLevel = useMemo(() => parseTowerTargetLevelInput(targetLevelInput), [targetLevelInput]);
+  const [highestKnownTowerLevel, setHighestKnownTowerLevel] = useState(0);
+  const milestoneLevels = Array.from({ length: Math.floor(highestKnownTowerLevel / 50) }, (_, index) => (index + 1) * 50);
+  const shortcutStart = Math.min(
+    Math.floor((towerTargetLevel ?? highestKnownTowerLevel) / 50) * 50,
+    Math.max(0, Math.floor((highestKnownTowerLevel - 1) / 50) * 50),
+  );
+  const nearbyLevels = Array.from({ length: 4 }, (_, index) => shortcutStart + (index + 1) * 10)
+    .filter((level) => level <= highestKnownTowerLevel);
   const [pumpkinJuicePlannerState, setPumpkinJuicePlannerState] = useState(() => {
     try {
       return loadPumpkinJuicePlannerState();
@@ -273,6 +281,10 @@ export function TowerProgressPage() {
   }
 
   useEffect(() => {
+    setTargetLevelInput(searchParams.get('through') ?? '');
+  }, [searchParams]);
+
+  useEffect(() => {
     let isMounted = true;
 
     void getLatestSnapshot()
@@ -319,6 +331,7 @@ export function TowerProgressPage() {
             return;
           }
 
+          setHighestKnownTowerLevel(Math.max(0, ...towerRequirementsData.entries.map((entry) => entry.towerLevel)));
           setProgressState({
             isLoading: false,
             snapshotError: null,
@@ -387,7 +400,19 @@ export function TowerProgressPage() {
 
   return (
     <div className="page-stack tower-progress-page">
-      <header className="tower-remaining-heading"><h1>Tower — remaining items</h1></header>
+      <header className="tower-remaining-heading">
+        <h1>Tower — remaining items</h1>
+        {!progressState.isLoading && progressState.derivedProgress ? (
+          <div className="tower-pj-summary" role="group" aria-label="PJ remaining" aria-live="polite">
+            <span className="field-label">PJ remaining{progressState.derivedProgress.pumpkinJuiceBlockedItemCount > 0 ? ' · partial total' : ''}</span>
+            <strong>{progressState.derivedProgress.totalPumpkinJuicesNeeded.toLocaleString()} Pumpkin Juice</strong>
+            <span className="subtle-text">{towerTargetLevel ? `Through level ${towerTargetLevel}` : 'All known Tower levels'}</span>
+            {progressState.derivedProgress.pumpkinJuiceBlockedItemCount > 0 ? (
+              <span className="subtle-text">Excludes {progressState.derivedProgress.pumpkinJuiceBlockedItemCount} item{progressState.derivedProgress.pumpkinJuiceBlockedItemCount === 1 ? '' : 's'} needing baseline mastery.</span>
+            ) : null}
+          </div>
+        ) : null}
+      </header>
 
       {progressState.isLoading ? (
         <p className="empty-state">Loading latest snapshot, tower requirements, and mastery difficulty data...</p>
@@ -431,12 +456,25 @@ export function TowerProgressPage() {
             <input id="tower-through-level" className="text-input text-input--short" type="number" min="1" step="1"
               value={targetLevelInput} placeholder="All" onChange={(event) => handleTargetLevelInputChange(event.target.value)} />
             <button className="button" onClick={handleSelectAllKnownTowerLevels}>All known</button>
-            <button className="button" onClick={() => handleSelectTowerPreset(300)}>T300</button>
             <button className="tower-view-link" onClick={() => openSecondaryView('tower-activity-panel')}>By activity</button>
             <button className="tower-view-link" onClick={() => openSecondaryView('tower-difficulty-panel')}>By difficulty</button>
             <button className="tower-view-link" onClick={() => openSecondaryView('tower-pj-panel')}>PJ planner</button>
             <Link to="/tower">By level groups</Link>
             <Link to="/tower-pj-history">PJ history</Link>
+          </div>
+          <div className="tower-level-shortcuts" aria-label="Tower level shortcuts">
+            <div className="tower-shortcut-row" role="group" aria-label="50-level milestones">
+              {milestoneLevels.map((level) => (
+                <button key={level} type="button" className="button button--secondary" aria-pressed={towerTargetLevel === level}
+                  onClick={() => handleSelectTowerPreset(level)}>T{level}</button>
+              ))}
+            </div>
+            <div className="tower-shortcut-row" role="group" aria-label="Nearby 10-level shortcuts">
+              {nearbyLevels.map((level) => (
+                <button key={level} type="button" className="button button--secondary" aria-pressed={towerTargetLevel === level}
+                  onClick={() => handleSelectTowerPreset(level)}>T{level}</button>
+              ))}
+            </div>
           </div>
           <TowerRemainingTable rows={progressState.requirementRows} targetItem={targetCanonicalKey}
             recipeGraph={progressState.recipeGraph} dropRateReference={progressState.dropRateReference}

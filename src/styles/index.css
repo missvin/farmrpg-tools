@@ -1513,6 +1513,14 @@ a {
 .tower-mastery-tooltip--open { display: block; }
 .tower-material-tooltip { width: max-content; max-width: min(300px, calc(100vw - 16px)); }
 .tower-remaining-heading h1 { margin: 0; font-size: 1.6rem; }
+.tower-remaining-heading { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1rem 2rem; }
+.tower-pj-summary { display: grid; gap: 0.2rem; max-width: 25rem; }
+.tower-pj-summary strong { font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.tower-pj-summary .subtle-text { margin: 0; }
+.tower-level-shortcuts { display: grid; gap: 0.4rem; }
+.tower-shortcut-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tower-shortcut-row .button { min-height: 44px; padding: 0.35rem 0.75rem; }
+.tower-shortcut-row .button[aria-pressed="true"] { border-color: var(--color-next-border); background: var(--color-next-bg); }
 .tower-secondary-view > summary { cursor: pointer; color: var(--color-next-border); padding: 0.5rem 0; }
 .tower-view-link { border: 0; background: transparent; color: var(--color-next-border); font: inherit; text-decoration: underline; cursor: pointer; padding: 0.4rem 0; }
 .tower-remaining-table { min-width: 470px; }
