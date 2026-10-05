@@ -1494,6 +1494,11 @@ export function ItemProfilePage() {
   }, [canonicalKey, resourcesState.resources]);
 
   const icon = profile ? getItemIcon(profile.canonicalKey) : null;
+  const nextMilestone = profile ? getNextMasteryMilestone(profile.currentMastery) : null;
+  const savedInventory = acquisitionState.inventory.entries.find((entry) => entry.canonicalItemKey === profile?.canonicalKey);
+  const nextTowerTarget = profile ? [...profile.towerTargets]
+    .filter((target) => !isTowerTargetComplete(profile, target))
+    .sort((left, right) => (left.levels[0] ?? Infinity) - (right.levels[0] ?? Infinity))[0] ?? null : null;
   const burdenResult = useMemo(() => {
     if (
       !profile ||
@@ -1569,12 +1574,16 @@ export function ItemProfilePage() {
 
       {profile ? (
         <>
-          <section className="page-card page-stack" aria-labelledby="item-profile-title">
+          <section className="page-card page-stack item-profile-status" aria-labelledby="item-profile-title">
             <div className="item-profile-header">
               <div className="item-profile-header__identity">
                 {icon ? <img className="item-profile-header__icon" src={icon.src} alt="" aria-hidden="true" /> : null}
                 <div>
                   <h2 id="item-profile-title">{profile.itemName}</h2>
+                  <span className="subtle-text">Saved inventory: {savedInventory ? formatMastery(savedInventory.inventoryCount) : 'Not recorded'}</span>
+                  {resourcesState.resources?.snapshot ? (
+                    <span className="subtle-text item-profile-snapshot">Mastery snapshot: <time dateTime={resourcesState.resources.snapshot.createdAt}>{new Date(resourcesState.resources.snapshot.createdAt).toLocaleDateString()}</time></span>
+                  ) : null}
                   {!profile.known ? (
                     <p className="status-message">
                       This item is not in the current local reference data yet, so only safe fallback details are shown.
@@ -1587,10 +1596,11 @@ export function ItemProfilePage() {
                 style={getMasteryProgressStyle(profile.currentMastery)}
                 aria-label={`${profile.itemName} mastery progress`}
               >
-                <span className="item-mastery-progress__label">Current mastery</span>
+                <span className="item-mastery-progress__label">{nextMilestone ? `Remaining to ${nextMilestone.label}` : 'Mastery'}</span>
                 <strong>
-                  {formatMastery(profile.currentMastery)} / 1,000,000
+                  {!profile.matchedSnapshotRow ? 'Not in latest import' : nextMilestone ? formatMastery(nextMilestone.targetMastery - profile.currentMastery) : 'MM complete'}
                 </strong>
+                <span className="subtle-text">{formatMastery(profile.currentMastery)} / 1,000,000</span>
                 <span className="subtle-text">
                   {formatNextMasteryMilestoneProgress(profile.currentMastery)}
                 </span>
@@ -1606,9 +1616,21 @@ export function ItemProfilePage() {
                 ) : null}
               </div>
             </div>
-          </section>
-
-          <section className="page-card page-stack" aria-labelledby="item-profile-tower-title">
+            <div className="item-profile-next-tower" aria-label="Next Tower need">
+              {nextTowerTarget ? (
+                <>
+                  <span className="field-label">Next Tower need</span>
+                  <Link to={`/tower-progress?through=${nextTowerTarget.levels[0]}&item=${encodeURIComponent(profile.canonicalKey)}&level=${nextTowerTarget.levels[0]}`}>
+                    {nextTowerTarget.masteryLevelLabel} at Tower {nextTowerTarget.levels[0]}
+                  </Link>
+                  <span>{formatMastery(nextTowerTarget.requiredThreshold - profile.currentMastery)} mastery left</span>
+                  <span>PJ: {formatPumpkinJuiceCount(nextTowerTarget.estimate.totalPumpkinJuices)}</span>
+                </>
+              ) : <span className="subtle-text">{profile.towerTargets.length ? 'All Tower targets complete' : 'No Tower requirement found for this item.'}</span>}
+            </div>
+            {profile.towerTargets.length > 0 ? <details className="item-profile-tower-details">
+              <summary>All Tower targets ({profile.towerTargets.length})</summary>
+          <section className="page-stack" aria-labelledby="item-profile-tower-title">
             <h2 id="item-profile-tower-title">Tower Need</h2>
             {profile.towerTargets.length > 0 ? (
               <div className="page-stack">
@@ -1640,6 +1662,8 @@ export function ItemProfilePage() {
             ) : (
               <p className="empty-state">No Tower requirement found for this item.</p>
             )}
+          </section>
+            </details> : null}
           </section>
 
           <section className="page-card page-stack" aria-labelledby="item-profile-recipe-title">

@@ -2299,6 +2299,13 @@ a {
   object-fit: contain;
 }
 
+.item-profile-status .item-profile-header__icon { width: 3rem; height: 3rem; }
+.item-profile-status h2 { margin: 0 0 0.25rem; }
+.item-profile-snapshot { display: block; }
+.item-profile-next-tower { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1rem; }
+.item-profile-tower-details > summary { cursor: pointer; color: var(--color-next-border); padding: 0.35rem 0; }
+.item-profile-tower-details > section { margin-top: 0.5rem; }
+
 .item-mastery-progress {
   position: relative;
   display: grid;

@@ -9,6 +9,8 @@ Note:
 
 ## Unreleased / post-v1.6 shipped work
 
+- Compacted item status with saved inventory, mastery remaining, and the next Tower/PJ target; full Tower targets now expand within the header.
+
 - Added a cutoff-aware Pumpkin Juice total at the top of Tower, with partial-estimate warnings and quick 10/50-level milestone buttons.
 
 - Added a storage foundation for keeping multiple local snapshots with stable IDs and saved/imported metadata.

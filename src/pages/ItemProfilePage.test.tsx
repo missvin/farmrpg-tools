@@ -1,8 +1,10 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ItemProfilePage } from './ItemProfilePage';
+import { createDefaultAcquisitionPlannerInputState, saveAcquisitionPlannerInputState } from '../lib/acquisitionPlannerState';
 
 const getLatestSnapshotMock = vi.fn();
 const loadItemCatalogMock = vi.fn();
@@ -316,6 +318,7 @@ describe('ItemProfilePage', () => {
   }
 
   it('shows item mastery, Tower, PJ, and recipe context', async () => {
+    const user = userEvent.setup();
     mockResources();
 
     render(
@@ -330,6 +333,13 @@ describe('ItemProfilePage', () => {
 
     expect(screen.getByText('50,000 / 1,000,000')).toBeInTheDocument();
     expect(screen.getByText('50.0% to GM')).toBeInTheDocument();
+    const nextTower = screen.getByLabelText('Next Tower need');
+    expect(within(nextTower).getByText('50,000 mastery left')).toBeInTheDocument();
+    expect(within(nextTower).getByText('PJ: 8')).toBeInTheDocument();
+    expect(within(nextTower).getByRole('link', { name: 'GM at Tower 304' })).toHaveAttribute('href', '/tower-progress?through=304&item=red%20dye&level=304');
+    const towerDetails = screen.getByText('All Tower targets (1)').closest('details');
+    expect(towerDetails).not.toHaveAttribute('open');
+    await user.click(screen.getByText('All Tower targets (1)'));
 
     const towerSection = screen.getByRole('heading', { name: 'Tower Need' }).closest('section');
     expect(towerSection).not.toBeNull();
@@ -389,6 +399,7 @@ describe('ItemProfilePage', () => {
   });
 
   it('marks completed Tower targets clearly', async () => {
+    const user = userEvent.setup();
     mockResources();
     getLatestSnapshotMock.mockResolvedValue({
       snapshotId: 'snapshot-1',
@@ -426,7 +437,10 @@ describe('ItemProfilePage', () => {
       </MemoryRouter>,
     );
 
-    const towerSection = (await screen.findByRole('heading', { name: 'Tower Need' })).closest('section');
+    await screen.findByRole('heading', { name: 'Red Dye' });
+    expect(screen.getByText('All Tower targets complete')).toBeInTheDocument();
+    await user.click(screen.getByText('All Tower targets (1)'));
+    const towerSection = screen.getByRole('heading', { name: 'Tower Need' }).closest('section');
     expect(towerSection).not.toBeNull();
     expect(within(towerSection as HTMLElement).getByText('Complete')).toBeInTheDocument();
     expect(within(towerSection as HTMLElement).getAllByText('0')).toHaveLength(2);
@@ -447,5 +461,22 @@ describe('ItemProfilePage', () => {
       expect(screen.getByRole('heading', { name: 'Mystery Item' })).toBeInTheDocument();
     });
     expect(screen.getByText(/not in the current local reference data/i)).toBeInTheDocument();
+    expect(screen.getByText('Saved inventory: Not recorded')).toBeInTheDocument();
+    expect(screen.getByText('Not in latest import')).toBeInTheDocument();
+  });
+
+  it('shows saved inventory and chooses the earliest unfinished Tower target over a later MM target', async () => {
+    mockResources();
+    const state = createDefaultAcquisitionPlannerInputState();
+    state.inventory.entries = [{ canonicalItemKey: 'red dye', itemName: 'Red Dye', inventoryCount: 123 }];
+    saveAcquisitionPlannerInputState(state);
+    const requirements = await loadTowerRequirementsMock();
+    requirements.byCanonicalKey['red dye'].push({ ...requirements.byCanonicalKey['red dye'][0], towerLevel: 350, masteryLevelNeeded: 'MM' });
+    render(<MemoryRouter initialEntries={['/items/red%20dye']}><Routes><Route path="/items/:canonicalKey" element={<ItemProfilePage />} /></Routes></MemoryRouter>);
+    await screen.findByRole('heading', { name: 'Red Dye' });
+    expect(screen.getByText('Saved inventory: 123')).toBeInTheDocument();
+    expect(within(screen.getByLabelText('Next Tower need')).getByRole('link', { name: 'GM at Tower 304' })).toBeInTheDocument();
+    expect(screen.getByText('All Tower targets (2)')).toBeInTheDocument();
+    expect(screen.getByText(/Mastery snapshot:/)).toBeInTheDocument();
   });
 });
