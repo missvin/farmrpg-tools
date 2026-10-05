@@ -1673,7 +1673,7 @@ export function ItemProfilePage() {
               ['get-more', 'Get more'],
               ['use-it', 'Use it'],
             ] as const).map(([view, label]) => (
-              <button key={view} type="button" aria-pressed={activeView === view}
+              <button key={view} type="button" className={`button${activeView === view ? ' button--active' : ''}`} aria-pressed={activeView === view}
                 aria-controls={`item-view-${view}`} onClick={() => setActiveView(view)}>
                 {label}
               </button>
