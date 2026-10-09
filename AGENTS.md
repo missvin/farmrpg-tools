@@ -177,9 +177,9 @@ For explicitly approved direct protected-branch pushes, `git codex-push` reads `
 
 If a helper fails, stop and report the failure. Do not silently fall back to raw `git add`, `git commit`, `git push`, or `git merge`.
 
-For normal one-off tasks, do not commit unless the user asks. For `farmrpg-tools-next-slice` runs, completed work should be committed, merged, and pushed by default unless the user explicitly asks not to land it, asks for planning-only/review-only, or the work is not safe to land.
+For implementation tasks, including normal one-off tasks and `farmrpg-tools-next-slice` runs, completed and verified work should be committed, merged, and pushed by default unless the user explicitly asks not to land it, asks for planning-only/review-only, or the work is not safe to land.
 
-When landing next-slice work, use a short-lived `codex/...` task branch if needed, then use the helper workflow to stage exact files, commit, push the task branch, fast-forward merge into `master`, and push `master`. End by verifying whether `master` is up to date with `origin/master`.
+When landing implementation work, use a short-lived `codex/...` task branch if needed, then use the helper workflow to stage exact files, commit, push the task branch, fast-forward merge into `master`, and push `master`. End by verifying whether `master` is up to date with `origin/master`.
 
 ## Secondary project consideration
 

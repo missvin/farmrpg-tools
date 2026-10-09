@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { getItemIcon } from '../lib/itemIconManifest';
-import { COMMON_TOWER_MATERIALS, TOWER_DYES, type TowerMaterial } from '../lib/towerMaterials';
+import { COMMON_TOWER_MATERIALS, TOWER_CROPS, TOWER_DYES, type TowerMaterial } from '../lib/towerMaterials';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 
 export function TowerMaterialFilters({ choices, selected, mode, onChange }: {
@@ -10,8 +10,10 @@ export function TowerMaterialFilters({ choices, selected, mode, onChange }: {
   const [search, setSearch] = useState('');
   const dyeKeys = TOWER_DYES.map(toCanonicalItemKey);
   const dyeCount = dyeKeys.filter((key) => selected.includes(key)).length;
+  const cropKeys = TOWER_CROPS.map(toCanonicalItemKey);
+  const cropCount = cropKeys.filter((key) => selected.includes(key)).length;
   const commonKeys = COMMON_TOWER_MATERIALS.map(toCanonicalItemKey);
-  const other = choices.filter((choice) => !commonKeys.includes(choice.canonicalKey) && !dyeKeys.includes(choice.canonicalKey));
+  const other = choices.filter((choice) => !commonKeys.includes(choice.canonicalKey) && !dyeKeys.includes(choice.canonicalKey) && !cropKeys.includes(choice.canonicalKey));
   const results = other.filter((choice) => choice.itemName.toLowerCase().includes(search.trim().toLowerCase()));
   function option(material: TowerMaterial) {
     const icon = getItemIcon(material.canonicalKey)?.src;
@@ -36,6 +38,17 @@ export function TowerMaterialFilters({ choices, selected, mode, onChange }: {
         <span>Dyes{dyeCount > 0 && dyeCount < dyeKeys.length ? ` · ${dyeCount}` : ''}</span>
         <span className="tower-chip-check" aria-hidden="true">{dyeCount > 0 && dyeCount < dyeKeys.length ? '−' : '✓'}</span>
       </label>
+      <label className="tower-material-chip" data-partial={cropCount > 0 && cropCount < cropKeys.length || undefined}>
+        <input type="checkbox" aria-label="Crops" checked={cropCount === cropKeys.length}
+          ref={(input) => { if (input) input.indeterminate = cropCount > 0 && cropCount < cropKeys.length; }}
+          onChange={() => onChange(cropCount === cropKeys.length ? selected.filter((key) => !cropKeys.includes(key)) : [...new Set([...selected, ...cropKeys])], mode)} />
+        <span className="tower-dye-stack" aria-hidden="true">{['Corn', 'Cotton', 'Pine Tree'].map((name) => {
+          const icon = getItemIcon(toCanonicalItemKey(name))?.src;
+          return icon ? <img key={name} src={icon} alt="" /> : null;
+        })}</span>
+        <span>Crops{cropCount > 0 && cropCount < cropKeys.length ? ` · ${cropCount}` : ''}</span>
+        <span className="tower-chip-check" aria-hidden="true">{cropCount > 0 && cropCount < cropKeys.length ? '−' : '✓'}</span>
+      </label>
     </div>
     <div className="tower-material-actions">
       <span>Match</span><div className="tower-material-match" role="radiogroup" aria-label="Material matching">
@@ -49,6 +62,9 @@ export function TowerMaterialFilters({ choices, selected, mode, onChange }: {
       <details><summary>Dye colors</summary><div className="tower-material-options">
         {TOWER_DYES.map((itemName) => option({ itemName, canonicalKey: toCanonicalItemKey(itemName) }))}
       </div><p className="subtle-text">All requires every checked color. Uncheck colors to narrow the dye group.</p></details>
+      <details><summary>Individual crops</summary><div className="tower-material-options">
+        {TOWER_CROPS.filter((itemName) => !commonKeys.includes(toCanonicalItemKey(itemName))).map((itemName) => option({ itemName, canonicalKey: toCanonicalItemKey(itemName) }))}
+      </div><p className="subtle-text">Corn is also available above. All requires every checked crop; use Any to find requirements using any crop.</p></details>
       <details><summary>Other materials{selected.some((key) => other.some((item) => item.canonicalKey === key)) ? ' (selected)' : ''}</summary>
         <label>Search materials <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
         <div className="tower-material-options tower-material-search-results">

@@ -15,6 +15,15 @@ export function materialTestGraph(): RecipeGraph {
 }
 
 describe('Tower material relationships', () => {
+  it('matches crops themselves and recursive crop ingredients without treating harvest drops as crops', () => {
+    const graph = materialTestGraph();
+    graph.byOutputCanonicalKey['steel'].inputs = [{ itemName: 'Cotton', canonicalKey: 'cotton', inputOrder: 0, quantity: 2 }];
+    expect(matchesTowerMaterials(towerMaterialKeys('propeller hat', graph, null), ['cotton'], 'any')).toBe(true);
+    expect(matchesTowerMaterials(towerMaterialKeys('corn', null, null), ['corn'], 'any')).toBe(true);
+    expect(matchesTowerMaterials(towerMaterialKeys('pine tree', null, null), ['pine tree'], 'any')).toBe(true);
+    expect(towerMaterialKeys('runestone 01', null, null).size).toBe(0);
+    expect(towerMaterialChoices(null)).toContainEqual({ canonicalKey: 'tomato', itemName: 'Tomato' });
+  });
   it('makes Bamboo a default visible and selectable material', () => {
     expect(DEFAULT_TOWER_MATERIAL_KEYS).toContain('bamboo');
     expect(towerMaterialChoices(null)).toContainEqual({ canonicalKey: 'bamboo', itemName: 'Bamboo' });

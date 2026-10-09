@@ -8,11 +8,13 @@ import { createDefaultCraftingModifierState } from './craftingModifierState';
 export type TowerMaterial = { canonicalKey: string; itemName: string };
 export const COMMON_TOWER_MATERIALS = ['Steel', 'Steel Wire', 'Corn', 'Bamboo', 'Large Net', 'Twine', 'Oak', 'Cloth', 'Small Bolt', 'Emberstone', 'Leather'];
 export const TOWER_DYES = ['Black', 'Blue', 'Brown', 'Green', 'Orange', 'Purple', 'Red', 'White', 'Yellow'].map((color) => `${color} Dye`);
+// Growable outputs in the reviewed farming sources; rare harvest drops are not crops.
+export const TOWER_CROPS = ['Beet', 'Broccoli', 'Cabbage', 'Carrot', 'Corn', 'Cotton', 'Cucumber', 'Eggplant', 'Hops', 'Leek', 'Mushroom', 'Onion', 'Peas', 'Peppers', 'Pine Tree', 'Potato', 'Pumpkin', 'Radish', 'Rice', 'Sunflower', 'Tomato', 'Watermelon', 'Wheat'];
 export const DEFAULT_TOWER_MATERIAL_KEYS = [...COMMON_TOWER_MATERIALS, ...TOWER_DYES].map(toCanonicalItemKey);
 
 export function towerMaterialChoices(graph: RecipeGraph | null): TowerMaterial[] {
   const names = new Map<string, string>();
-  for (const name of [...COMMON_TOWER_MATERIALS, ...TOWER_DYES, 'Fishing Net']) names.set(toCanonicalItemKey(name), name);
+  for (const name of [...COMMON_TOWER_MATERIALS, ...TOWER_DYES, ...TOWER_CROPS, 'Fishing Net']) names.set(toCanonicalItemKey(name), name);
   for (const recipe of graph?.recipes ?? []) {
     for (const input of recipe.inputs) names.set(input.canonicalKey, input.itemName);
   }
@@ -44,6 +46,7 @@ export function towerMaterialKeys(root: string, graph: RecipeGraph | null, sourc
   }
   visit(root);
   result.delete(root);
+  if (TOWER_CROPS.some((name) => toCanonicalItemKey(name) === root)) result.add(root);
   return result;
 }
 

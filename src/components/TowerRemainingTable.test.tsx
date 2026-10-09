@@ -199,6 +199,30 @@ describe('Tower remaining requirements', () => {
     expect(screen.getByRole('checkbox', { name: 'Filter by Steel', exact: true })).not.toBeChecked();
   });
 
+  it('groups crops beside dyes, filters direct and recursive uses, and restores overrides from the URL', async () => {
+    const user = userEvent.setup();
+    const cropRecipe = { ...recipes[0], inputs: [{ itemName: 'Cotton', canonicalKey: 'cotton', inputOrder: 0, quantity: 2 }] };
+    const cropGraph = { ...graph, recipes: [cropRecipe], byOutputCanonicalKey: { 'propeller hat': cropRecipe } };
+    const cropRows = deriveTowerRemainingRows(snapshot, { entries: [...requirements.entries, requirement(304, 'Corn', 'GM')], byCanonicalKey: {} }, null);
+    render(<MemoryRouter initialEntries={['/tower-progress?through=350']}><NavigationProbe /><TowerRemainingTable rows={cropRows} targetItem={null} targetLevel={null} recipeGraph={cropGraph} /></MemoryRouter>);
+    await user.click(screen.getByRole('checkbox', { name: 'Crops', exact: true }));
+    expect(screen.getByRole('checkbox', { name: 'Crops', exact: true })).toBeChecked();
+    expect(within(screen.getByRole('table')).getAllByRole('row')).toHaveLength(4);
+    expect(screen.getByLabelText('Current URL')).toHaveTextContent('material=pine+tree');
+    expect(screen.getByLabelText('Current URL')).toHaveTextContent('material=tomato');
+    await user.click(screen.getByText('Individual crops', { selector: 'summary' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Filter by Cotton' }));
+    expect(screen.getByRole('checkbox', { name: 'Crops', exact: true })).toBePartiallyChecked();
+    expect(within(screen.getByRole('table')).getAllByRole('row')).toHaveLength(2);
+    await user.click(screen.getByRole('button', { name: 'Back' }));
+    expect(screen.getByRole('checkbox', { name: 'Crops', exact: true })).toBeChecked();
+    await user.click(screen.getByRole('radio', { name: 'All' }));
+    expect(screen.getByText(/No requirements match/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Clear' }));
+    expect(screen.getByRole('checkbox', { name: 'Crops', exact: true })).not.toBeChecked();
+    expect(screen.getByLabelText('Current URL')).toHaveTextContent('?through=350');
+  });
+
   it('supports dye group overrides and Fishing Net only through searchable Other materials', async () => {
     const user = userEvent.setup();
     render(<MemoryRouter><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} /></MemoryRouter>);
