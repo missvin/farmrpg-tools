@@ -25,6 +25,35 @@ function sources(): TowerEstimateSources {
 }
 
 describe('Tower target material estimates', () => {
+  it('counts terminal crops in direct, nested, and repeated ingredient paths', () => {
+    const input = sources();
+    input.recipeGraph = graphFrom({ 'veggie juice': [['tomato', 5], ['paste', 2]], paste: [['mushroom', 3]],
+      piano: [['cotton', 4], ['paste', 1], ['pine board', 2]], 'pine board': [['pine tree', 1]] });
+    expect(estimateTowerMaterial(row('veggie juice'), 'tomato', input).quantity).toBe(500);
+    expect(estimateTowerMaterial(row('veggie juice'), 'mushroom', input).quantity).toBe(600);
+    expect(estimateTowerMaterial(row('piano'), 'cotton', input).quantity).toBe(400);
+    expect(estimateTowerMaterial(row('piano'), 'pine tree', input).quantity).toBe(200);
+    input.recipeGraph.byOutputCanonicalKey['veggie juice'].inputs.push({ canonicalKey: 'mushroom', itemName: 'mushroom', quantity: 1, inputOrder: 2 });
+    expect(estimateTowerMaterial(row('veggie juice'), 'mushroom', input).quantity).toBe(700);
+    input.modifierState.temporary.eventResourceSaverBonusPercent = 1;
+    input.modifierState.temporary.eventMasteryBonusPercent = 1;
+    expect(estimateTowerMaterial(row('veggie juice'), 'tomato', input).quantity).toBe(125);
+  });
+  it('estimates direct crop mastery using mastery bonuses but not Resource Saver', () => {
+    const input = sources();
+    expect(estimateTowerMaterial(row('sunflower', 101), 'sunflower', input).quantity).toBe(101);
+    input.modifierState.temporary.eventResourceSaverBonusPercent = 1;
+    expect(estimateTowerMaterial(row('sunflower', 101), 'sunflower', input).quantity).toBe(101);
+    input.modifierState.temporary.eventMasteryBonusPercent = 1;
+    expect(estimateTowerMaterial(row('sunflower', 101), 'sunflower', input).quantity).toBe(51);
+    expect(estimateTowerMaterial({ ...row('sunflower'), matchedSnapshotRow: false }, 'sunflower', input).quantity).toBeNull();
+  });
+  it('still rejects a crop total when a separate unsupported acquisition path also consumes it', () => {
+    const input = sources();
+    input.recipeGraph = graphFrom({ hat: [['corn', 1], ['meal', 1]], meal: [['corn', 2]] });
+    input.recipeGraph.byOutputCanonicalKey.meal.recipeType = 'cooking';
+    expect(estimateTowerMaterial(row(), 'corn', input)).toMatchObject({ quantity: null, note: expect.stringContaining('partial quantity') });
+  });
   it('keeps the Veggie Juice chain consistent with excluded and enabled Shimmer Stone crafting', () => {
     const input = sources();
     input.recipeGraph = graphFrom({ 'veggie juice': [['glass bottle', 1], ['twine', 2]], 'glass bottle': [['glass orb', 1], ['stone', 1]],

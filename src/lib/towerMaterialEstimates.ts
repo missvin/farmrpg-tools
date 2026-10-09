@@ -7,7 +7,8 @@ import type { DropRateReferenceData } from './loadDropRateReference';
 import type { RecipeGraph } from './loadRecipeGraph';
 import { calculateCraftIngredientDemand } from './recursiveIngredientBurden';
 import type { TowerRemainingRow } from './towerRemainingRows';
-import { towerMaterialKeys } from './towerMaterials';
+import { TOWER_CROPS, towerMaterialKeys } from './towerMaterials';
+import { toCanonicalItemKey } from './normalizeItemKey';
 
 export type TowerMaterialEstimate = { quantity: number | null; note: string };
 export type TowerEstimateSources = {
@@ -28,13 +29,16 @@ export function estimateTowerMaterial(row: TowerRemainingRow, material: string, 
   if (policy.excludedCraftRecipeOutputKeys.has(row.canonicalKey)) return unavailable(excludedRecipeNote(row.canonicalKey));
   try {
     const gain = calculateEffectiveMasteryGain({ baseMasteryGain: 1, modifierState }).effectiveMasteryGain;
+    if (material === row.canonicalKey && TOWER_CROPS.some((name) => toCanonicalItemKey(name) === material)) {
+      return { quantity: Math.ceil(row.remainingToRequirement / gain), note: 'Crop units needed for mastery with saved mastery bonuses; Resource Saver does not multiply harvested crops. No inventory subtraction or growing-time estimate.' };
+    }
     if (recipeGraph?.byOutputCanonicalKey[row.canonicalKey]?.recipeType === 'craft') {
       const demand = calculateCraftIngredientDemand({ recipeGraph, modifierState, goals: [{
         canonicalKey: row.canonicalKey, itemName: row.itemName, desiredEffectiveOutput: row.remainingToRequirement / gain,
       }] });
       const incompletePath = Object.keys(demand.ingredientBurdenByCanonicalKey).some((key) => {
         const recipe = recipeGraph.byOutputCanonicalKey[key];
-        return (recipe?.recipeType !== 'craft' || policy.excludedCraftRecipeOutputKeys.has(key))
+        return key !== material && (recipe?.recipeType !== 'craft' || policy.excludedCraftRecipeOutputKeys.has(key))
           && towerMaterialKeys(key, recipeGraph, dropRateReference, policy).has(material);
       });
       if (incompletePath) return unavailable('A contributing acquisition or recipe path is unsupported; a partial quantity would undercount.');
