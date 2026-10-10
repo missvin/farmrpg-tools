@@ -13,8 +13,10 @@ describe('buildItemIconLookup', () => {
     expect(lookup.has('re taw')).toBe(false);
   });
 
-  it('includes the four reviewed Tower item icons', () => {
-    for (const itemName of ["Re'taw", "Re'taw Pail", 'Acid Extract', 'Joyful Ring', 'Pinecone Bird Feeder']) {
+  it('includes the reviewed Tower items and recipe ingredient icons', () => {
+    for (const itemName of ["Re'taw", "Re'taw Pail", 'Acid Extract', 'Joyful Ring', 'Pinecone Bird Feeder',
+      'Pestle and Mortar', 'Cave Paste', 'Ocean Stone', 'Ancient Bird Fossil', 'Ancient Ram Fossil',
+      'Flarite Ring', 'Green Halite Ring', 'Green Halite Earrings', 'Sparkle Dust']) {
       expect(getItemIcon(toCanonicalItemKey(itemName))?.src, itemName).toBeTruthy();
     }
   });
