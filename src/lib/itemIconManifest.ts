@@ -1,4 +1,5 @@
 import manifest from '../../generated/buddy_item_icon_manifest.json';
+import { toCanonicalItemKey } from './normalizeItemKey';
 
 export type ItemIconManifestEntry = {
   itemName: string;
@@ -41,7 +42,8 @@ export function buildItemIconLookup(
   const lookup = new Map<string, ItemIcon>();
 
   for (const entry of manifestEntries) {
-    if (entry.manifestStatus !== 'ready' || !entry.localRelativePath || lookup.has(entry.canonicalKey)) {
+    const canonicalKey = toCanonicalItemKey(entry.itemName);
+    if (entry.manifestStatus !== 'ready' || !entry.localRelativePath || lookup.has(canonicalKey)) {
       continue;
     }
 
@@ -50,9 +52,9 @@ export function buildItemIconLookup(
       continue;
     }
 
-    lookup.set(entry.canonicalKey, {
+    lookup.set(canonicalKey, {
       itemName: entry.itemName,
-      canonicalKey: entry.canonicalKey,
+      canonicalKey,
       src: assetUrl,
     });
   }

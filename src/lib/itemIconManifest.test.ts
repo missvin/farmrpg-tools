@@ -4,8 +4,17 @@ import { buildItemIconLookup, getItemIcon, type ItemIconManifestEntry } from './
 import { toCanonicalItemKey } from './normalizeItemKey';
 
 describe('buildItemIconLookup', () => {
+  it('derives canonical identity from the item name rather than legacy punctuation-stripped keys', () => {
+    const lookup = buildItemIconLookup([{
+      itemName: "Re’taw", canonicalKey: 're taw', manifestStatus: 'ready',
+      localRelativePath: 'generated/item-icons/retaw.png',
+    }], { 'generated/item-icons/retaw.png': '/assets/retaw.png' });
+    expect(lookup.get("re'taw")?.src).toBe('/assets/retaw.png');
+    expect(lookup.has('re taw')).toBe(false);
+  });
+
   it('includes the four reviewed Tower item icons', () => {
-    for (const itemName of ["Re'taw Pail", 'Acid Extract', 'Joyful Ring', 'Pinecone Bird Feeder']) {
+    for (const itemName of ["Re'taw", "Re'taw Pail", 'Acid Extract', 'Joyful Ring', 'Pinecone Bird Feeder']) {
       expect(getItemIcon(toCanonicalItemKey(itemName))?.src, itemName).toBeTruthy();
     }
   });
@@ -40,7 +49,7 @@ describe('buildItemIconLookup', () => {
         localRelativePath: 'generated/item-icons/board.png',
       },
       {
-        itemName: 'Board Duplicate',
+        itemName: 'Board',
         canonicalKey: 'board',
         manifestStatus: 'ready',
         localRelativePath: 'generated/item-icons/duplicate-board.png',

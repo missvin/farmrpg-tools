@@ -123,8 +123,15 @@ fancy pipe,Fancy Pipe,1,Wood,wood,10,https://buddy.farm/i/fancy-pipe/,https://bu
     const recipeInputsCsv = readFileSync(join(process.cwd(), 'data', 'recipe_inputs.csv'), 'utf8');
     const graph = buildRecipeGraph(parseRecipesCsv(recipesCsv), parseRecipeInputsCsv(recipeInputsCsv));
 
-    expect(graph.recipes).toHaveLength(316);
+    expect(graph.recipes).toHaveLength(331);
     expect(graph.recipes.every((recipe) => recipe.inputs.length > 0)).toBe(true);
+    expect(graph.byOutputCanonicalKey['acid extract'].inputs.map((input) => [input.canonicalKey, input.quantity])).toEqual([
+      ['pestle and mortar', 1], ['glass bottle', 1], ['horned beetle', 3],
+    ]);
+    expect(graph.byOutputCanonicalKey['ocean stone'].inputs).toContainEqual({
+      inputOrder: 2, itemName: 'Acid Extract', canonicalKey: 'acid extract', quantity: 1,
+    });
+    expect(graph.byInputCanonicalKey['horned beetle'].map((recipe) => recipe.outputCanonicalKey)).toContain('acid extract');
     expect(graph.byOutputCanonicalKey.valve.inputs.map((input) => input.itemName).sort()).toEqual([
       'Broken Pipe',
       'Cogwheel',
