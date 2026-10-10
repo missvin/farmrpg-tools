@@ -1,3 +1,4 @@
+import { clearTowerMaterialPreferences, createDefaultTowerMaterialPreferences, loadTowerMaterialPreferences, saveTowerMaterialPreferences } from './towerMaterialPreferences';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearTowerProductionRates, loadTowerProductionRates } from './towerProductionRates';
 
@@ -928,5 +929,34 @@ describe('appBackupRestore', () => {
     reloadAfterRestore();
 
     expect(reloadSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('round trips Tower material preferences and accepts older backups without them', async () => {
+    const payload = createBackupPayload();
+    payload.state.preferences.towerMaterialPreferences = { schemaVersion: 1, showInlineAmounts: true, watches: { 'veggie juice': ['beet', 'watermelon'] } };
+    await restoreAppBackupPayload(payload);
+    expect(loadTowerMaterialPreferences()).toEqual(payload.state.preferences.towerMaterialPreferences);
+    const older = createBackupPayload();
+    delete older.state.preferences.towerMaterialPreferences;
+    await restoreAppBackupPayload(older);
+    expect(loadTowerMaterialPreferences()).toEqual(createDefaultTowerMaterialPreferences());
+  });
+
+  it('rolls back watches and inline preferences if a later preference restore fails', async () => {
+    const previous = { schemaVersion: 1 as const, showInlineAmounts: false, watches: { hat: ['steel'] } };
+    saveTowerMaterialPreferences(previous);
+    const payload = createBackupPayload();
+    payload.state.preferences.towerMaterialPreferences = { schemaVersion: 1, showInlineAmounts: true, watches: { hat: ['iron'] } };
+    payload.state.preferences.towerProductionRates = { schemaVersion: 1, steelPerHour: 1000, steelWirePerHour: null };
+    const original = Storage.prototype.setItem;
+    let fail = true;
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key, value) {
+      if (key === 'farmrpg-tools.towerProductionRates.v1' && fail) { fail = false; throw new Error('Quota'); }
+      original.call(this, key, value);
+    });
+    try {
+      await expect(restoreAppBackupPayload(payload)).rejects.toThrow('left unchanged');
+      expect(loadTowerMaterialPreferences()).toEqual(previous);
+    } finally { spy.mockRestore(); clearTowerMaterialPreferences(); }
   });
 });

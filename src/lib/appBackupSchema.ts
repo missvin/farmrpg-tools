@@ -3,6 +3,7 @@ import {
   isValidBuildingProductionState,
   type BuildingProductionState,
 } from './buildingProductionState';
+import { isValidTowerMaterialPreferences, type TowerMaterialPreferences } from './towerMaterialPreferences';
 import type { UserCraftingModifierState } from './craftingModifierState';
 import { isValidTowerProductionRates, type TowerProductionRates } from './towerProductionRates';
 import type { DropRateAcquisitionSettings } from './dropRateAcquisitionSettings';
@@ -58,6 +59,7 @@ export type AppBackupStateV1 = {
     sourceRateAssumptionsState?: SourceRateAssumptionsState | null;
     buildingProductionState?: BuildingProductionState | null;
     towerProductionRates?: TowerProductionRates | null;
+    towerMaterialPreferences?: TowerMaterialPreferences | null;
     themePreference: AppTheme | null;
   };
 };
@@ -91,6 +93,7 @@ export type CreateAppBackupPayloadInput = {
   sourceRateAssumptionsState?: SourceRateAssumptionsState | null;
   buildingProductionState?: BuildingProductionState | null;
   towerProductionRates?: TowerProductionRates | null;
+  towerMaterialPreferences?: TowerMaterialPreferences | null;
   themePreference: AppTheme | null;
 };
 
@@ -127,7 +130,8 @@ export type AppBackupPayloadValidationErrorCode =
   | 'invalid_snapshot_velocity_preferences'
   | 'invalid_source_rate_assumptions_state'
   | 'invalid_building_production_state'
-  | 'invalid_tower_production_rates';
+  | 'invalid_tower_production_rates'
+  | 'invalid_tower_material_preferences';
 
 export type AppBackupPayloadValidationResult =
   | { ok: true; payload: AppBackupPayloadV1 }
@@ -695,6 +699,7 @@ export function createAppBackupPayload(input: CreateAppBackupPayloadInput): AppB
           sourceRateAssumptionsState: input.sourceRateAssumptionsState ?? null,
           buildingProductionState: input.buildingProductionState ?? null,
           towerProductionRates: input.towerProductionRates ?? null,
+          towerMaterialPreferences: input.towerMaterialPreferences ?? null,
           themePreference: input.themePreference,
         },
       },
@@ -998,6 +1003,11 @@ export function validateAppBackupPayloadV1(value: unknown): AppBackupPayloadVali
       code: 'invalid_building_production_state',
       message: 'The backup file contains malformed building production assumptions.',
     };
+  }
+
+  const towerMaterialPreferences = value.state.preferences.towerMaterialPreferences;
+  if (towerMaterialPreferences !== undefined && towerMaterialPreferences !== null && !isValidTowerMaterialPreferences(towerMaterialPreferences)) {
+    return { ok: false, code: 'invalid_tower_material_preferences', message: 'The backup file contains malformed Tower material preferences.' };
   }
 
   const towerProductionRates = value.state.preferences.towerProductionRates;

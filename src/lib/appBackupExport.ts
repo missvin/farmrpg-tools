@@ -2,6 +2,7 @@ import { loadAcquisitionPlannerInputState } from './acquisitionPlannerState';
 import packageJson from '../../package.json';
 
 import { loadBuildingProductionState } from './buildingProductionState';
+import { loadTowerMaterialPreferences } from './towerMaterialPreferences';
 import { loadTowerProductionRates } from './towerProductionRates';
 import { loadCraftingModifierState } from './craftingModifierState';
 import { createAppBackupPayload, type AppBackupPayloadV1 } from './appBackupSchema';
@@ -66,6 +67,7 @@ export async function buildCurrentAppBackupPayload(
     sourceRateAssumptionsState: loadSourceRateAssumptionsState(),
     buildingProductionState: loadBuildingProductionState(),
     towerProductionRates: loadTowerProductionRates(),
+    towerMaterialPreferences: loadTowerMaterialPreferences(),
     themePreference: readStoredAppTheme(),
   });
 }

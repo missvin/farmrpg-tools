@@ -3803,3 +3803,19 @@ a {
 .item-profile-page .item-profile-header__identity > div { min-width: 0; }
 .item-profile-page .item-quick-plan { min-width: 0; }
 .item-profile-page .item-quick-plan .text-input { width: 100%; }
+
+.tower-material-watches { margin-top: 0.3rem; font-size: 0.8rem; text-align: left; }
+.tower-material-watches summary { cursor: pointer; color: var(--color-next-border); padding: 0.35rem 0; }
+.tower-watch-content { padding: 0.25rem 0; min-width: 15rem; }
+.tower-watch-options { display: grid; gap: 0.15rem; }
+.tower-watch-option { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; }
+.tower-watch-option .checkbox-label { display: inline-flex; align-items: center; gap: 0.4rem; margin: 0; }
+.tower-watch-option .tower-material-icon-link .item-icon { width: 24px; height: 24px; }
+.tower-material-totals { border-top: 2px solid var(--color-border-strong); background: var(--color-surface); }
+.tower-material-totals > th { text-align: left; white-space: normal; }
+.tower-material-totals > th .subtle-text { font-weight: 400; font-size: 0.8rem; }
+.tower-total-list { display: grid; gap: 0.4rem; text-align: left; }
+.tower-total-list .item-icon { width: 28px; height: 28px; }
+
+.tower-total-warning { font-size: 0.8rem; font-weight: 400; margin-top: 0.25rem; }
+.tower-total-warning summary { cursor: pointer; color: var(--color-next-border); }

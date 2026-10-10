@@ -286,6 +286,7 @@ describe('appBackupSchema', () => {
           sourceRateAssumptionsState,
           buildingProductionState,
           towerProductionRates: null,
+          towerMaterialPreferences: null,
           themePreference: 'dark',
         },
       },
@@ -846,4 +847,16 @@ describe('appBackupSchema', () => {
     expect(validateAppBackupPayloadV1(invalid)).toMatchObject({ ok: false, code: 'invalid_tower_production_rates' });
   });
 
+
+  it('accepts optional Tower material preferences and rejects malformed watches', () => {
+    const base = createAppBackupPayload({ appVersion: '1.1.0', exportedAt: '2026-10-10T12:00:00.000Z',
+      snapshots: [], craftingModifierState: null, acquisitionPlannerState: null, themePreference: null });
+    delete base.state.preferences.towerMaterialPreferences;
+    expect(validateAppBackupPayloadV1(base).ok).toBe(true);
+    base.state.preferences.towerMaterialPreferences = { schemaVersion: 1, showInlineAmounts: true, watches: { hat: ['iron'] } };
+    expect(validateAppBackupPayloadV1(base).ok).toBe(true);
+    const invalid = structuredClone(base);
+    invalid.state.preferences.towerMaterialPreferences!.watches.hat.push('Iron');
+    expect(validateAppBackupPayloadV1(invalid)).toMatchObject({ ok: false, code: 'invalid_tower_material_preferences' });
+  });
 });

@@ -1,7 +1,9 @@
+import { clearTowerMaterialPreferences, TOWER_MATERIAL_PREFERENCES_STORAGE_KEY } from '../lib/towerMaterialPreferences';
+import { clearTowerProductionRates, saveTowerProductionRates } from '../lib/towerProductionRates';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useNavigate, useLocation } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TowerRemainingTable } from './TowerRemainingTable';
 import { deriveTowerRemainingRows, sortTowerRemainingRows } from '../lib/towerRemainingRows';
 import type { TowerRequirementEntry } from '../lib/loadTowerRequirements';
@@ -37,6 +39,8 @@ function NavigationProbe() {
   const location = useLocation();
   return <><button onClick={() => navigate(-1)}>Back</button><output aria-label="Current URL">{location.search}</output></>;
 }
+
+beforeEach(() => { clearTowerMaterialPreferences(); clearTowerProductionRates(); });
 
 describe('Tower remaining requirements', () => {
   it('collapses material controls and optionally shows row-target amounts beside linked icons', async () => {
@@ -300,5 +304,100 @@ describe('Tower remaining requirements', () => {
       expect(screen.getByText(/Linked completed requirement included/)).toBeInTheDocument();
       await vi.waitFor(() => expect(scroll).toHaveBeenCalled());
     } finally { HTMLElement.prototype.scrollIntoView = original; }
+  });
+
+  it('keeps per-item watches additive to global choices, shared across tiers, and saved across visits', async () => {
+    const user = userEvent.setup();
+    const view = render(<MemoryRouter initialEntries={['/tower-progress?material=steel&material=iron']}>
+      <TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} />
+    </MemoryRouter>);
+    const gm = screen.getByRole('row', { name: /301 Propeller Hat/ });
+    const icons = () => within(gm.querySelector('.tower-material-icons') as HTMLElement);
+    await user.click(within(gm).getByText('Materials to watch', { selector: 'summary' }));
+    await user.click(within(gm).getByText(/Show deeper ingredients/, { selector: 'summary' }));
+    const watch = await within(gm).findByRole('checkbox', { name: 'Watch Iron for Propeller Hat T301' });
+    expect(watch).not.toBeChecked();
+    await user.click(watch);
+    await user.click(screen.getByText('Other materials (selected)', { selector: 'summary' }));
+    await user.type(screen.getByRole('searchbox', { name: 'Search materials' }), 'iron');
+    await user.click(screen.getByRole('checkbox', { name: 'Filter by Iron' }));
+    expect(icons().getByRole('link', { name: 'Iron' })).toBeInTheDocument();
+    await user.click(watch);
+    expect(icons().queryByRole('link', { name: 'Iron' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('checkbox', { name: 'Filter by Iron' }));
+    await user.click(watch);
+    await user.click(watch);
+    expect(icons().getAllByRole('link', { name: 'Iron' })).toHaveLength(1);
+    await user.click(watch);
+    await user.click(screen.getByRole('checkbox', { name: 'Filter by Iron' }));
+    const mm = screen.getByRole('row', { name: /340 Propeller Hat/ });
+    expect(within(mm.querySelector('.tower-material-icons') as HTMLElement).getByRole('link', { name: 'Iron' })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Filter by Steel', exact: true })).toBeChecked();
+    view.unmount();
+    render(<MemoryRouter initialEntries={['/tower-progress?material=steel']}>
+      <TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} />
+    </MemoryRouter>);
+    const reloaded = screen.getByRole('row', { name: /301 Propeller Hat/ });
+    expect(within(reloaded.querySelector('.tower-material-icons') as HTMLElement).getByRole('link', { name: 'Iron' })).toBeInTheDocument();
+  });
+
+  it('shows direct ingredient watches first and retains the inline checkbox on reload and after turning it off', async () => {
+    const user = userEvent.setup();
+    const renderTable = () => render(<MemoryRouter initialEntries={['/tower-progress?material=steel']}>
+      <TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} />
+    </MemoryRouter>);
+    let view = renderTable();
+    const gm = screen.getByRole('row', { name: /301 Propeller Hat/ });
+    await user.click(within(gm).getByText('Materials to watch', { selector: 'summary' }));
+    expect(await within(gm).findByRole('checkbox', { name: 'Watch Red Dye for Propeller Hat T301' })).not.toBeChecked();
+    expect(within(gm).queryByRole('checkbox', { name: 'Watch Iron for Propeller Hat T301' })).not.toBeInTheDocument();
+    await user.click(within(gm).getByRole('checkbox', { name: 'Watch Red Dye for Propeller Hat T301' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Show material amounts inline' }));
+    view.unmount();
+    view = renderTable();
+    expect(screen.getByRole('checkbox', { name: 'Show material amounts inline' })).toBeChecked();
+    expect(screen.getByRole('row', { name: /Selected material totals/ })).toHaveTextContent('918,000');
+    await user.click(screen.getByRole('checkbox', { name: 'Show material amounts inline' }));
+    view.unmount();
+    renderTable();
+    expect(screen.getByRole('checkbox', { name: 'Show material amounts inline' })).not.toBeChecked();
+    expect(screen.queryByRole('row', { name: /Selected material totals/ })).not.toBeInTheDocument();
+  });
+
+  it('limits totals to explicit globals and visible requirements and uses independent Steelworks times', async () => {
+    saveTowerProductionRates({ schemaVersion: 1, steelPerHour: 1000, steelWirePerHour: 2000 });
+    const user = userEvent.setup();
+    const hat = { ...recipes[0], inputs: [...recipes[0].inputs, { canonicalKey: 'steel wire', itemName: 'Steel Wire', inputOrder: 2, quantity: 2 }] };
+    const totalGraph = { ...graph, recipes: [hat, ...recipes.slice(1)], byOutputCanonicalKey: { ...graph.byOutputCanonicalKey, 'propeller hat': hat } };
+    const view = render(<MemoryRouter initialEntries={['/tower-progress?material=steel&material=steel+wire']}>
+      <TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={totalGraph} />
+    </MemoryRouter>);
+    expect(screen.queryByRole('row', { name: /Selected material totals/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('checkbox', { name: 'Show material amounts inline' }));
+    const totals = () => screen.getByRole('row', { name: /Selected material totals/ });
+    expect(totals()).toHaveTextContent('Steel · 918,000 · 38d 6h');
+    expect(totals()).toHaveTextContent('Steel Wire · 1,836,000 · 38d 6h');
+    await user.click(screen.getByRole('button', { name: 'Item', exact: true }));
+    expect(totals()).toHaveTextContent('918,000');
+    view.rerender(<MemoryRouter initialEntries={['/tower-progress?material=steel&material=steel+wire']}>
+      <TowerRemainingTable rows={rows.filter((row) => row.towerLevel < 340)} targetItem={null} targetLevel={null} recipeGraph={totalGraph} />
+    </MemoryRouter>);
+    expect(totals()).toHaveTextContent('Steel · 18,000 · 18h');
+    expect(totals()).toHaveTextContent('Steel Wire · 36,000 · 18h');
+    await user.click(screen.getByRole('button', { name: 'Clear' }));
+    expect(screen.queryByRole('row', { name: /Selected material totals/ })).not.toBeInTheDocument();
+  });
+
+  it('keeps the table usable and explains unsaved preferences when storage is unavailable', async () => {
+    localStorage.setItem(TOWER_MATERIAL_PREFERENCES_STORAGE_KEY, '{broken');
+    const user = userEvent.setup();
+    render(<MemoryRouter><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} /></MemoryRouter>);
+    expect(screen.getByRole('status')).toHaveTextContent('could not be loaded');
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('Quota'); });
+    try {
+      await user.click(screen.getByRole('checkbox', { name: 'Show material amounts inline' }));
+      expect(screen.getByRole('checkbox', { name: 'Show material amounts inline' })).toBeChecked();
+      expect(screen.getByRole('status')).toHaveTextContent('this visit only');
+    } finally { spy.mockRestore(); }
   });
 });

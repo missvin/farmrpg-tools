@@ -19,6 +19,7 @@ import {
   saveDropRateAcquisitionSettings,
 } from './dropRateAcquisitionSettings';
 import { validateAppBackupPayloadV1, type AppBackupPayloadV1 } from './appBackupSchema';
+import { clearTowerMaterialPreferences, loadTowerMaterialPreferences, saveTowerMaterialPreferences } from './towerMaterialPreferences';
 import { clearTowerProductionRates, loadTowerProductionRates, saveTowerProductionRates } from './towerProductionRates';
 import {
   clearMasteryRaceCountsState,
@@ -121,6 +122,7 @@ async function restoreLocked(payload: AppBackupPayloadV1): Promise<void> {
   const currentSourceRateAssumptionsState = loadSourceRateAssumptionsState();
   const currentBuildingProductionState = loadBuildingProductionState();
   const currentTowerProductionRates = loadTowerProductionRates();
+  const currentTowerMaterialPreferences = loadTowerMaterialPreferences();
   const currentThemePreference = readStoredAppTheme();
 
   try {
@@ -210,6 +212,12 @@ async function restoreLocked(payload: AppBackupPayloadV1): Promise<void> {
       clearBuildingProductionState();
     }
 
+    if (payload.state.preferences.towerMaterialPreferences) {
+      saveTowerMaterialPreferences(payload.state.preferences.towerMaterialPreferences);
+    } else {
+      clearTowerMaterialPreferences();
+    }
+
     if (payload.state.preferences.towerProductionRates) {
       saveTowerProductionRates(payload.state.preferences.towerProductionRates);
     } else {
@@ -238,6 +246,7 @@ async function restoreLocked(payload: AppBackupPayloadV1): Promise<void> {
     saveSourceRateAssumptionsState(currentSourceRateAssumptionsState);
     saveBuildingProductionState(currentBuildingProductionState);
     saveTowerProductionRates(currentTowerProductionRates);
+    saveTowerMaterialPreferences(currentTowerMaterialPreferences);
 
     if (currentThemePreference) {
       persistAppTheme(currentThemePreference);

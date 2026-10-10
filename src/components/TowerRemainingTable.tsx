@@ -13,7 +13,10 @@ import { DEFAULT_TOWER_MATERIAL_KEYS, matchesTowerMaterials, towerMaterialChoice
 import type { RecipeGraph } from '../lib/loadRecipeGraph';
 import type { DropRateReferenceData } from '../lib/loadDropRateReference';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
-import { createDefaultTowerProductionRates, loadTowerProductionRates, saveTowerProductionRates } from '../lib/towerProductionRates';
+import { TowerMaterialWatches } from './TowerMaterialWatches';
+import { createDefaultTowerMaterialPreferences, loadTowerMaterialPreferences, saveTowerMaterialPreferences, type TowerMaterialPreferences } from '../lib/towerMaterialPreferences';
+import { totalTowerMaterials } from '../lib/towerMaterialTotals';
+import { createDefaultTowerProductionRates, estimateTowerProductionHours, formatTowerProductionHours, loadTowerProductionRates, saveTowerProductionRates } from '../lib/towerProductionRates';
 
 const columns: Array<[TowerRemainingSort, string]> = [
   ['level', 'Level'], ['item', 'Item'], ['tier', 'Tier'], ['remaining', 'Remaining'], ['pj', 'PJ remaining'],
@@ -32,7 +35,7 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
   dropRateReference?: DropRateReferenceData | null;
 }) {
   const [params, setParams] = useSearchParams();
-  const selected = [...new Set(params.getAll('material').map(toCanonicalItemKey).filter(Boolean))];
+  const selected = useMemo(() => [...new Set(params.getAll('material').map(toCanonicalItemKey).filter(Boolean))], [params]);
   const mode = params.get('materialMatch') === 'all' ? 'all' : 'any';
   const choices = useMemo(() => towerMaterialChoices(recipeGraph), [recipeGraph]);
   const [modifierState] = useState(() => loadCraftingModifierState());
@@ -71,12 +74,28 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
     if (match === 'all') next.set('materialMatch', match);
     setParams(next);
   }
+  const [initialPreferences] = useState(() => {
+    try { return { state: loadTowerMaterialPreferences(), message: '' }; }
+    catch { return { state: createDefaultTowerMaterialPreferences(), message: 'Saved material preferences could not be loaded. Defaults are shown.' }; }
+  });
+  const [preferences, setPreferences] = useState(initialPreferences.state);
+  const [preferenceMessage, setPreferenceMessage] = useState(initialPreferences.message);
+  function updatePreferences(next: TowerMaterialPreferences) {
+    setPreferences(next);
+    try { saveTowerMaterialPreferences(next); setPreferenceMessage(''); }
+    catch { setPreferenceMessage('Material preferences could not be saved. These choices apply to this visit only.'); }
+  }
+  function updateWatch(item: string, material: string, checked: boolean) {
+    const watched = preferences.watches[item] ?? [];
+    const next = checked ? [...new Set([...watched, material])] : watched.filter((key) => key !== material);
+    updatePreferences({ ...preferences, watches: { ...preferences.watches, [item]: next } });
+  }
   const displayedMaterials = (key: string) => choices.filter((material) =>
-    (selected.length ? selected : DEFAULT_TOWER_MATERIAL_KEYS).includes(material.canonicalKey)
+    [...(selected.length ? selected : DEFAULT_TOWER_MATERIAL_KEYS), ...(preferences.watches[key] ?? [])].includes(material.canonicalKey)
       && relationships.get(key)?.has(material.canonicalKey));
   const [incompleteOnly, setIncompleteOnly] = useState(true);
   const [materialsOpen, setMaterialsOpen] = useState(true);
-  const [showMaterialAmounts, setShowMaterialAmounts] = useState(false);
+  const showMaterialAmounts = preferences.showInlineAmounts;
   const [sort, setSort] = useState<TowerRemainingSort>('level');
   const [descending, setDescending] = useState(false);
   const [expandedDetail, setExpandedDetail] = useState<{ id: string; left: number; top?: number; bottom?: number } | null>(null);
@@ -107,11 +126,16 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
   const target = rows.find((row) => row.canonicalKey === targetItem
     && (targetLevel === null || row.towerLevel === targetLevel));
   // Explicit item links may reveal an achieved row without changing the normal default.
+  const matchingRows = useMemo(() => rows.filter((row) => (!incompleteOnly || !row.achieved || row === target)
+    && matchesTowerMaterials(relationships.get(row.canonicalKey) ?? new Set(), selected, mode)),
+  [rows, incompleteOnly, target, relationships, selected, mode]);
   const visibleRows = sortTowerRemainingRows(
-    rows.filter((row) => (!incompleteOnly || !row.achieved || row === target)
-      && matchesTowerMaterials(relationships.get(row.canonicalKey) ?? new Set(), selected, mode))
+    matchingRows
       .map((row) => ({ ...row, materialNames: displayedMaterials(row.canonicalKey).map((material) => material.itemName) })), sort, descending,
   );
+  const totals = useMemo(() => showMaterialAmounts && selected.length ? totalTowerMaterials(matchingRows, selected.map((key) =>
+    choices.find((choice) => choice.canonicalKey === key) ?? { canonicalKey: key, itemName: key }), estimateSources) : [],
+  [showMaterialAmounts, matchingRows, selected, choices, estimateSources]);
   const nextLevel = Math.min(...rows.filter((row) => !row.achieved).map((row) => row.towerLevel));
 
   useEffect(() => {
@@ -133,13 +157,14 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
       <details className="tower-material-panel" open={materialsOpen} onToggle={(event) => setMaterialsOpen(event.currentTarget.open)}>
         <summary>Materials <span className="subtle-text">· {selected.length ? `${selected.length} selected · ${mode === 'all' ? 'All' : 'Any'}` : 'All requirements'}</span></summary>
         <label className="checkbox-label tower-material-amount-toggle">
-          <input type="checkbox" checked={showMaterialAmounts} onChange={(event) => setShowMaterialAmounts(event.target.checked)} />
+          <input type="checkbox" checked={showMaterialAmounts} onChange={(event) => updatePreferences({ ...preferences, showInlineAmounts: event.target.checked })} />
           Show material amounts inline
         </label>
         <TowerMaterialFilters choices={choices} selected={selected} mode={mode} onChange={updateMaterials} />
       </details>
+      {preferenceMessage ? <p className="subtle-text" role="status">{preferenceMessage}</p> : null}
       <details className="tower-estimate-assumptions"><summary>Assumptions · Resource Saver {(modifierTotals.totalResourceSaverPercent * 100).toLocaleString()}% · Mastery bonus {(modifierTotals.totalMasteryBonusPercent * 100).toLocaleString()}%</summary>
-        <p className="subtle-text">Total needed from current mastery to each row’s target. Inventory is not subtracted. Rows are independent estimates; do not add them together.</p>
+        <p className="subtle-text">Total needed from current mastery to each row’s target. Inventory is not subtracted. Rows are independent estimates. Selected-material totals below use the highest visible target per item.</p>
         <form onSubmit={saveRates} className="page-stack page-stack--tight">
           <p className="subtle-text">Steel and Steel Wire are separate Steelworks outputs. Enter your effective production of each per hour; their time estimates are separate and should not be added.</p>
           <div className="summary-grid">
@@ -203,10 +228,36 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
                   <td className="tower-remaining-number">{row.pumpkinJuices === null ? <span className="subtle-text">Needs baseline</span> : row.pumpkinJuices.toLocaleString()}</td>
                   <td><div className="tower-material-icons">{displayedMaterials(row.canonicalKey).map((material) =>
                     <TowerMaterialDetail key={material.canonicalKey} material={material} row={row} sources={estimateSources} productionRates={productionRates} showInlineAmount={showMaterialAmounts} />
-                  )}{!row.materialNames?.length ? <span className="subtle-text">—</span> : null}</div></td>
+                  )}{!row.materialNames?.length ? <span className="subtle-text">—</span> : null}</div>
+                    <TowerMaterialWatches row={row} materials={choices.filter((material) => relationships.get(row.canonicalKey)?.has(material.canonicalKey))}
+                      watched={preferences.watches[row.canonicalKey] ?? []} graph={recipeGraph} sources={estimateSources}
+                      productionRates={productionRates} showInlineAmounts={showMaterialAmounts}
+                      onChange={(key, checked) => updateWatch(row.canonicalKey, key, checked)} />
+                  </td>
                 </tr>
               );
             })}</tbody>
+            {totals.length ? <tfoot><tr className="tower-material-totals">
+              <th scope="row" colSpan={5}>Selected material totals
+                <span className="subtle-text tower-detail-line">Shown requirements · highest target per item</span>
+              </th>
+              <td><div className="tower-total-list">{totals.map((total) => {
+                const rate = total.canonicalKey === 'steel' ? productionRates.steelPerHour : productionRates.steelWirePerHour;
+                const showTime = total.canonicalKey === 'steel' || total.canonicalKey === 'steel wire';
+                const hours = estimateTowerProductionHours(total.quantity, rate);
+                const partial = total.unavailableItems.length > 0;
+                return <div key={total.canonicalKey}>
+                  <ItemProfileLink canonicalKey={total.canonicalKey} itemName={total.itemName} iconSrc={getItemIcon(total.canonicalKey)?.src ?? null} />
+                  <span className="tower-material-quantity"> · {total.quantity === null ? 'Unavailable' : Math.ceil(total.quantity).toLocaleString()}
+                    {partial && total.quantity !== null ? ' (partial)' : ''}
+                    {showTime && total.quantity !== null ? ' · ' + (hours === null ? 'hours unknown' : (partial ? 'at least ' : '') + formatTowerProductionHours(hours)) : ''}
+                  </span>
+                  {partial ? <details className="tower-total-warning"><summary>{total.unavailableItems.length} items unavailable</summary>
+                    <span className="subtle-text">Estimate unavailable for: {total.unavailableItems.join(', ')}.</span>
+                  </details> : null}
+                </div>;
+              })}</div></td>
+            </tr></tfoot> : null}
           </table>
         </div>
       ) : <p className="empty-state">{selected.length ? 'No requirements match these materials. Change your selections or Clear filters.' : 'All Tower requirements in this range are complete. Uncheck Incomplete only to see them.'}</p>}
