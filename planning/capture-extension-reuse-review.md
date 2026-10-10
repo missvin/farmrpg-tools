@@ -96,3 +96,22 @@ All runtime checks below are **pending**, not results from this review. Save rep
 | Signed unlisted install/update | Installable in normal Firefox; intended permissions/consent and state retention | Signed-package manual test |
 
 Before usable status: run focused parser/application/bridge tests, code lint/build as appropriate, and the required live Firefox tests. Before distribution: attribution/permission record, accurate Mozilla declaration, exact production tracker origin, signing and signed-package verification. Rebecca has offered extensive manual testing; provide concrete test steps and observed expected outcomes when a runnable package exists.
+
+## BL-366 implementation checkpoint — 2026-10-09
+
+First increment landed: manual inventory/mastery saves now use `src/lib/playerDataImports.ts`; `src/lib/captureImportAdapter.ts` prepares structured observations without writes or a browser listener. No upstream capture runtime is duplicated or installed by this increment. It establishes a tracker-side boundary for the later reused extension.
+
+The adapter's version-1 candidate envelope includes `schemaVersion`, `captureId`, `section` (inventory/mastery), `scope` (full only for now), `sourceUrl`, ISO `observedAt`, `coverage` and `rows`. Coverage contains `activePage`, `settled`, and loaded sections with `id` and `expectedRows`. Rows contain `itemName`, `count`, `sectionId`, and mastery `targetTier` where applicable. The caller supplies a reviewed required-section list, current time, lookup and optional previous same-section receipt. Required sections must come from trusted page-adapter configuration, never from payload assertions. Section evidence remains the extractor's responsibility; shape validation alone cannot prove a DOM page was complete.
+
+Preparation rejects unsupported versions/scopes, incomplete coverage, malformed counts/names/tiers, canonical collisions, older/simultaneous observations, duplicate IDs, unsafe source origins and oversized data. Unknown items produce existing evidence-compatible warnings. Explicit zero inventory rows survive full replacement and existing normalization. It does not implement partial-item upserts or infer unobserved zeros. A receipt describes a prepared observation, **not** an application acknowledgment.
+
+Verified: 50 focused tests across adapter, manual inventory UI, mastery UI and both existing text parsers; lint and production build. Inventory paste save errors now appear as alerts, retain paste and do not publish a false saved state. Existing manual incomplete-mastery acknowledgment remains unchanged.
+
+BL-366 remains **in progress**. Before a capture receiver can be activated, finish:
+
+- Durable per-section freshness/provenance and ordering metadata, shared manual/capture arbitration, transactional application and multi-tab serialization. Existing mastery storage resolves a request before its transaction completes; bridge acknowledgments must wait for durable completion.
+- Backward-compatible backup/restore of capture metadata; tests for old backups and full round trips.
+- Exact-origin/sender validation, versioned browser bridge, rejected/applied acknowledgments and notification of already-open views.
+- Shared unknown-item evidence persistence for capture, structured/text parity for the supported extractor layouts, and explicit history cadence separate from live updates.
+
+No extension runtime, Firefox installation, hosted deployment or live capture behavior has been verified by this increment. BL-367 remains blocked on finishing BL-366.

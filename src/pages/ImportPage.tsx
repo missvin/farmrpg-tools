@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { PageIntro } from '../components/PageIntro';
 import { parseMasteryPaste } from '../lib/parseMasteryPaste';
-import { createSnapshotId, saveSnapshot } from '../lib/storage/masterySnapshots';
+import { persistMasteryImport } from '../lib/playerDataImports';
 
 const PREVIEW_LIMIT = 10;
 const MIN_EXPECTED_IMPORT_ROWS = 50;
@@ -261,14 +261,7 @@ export function ImportPage() {
     setSaveMessage(null);
 
     try {
-      await saveSnapshot({
-        snapshotId: createSnapshotId(),
-        createdAt: new Date().toISOString(),
-        rawText: parsedText,
-        masteryByItem: parseResult.masteryByItem,
-        parseSummary: parseResult.parseSummary,
-        parsedRows: parseResult.parsedRows,
-      });
+      await persistMasteryImport(parseResult, parsedText);
 
       setSaveMessage('Snapshot saved locally. The pasted text is still here if you want to review it.');
     } catch (error) {

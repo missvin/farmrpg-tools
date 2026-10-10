@@ -5,7 +5,6 @@ import {
   getStoredPetInventoryItemInputs,
   removeCurrentInventoryItemInput,
   removeStoredPetInventoryItemInput,
-  replaceCurrentInventoryEntries,
   replaceStoredPetInventoryEntries,
   saveAcquisitionPlannerInputState,
   upsertCurrentInventoryItemInput,
@@ -16,7 +15,7 @@ import {
   resolveLocalItemReference,
   type LocalItemReferenceLookup,
 } from '../lib/localItemReferenceLookup';
-import { parseCurrentInventoryPaste } from '../lib/parseCurrentInventoryPaste';
+import { persistInventoryImport, prepareInventoryPaste } from '../lib/playerDataImports';
 import { parseStoredPetInventoryPaste } from '../lib/parseStoredPetInventoryPaste';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 import {
@@ -63,23 +62,12 @@ export function CurrentInventoryImportPanel({
   const [currentInventoryName, setCurrentInventoryName] = useState('');
   const [currentInventoryQuantity, setCurrentInventoryQuantity] = useState('');
   const [currentInventoryMessage, setCurrentInventoryMessage] = useState<string | null>(null);
+  const [currentInventoryError, setCurrentInventoryError] = useState<string | null>(null);
   const [currentInventoryWarnings, setCurrentInventoryWarnings] = useState<string[]>([]);
 
   const handleCurrentInventoryImport = () => {
-    const parsed = parseCurrentInventoryPaste(currentInventoryPaste, {
-      resolveItem: localItemLookup
-        ? (itemName) => {
-            const result = resolveLocalItemReference(itemName, localItemLookup);
-
-            return {
-              canonicalItemKey: result.canonicalKey,
-              itemName: result.displayName,
-              recognized: result.recognized,
-              warnings: result.recognized ? [] : result.warnings,
-            };
-          }
-        : undefined,
-    });
+    setCurrentInventoryError(null);
+    const parsed = prepareInventoryPaste(currentInventoryPaste, localItemLookup);
 
     if (parsed.entries.length === 0) {
       setCurrentInventoryMessage('No item quantities found. Paste rows that include an item name and quantity.');
@@ -87,8 +75,15 @@ export function CurrentInventoryImportPanel({
       return;
     }
 
-    const savedState = replaceCurrentInventoryEntries(acquisitionPlannerState, parsed.entries);
-    saveAcquisitionPlannerInputState(savedState);
+    let savedState: AcquisitionPlannerInputState;
+    try {
+      savedState = persistInventoryImport(acquisitionPlannerState, parsed);
+    } catch (error) {
+      setCurrentInventoryMessage(null);
+      setCurrentInventoryError(error instanceof Error ? error.message : 'Unable to save inventory locally.');
+      setCurrentInventoryWarnings(parsed.warnings);
+      return;
+    }
     onAcquisitionPlannerStateChange(savedState);
     recordUnknownItemEvidence(
       createUnknownItemEvidenceFromWarnings(parsed.warnings, {
@@ -102,6 +97,7 @@ export function CurrentInventoryImportPanel({
   };
 
   const handleCurrentInventoryManualAdd = () => {
+    setCurrentInventoryError(null);
     const quantity = Number.parseInt(currentInventoryQuantity, 10);
 
     if (!currentInventoryName.trim() || !Number.isFinite(quantity) || quantity < 0) {
@@ -196,6 +192,7 @@ export function CurrentInventoryImportPanel({
       </div>
 
       {currentInventoryMessage ? <p className="status-message status-message--success">{currentInventoryMessage}</p> : null}
+      {currentInventoryError ? <p className="status-message status-message--error" role="alert">{currentInventoryError}</p> : null}
       {currentInventoryWarnings.length > 0 ? (
         <ul className="warning-list">
           {currentInventoryWarnings.map((warning, index) => (
