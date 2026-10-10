@@ -1,5 +1,7 @@
 # Capture companion reuse review — BL-365
 
+Planning reconciliation 2026-10-10: BL-366 through BL-369 are completion umbrellas, not single implementation slices. BL-370/BL-371 record the two landed increments below. Next is BL-372 application/history, then BL-373 bridge, BL-374 manual Firefox port, BL-375 passive observation, BL-376 reconnect/status, and BL-377 signed-unlisted acceptance. BL-378/BL-379 add partial personal observations; BL-380 adds raw global statistics independently of difficulty policy. BL-381 difficulty integration requires BL-382 policy resolution. The dated checkpoints below are preserved as implementation history, not instructions to work directly from an umbrella.
+
 Reviewed 2026-10-09. This completes the source/Firefox review, not an installable companion. No upstream code was executed, installed, or vendored; no saved player data was changed.
 
 ## Decisions and provenance

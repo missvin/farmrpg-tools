@@ -82,7 +82,7 @@ The target-output planner becomes easier to feed with real inventory data and ea
 ## v2.2 (Complete)
 
 - Item-level goal and source planning
-  - item profile goal calculator workstream (`BL-235`, in progress as an umbrella; v2.2 calculator scope shipped)
+  - item profile goal calculator workstream (`BL-235`, shipped)
   - reviewed openable contents as optional sources (`BL-236`, shipped)
   - recursive passive-source modeling for pets, Crunchy Omelette collection, and Tower-artifact recurring inputs (`BL-237`, shipped)
   - Wishing Well expected-value source modeling (`BL-238`, shipped)
@@ -125,6 +125,10 @@ Completed quest exports become useful planning data: you can review imports, see
   - farm-building production assumptions and item-goal source integration
   - Tower cutoff Pumpkin Juice planning and item-goal source relevance cleanup
   - per-zone Apple Cider effectiveness and opt-in acquisition meal modifiers
+  - Museum Completion's defined personal-import, ordered-canon and missing-item acquisition workflow (`BL-186`, including `BL-189`, shipped); future reference refreshes remain separate maintenance
+  - game-area needs for quests, meals and Tower progress (`BL-331`–`BL-334`)
+  - compact Tower remaining-items view, material/crop filters, quantities, Pumpkin Juice history and cutoff summary (`BL-340`, `BL-342`–`BL-354`, `BL-362`–`BL-363`, applicable product rows shipped)
+  - compact item Overview / Get more / Use it flow (`BL-357`–`BL-361`, local acceptance recorded; hosted deployment not verified by this roadmap)
 - Reference maintenance and history usability
   - repeatable cache-first new-item intake with a reviewed June 2026 promotion batch
   - readable Item Velocity dates and historical point tooltips
@@ -133,12 +137,23 @@ Completed quest exports become useful planning data: you can review imports, see
 User-facing story:
 The app now behaves as a goal-and-item workbench rather than a loose collection of tools, while preserving familiar routes and local data. Item planning reaches more source types and player-specific modifiers, new reference items have a repeatable review path, and historical progress is easier to inspect.
 
+## Current — Firefox capture companion (in progress)
+
+Keep planning data current from game pages the player visits, reusing the reviewed existing extension. Firefox is required; distribution will be signed and unlisted. No game actions, extra game requests, credentials, backend or cloud sync.
+
+- Shared manual-import services, structured validation, durable observation metadata and backup compatibility are landed (`BL-370`, `BL-371`). They do not constitute an active capture receiver.
+- Next: serialized capture application/history (`BL-372`), then the exact-origin tracker bridge, acknowledgments and open-view refresh (`BL-373`).
+- First usable companion milestone: manual Firefox capture, passive stable-page observation, reconnect/status recovery and signed-package acceptance (`BL-374`–`BL-377`). All four gates are required; no installable or live-verified extension is claimed yet.
+- Then add personal item-page observations (`BL-378`, `BL-379`) and separate raw global mastery statistics/history (`BL-380`). Difficulty evidence integration (`BL-381`) waits for the explicit rating-policy decision (`BL-382`); raw statistics do not.
+
+Completion is tracked through umbrellas `BL-364` and `BL-366`–`BL-369`. Child rows own implementation and verification. Exact tracker origin and real Firefox testing remain release gates.
+
 ## Later
 
 - Focused planning follow-ups
   - Tower method filtering when method metadata is trustworthy enough
 - Trust, performance, and workflow polish
-  - alternate rating-source selection after reviewed ClientCoin rows are populated
+  - alternate rating-source selection after reviewed ClientCoin rows are populated and range/zero-score/source-date policy is resolved (`BL-382` then `BL-150`)
   - item-icon manifest chunk optimization if the build warning remains isolated there
   - shipped-version release tracking in the backlog/changelog workflow
   - stable backlog row ordering maintenance

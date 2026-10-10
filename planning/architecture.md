@@ -24,9 +24,11 @@ This document summarizes the current runtime architecture of the local-first Far
 - Import/parsing layer
   - Parses pasted FarmRPG mastery export text into normalized structured data
   - Lives mainly in [`src/lib/parseMasteryPaste.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/parseMasteryPaste.ts) and [`src/lib/normalizeItemKey.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/normalizeItemKey.ts)
+  - Manual inventory/mastery application is shared through `src/lib/playerDataImports.ts`; `src/lib/captureImportAdapter.ts` validates structured full observations without installing a receiver or taking game actions (`BL-370`).
 - Storage layer
   - Saves and loads local mastery snapshots in IndexedDB
   - Lives in [`src/lib/storage/masterySnapshots.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/storage/masterySnapshots.ts)
+  - Optional provenance is stored with inventory and mastery values, preserved in backups, and absent in legacy state rather than assigned fabricated freshness. Snapshot saves await transaction completion (`BL-371`). Capture application/coordination and the browser bridge remain planned (`BL-372`, `BL-373`).
 - Reference-data layer
   - Loads CSV-backed canonical reference data from `data/`
   - Lives in [`src/lib/loadMasteryDifficulty.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/loadMasteryDifficulty.ts) and [`src/lib/loadTowerRequirements.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/loadTowerRequirements.ts)
@@ -189,16 +191,17 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 - Import warnings are inline and non-fatal
 - Temporary parser debug visibility exists to help inspect parsed rows
 
-### Tower Page
+### Tower Views
 
 - Read-only latest-snapshot view over tower requirements
 - Uses derived tower status rows without collapsing row identity
 - Tower requirement rows stay independent even if the same item appears multiple times across levels
-- Current hierarchy is:
+- The original read-only Tower page hierarchy is:
   - top-level completed/incomplete range grouping
   - grouping by `tower_level_range`
   - level-level accordion
   - independent requirement rows
+- The later remaining-items workflow also provides compact rows, material/crop filtering and quantities, plus cutoff-aware Pumpkin Juice summaries. See BL-342 through BL-354 and BL-362/BL-363; these are distinct from the original hierarchy above.
 
 ## Testing Approach
 
@@ -209,9 +212,9 @@ Prefer compact/collapsible guidance and clearer controls over long explanatory b
 ## Known Tensions And Likely Evolution
 
 - Normalized-name identity works today but is fragile across naming drift
-- Reference CSV validation is still a follow-up area
-- Tower detail presentation still mixes planning and debugging concerns
-- Snapshot history/compare and richer planning flows are intentionally limited today
+- Missing or stale reference-source coverage must remain visible even where schema validation is present
+- Shared planners and adapters now support richer item, Tower, quest and game-area views; technical acceptance does not by itself confirm hosted deployment or player usefulness
+- Live observation integration is unfinished: serialized application, authenticated bridge, passive Firefox runtime and signed unlisted acceptance are explicit remaining slices
 
 ## High-Level File Map
 

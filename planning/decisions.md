@@ -1,5 +1,7 @@
 # Project Decisions
 
+This file records important architectural and product decisions for the project and the rationale behind them. Use [roadmap.md](/C:/Users/liqui/Documents/farmrpg-tools/planning/roadmap.md) for milestone planning and [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for backlog items.
+
 ## Import observation provenance — BL-366 (2026-10-09)
 
 Status: Accepted
@@ -7,8 +9,6 @@ Status: Accepted
 Store optional observation metadata with the inventory section and with each mastery snapshot: source (manual/capture), scope, observation time, application time and capture identity where applicable. Inventory counts and their provenance share one localStorage write; mastery values and provenance share one IndexedDB transaction. Do not introduce a separate receipt store that could claim application when its data write failed.
 
 Legacy state/backups without metadata remain valid and retain unknown freshness. New backups preserve metadata; malformed metadata is rejected during backup validation. A manual correction establishes a conservative ordering boundary for its section, so earlier full captures can be rejected. Capture receivers must still implement shared serialization and authenticated delivery before becoming active. Snapshot saves resolve only after transaction completion, including rejection when a successful request is followed by an abort.
-
-This file records important architectural and product decisions for the project and the rationale behind them. Use [roadmap.md](/C:/Users/liqui/Documents/farmrpg-tools/planning/roadmap.md) for milestone planning and [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for backlog items.
 
 ## Single-profile only
 
