@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -934,6 +935,7 @@ function ImportHistoryList({ state }: { state: QuestHistoryState }) {
 }
 
 export function QuestHistoryPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [resourcesState, setResourcesState] = useState<QuestHistoryResourceState>({
     isLoading: true,
     error: null,
@@ -1020,7 +1022,7 @@ export function QuestHistoryPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const planning = useMemo(() => {
     if (!resourcesState.referenceData) {

@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "FarmRPG Planning Tools Companion (test)",
+  "version": "0.1.0",
+  "description": "Manually read a complete FarmRPG Inventory or Mastery page into your paired local tracker.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://farmrpg.com/*", "https://www.farmrpg.com/*", "https://farmrpg-tools.vercel.app/*"],
+  "background": {"scripts": ["shared.js", "background.js"], "persistent": false},
+  "action": {"default_title": "FarmRPG capture", "default_popup": "popup.html"},
+  "content_scripts": [
+    {"matches": ["https://farmrpg.com/*", "https://www.farmrpg.com/*"], "js": ["upstream-layout.js", "shared.js", "extractor.js", "farm-content.js"], "run_at": "document_idle", "all_frames": false},
+    {"matches": ["https://farmrpg-tools.vercel.app/*"], "js": ["shared.js", "tracker-content.js"], "run_at": "document_idle", "all_frames": false}
+  ],
+  "browser_specific_settings": {"gecko": {"id": "farmrpg-planning-companion@missvin", "strict_min_version": "140.0", "data_collection_permissions": {"required": ["websiteContent", "browsingActivity"]}}}
+}

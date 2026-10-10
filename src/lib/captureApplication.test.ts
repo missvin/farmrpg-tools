@@ -67,6 +67,16 @@ beforeEach(() => {
 afterEach(() => { vi.restoreAllMocks(); localStorage.clear(); Object.defineProperty(navigator, 'locks', { configurable: true, value: undefined }); });
 
 describe('serialized capture application', () => {
+  it('checks bridge authorization again after waiting for the cross-tab lock', async () => {
+    let release!: () => void;
+    const held = withPlayerDataLock(() => new Promise<void>((resolve) => { release = resolve; }));
+    await vi.waitFor(() => expect(release).toBeTypeOf('function'));
+    let authorized = true;
+    const waiting = applyCapture(inventory(), { ...context, isAuthorized: () => authorized });
+    authorized = false; release(); await held;
+    expect(await waiting).toMatchObject({ ok: false, reason: expect.stringContaining('disconnected') });
+    expect(localStorage.getItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY)).toBeNull();
+  });
   it('requires loaded references so unknown items cannot bypass evidence review', async () => {
     expect(await applyCapture(inventory(), { ...context, lookup: null })).toMatchObject({ ok: false, reason: expect.stringContaining('references') });
     expect(localStorage.getItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY)).toBeNull();

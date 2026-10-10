@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
@@ -38,6 +39,7 @@ function formatChangeType(changeType: 'increased' | 'decreased' | 'added' | 'rem
 }
 
 export function ComparePage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [compareState, setCompareState] = useState<{
     isLoading: boolean;
     loadError: string | null;
@@ -72,8 +74,10 @@ export function ComparePage() {
           isLoading: false,
           loadError: null,
           snapshots,
-          fromSnapshotId: snapshots[1]?.snapshotId ?? snapshots[0]?.snapshotId ?? '',
-          toSnapshotId: snapshots[0]?.snapshotId ?? '',
+          fromSnapshotId: snapshots.some((snapshot) => snapshot.snapshotId === current.fromSnapshotId)
+            ? current.fromSnapshotId : snapshots[1]?.snapshotId ?? snapshots[0]?.snapshotId ?? '',
+          toSnapshotId: snapshots.some((snapshot) => snapshot.snapshotId === current.toSnapshotId)
+            ? current.toSnapshotId : snapshots[0]?.snapshotId ?? '',
         }));
       })
       .catch((error: unknown) => {
@@ -91,7 +95,7 @@ export function ComparePage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   useEffect(() => {
     let isMounted = true;

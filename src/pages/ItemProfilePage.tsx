@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -874,6 +875,7 @@ function ItemGoalCalculatorSection({
 }
 
 export function ItemProfilePage() {
+  const playerDataRevision = usePlayerDataRevision();
   const { canonicalKey: canonicalKeyParam } = useParams();
   const canonicalKey = decodeItemProfileParam(canonicalKeyParam);
   const [activeView, setActiveView] = useState<'overview' | 'get-more' | 'use-it'>('overview');
@@ -992,7 +994,7 @@ export function ItemProfilePage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   useEffect(() => {
     try {

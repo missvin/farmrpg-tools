@@ -1,10 +1,11 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ItemProfilePage } from './ItemProfilePage';
 import { createDefaultAcquisitionPlannerInputState, saveAcquisitionPlannerInputState } from '../lib/acquisitionPlannerState';
+import { notifyPlayerDataChanged } from '../lib/playerDataNotifications';
 
 const getLatestSnapshotMock = vi.fn();
 const loadItemCatalogMock = vi.fn();
@@ -482,6 +483,27 @@ describe('ItemProfilePage', () => {
     expect(screen.getByText(/not in the current local reference data/i)).toBeInTheDocument();
     expect(screen.getByText('Saved inventory: Not recorded')).toBeInTheDocument();
     expect(screen.getByText('Eligibility not recorded')).toBeInTheDocument();
+  });
+
+  it('refreshes saved stock and mastery without losing its selected view or custom planning input', async () => {
+    mockResources(); const user = userEvent.setup();
+    render(<MemoryRouter initialEntries={['/items/red%20dye']}><Routes><Route path="/items/:canonicalKey" element={<ItemProfilePage />} /></Routes></MemoryRouter>);
+    await screen.findByRole('heading', { name: 'Red Dye' });
+    await user.click(screen.getByRole('button', { name: 'Get more' }));
+    const planner = within(screen.getByRole('region', { name: 'Get more' }));
+    await user.selectOptions(planner.getByLabelText('Planning target'), 'custom-quantity');
+    await user.clear(planner.getByLabelText('Total quantity'));
+    await user.type(planner.getByLabelText('Total quantity'), '54321');
+    const callsBefore = getLatestSnapshotMock.mock.calls.length;
+    const state = createDefaultAcquisitionPlannerInputState();
+    state.inventory.entries = [{ canonicalItemKey: 'red dye', itemName: 'Red Dye', inventoryCount: 777 }];
+    saveAcquisitionPlannerInputState(state, undefined, true);
+    act(() => notifyPlayerDataChanged());
+    await screen.findByText('Saved inventory: 777');
+    expect(getLatestSnapshotMock.mock.calls.length).toBeGreaterThan(callsBefore);
+    expect(screen.getByRole('button', { name: 'Get more' })).toHaveAttribute('aria-pressed', 'true');
+    expect(planner.getByLabelText('Planning target')).toHaveValue('custom-quantity');
+    expect(planner.getByLabelText('Total quantity')).toHaveValue(54321);
   });
 
   it('shows saved inventory and chooses the earliest unfinished Tower target over a later MM target', async () => {

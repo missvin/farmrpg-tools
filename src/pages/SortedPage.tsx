@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useState, type CSSProperties } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
@@ -161,6 +162,7 @@ function buildTierBuckets(
 }
 
 export function SortedPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [mode, setMode] = useState<SortedMode>('m');
   const [filterText, setFilterText] = useState('');
   const [sortedState, setSortedState] = useState<{
@@ -243,7 +245,7 @@ export function SortedPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const activeGroups =
     mode === 'm'

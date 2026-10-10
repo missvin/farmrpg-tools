@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
@@ -64,6 +65,7 @@ function getSnapshotRows(history: TowerPumpkinJuiceHistory) {
 }
 
 export function TowerPumpkinJuiceHistoryPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedLevels = useMemo(() => parseTargetLevels(searchParams.get('levels')), [searchParams]);
   const [customTargetInput, setCustomTargetInput] = useState('');
@@ -109,7 +111,7 @@ export function TowerPumpkinJuiceHistoryPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const history = useMemo(
     () => pageState.towerRequirements

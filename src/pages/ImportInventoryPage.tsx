@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useObservedInventoryState } from '../lib/useObservedInventoryState';
+
 
 import { CurrentInventoryImportPanel } from '../components/InventoryImportPanels';
 import { PageIntro } from '../components/PageIntro';
@@ -6,7 +7,7 @@ import { loadAcquisitionPlannerInputState } from '../lib/acquisitionPlannerState
 import { useImportReferenceLookup } from '../lib/useImportReferenceLookup';
 
 export function ImportInventoryPage() {
-  const [acquisitionPlannerState, setAcquisitionPlannerState] = useState(() => loadAcquisitionPlannerInputState());
+  const [acquisitionPlannerState, setAcquisitionPlannerState] = useObservedInventoryState(() => loadAcquisitionPlannerInputState());
   const { localItemLookup } = useImportReferenceLookup();
 
   return (

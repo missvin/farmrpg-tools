@@ -1,3 +1,5 @@
+import { useObservedInventoryState } from '../lib/useObservedInventoryState';
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
@@ -174,6 +176,7 @@ function loadGoalStateSafely(): PersonalMasteryGoalsState {
 }
 
 export function MasteryGoalsPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [goalsState, setGoalsState] = useState(loadGoalStateSafely);
   const [raceCountsState, setRaceCountsState] = useState(() => {
     try {
@@ -192,7 +195,7 @@ export function MasteryGoalsPage() {
       return createDefaultPumpkinJuicePlannerState();
     }
   });
-  const [acquisitionPlannerState] = useState(() => {
+  const [acquisitionPlannerState] = useObservedInventoryState(() => {
     try {
       return loadAcquisitionPlannerInputState();
     } catch {
@@ -267,7 +270,7 @@ export function MasteryGoalsPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const itemOptions = useMemo(
     () => buildItemOptions(resourcesState.snapshot, resourcesState.referenceOptions),

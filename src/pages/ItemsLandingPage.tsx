@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -32,6 +33,7 @@ function formatMasteryPossible(value: ItemCatalogEntry['masteryPossible']): stri
 }
 
 export function ItemsLandingPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [query, setQuery] = useState('');
   const [state, setState] = useState<ItemsLandingState>({
     isLoading: true,
@@ -78,7 +80,7 @@ export function ItemsLandingPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const normalizedQuery = query.trim().toLowerCase();
   const visibleItems = useMemo(() => {

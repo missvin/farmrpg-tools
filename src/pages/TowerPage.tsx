@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -104,6 +105,7 @@ function TowerItemCell({
 }
 
 export function TowerPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [searchParams] = useSearchParams();
   const [selectedRange, setSelectedRange] = useState<string>('all');
   const [rowStateFilter, setRowStateFilter] = useState<TowerRowStateFilter>('all');
@@ -187,7 +189,7 @@ export function TowerPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const totalRequirements = towerState.derivedTowerRequirements?.rows.length ?? 0;
   const completedRequirements =

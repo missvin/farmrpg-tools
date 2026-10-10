@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -155,6 +156,7 @@ function loadInitialPlannerState(acquisitionState: AcquisitionPlannerInputState)
 }
 
 export function LargeNetPlannerPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [acquisitionState, setAcquisitionState] = useState<AcquisitionPlannerInputState>(() => {
     try {
       return loadAcquisitionPlannerInputState();
@@ -231,7 +233,7 @@ export function LargeNetPlannerPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   useEffect(() => {
     try {

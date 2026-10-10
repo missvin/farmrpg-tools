@@ -11,7 +11,7 @@ import { createUnknownItemEvidenceFromWarnings, recordUnknownItemEvidence, UNKNO
 export type CaptureApplicationResult =
   | { ok: true; receipt: CaptureReceipt; warnings: string[]; historySaved: boolean }
   | { ok: false; reason: string };
-type ApplicationContext = Pick<CaptureImportContext, 'lookup' | 'requiredSections'> & { now?: () => string };
+type ApplicationContext = Pick<CaptureImportContext, 'lookup' | 'requiredSections'> & { now?: () => string; isAuthorized?: () => boolean };
 
 function ordering(observation: unknown, section: CaptureReceipt['section'], now: string): CaptureReceipt {
   if (!isValidPlayerDataObservation(observation) || observation.appliedAt > now) {
@@ -47,6 +47,10 @@ export async function applyCapture(payload: unknown, context: ApplicationContext
     // Own the input while waiting for other tabs; callers cannot mutate queued captures.
     const ownedPayload: unknown = structuredClone(payload);
     return await withPlayerDataLock(async () => {
+      const authorize = () => {
+        if (context.isAuthorized && !context.isAuthorized()) throw new Error('Capture pairing was disconnected. Previous data retained.');
+      };
+      authorize();
       const now = context.now?.() ?? new Date().toISOString();
       const checked = prepareCaptureImport(ownedPayload, { ...context, now });
       if (!checked.ok) return checked;
@@ -61,6 +65,7 @@ export async function applyCapture(payload: unknown, context: ApplicationContext
         observedAt: prepared.receipt.observedAt, appliedAt: now,
       };
       const warnings = prepared.section === 'inventory' ? prepared.parsed.warnings : prepared.parsed.parseSummary.warnings;
+      authorize();
       const evidence = localStorage.getItem(UNKNOWN_ITEM_EVIDENCE_STORAGE_KEY);
       if (evidence !== null && !isValidUnknownItemEvidenceState(JSON.parse(evidence))) {
         throw new Error('Saved unknown-item evidence is invalid. Capture was not applied.');
@@ -88,6 +93,7 @@ export async function applyCapture(payload: unknown, context: ApplicationContext
         // yesterday's later progress must still earn today's checkpoint.
         const previousHistory = (await listSnapshots())[0] ?? null;
         historySaved = !history && !sameMastery(previousHistory, snapshot);
+        authorize();
         await saveSnapshots(historySaved ? [snapshot, {
           ...snapshot, snapshotId: historyId, createdAt: observation.observedAt, importedAt: now,
         }] : [snapshot]);

@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
@@ -507,6 +508,7 @@ function QuestResourcePlanTable({ resourcePlan }: { resourcePlan: QuestResourceP
 }
 
 export function QuestPlannerPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [resourcesState, setResourcesState] = useState<ResourceState>({
     isLoading: true,
     error: null,
@@ -616,7 +618,7 @@ export function QuestPlannerPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const viewModel = useMemo(() => {
     if (!resourcesState.resources) {

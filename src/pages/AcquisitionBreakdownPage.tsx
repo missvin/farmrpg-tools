@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
@@ -214,6 +215,7 @@ function getDropRateVariantLabels(row: DropRateReferenceEntry): string {
 }
 
 export function AcquisitionBreakdownPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [searchParams] = useSearchParams();
   const [resourcesState, setResourcesState] = useState<{
     isLoading: boolean;
@@ -411,7 +413,7 @@ export function AcquisitionBreakdownPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const burdenResult = useMemo(() => {
     if (!resourcesState.snapshot || !resourcesState.recipeGraph || !resourcesState.towerRequirementsData) {

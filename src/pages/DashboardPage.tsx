@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -257,6 +258,7 @@ const workbenchSections: Array<{
 ];
 
 export function DashboardPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [dashboardState, setDashboardState] = useState<DashboardState>({
     isLoading: true,
     snapshotError: null,
@@ -331,7 +333,7 @@ export function DashboardPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   return (
     <div className="page-stack">

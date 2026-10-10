@@ -1,3 +1,4 @@
+import { useObservedInventoryState } from '../lib/useObservedInventoryState';
 import { useEffect, useState, type ChangeEvent } from 'react';
 
 import {
@@ -59,7 +60,7 @@ function formatForecastQuantity(value: number): string {
 }
 
 export function SettingsPage() {
-  const [acquisitionPlannerState, setAcquisitionPlannerState] = useState(() => loadAcquisitionPlannerInputState());
+  const [acquisitionPlannerState, setAcquisitionPlannerState] = useObservedInventoryState(() => loadAcquisitionPlannerInputState());
   const [dropRateSettings, setDropRateSettings] = useState(() => loadDropRateAcquisitionSettings());
   const [dropRateSettingsMessage, setDropRateSettingsMessage] = useState<string | null>(null);
   const [dropRateSettingsError, setDropRateSettingsError] = useState<string | null>(null);

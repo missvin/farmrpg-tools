@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useId, useMemo, useState } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
@@ -388,6 +389,7 @@ function TargetRowsTable({ rows }: { rows: TargetOutputPlannerItemRow[] }) {
 }
 
 export function TargetOutputPlannerPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const targetListId = useId();
   const overrideListId = useId();
   const [plannerState, setPlannerState] = useState<TargetOutputPlannerState>(() => loadTargetOutputPlannerState());
@@ -464,7 +466,7 @@ export function TargetOutputPlannerPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const itemOptions = useMemo(() => {
     return resourceState.resources ? getItemOptions(resourceState.resources.recipeGraph) : [];

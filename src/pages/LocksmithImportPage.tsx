@@ -1,3 +1,4 @@
+import { useObservedInventoryState } from '../lib/useObservedInventoryState';
 import { useState } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
@@ -19,7 +20,7 @@ import {
 import { useImportReferenceLookup } from '../lib/useImportReferenceLookup';
 
 export function LocksmithImportPage() {
-  const [acquisitionPlannerState, setAcquisitionPlannerState] = useState(() => loadAcquisitionPlannerInputState());
+  const [acquisitionPlannerState, setAcquisitionPlannerState] = useObservedInventoryState(() => loadAcquisitionPlannerInputState());
   const [pasteText, setPasteText] = useState('');
   const [manualItemName, setManualItemName] = useState('');
   const [manualQuantity, setManualQuantity] = useState('');
