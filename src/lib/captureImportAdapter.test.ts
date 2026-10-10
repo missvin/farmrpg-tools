@@ -45,7 +45,7 @@ describe('capture import preparation', () => {
     state.pets.storedInventoryEntries = [{ canonicalItemKey: 'steel', itemName: 'Steel', storedCount: 90 }];
     state.ownedNow.entries = [{ canonicalItemKey: 'steel', itemName: 'Steel', ownedCount: 80, sourceCategory: 'stockpile' }];
     const saved = persistInventoryImport(state, prepared.parsed, localStorage);
-    expect(saved).toEqual({ ...state, inventory: { entries: paste.entries } });
+    expect(saved).toEqual({ ...state, inventory: { entries: paste.entries, observation: expect.objectContaining({ source: 'manual', scope: 'full' }) } });
     expect(loadAcquisitionPlannerInputState(localStorage)).toEqual(saved);
     expect(state.inventory.entries[0].inventoryCount).toBe(999);
   });

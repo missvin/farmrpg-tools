@@ -4,6 +4,7 @@ import {
 } from './acquisitionSourceCatalog';
 import type { UserCraftingModifierState } from './craftingModifierState';
 import { toCanonicalItemKey } from './normalizeItemKey';
+import { isValidPlayerDataObservation, type PlayerDataObservation } from './playerDataObservation';
 
 export const ACQUISITION_PLANNER_STATE_STORAGE_KEY = 'farmrpg-tools.acquisitionPlannerState';
 
@@ -75,6 +76,7 @@ export type AcquisitionCurrentInventoryItemInput = {
 
 export type AcquisitionCurrentInventoryPlannerState = {
   entries: AcquisitionCurrentInventoryItemInput[];
+  observation?: PlayerDataObservation;
 };
 
 export type AcquisitionStoredPetInventoryItemInput = {
@@ -631,6 +633,7 @@ export function normalizeAcquisitionPlannerInputState(value: unknown): Acquisiti
     },
     inventory: {
       entries: normalizeCurrentInventoryEntries(inventory.entries),
+      ...(isValidPlayerDataObservation(inventory.observation) ? { observation: inventory.observation } : {}),
     },
     pets: {
       storedInventoryEntries: normalizeStoredPetInventoryEntries(

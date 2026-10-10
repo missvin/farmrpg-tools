@@ -25,6 +25,7 @@ import {
 } from './sourceRateAssumptions';
 import type { AppTheme } from './themePreference';
 import type { MasterySnapshot } from './storage/masterySnapshots';
+import { isValidPlayerDataObservation } from './playerDataObservation';
 import type { TargetOutputPlannerState } from './targetOutputPlannerState';
 import {
   isValidUnknownItemEvidenceState,
@@ -278,7 +279,8 @@ function isValidAcquisitionPlannerState(value: unknown): value is AcquisitionPla
     value.inventory !== undefined &&
     (!isRecord(value.inventory) ||
       !Array.isArray(value.inventory.entries) ||
-      !value.inventory.entries.every((entry) => isValidCurrentInventoryEntry(entry)))
+      !value.inventory.entries.every((entry) => isValidCurrentInventoryEntry(entry)) ||
+      (value.inventory.observation !== undefined && !isValidPlayerDataObservation(value.inventory.observation)))
   ) {
     return false;
   }
@@ -661,6 +663,7 @@ function isValidSnapshot(value: unknown): value is MasterySnapshot {
     (importedAt === undefined || typeof importedAt === 'string') &&
     typeof value.rawText === 'string' &&
     isValidMasteryByItem(value.masteryByItem) &&
+    (value.observation === undefined || isValidPlayerDataObservation(value.observation)) &&
     isValidParseSummary(value.parseSummary)
   );
 }

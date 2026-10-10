@@ -703,6 +703,16 @@ describe('appBackupRestore', () => {
     expect(mockClearStoredAppTheme).not.toHaveBeenCalled();
   });
 
+  it('restores observations with their inventory and mastery values', async () => {
+    const payload = createBackupPayload();
+    const observation = { source: 'capture' as const, scope: 'full' as const, captureId: 'capture-1', observedAt: '2026-10-09T11:00:00.000Z', appliedAt: '2026-10-09T12:00:00.000Z' };
+    payload.state.snapshots[0].observation = observation;
+    payload.state.preferences.acquisitionPlannerState!.inventory.observation = observation;
+    await restoreAppBackupPayload(payload);
+    expect(mockReplaceSnapshots).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ observation })]));
+    expect(mockSaveAcquisitionPlannerInputState).toHaveBeenCalledWith(expect.objectContaining({ inventory: expect.objectContaining({ observation }) }));
+  });
+
   it('restores separate Tower rates and clears them when an older backup has no rate field', async () => {
     const previous = loadTowerProductionRates();
     try {

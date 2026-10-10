@@ -15,7 +15,7 @@ import {
   resolveLocalItemReference,
   type LocalItemReferenceLookup,
 } from '../lib/localItemReferenceLookup';
-import { persistInventoryImport, prepareInventoryPaste } from '../lib/playerDataImports';
+import { persistInventoryImport, persistManualInventoryState, prepareInventoryPaste } from '../lib/playerDataImports';
 import { parseStoredPetInventoryPaste } from '../lib/parseStoredPetInventoryPaste';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 import {
@@ -120,12 +120,19 @@ export function CurrentInventoryImportPanel({
       recordUnknownItemEvidence(evidenceRecord ? [evidenceRecord] : []);
     }
 
-    const savedState = upsertCurrentInventoryItemInput(acquisitionPlannerState, {
+    const nextState = upsertCurrentInventoryItemInput(acquisitionPlannerState, {
       itemName: resolved?.displayName ?? currentInventoryName.trim(),
       inventoryCount: quantity,
     });
 
-    saveAcquisitionPlannerInputState(savedState);
+    let savedState: AcquisitionPlannerInputState;
+    try {
+      savedState = persistManualInventoryState(nextState, 'item');
+    } catch (error) {
+      setCurrentInventoryMessage(null);
+      setCurrentInventoryError(error instanceof Error ? error.message : 'Unable to save inventory locally.');
+      return;
+    }
     onAcquisitionPlannerStateChange(savedState);
     setCurrentInventoryName('');
     setCurrentInventoryQuantity('');
@@ -224,8 +231,14 @@ export function CurrentInventoryImportPanel({
                           acquisitionPlannerState,
                           entry.canonicalItemKey,
                         );
-                        saveAcquisitionPlannerInputState(savedState);
-                        onAcquisitionPlannerStateChange(savedState);
+                        try {
+                          const persisted = persistManualInventoryState(savedState, 'item');
+                          onAcquisitionPlannerStateChange(persisted);
+                          setCurrentInventoryError(null);
+                        } catch (error) {
+                          setCurrentInventoryMessage(null);
+                          setCurrentInventoryError(error instanceof Error ? error.message : 'Unable to save inventory locally.');
+                        }
                       }}
                       type="button"
                     >

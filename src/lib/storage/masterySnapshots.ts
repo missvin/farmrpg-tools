@@ -1,4 +1,5 @@
 import type { ParsedRow, ParseSummary } from '../parseMasteryPaste';
+import type { PlayerDataObservation } from '../playerDataObservation';
 
 export type MasterySnapshot = {
   snapshotId: string;
@@ -9,6 +10,7 @@ export type MasterySnapshot = {
   masteryByItem: Record<string, number>;
   parseSummary: ParseSummary;
   parsedRows?: ParsedRow[];
+  observation?: PlayerDataObservation;
 };
 
 export type MasterySnapshotSummary = {
@@ -101,22 +103,28 @@ function runStoreRequest<T>(
       new Promise((resolve, reject) => {
         const transaction = database.transaction(SNAPSHOT_STORE_NAME, mode);
         const store = transaction.objectStore(SNAPSHOT_STORE_NAME);
-        const request = execute(store);
-
-        request.onsuccess = () => {
-          resolve(request.result);
-        };
+        let request: IDBRequest<T>;
+        try {
+          request = execute(store);
+        } catch (error) {
+          database.close();
+          reject(error);
+          return;
+        }
 
         request.onerror = () => {
+          database.close();
           reject(request.error ?? new Error('Snapshot storage request failed.'));
         };
 
         transaction.onabort = () => {
+          database.close();
           reject(transaction.error ?? new Error('Snapshot storage transaction was aborted.'));
         };
 
         transaction.oncomplete = () => {
           database.close();
+          resolve(request.result);
         };
       }),
   );

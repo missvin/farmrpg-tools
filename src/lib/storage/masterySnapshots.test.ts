@@ -170,6 +170,42 @@ function createSnapshot(overrides: Partial<MasterySnapshot>): MasterySnapshot {
 describe('masterySnapshots storage', () => {
   beforeEach(() => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('waits for transaction completion after a successful write request', async () => {
+    vi.stubGlobal('indexedDB', createFakeIndexedDb());
+    const pending: FakeTransaction[] = [];
+    vi.spyOn(FakeTransaction.prototype, 'finish').mockImplementation(function (this: FakeTransaction) { pending.push(this); });
+    let resolved = false;
+    const saving = saveSnapshot(createSnapshot({})).then(() => { resolved = true; });
+    await vi.waitFor(() => expect(pending).toHaveLength(1));
+    expect(resolved).toBe(false);
+    pending[0].oncomplete?.call(pending[0] as unknown as IDBTransaction, new Event('complete'));
+    await saving;
+    expect(resolved).toBe(true);
+  });
+
+  it('rejects a transaction abort even after its write request succeeded', async () => {
+    vi.stubGlobal('indexedDB', createFakeIndexedDb());
+    const pending: FakeTransaction[] = [];
+    vi.spyOn(FakeTransaction.prototype, 'finish').mockImplementation(function (this: FakeTransaction) { pending.push(this); });
+    const saving = saveSnapshot(createSnapshot({}));
+    const rejected = expect(saving).rejects.toThrow('Commit aborted');
+    await vi.waitFor(() => expect(pending).toHaveLength(1));
+    pending[0].error = new Error('Commit aborted');
+    pending[0].onabort?.call(pending[0] as unknown as IDBTransaction, new Event('abort'));
+    await rejected;
+  });
+
+  it('keeps observation metadata with its snapshot through save and restore', async () => {
+    vi.stubGlobal('indexedDB', createFakeIndexedDb());
+    const observation = { source: 'capture' as const, scope: 'full' as const, captureId: 'capture-1', observedAt: '2026-10-09T11:00:00.000Z', appliedAt: '2026-10-09T12:00:00.000Z' };
+    await saveSnapshot({ ...createSnapshot({}), observation });
+    expect((await getLatestSnapshot())?.observation).toEqual(observation);
+    const snapshots = await listSnapshots();
+    await replaceSnapshots(snapshots);
+    expect((await getLatestSnapshot())?.observation).toEqual(observation);
   });
 
   it('preserves multiple snapshots and returns newest-first summaries with saved/imported metadata', async () => {

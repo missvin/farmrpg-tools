@@ -115,3 +115,13 @@ BL-366 remains **in progress**. Before a capture receiver can be activated, fini
 - Shared unknown-item evidence persistence for capture, structured/text parity for the supported extractor layouts, and explicit history cadence separate from live updates.
 
 No extension runtime, Firefox installation, hosted deployment or live capture behavior has been verified by this increment. BL-367 remains blocked on finishing BL-366.
+
+### Second BL-366 increment — observation metadata and durable saves
+
+Inventory state and mastery snapshots now support optional `PlayerDataObservation` metadata (`source`, `scope`, `observedAt`, `appliedAt`, and capture-only `captureId`). Manual paste imports, inventory corrections and removals stamp provenance through shared services. Metadata accompanies inventory in one localStorage record and mastery in the same snapshot transaction. `getCaptureOrderingReceipt` converts valid persisted provenance into the validator's ordering input; this enables rejection of observations older than a manual correction, without claiming a receiver is active.
+
+Backup creation/export/restore retain these optional fields through the existing inventory/snapshot state paths. Schema validation rejects malformed metadata in either location. Old backups remain accepted with unknown freshness; no current timestamp is fabricated. No new storage key, IndexedDB version, migration or backup schema version is needed for these optional fields.
+
+Snapshot requests now resolve after transaction completion, and reject an abort that follows successful request execution. Verified by controlled completion/abort tests, metadata save/restore tests, old/new backup validation and restore tests, manual correction/removal tests, plus existing import regressions: **87 tests**, lint and production build passed (existing large-chunk warning).
+
+Remaining BL-366 work: capture application with shared multi-tab serialization and history cadence; fail-closed handling of legacy/invalid ordering metadata; exact-origin/sender bridge validation and durable applied/rejected acknowledgments; capture evidence persistence and open-view refresh. No capture receiver, extension install or live Firefox verification is included here. Next implementation should finish these application/bridge responsibilities before unblocking BL-367.

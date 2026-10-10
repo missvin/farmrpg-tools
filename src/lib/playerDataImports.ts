@@ -7,6 +7,7 @@ import { resolveLocalItemReference, type LocalItemReferenceLookup } from './loca
 import { parseCurrentInventoryPaste, type ParseCurrentInventoryPasteResult } from './parseCurrentInventoryPaste';
 import type { ParseResult } from './parseMasteryPaste';
 import { createSnapshotId, saveSnapshot, type MasterySnapshot } from './storage/masterySnapshots';
+import { createManualObservation } from './playerDataObservation';
 
 /** Shared resolution for pasted inventory and structured observations. */
 export function inventoryImportResolver(lookup: LocalItemReferenceLookup | null) {
@@ -32,12 +33,25 @@ export function persistInventoryImport(
   state: AcquisitionPlannerInputState,
   parsed: ParseCurrentInventoryPasteResult,
   storage?: Storage,
+  now = new Date().toISOString(),
 ): AcquisitionPlannerInputState {
   if (parsed.entries.length === 0) {
     throw new Error('No item quantities found. Previous inventory was retained.');
   }
 
-  return saveAcquisitionPlannerInputState(replaceCurrentInventoryEntries(state, parsed.entries), storage);
+  return persistManualInventoryState(replaceCurrentInventoryEntries(state, parsed.entries), 'full', storage, now);
+}
+
+export function persistManualInventoryState(
+  state: AcquisitionPlannerInputState,
+  scope: 'full' | 'item',
+  storage?: Storage,
+  now = new Date().toISOString(),
+): AcquisitionPlannerInputState {
+  return saveAcquisitionPlannerInputState({
+    ...state,
+    inventory: { ...state.inventory, observation: createManualObservation(scope, now) },
+  }, storage);
 }
 
 export function createMasteryImportSnapshot(
@@ -57,6 +71,7 @@ export function createMasteryImportSnapshot(
     masteryByItem: parsed.masteryByItem,
     parseSummary: parsed.parseSummary,
     parsedRows: parsed.parsedRows,
+    observation: createManualObservation('full', savedAt),
   };
 }
 
