@@ -26,10 +26,10 @@ function backup() {
 }
 
 describe('durable player data observations', () => {
-  it('stores manual provenance with inventory and does not invent freshness for legacy state', () => {
+  it('stores manual provenance with inventory and does not invent freshness for legacy state', async () => {
     const state = createDefaultAcquisitionPlannerInputState();
     expect(normalizeAcquisitionPlannerInputState(state).inventory.observation).toBeUndefined();
-    const saved = persistInventoryImport(state, prepareInventoryPaste('Steel, 0', null), localStorage, now);
+    const saved = await persistInventoryImport(state, prepareInventoryPaste('Steel, 0', null), localStorage, now);
     expect(loadAcquisitionPlannerInputState().inventory).toEqual({
       entries: [{ canonicalItemKey: 'steel', itemName: 'Steel', inventoryCount: 0 }],
       observation: createManualObservation('full', now),
@@ -37,8 +37,8 @@ describe('durable player data observations', () => {
     expect(saved.inventory.observation).toEqual(createManualObservation('full', now));
   });
 
-  it('a manual correction protects against delayed captures observed before the correction', () => {
-    const saved = persistManualInventoryState(createDefaultAcquisitionPlannerInputState(), 'item', localStorage, now);
+  it('a manual correction protects against delayed captures observed before the correction', async () => {
+    const saved = await persistManualInventoryState(() => createDefaultAcquisitionPlannerInputState(), 'item', localStorage, now);
     const result = prepareCaptureImport({
       schemaVersion: 1, captureId: 'delayed', section: 'inventory', scope: 'full',
       sourceUrl: 'https://farmrpg.com/inventory.php', observedAt: '2026-10-09T11:59:00.000Z',

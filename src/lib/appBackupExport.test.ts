@@ -466,7 +466,7 @@ describe('appBackupExport', () => {
   });
 
   it('builds the full current backup payload from local snapshot and preference state', async () => {
-    const snapshots = [createSnapshot('snapshot-1'), createSnapshot('snapshot-2')];
+    const snapshots = [createSnapshot('snapshot-1'), createSnapshot('capture-live-mastery')];
     const craftingModifierState = {
       ...createModifierStateFixture(),
       persistent: {
@@ -509,6 +509,7 @@ describe('appBackupExport', () => {
       exportedAt: '2026-03-21T10:30:00.000Z',
       appVersion: '1.1.0',
     });
+    expect(mockListSnapshots).toHaveBeenCalledWith(true);
 
     expect(payload.schemaVersion).toBe(1);
     expect(payload.kind).toBe('farmrpg-tools-backup');

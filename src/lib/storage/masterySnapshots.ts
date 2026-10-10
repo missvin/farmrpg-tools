@@ -25,6 +25,7 @@ export type MasterySnapshotSummary = {
 const DB_NAME = 'farmrpg-tools';
 const DB_VERSION = 1;
 const SNAPSHOT_STORE_NAME = 'masterySnapshots';
+export const LIVE_CAPTURE_MASTERY_ID = 'capture-live-mastery';
 
 function createStorageError(): Error {
   return new Error('IndexedDB is not available in this browser.');
@@ -107,6 +108,7 @@ function runStoreRequest<T>(
         try {
           request = execute(store);
         } catch (error) {
+          transaction.abort();
           database.close();
           reject(error);
           return;
@@ -143,16 +145,19 @@ function runStoreTransaction(
         try {
           execute(store);
         } catch (error) {
+          transaction.abort();
           database.close();
           reject(error);
           return;
         }
 
         transaction.onabort = () => {
+          database.close();
           reject(transaction.error ?? new Error('Snapshot storage transaction was aborted.'));
         };
 
         transaction.onerror = () => {
+          database.close();
           reject(transaction.error ?? new Error('Snapshot storage transaction failed.'));
         };
 
@@ -174,6 +179,9 @@ function sortSnapshotsNewestFirst(snapshots: MasterySnapshot[]): MasterySnapshot
         return savedAtComparison;
       }
 
+      const manualPriority = Number(right.observation?.source === 'manual') - Number(left.observation?.source === 'manual');
+      if (manualPriority !== 0) return manualPriority;
+
       return right.snapshotId.localeCompare(left.snapshotId);
     });
 }
@@ -190,6 +198,13 @@ export async function saveSnapshot(snapshot: MasterySnapshot): Promise<void> {
   await runStoreRequest('readwrite', (store) => store.put(normalizeSnapshot(snapshot)));
 }
 
+/** Publish live mastery and its optional history checkpoint in one transaction. */
+export async function saveSnapshots(snapshots: MasterySnapshot[]): Promise<void> {
+  await runStoreTransaction('readwrite', (store) => {
+    snapshots.forEach((snapshot) => store.put(normalizeSnapshot(snapshot)));
+  });
+}
+
 export async function replaceSnapshots(snapshots: MasterySnapshot[]): Promise<void> {
   const normalizedSnapshots = snapshots.map(normalizeSnapshot);
 
@@ -202,9 +217,9 @@ export async function replaceSnapshots(snapshots: MasterySnapshot[]): Promise<vo
   });
 }
 
-export async function listSnapshots(): Promise<MasterySnapshot[]> {
+export async function listSnapshots(includeLiveCapture = false): Promise<MasterySnapshot[]> {
   const snapshots = await runStoreRequest('readonly', (store) => store.getAll());
-  return sortSnapshotsNewestFirst(snapshots);
+  return sortSnapshotsNewestFirst(snapshots).filter((snapshot) => includeLiveCapture || snapshot.snapshotId !== LIVE_CAPTURE_MASTERY_ID);
 }
 
 export async function listSnapshotSummaries(): Promise<MasterySnapshotSummary[]> {
@@ -218,6 +233,6 @@ export async function getSnapshot(snapshotId: string): Promise<MasterySnapshot |
 }
 
 export async function getLatestSnapshot(): Promise<MasterySnapshot | null> {
-  const snapshots = await listSnapshots();
+  const snapshots = await listSnapshots(true);
   return snapshots[0] ?? null;
 }

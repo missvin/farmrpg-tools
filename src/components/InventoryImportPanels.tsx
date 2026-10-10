@@ -65,7 +65,7 @@ export function CurrentInventoryImportPanel({
   const [currentInventoryError, setCurrentInventoryError] = useState<string | null>(null);
   const [currentInventoryWarnings, setCurrentInventoryWarnings] = useState<string[]>([]);
 
-  const handleCurrentInventoryImport = () => {
+  const handleCurrentInventoryImport = async () => {
     setCurrentInventoryError(null);
     const parsed = prepareInventoryPaste(currentInventoryPaste, localItemLookup);
 
@@ -77,7 +77,7 @@ export function CurrentInventoryImportPanel({
 
     let savedState: AcquisitionPlannerInputState;
     try {
-      savedState = persistInventoryImport(acquisitionPlannerState, parsed);
+      savedState = await persistInventoryImport(acquisitionPlannerState, parsed);
     } catch (error) {
       setCurrentInventoryMessage(null);
       setCurrentInventoryError(error instanceof Error ? error.message : 'Unable to save inventory locally.');
@@ -96,7 +96,7 @@ export function CurrentInventoryImportPanel({
     setCurrentInventoryWarnings(parsed.warnings);
   };
 
-  const handleCurrentInventoryManualAdd = () => {
+  const handleCurrentInventoryManualAdd = async () => {
     setCurrentInventoryError(null);
     const quantity = Number.parseInt(currentInventoryQuantity, 10);
 
@@ -120,14 +120,12 @@ export function CurrentInventoryImportPanel({
       recordUnknownItemEvidence(evidenceRecord ? [evidenceRecord] : []);
     }
 
-    const nextState = upsertCurrentInventoryItemInput(acquisitionPlannerState, {
-      itemName: resolved?.displayName ?? currentInventoryName.trim(),
-      inventoryCount: quantity,
-    });
-
     let savedState: AcquisitionPlannerInputState;
     try {
-      savedState = persistManualInventoryState(nextState, 'item');
+      savedState = await persistManualInventoryState((current) => upsertCurrentInventoryItemInput(current, {
+        itemName: resolved?.displayName ?? currentInventoryName.trim(),
+        inventoryCount: quantity,
+      }), 'item');
     } catch (error) {
       setCurrentInventoryMessage(null);
       setCurrentInventoryError(error instanceof Error ? error.message : 'Unable to save inventory locally.');
@@ -226,13 +224,10 @@ export function CurrentInventoryImportPanel({
                   <td>
                     <button
                       className="button"
-                      onClick={() => {
-                        const savedState = removeCurrentInventoryItemInput(
-                          acquisitionPlannerState,
-                          entry.canonicalItemKey,
-                        );
+                      onClick={async () => {
                         try {
-                          const persisted = persistManualInventoryState(savedState, 'item');
+                          const persisted = await persistManualInventoryState(
+                            (current) => removeCurrentInventoryItemInput(current, entry.canonicalItemKey), 'item');
                           onAcquisitionPlannerStateChange(persisted);
                           setCurrentInventoryError(null);
                         } catch (error) {

@@ -2,6 +2,16 @@
 
 This file records important architectural and product decisions for the project and the rationale behind them. Use [roadmap.md](/C:/Users/liqui/Documents/farmrpg-tools/planning/roadmap.md) for milestone planning and [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for backlog items.
 
+## Serialized capture and independent history cadence — BL-372 (2026-10-10)
+
+Status: Accepted
+
+Capture application, manual inventory/mastery saves and backup restore share the origin-wide exclusive Web Lock `farmrpg-tools.player-data`. Capture requires Web Locks; older browsers retain manual imports but cannot enable capture. Re-read persisted ordering inside the lock, and reject duplicate/older/simultaneous observations. A truly absent dataset can accept its first capture; existing legacy, malformed or future ordering requires review and a manual import/correction before capture. Loaded local references are required so unknown items cannot bypass evidence review; unmatched items remain non-fatal and keep normalized-name identity.
+
+Inventory counts and observation metadata are one localStorage write, preserving current assumptions, pet stock and separate supplies. Ordinary settings saves preserve the latest observed inventory instead of restoring stale page state. Manual item corrections derive from the fresh inventory inside the lock. Mastery live data and an optional history checkpoint commit together in one IndexedDB transaction; no application receipt is returned before commit. Unknown-item evidence is saved before authoritative data: a later write failure may leave useful evidence, but never an applied receipt. Storage errors remain visible.
+
+Every accepted mastery observation updates the reserved `capture-live-mastery` snapshot. Retain at most one immutable checkpoint per UTC observation day, on the first capture whose normalized counts/tiers differ from the latest retained history. This compares against history, not live values, so later progress yesterday can still earn today's checkpoint. Identical history content does not create another daily row. Manual snapshots are never overwritten. History/compare lists exclude the mutable live record; latest-data reads and full backup/restore include it. No database or backup schema version changes are required. This service has no window listener or game extraction; authenticated delivery and view refresh remain BL-373.
+
 ## Import observation provenance — BL-366 (2026-10-09)
 
 Status: Accepted

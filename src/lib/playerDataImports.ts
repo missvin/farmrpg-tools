@@ -1,5 +1,6 @@
 import {
   replaceCurrentInventoryEntries,
+  loadAcquisitionPlannerInputState,
   saveAcquisitionPlannerInputState,
   type AcquisitionPlannerInputState,
 } from './acquisitionPlannerState';
@@ -8,6 +9,7 @@ import { parseCurrentInventoryPaste, type ParseCurrentInventoryPasteResult } fro
 import type { ParseResult } from './parseMasteryPaste';
 import { createSnapshotId, saveSnapshot, type MasterySnapshot } from './storage/masterySnapshots';
 import { createManualObservation } from './playerDataObservation';
+import { withPlayerDataLock } from './playerDataLock';
 
 /** Shared resolution for pasted inventory and structured observations. */
 export function inventoryImportResolver(lookup: LocalItemReferenceLookup | null) {
@@ -29,29 +31,33 @@ export function prepareInventoryPaste(rawText: string, lookup: LocalItemReferenc
 }
 
 /** Only inventory changes. Pet stock, owned supplies and planning assumptions survive. */
-export function persistInventoryImport(
+export async function persistInventoryImport(
   state: AcquisitionPlannerInputState,
   parsed: ParseCurrentInventoryPasteResult,
   storage?: Storage,
-  now = new Date().toISOString(),
-): AcquisitionPlannerInputState {
+  now?: string,
+): Promise<AcquisitionPlannerInputState> {
   if (parsed.entries.length === 0) {
     throw new Error('No item quantities found. Previous inventory was retained.');
   }
 
-  return persistManualInventoryState(replaceCurrentInventoryEntries(state, parsed.entries), 'full', storage, now);
+  return persistManualInventoryState(() => replaceCurrentInventoryEntries(state, parsed.entries), 'full', storage, now);
 }
 
-export function persistManualInventoryState(
-  state: AcquisitionPlannerInputState,
+export async function persistManualInventoryState(
+  update: (current: AcquisitionPlannerInputState) => AcquisitionPlannerInputState,
   scope: 'full' | 'item',
   storage?: Storage,
-  now = new Date().toISOString(),
-): AcquisitionPlannerInputState {
-  return saveAcquisitionPlannerInputState({
-    ...state,
-    inventory: { ...state.inventory, observation: createManualObservation(scope, now) },
-  }, storage);
+  now?: string,
+): Promise<AcquisitionPlannerInputState> {
+  return withPlayerDataLock(() => {
+    const current = loadAcquisitionPlannerInputState(storage);
+    const next = update(current);
+    return saveAcquisitionPlannerInputState({
+      ...current,
+      inventory: { ...next.inventory, observation: createManualObservation(scope, now ?? new Date().toISOString()) },
+    }, storage, true);
+  });
 }
 
 export function createMasteryImportSnapshot(
@@ -76,5 +82,5 @@ export function createMasteryImportSnapshot(
 }
 
 export async function persistMasteryImport(parsed: ParseResult, rawText: string): Promise<void> {
-  await saveSnapshot(createMasteryImportSnapshot(parsed, rawText));
+  await withPlayerDataLock(() => saveSnapshot(createMasteryImportSnapshot(parsed, rawText)));
 }

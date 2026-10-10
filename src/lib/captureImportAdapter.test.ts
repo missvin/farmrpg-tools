@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { prepareCaptureImport, type CaptureImportContext } from './captureImportAdapter';
-import { createDefaultAcquisitionPlannerInputState, loadAcquisitionPlannerInputState } from './acquisitionPlannerState';
+import { createDefaultAcquisitionPlannerInputState, loadAcquisitionPlannerInputState, saveAcquisitionPlannerInputState } from './acquisitionPlannerState';
 import { createMasteryImportSnapshot, persistInventoryImport, prepareInventoryPaste } from './playerDataImports';
 import { parseMasteryPaste } from './parseMasteryPaste';
 import { parseItemAliasesCsv } from './itemAliases';
@@ -34,7 +34,7 @@ function capture() {
 }
 
 describe('capture import preparation', () => {
-  it('matches manual inventory resolution and keeps observed zero through persistence', () => {
+  it('matches manual inventory resolution and keeps observed zero through persistence', async () => {
     const prepared = prepareCaptureImport(capture(), context);
     const paste = prepareInventoryPaste('Steel, 10\nCorn, 0', null);
     expect(prepared.ok && prepared.section === 'inventory' && prepared.parsed).toEqual(paste);
@@ -44,7 +44,8 @@ describe('capture import preparation', () => {
     state.explore.availableStamina = 1234;
     state.pets.storedInventoryEntries = [{ canonicalItemKey: 'steel', itemName: 'Steel', storedCount: 90 }];
     state.ownedNow.entries = [{ canonicalItemKey: 'steel', itemName: 'Steel', ownedCount: 80, sourceCategory: 'stockpile' }];
-    const saved = persistInventoryImport(state, prepared.parsed, localStorage);
+    saveAcquisitionPlannerInputState(state, localStorage, true);
+    const saved = await persistInventoryImport(state, prepared.parsed, localStorage);
     expect(saved).toEqual({ ...state, inventory: { entries: paste.entries, observation: expect.objectContaining({ source: 'manual', scope: 'full' }) } });
     expect(loadAcquisitionPlannerInputState(localStorage)).toEqual(saved);
     expect(state.inventory.entries[0].inventoryCount).toBe(999);
@@ -152,14 +153,14 @@ describe('capture import preparation', () => {
     expect(prepareCaptureImport({ ...payload, rows: [{ ...payload.rows[0], targetTier: 123 }] }, { ...context, requiredSections: ['100000', 'INF'] }).ok).toBe(false);
   });
 
-  it('retains storage on empty imports and exposes write failure instead of claiming success', () => {
+  it('retains storage on empty imports and exposes write failure instead of claiming success', async () => {
     localStorage.clear();
     localStorage.setItem('sentinel', 'retained');
     const state = createDefaultAcquisitionPlannerInputState();
-    expect(() => persistInventoryImport(state, { entries: [], warnings: [] }, localStorage)).toThrow('retained');
+    await expect(persistInventoryImport(state, { entries: [], warnings: [] }, localStorage)).rejects.toThrow('retained');
     expect(localStorage.getItem('sentinel')).toBe('retained');
     expect(() => createMasteryImportSnapshot(parseMasteryPaste(''), '')).toThrow('retained');
-    const storage = { setItem: () => { throw new Error('Storage full'); } } as unknown as Storage;
-    expect(() => persistInventoryImport(state, prepareInventoryPaste('Steel, 10', null), storage)).toThrow('Storage full');
+    const storage = { getItem: () => null, setItem: () => { throw new Error('Storage full'); } } as unknown as Storage;
+    await expect(persistInventoryImport(state, prepareInventoryPaste('Steel, 10', null), storage)).rejects.toThrow('Storage full');
   });
 });

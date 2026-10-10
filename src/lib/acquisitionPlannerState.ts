@@ -687,9 +687,17 @@ export function loadAcquisitionPlannerInputState(storage?: Storage): Acquisition
 export function saveAcquisitionPlannerInputState(
   state: AcquisitionPlannerInputState,
   storage?: Storage,
+  replaceInventory = false,
 ): AcquisitionPlannerInputState {
   const normalizedState = normalizeAcquisitionPlannerInputState(state);
   const activeStorage = getLocalStorage(storage);
+
+  // Settings/pet edits can originate in a stale open view. They do not own the
+  // observed inventory; only serialized import/restore services replace it.
+  if (!replaceInventory) {
+    const current = loadAcquisitionPlannerInputState(activeStorage);
+    if (current.inventory.observation) normalizedState.inventory = current.inventory;
+  }
 
   activeStorage.setItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY, JSON.stringify(normalizedState));
   return normalizedState;

@@ -652,6 +652,7 @@ describe('appBackupRestore', () => {
     );
     expect(mockSaveAcquisitionPlannerInputState).toHaveBeenCalledWith(
       payload.state.preferences.acquisitionPlannerState,
+      undefined, true,
     );
     expect(mockSaveDropRateAcquisitionSettings).toHaveBeenCalledWith(
       payload.state.preferences.dropRateAcquisitionSettings,
@@ -710,7 +711,7 @@ describe('appBackupRestore', () => {
     payload.state.preferences.acquisitionPlannerState!.inventory.observation = observation;
     await restoreAppBackupPayload(payload);
     expect(mockReplaceSnapshots).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ observation })]));
-    expect(mockSaveAcquisitionPlannerInputState).toHaveBeenCalledWith(expect.objectContaining({ inventory: expect.objectContaining({ observation }) }));
+    expect(mockSaveAcquisitionPlannerInputState).toHaveBeenCalledWith(expect.objectContaining({ inventory: expect.objectContaining({ observation }) }), undefined, true);
   });
 
   it('restores separate Tower rates and clears them when an older backup has no rate field', async () => {
@@ -898,7 +899,7 @@ describe('appBackupRestore', () => {
     expect(mockReplaceSnapshots).toHaveBeenNthCalledWith(1, payload.state.snapshots);
     expect(mockReplaceSnapshots).toHaveBeenNthCalledWith(2, previousSnapshots);
     expect(mockSaveCraftingModifierState).toHaveBeenLastCalledWith(previousModifierState);
-    expect(mockSaveAcquisitionPlannerInputState).toHaveBeenLastCalledWith(previousAcquisitionPlannerState);
+    expect(mockSaveAcquisitionPlannerInputState).toHaveBeenLastCalledWith(previousAcquisitionPlannerState, undefined, true);
     expect(mockSaveDropRateAcquisitionSettings).toHaveBeenLastCalledWith(previousDropRateAcquisitionSettings);
     expect(mockSavePumpkinJuicePlannerState).toHaveBeenLastCalledWith(previousPumpkinJuicePlannerState);
     expect(mockSavePersonalMasteryGoalsState).toHaveBeenLastCalledWith(previousPersonalMasteryGoalsState);

@@ -45,7 +45,7 @@ export function serializeAppBackupPayload(payload: AppBackupPayloadV1): string {
 export async function buildCurrentAppBackupPayload(
   options: BuildCurrentAppBackupPayloadOptions = {},
 ): Promise<AppBackupPayloadV1> {
-  const snapshots = await listSnapshots();
+  const snapshots = await listSnapshots(true);
 
   return createAppBackupPayload({
     appVersion: options.appVersion ?? packageJson.version,

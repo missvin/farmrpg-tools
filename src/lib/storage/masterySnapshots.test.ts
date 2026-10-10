@@ -7,6 +7,8 @@ import {
   listSnapshots,
   replaceSnapshots,
   saveSnapshot,
+  saveSnapshots,
+  LIVE_CAPTURE_MASTERY_ID,
   type MasterySnapshot,
 } from './masterySnapshots';
 
@@ -82,14 +84,24 @@ class FakeTransaction {
   oncomplete: ((this: IDBTransaction, event: Event) => void) | null = null;
   error: Error | null = null;
 
-  constructor(private readonly values: Map<string, StoredValue>) {}
+  private readonly pending: Map<string, StoredValue>;
+  private aborted = false;
+  constructor(private readonly values: Map<string, StoredValue>) { this.pending = new Map(values); }
 
   objectStore(): IDBObjectStore {
-    return new FakeObjectStore(this.values, this) as unknown as IDBObjectStore;
+    return new FakeObjectStore(this.pending, this) as unknown as IDBObjectStore;
+  }
+
+  abort(): void {
+    this.aborted = true;
+    this.onabort?.call(this as unknown as IDBTransaction, new Event('abort'));
   }
 
   finish(): void {
     queueMicrotask(() => {
+      if (this.aborted) return;
+      this.values.clear();
+      this.pending.forEach((value, key) => this.values.set(key, value));
       this.oncomplete?.call(this as unknown as IDBTransaction, new Event('complete'));
     });
   }
@@ -164,6 +176,7 @@ function createSnapshot(overrides: Partial<MasterySnapshot>): MasterySnapshot {
     parsedRows: overrides.parsedRows ?? [],
     savedAt: overrides.savedAt,
     importedAt: overrides.importedAt,
+    observation: overrides.observation,
   };
 }
 
@@ -171,6 +184,39 @@ describe('masterySnapshots storage', () => {
   beforeEach(() => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
+  });
+
+  it('keeps live mastery out of history lists but includes it in latest and backup reads', async () => {
+    vi.stubGlobal('indexedDB', createFakeIndexedDb());
+    await saveSnapshots([
+      createSnapshot({ snapshotId: 'capture-history-2026-10-09' }),
+      createSnapshot({ snapshotId: LIVE_CAPTURE_MASTERY_ID, createdAt: '2026-10-09T12:00:00.000Z' }),
+    ]);
+    expect((await getLatestSnapshot())?.snapshotId).toBe(LIVE_CAPTURE_MASTERY_ID);
+    expect((await listSnapshots()).map((row) => row.snapshotId)).toEqual(['capture-history-2026-10-09']);
+    expect(await listSnapshotSummaries()).toHaveLength(1);
+    expect(await listSnapshots(true)).toHaveLength(2);
+  });
+
+  it('prefers a manual correction over a live capture saved in the same millisecond', async () => {
+    const time = '2026-10-09T12:00:00.000Z';
+    vi.stubGlobal('indexedDB', createFakeIndexedDb([
+      createSnapshot({ snapshotId: LIVE_CAPTURE_MASTERY_ID, createdAt: time }),
+      createSnapshot({ snapshotId: '000-manual', createdAt: time, observation: { source: 'manual', scope: 'full', observedAt: time, appliedAt: time } }),
+    ]));
+    expect((await getLatestSnapshot())?.snapshotId).toBe('000-manual');
+  });
+
+  it('does not publish either batch write when the transaction aborts after requests succeed', async () => {
+    vi.stubGlobal('indexedDB', createFakeIndexedDb());
+    const pending: FakeTransaction[] = [];
+    const finish = vi.spyOn(FakeTransaction.prototype, 'finish').mockImplementation(function (this: FakeTransaction) { pending.push(this); });
+    const saving = saveSnapshots([createSnapshot({ snapshotId: 'live' }), createSnapshot({ snapshotId: 'history' })]);
+    const rejected = expect(saving).rejects.toThrow('Batch aborted');
+    await vi.waitFor(() => expect(pending).toHaveLength(2));
+    pending[0].error = new Error('Batch aborted'); pending[0].abort();
+    await rejected; finish.mockRestore();
+    expect(await listSnapshots(true)).toEqual([]);
   });
 
   it('waits for transaction completion after a successful write request', async () => {

@@ -61,6 +61,7 @@ import {
   saveSourceRateAssumptionsState,
 } from './sourceRateAssumptions';
 import { listSnapshots, replaceSnapshots } from './storage/masterySnapshots';
+import { withPlayerDataLock } from './playerDataLock';
 import {
   clearTargetOutputPlannerState,
   loadTargetOutputPlannerState,
@@ -100,7 +101,11 @@ export async function readAppBackupFile(file: File): Promise<AppBackupPayloadV1>
 }
 
 export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Promise<void> {
-  const currentSnapshots = await listSnapshots();
+  return withPlayerDataLock(() => restoreLocked(payload));
+}
+
+async function restoreLocked(payload: AppBackupPayloadV1): Promise<void> {
+  const currentSnapshots = await listSnapshots(true);
   const currentCraftingModifierState = loadCraftingModifierState();
   const currentAcquisitionPlannerState = loadAcquisitionPlannerInputState();
   const currentDropRateAcquisitionSettings = loadDropRateAcquisitionSettings();
@@ -128,7 +133,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
     }
 
     if (payload.state.preferences.acquisitionPlannerState) {
-      saveAcquisitionPlannerInputState(payload.state.preferences.acquisitionPlannerState);
+      saveAcquisitionPlannerInputState(payload.state.preferences.acquisitionPlannerState, undefined, true);
     } else {
       clearAcquisitionPlannerInputState();
     }
@@ -219,7 +224,7 @@ export async function restoreAppBackupPayload(payload: AppBackupPayloadV1): Prom
   } catch {
     await replaceSnapshots(currentSnapshots);
     saveCraftingModifierState(currentCraftingModifierState);
-    saveAcquisitionPlannerInputState(currentAcquisitionPlannerState);
+    saveAcquisitionPlannerInputState(currentAcquisitionPlannerState, undefined, true);
     saveDropRateAcquisitionSettings(currentDropRateAcquisitionSettings);
     savePumpkinJuicePlannerState(currentPumpkinJuicePlannerState);
     savePersonalMasteryGoalsState(currentPersonalMasteryGoalsState);
