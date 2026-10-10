@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import type { RecipeGraph } from '../lib/loadRecipeGraph';
 import type { TowerMaterial } from '../lib/towerMaterials';
 import type { TowerRemainingRow } from '../lib/towerRemainingRows';
@@ -13,6 +13,7 @@ export function TowerMaterialWatches({ row, materials, watched, graph, sources, 
 }) {
   const [open, setOpen] = useState(false);
   const [deeperOpen, setDeeperOpen] = useState(false);
+  const panelId = useId();
   const directKeys = new Set(graph?.byOutputCanonicalKey[row.canonicalKey]?.inputs.map((input) => input.canonicalKey) ?? []);
   if (!directKeys.size) {
     for (const key of ['large net', 'fishing net', row.canonicalKey]) directKeys.add(key);
@@ -30,11 +31,14 @@ export function TowerMaterialWatches({ row, materials, watched, graph, sources, 
       </label>
       <TowerMaterialDetail material={material} row={row} sources={sources} productionRates={productionRates} showInlineAmount={showInlineAmounts} />
     </div>)}</div>;
-  return <details className="tower-material-watches" onToggle={(event) => {
-    if (event.target === event.currentTarget) setOpen(event.currentTarget.open);
-  }}>
-    <summary aria-label={'Materials to watch for ' + row.itemName + ' T' + row.towerLevel}>Materials to watch{watched.length ? ' · ' + watched.length : ''}</summary>
-    {open ? <div className="tower-watch-content">
+  return <>
+    <button type="button" className="tower-watch-toggle"
+      aria-label={'Materials to watch for ' + row.itemName + ' T' + row.towerLevel}
+      aria-expanded={open} aria-controls={panelId} onClick={() => setOpen(!open)}>
+      <span aria-hidden="true">{open ? '▾' : '▸'}</span>
+    </button>
+    <div id={panelId} className="tower-watch-content" hidden={!open}>
+    {open ? <>
       {direct.length ? options(direct) : null}
       {deeper.length ? <details onToggle={(event) => {
         if (event.target === event.currentTarget) setDeeperOpen(event.currentTarget.open);
@@ -47,6 +51,7 @@ export function TowerMaterialWatches({ row, materials, watched, graph, sources, 
         <input type="checkbox" checked aria-label={'Watch ' + key + ' for ' + row.itemName + ' T' + row.towerLevel}
           onChange={() => onChange(key, false)} />{key} · unavailable under current references or recipe policy
       </label>)}
-    </div> : null}
-  </details>;
+    </> : null}
+    </div>
+  </>;
 }

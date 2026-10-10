@@ -313,7 +313,14 @@ describe('Tower remaining requirements', () => {
     </MemoryRouter>);
     const gm = screen.getByRole('row', { name: /301 Propeller Hat/ });
     const icons = () => within(gm.querySelector('.tower-material-icons') as HTMLElement);
-    await user.click(within(gm).getByText('Materials to watch', { selector: 'summary' }));
+    const toggle = within(gm).getByRole('button', { name: 'Materials to watch for Propeller Hat T301' });
+    expect(toggle).toHaveTextContent('▸');
+    expect(toggle).not.toHaveTextContent('Materials to watch');
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    toggle.focus();
+    await user.keyboard('{Enter}');
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(toggle).toHaveTextContent('▾');
     await user.click(within(gm).getByText(/Show deeper ingredients/, { selector: 'summary' }));
     const watch = await within(gm).findByRole('checkbox', { name: 'Watch Iron for Propeller Hat T301' });
     expect(watch).not.toBeChecked();
@@ -333,6 +340,10 @@ describe('Tower remaining requirements', () => {
     const mm = screen.getByRole('row', { name: /340 Propeller Hat/ });
     expect(within(mm.querySelector('.tower-material-icons') as HTMLElement).getByRole('link', { name: 'Iron' })).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: 'Filter by Steel', exact: true })).toBeChecked();
+    toggle.focus();
+    await user.keyboard(' ');
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(within(gm).queryByRole('checkbox', { name: 'Watch Iron for Propeller Hat T301' })).not.toBeInTheDocument();
     view.unmount();
     render(<MemoryRouter initialEntries={['/tower-progress?material=steel']}>
       <TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} />
@@ -348,7 +359,7 @@ describe('Tower remaining requirements', () => {
     </MemoryRouter>);
     let view = renderTable();
     const gm = screen.getByRole('row', { name: /301 Propeller Hat/ });
-    await user.click(within(gm).getByText('Materials to watch', { selector: 'summary' }));
+    await user.click(within(gm).getByRole('button', { name: 'Materials to watch for Propeller Hat T301' }));
     expect(await within(gm).findByRole('checkbox', { name: 'Watch Red Dye for Propeller Hat T301' })).not.toBeChecked();
     expect(within(gm).queryByRole('checkbox', { name: 'Watch Iron for Propeller Hat T301' })).not.toBeInTheDocument();
     await user.click(within(gm).getByRole('checkbox', { name: 'Watch Red Dye for Propeller Hat T301' }));

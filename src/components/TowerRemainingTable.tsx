@@ -226,13 +226,14 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
                       style={expandedDetail?.id === id ? { left: expandedDetail.left, top: expandedDetail.top, bottom: expandedDetail.bottom } : undefined}>{detail}</span>
                   </td>
                   <td className="tower-remaining-number">{row.pumpkinJuices === null ? <span className="subtle-text">Needs baseline</span> : row.pumpkinJuices.toLocaleString()}</td>
-                  <td><div className="tower-material-icons">{displayedMaterials(row.canonicalKey).map((material) =>
+                  <td><div className="tower-material-cell"><div className="tower-material-icons">{displayedMaterials(row.canonicalKey).map((material) =>
                     <TowerMaterialDetail key={material.canonicalKey} material={material} row={row} sources={estimateSources} productionRates={productionRates} showInlineAmount={showMaterialAmounts} />
                   )}{!row.materialNames?.length ? <span className="subtle-text">—</span> : null}</div>
                     <TowerMaterialWatches row={row} materials={choices.filter((material) => relationships.get(row.canonicalKey)?.has(material.canonicalKey))}
                       watched={preferences.watches[row.canonicalKey] ?? []} graph={recipeGraph} sources={estimateSources}
                       productionRates={productionRates} showInlineAmounts={showMaterialAmounts}
                       onChange={(key, checked) => updateWatch(row.canonicalKey, key, checked)} />
+                    </div>
                   </td>
                 </tr>
               );

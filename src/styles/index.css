@@ -3804,9 +3804,11 @@ a {
 .item-profile-page .item-quick-plan { min-width: 0; }
 .item-profile-page .item-quick-plan .text-input { width: 100%; }
 
-.tower-material-watches { margin-top: 0.3rem; font-size: 0.8rem; text-align: left; }
-.tower-material-watches summary { cursor: pointer; color: var(--color-next-border); padding: 0.35rem 0; }
-.tower-watch-content { padding: 0.25rem 0; min-width: 15rem; }
+.tower-material-cell { display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; }
+.tower-watch-toggle { border: 0; background: transparent; color: var(--color-next-border); padding: 0.25rem; min-width: 1.5rem; min-height: 1.5rem; font-size: 0.8rem; cursor: pointer; }
+.tower-watch-toggle:focus-visible { outline: 2px solid var(--color-next-border); outline-offset: 2px; }
+.tower-watch-content { flex-basis: 100%; padding: 0.25rem 0; min-width: 0; font-size: 0.8rem; text-align: left; }
+.tower-watch-content summary { cursor: pointer; color: var(--color-next-border); padding: 0.35rem 0; }
 .tower-watch-options { display: grid; gap: 0.15rem; }
 .tower-watch-option { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; }
 .tower-watch-option .checkbox-label { display: inline-flex; align-items: center; gap: 0.4rem; margin: 0; }
