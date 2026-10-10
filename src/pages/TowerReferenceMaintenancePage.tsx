@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useState } from 'react';
 
 import { PageIntro } from '../components/PageIntro';
@@ -10,6 +11,7 @@ import { loadTowerRequirements } from '../lib/loadTowerRequirements';
 import { getLatestSnapshot } from '../lib/storage/masterySnapshots';
 
 export function TowerReferenceMaintenancePage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
   const [towerState, setTowerState] = useState<{
@@ -91,7 +93,7 @@ export function TowerReferenceMaintenancePage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const referenceReviewRows = towerState.derivedTowerRequirements
     ? deriveTowerReferenceReviewRows(towerState.derivedTowerRequirements.rows)

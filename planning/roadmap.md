@@ -142,11 +142,11 @@ The app now behaves as a goal-and-item workbench rather than a loose collection 
 Keep planning data current from game pages the player visits, reusing the reviewed existing extension. Firefox is required; distribution will be signed and unlisted. No game actions, extra game requests, credentials, backend or cloud sync.
 
 - Shared manual-import services, structured validation, durable observation metadata and backup compatibility are landed (`BL-370`, `BL-371`). They do not constitute an active capture receiver.
-- Serialized capture application/history is landed (`BL-372`): cross-tab arbitration, visible rejection, unknown-item evidence and bounded mastery checkpoints. Next: the exact-origin tracker bridge, acknowledgments and open-view refresh (`BL-373`).
+- Serialized application/history and the paired exact-origin tracker receiver are landed (`BL-372`, `BL-373`): cross-tab arbitration, visible rejection, unknown-item evidence, bounded checkpoints, durable acknowledgments and open-view refresh. Rebecca confirmed `https://farmrpg-tools.vercel.app/`; pairing is opt-in. No Firefox capture package is enabled by these tracker foundations.
 - First usable companion milestone: manual Firefox capture, passive stable-page observation, reconnect/status recovery and signed-package acceptance (`BL-374`–`BL-377`). All four gates are required; no installable or live-verified extension is claimed yet.
 - Then add personal item-page observations (`BL-378`, `BL-379`) and separate raw global mastery statistics/history (`BL-380`). Difficulty evidence integration (`BL-381`) waits for the explicit rating-policy decision (`BL-382`); raw statistics do not.
 
-Completion is tracked through umbrellas `BL-364` and `BL-366`–`BL-369`. Child rows own implementation and verification. Exact tracker origin and real Firefox testing remain release gates.
+Completion is tracked through umbrellas `BL-364` and `BL-366`–`BL-369`. Child rows own implementation and verification. The tracker origin is confirmed; actual Firefox transport, extraction and signed-package tests remain release gates. Next: `BL-374`, reuse the reviewed extension for manual Firefox capture.
 
 ## Later
 

@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -63,6 +64,7 @@ function getSelectedBurden(
 }
 
 export function IngredientDemandPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [searchParams] = useSearchParams();
   const [resourcesState, setResourcesState] = useState<{
     isLoading: boolean;
@@ -195,7 +197,7 @@ export function IngredientDemandPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const towerCutoff = useMemo(() => {
     const trimmedValue = towerCutoffInput.trim();

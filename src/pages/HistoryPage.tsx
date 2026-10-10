@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
@@ -462,6 +463,7 @@ function ReasonBadges({ reasons }: { reasons: string[] }) {
 }
 
 export function HistoryPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [historyState, setHistoryState] = useState<{
     isLoading: boolean;
     loadError: string | null;
@@ -532,7 +534,7 @@ export function HistoryPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   function savePreferences(nextPreferences: SnapshotVelocityPreferences): void {
     setPreferences(saveSnapshotVelocityPreferences(nextPreferences));

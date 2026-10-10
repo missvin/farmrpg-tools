@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { type CSSProperties, useEffect, useMemo, useState } from 'react';
 
 import { useSearchParams } from 'react-router-dom';
@@ -462,6 +463,7 @@ function TowerColorPivotMatrix({
 }
 
 export function CraftMaterialMatrixPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [searchParams] = useSearchParams();
   const [resourcesState, setResourcesState] = useState<ResourceState>({
     isLoading: true,
@@ -513,7 +515,7 @@ export function CraftMaterialMatrixPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const seedOptions = useMemo(() => getSeedOptions(resourcesState.recipeGraph), [resourcesState.recipeGraph]);
   const optionsByKey = useMemo(

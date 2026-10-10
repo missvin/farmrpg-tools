@@ -8,6 +8,7 @@ import {
 } from '../lib/themePreference';
 import { GlobalSearch } from './GlobalSearch';
 import { TopNav } from './TopNav';
+import { CaptureCompanion } from './CaptureCompanion';
 
 export function AppShell({ children }: PropsWithChildren) {
   const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -72,6 +73,7 @@ export function AppShell({ children }: PropsWithChildren) {
       </header>
       <main id="main-content" className="page-container">
         {children}
+        <CaptureCompanion />
       </main>
       {showScrollToTop ? (
         <div className="scroll-to-top-floating">

@@ -466,6 +466,8 @@ describe('appBackupExport', () => {
   });
 
   it('builds the full current backup payload from local snapshot and preference state', async () => {
+    const pairingSecret = 'ab'.repeat(32);
+    localStorage.setItem('farmrpg-tools.capture-pairing.v1', pairingSecret);
     const snapshots = [createSnapshot('snapshot-1'), createSnapshot('capture-live-mastery')];
     const craftingModifierState = {
       ...createModifierStateFixture(),
@@ -510,6 +512,8 @@ describe('appBackupExport', () => {
       appVersion: '1.1.0',
     });
     expect(mockListSnapshots).toHaveBeenCalledWith(true);
+    expect(JSON.stringify(payload)).not.toContain(pairingSecret);
+    localStorage.removeItem('farmrpg-tools.capture-pairing.v1');
 
     expect(payload.schemaVersion).toBe(1);
     expect(payload.kind).toBe('farmrpg-tools-backup');

@@ -28,7 +28,8 @@ This document summarizes the current runtime architecture of the local-first Far
 - Storage layer
   - Saves and loads local mastery snapshots in IndexedDB
   - Lives in [`src/lib/storage/masterySnapshots.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/storage/masterySnapshots.ts)
-  - Optional provenance is stored with inventory and mastery values, preserved in backups, and absent in legacy state rather than assigned fabricated freshness. Snapshot saves await transaction completion (`BL-371`). Capture application/coordination and the browser bridge remain planned (`BL-372`, `BL-373`).
+  - Optional provenance is stored with inventory and mastery values, preserved in backups, and absent in legacy state rather than assigned fabricated freshness. Snapshot saves await transaction completion (`BL-371`). Capture application shares a cross-tab lock with manual imports and backup restore; live mastery and bounded checkpoints commit together (`BL-372`).
+  - The opt-in tracker receiver authenticates paired capture messages at the exact user-confirmed production origin, reports durable application separately from waiting/rejection, and refreshes subscribed views without remounting controls (`BL-373`). Pairing authority remains local and is not part of player backups. See `planning/capture-bridge-protocol.md`; Firefox capture/transport and signed installation remain future gates.
 - Reference-data layer
   - Loads CSV-backed canonical reference data from `data/`
   - Lives in [`src/lib/loadMasteryDifficulty.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/loadMasteryDifficulty.ts) and [`src/lib/loadTowerRequirements.ts`](/C:/Users/liqui/Documents/farmrpg-tools/src/lib/loadTowerRequirements.ts)

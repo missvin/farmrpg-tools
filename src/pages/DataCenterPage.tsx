@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -108,6 +109,7 @@ function pluralize(count: number, singular: string, plural = `${singular}s`): st
 }
 
 export function DataCenterPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [snapshotStatus, setSnapshotStatus] = useState<SnapshotStatus>(getInitialSnapshotStatus);
   const questHistoryState = useMemo(() => loadQuestHistoryState(), []);
   const latestQuestImport = questHistoryState.imports[0] ?? null;
@@ -139,7 +141,7 @@ export function DataCenterPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const nextActions = latestSnapshot
     ? [routeLink('history'), routeLink('compare'), routeLink('settings')]

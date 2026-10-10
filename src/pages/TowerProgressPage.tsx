@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
@@ -156,6 +157,7 @@ function TowerGameAreaNeedsSection({ groups }: { groups: TowerGameAreaNeedGroup[
 }
 
 export function TowerProgressPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [searchParams, setSearchParams] = useSearchParams();
   const targetCanonicalKey = searchParams.get('item')?.trim().toLowerCase() ?? null;
   const [targetLevelInput, setTargetLevelInput] = useState(() => searchParams.get('through') ?? '');
@@ -395,7 +397,7 @@ export function TowerProgressPage() {
     return () => {
       isMounted = false;
     };
-  }, [towerTargetLevel]);
+  }, [towerTargetLevel, playerDataRevision]);
 
 
   return (

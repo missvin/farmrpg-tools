@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from 'react';
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
@@ -239,6 +240,7 @@ function getUniqueActionSources(goalSources: GoalSource[]): GoalSource[] {
 }
 
 export function GoalsOverviewPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [state, setState] = useState<GoalsOverviewState>({
     isLoading: true,
     snapshotError: null,
@@ -291,7 +293,7 @@ export function GoalsOverviewPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const goalSources = getGoalSources(state);
 

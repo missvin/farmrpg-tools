@@ -2,6 +2,14 @@
 
 This file records important architectural and product decisions for the project and the rationale behind them. Use [roadmap.md](/C:/Users/liqui/Documents/farmrpg-tools/planning/roadmap.md) for milestone planning and [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for backlog items.
 
+## Paired exact-origin tracker bridge — BL-373 (2026-10-10)
+
+Status: Accepted
+
+Rebecca confirmed `https://farmrpg-tools.vercel.app/` as the only tracker destination. The opt-in receiver accepts only same top-level-window messages at that exact HTTPS origin, with protocol v1 and HMAC-SHA-256 authentication using a locally generated pairing key. The key stays local and outside player backups; disconnect revokes queued application. Key possession authenticates pairing, not Firefox package identity. The companion must separately validate extension runtime sender/game URL/frame before signing captures. No wildcard, arbitrary localhost, file-page or preview-origin exception is enabled.
+
+Waiting/applying acknowledgments never mean applied. Applied replies follow durable application only; failures and duplicates are distinct. Successful applications publish non-personal same-tab/cross-tab refresh hints, and active pages reload saved data without remounting controls. Fixed coverage IDs, signing bytes, trust limits and the future Firefox acceptance gate are specified in `planning/capture-bridge-protocol.md`. Manual import and static local-first architecture remain unchanged.
+
 ## Serialized capture and independent history cadence — BL-372 (2026-10-10)
 
 Status: Accepted

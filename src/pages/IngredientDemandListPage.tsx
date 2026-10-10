@@ -1,3 +1,4 @@
+import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 
 import { ItemProfileLink } from '../components/ItemProfileLink';
@@ -92,6 +93,7 @@ function buildIngredientDemandRows(
 }
 
 export function IngredientDemandListPage() {
+  const playerDataRevision = usePlayerDataRevision();
   const [resourcesState, setResourcesState] = useState<{
     isLoading: boolean;
     snapshotError: string | null;
@@ -225,7 +227,7 @@ export function IngredientDemandListPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerDataRevision]);
 
   const towerCutoff = useMemo(() => {
     const trimmedValue = towerCutoffInput.trim();
