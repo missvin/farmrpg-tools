@@ -1,3 +1,4 @@
+import { existsSync, readFileSync, unlinkSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -110,6 +111,24 @@ const branchHeadResult = runGit(['rev-parse', branch], { capture: true });
 const branchHead = (branchHeadResult.stdout ?? '').trim();
 if ((branchHeadResult.status ?? 1) !== 0 || !branchHead) {
   fail(`Unable to determine HEAD for branch '${branch}'.`);
+}
+
+// Prepare an explicitly pinned parallel branch on the current task branch.
+// Default-branch landing below remains fast-forward-only.
+const integrateFile = join(repoRoot, 'recovery', 'codex-integrate-source.txt');
+if (existsSync(integrateFile)) {
+  const source = readFileSync(integrateFile, 'utf8').trim();
+  if (!/^[a-f0-9]{40}$/.test(source)) fail('Integration source must be an exact 40-character commit SHA.');
+  const checked = runGit(['rev-parse', '--verify', `${source}^{commit}`], { capture: true });
+  if (checked.status !== 0 || checked.stdout.trim() !== source) fail('Integration source commit is unavailable.');
+  const preflight = runGit(['merge-tree', '--write-tree', branchHead, source], { capture: true });
+  if (preflight.status !== 0) fail(`Integration preflight found conflicts; no checkout changed.\n${preflight.stdout}`);
+  const prepared = runGit(['merge', '--no-ff', '--no-commit', source]);
+  if (prepared === 0) {
+    unlinkSync(integrateFile);
+    console.log('Integration prepared on task branch. Verify, then use git codex-commit; no default branch was changed or pushed.');
+  }
+  process.exit(prepared);
 }
 
 let exitCode = runGit(['switch', defaultBranch]);

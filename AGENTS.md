@@ -173,6 +173,8 @@ Use the repo-local safe Codex git helpers for branch, stage, commit, push, and m
 
 The helpers read temporary input from `recovery/codex-branch-name.txt`, `recovery/codex-stage-paths.txt`, and `recovery/codex-commit-message.txt`. These files are ignored and should be removed automatically after successful helper use.
 
+For parallel-worktree integration, `git codex-branch` can also read an exact commit SHA from `recovery/codex-branch-start.txt`, allowing a new landing branch in the primary checkout without moving another worktree's branch. On a clean task branch, `git codex-merge` can read an exact commit SHA from `recovery/codex-integrate-source.txt` to preflight and prepare a non-fast-forward integration without committing, pushing, or changing the default branch. Verify the combined result and commit it with `git codex-commit`; then run normal `git codex-merge` with no integration input to fast-forward and push the default branch. Conflicting preflight results leave the checkout untouched. Successful operations consume the optional input files.
+
 For explicitly approved direct protected-branch pushes, `git codex-push` reads `recovery/codex-protected-push-approval.txt` and requires the file to name the protected branch and exact `HEAD` being pushed. The helper prints the required file contents when approval is missing. Normal `git codex-merge` task-branch landings do not require this approval file; they must still start from a clean feature branch, fast-forward merge into the default branch, and push the default branch through the helper.
 
 If a helper fails, stop and report the failure. Do not silently fall back to raw `git add`, `git commit`, `git push`, or `git merge`.

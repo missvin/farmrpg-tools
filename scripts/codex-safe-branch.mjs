@@ -34,6 +34,7 @@ function runGit(args, { capture = false } = {}) {
 }
 
 const branchFile = join(repoRoot, 'recovery', 'codex-branch-name.txt');
+const startFile = join(repoRoot, 'recovery', 'codex-branch-start.txt');
 
 if (!existsSync(branchFile)) {
   fail('Branch name file not found. Write the branch name to recovery/codex-branch-name.txt first.');
@@ -60,9 +61,16 @@ if ((existsResult.status ?? 1) === 0) {
   fail(`Branch '${branchName}' already exists locally.`);
 }
 
-const exitCode = runGit(['switch', '-c', branchName]);
+const start = existsSync(startFile) ? readFileSync(startFile, 'utf8').trim() : null;
+if (start !== null) {
+  if (!/^[a-f0-9]{40}$/.test(start)) fail('Branch start must be an exact 40-character commit SHA.');
+  const checked = runGit(['rev-parse', '--verify', `${start}^{commit}`], { capture: true });
+  if (checked.status !== 0 || checked.stdout.trim() !== start) fail('Branch start commit is unavailable.');
+}
+const exitCode = runGit(['switch', '-c', branchName, ...(start ? [start] : [])]);
 if (exitCode === 0) {
   unlinkSync(branchFile);
+  if (start !== null) unlinkSync(startFile);
 }
 
 process.exit(exitCode);
