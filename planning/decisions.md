@@ -2,6 +2,12 @@
 
 This file records important architectural and product decisions for the project and the rationale behind them. Use [roadmap.md](/C:/Users/liqui/Documents/farmrpg-tools/planning/roadmap.md) for milestone planning and [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for backlog items.
 
+## Manual Firefox test companion — BL-374 (2026-10-10)
+
+Use Firefox MV3 nonpersistent background scripts, a stable add-on ID, extension-local pairing/cache and only exact game/tracker hosts with storage/activeTab permissions. Reuse the pinned upstream parser subset with explicit attribution. Commands originate only in the own top-level extension popup; the background requests the selected game tab's frame 0, verifies unchanged URL, and signs structured full observations. Never give game scripts the pairing key or accept unsolicited game capture messages.
+
+Require independent page completeness evidence and exact counts; unsupported/currently unverified layouts reject without replacing good state. Manual retry of saved validated captures is included; passive triggers/reconnect automation remain later rows. Temporary unsigned installation and synthetic relay tests are not signed distribution or actual game capture acceptance. Declare websiteContent/browsingActivity conservatively for local transfer outside the add-on, and review consent/distribution terms before BL-377. See `planning/firefox-manual-capture.md` and the package README.
+
 ## Paired exact-origin tracker bridge — BL-373 (2026-10-10)
 
 Status: Accepted
