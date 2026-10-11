@@ -28,6 +28,17 @@ describe('Tower material relationships', () => {
     expect(DEFAULT_TOWER_MATERIAL_KEYS).toContain('bamboo');
     expect(towerMaterialChoices(null)).toContainEqual({ canonicalKey: 'bamboo', itemName: 'Bamboo' });
   });
+  it('matches gold crops directly and through recipes while excluding mushrooms', () => {
+    for (const itemName of ['Gold Carrot', 'Gold Cucumber', 'Gold Eggplant', 'Gold Peas', 'Gold Peppers', 'Gold Potato']) {
+      const canonicalKey = itemName.toLowerCase();
+      expect(towerMaterialChoices(null)).toContainEqual({ canonicalKey, itemName });
+      expect(towerMaterialKeys(canonicalKey, null, null).has(canonicalKey)).toBe(true);
+      const graph = materialTestGraph();
+      graph.byOutputCanonicalKey.steel.inputs = [{ itemName, canonicalKey, inputOrder: 0, quantity: 1 }];
+      expect(towerMaterialKeys('propeller hat', graph, null).has(canonicalKey)).toBe(true);
+    }
+    expect(towerMaterialKeys('mushroom', null, null).size).toBe(0);
+  });
   it('stops excluded recipe expansion but keeps the intermediate and honors opt-in and alternate paths', () => {
     const graph = materialTestGraph();
     const excluded = { ...graph.recipes[0], outputCanonicalKey: 'unpolished shimmer stone', outputItemName: 'Unpolished Shimmer Stone',

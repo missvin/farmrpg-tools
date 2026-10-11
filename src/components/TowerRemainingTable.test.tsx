@@ -214,7 +214,11 @@ describe('Tower remaining requirements', () => {
     expect(within(screen.getByRole('table')).getAllByRole('row')).toHaveLength(4);
     expect(screen.getByLabelText('Current URL')).toHaveTextContent('material=pine+tree');
     expect(screen.getByLabelText('Current URL')).toHaveTextContent('material=tomato');
+    expect(screen.getByLabelText('Current URL')).not.toHaveTextContent('material=mushroom');
+    expect(screen.getByLabelText('Current URL')).toHaveTextContent('material=gold+carrot');
     await user.click(screen.getByText('Individual crops', { selector: 'summary' }));
+    expect(screen.queryByRole('checkbox', { name: 'Filter by Mushroom', exact: true })).not.toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Filter by Gold Carrot', exact: true })).toBeChecked();
     await user.click(screen.getByRole('checkbox', { name: 'Filter by Cotton' }));
     expect(screen.getByRole('checkbox', { name: 'Crops', exact: true })).toBePartiallyChecked();
     expect(within(screen.getByRole('table')).getAllByRole('row')).toHaveLength(2);
