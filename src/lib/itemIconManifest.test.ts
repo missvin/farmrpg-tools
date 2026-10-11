@@ -4,6 +4,13 @@ import { buildItemIconLookup, getItemIcon, type ItemIconManifestEntry } from './
 import { toCanonicalItemKey } from './normalizeItemKey';
 
 describe('buildItemIconLookup', () => {
+  it.each(['Pillow Case 02', 'Oddvocado', 'Wyvern Priestess Mask', 'Egg of Oddvocado',
+    'Avocado', 'Cherries', 'Blueberries', 'Raspberries', 'Pear', 'Pumpkin Head Buddy Doll',
+    'Mega Lamprey Shark', 'Purple Ghost Crab', 'Robot Chicken', 'Hornworm', "Koala's Corgi",
+    "Roomba's Locket", 'Rocket Trophy', 'The Big One'])('bundles the original October intake icon for %s', (itemName) => {
+    expect(getItemIcon(toCanonicalItemKey(itemName))?.src).toBeTruthy();
+  });
+
   it('derives canonical identity from the item name rather than legacy punctuation-stripped keys', () => {
     const lookup = buildItemIconLookup([{
       itemName: "Re’taw", canonicalKey: 're taw', manifestStatus: 'ready',
