@@ -6,7 +6,7 @@ Captured from the user-provided guide and discussion on 2026-10-11. Planning onl
 
 Add a separate sortable Tower column, provisionally `Rasbit Δ`:
 
-`row PJ remaining - selected recommendation benchmark`
+`row PJ remaining - effective benchmark` (personal override when present; otherwise selected guide benchmark)
 
 Provide one global `Benchmark` selector: **Less grind / Midpoint / More grind**, defaulting to **Less grind**. Less grind uses the recommended maximum (24 for 20–24): reaching it enters the recommended range. Midpoint uses the arithmetic midpoint (22). More grind uses the recommended minimum (20): reaching it completes the ordinary grind through the range. Explain: `More grinding leaves fewer PJ needed to finish.` Avoid top/bottom labels, which reverse the apparent direction of mastery progress.
 
@@ -14,9 +14,17 @@ Keep half-point midpoint values. A single recommendation has equal minimum and m
 
 Show the original range, selected benchmark label/value, applicable condition, source date and attribution in hover/focus/tap details. This is contextual guidance, not an instruction to spend PJ, a spending allocation, affordability claim, market optimizer or replacement difficulty rating. It does not change mastery goals, materials, inventory or PJ calculations. Do not introduce an aggregate recommended-spend summary in this slice.
 
+### Optional personal benchmark
+
+Offer a compact per-row `My PJ finish` edit accepting a finite nonnegative whole PJ count, including explicit zero. Scope saved overrides by canonical normalized item key and target tier, so GM intentions never silently carry into MM. Without an override, follow the global Less grind / Midpoint / More grind choice. With an override, use the personal count for both numeric delta/sorting and mastery-threshold details, and visibly mark the row `Custom`. Keep the original Rasbit range, conditions and revision available in the tooltip when present; the custom value is not attributed to Rasbit.
+
+Clearing the override restores the current global guide selection. Global selector changes and replacement guide files must preserve personal values. A custom benchmark can be used for an explicitly known item/tier even without an applicable numeric guide recommendation; retain missing guide context separately. Invalid input must be rejected visibly without replacing the last saved value. Persist locally and preserve overrides through the existing backup/restore workflow with legacy backups remaining compatible; reuse existing settings patterns and avoid a storage-version migration unless compatibility review establishes a necessity.
+
+Overrides are personal finish benchmarks only. They do not reserve or consume PJ, subtract owned stock, adjust mastery/material goals, or promise affordability. Keep them distinct from any future spending/allocation planner. Since custom values can exist, choose a column label that does not falsely attribute every value to Rasbit during implementation design.
+
 ### Mastery threshold in tooltip
 
-Show the ordinary mastery needed before using the selected PJ benchmark of the applicable recommendation to reach the confirmed target tier, plus the player's mastery gap to that threshold. The same selector drives both the numeric column and tooltip threshold; do not retain a separate lower-bound tooltip calculation. For 20–24, Less grind uses 24, Midpoint uses 22, and More grind uses 20 for both.
+Show the ordinary mastery needed before using the effective PJ benchmark to reach the confirmed target tier, plus the player's mastery gap to that threshold. The same selected guide benchmark or personal override drives both the numeric column and tooltip threshold; do not retain a separate lower-bound tooltip calculation. For 20–24 without an override, Less grind uses 24, Midpoint uses 22, and More grind uses 20 for both.
 
 Use the existing shared PJ calculation rules to find the minimum eligible starting mastery that reaches the target with that number of PJ, including integer rounding and baseline requirements. Do not approximate by repeated division if that disagrees with the shared forward calculator. Zero PJ means the target mastery itself. For a fractional midpoint, keep its exact value for column sorting but resolve and explicitly label the whole-PJ threshold policy during implementation design; never silently round or imply a fractional PJ can be consumed. Missing tier/condition or unsupported calculations remain unavailable.
 
@@ -65,6 +73,7 @@ The guide's author's personal 30-PJ usage is anecdotal, not an alternate recomme
 
 - Verify exact values, half-point midpoints, numeric sorting and unknowns-last behavior.
 - Verify all three selector choices and the Less grind default update sorting and tooltip thresholds together. Single-number recommendations remain unchanged.
+- Verify custom zero/whole counts, invalid inputs, item/tier isolation, visible Custom attribution, reset, absent guide recommendations, selector/guide replacement preservation, local reload and compatible backup/restore.
 - Verify the selected PJ mastery threshold against the shared forward calculator, including minimality, zero PJ, integer rounding, explicit fractional-midpoint policy, missing baseline, and already-past cases; verify one-decimal compact mastery/gap formatting.
 - Verify repeated GM/MM targets retain individual estimates without affecting the shared total.
 - Verify target-tier mismatch, conditional applicability, qualitative advice and absent recommendations remain explicit.
