@@ -12,6 +12,14 @@ Keep half-point values. A single recommendation has equal minimum and maximum. P
 
 Show the original range, midpoint, applicable condition, source date and attribution in hover/focus/tap details. This is contextual guidance, not an instruction to spend PJ, a spending allocation, affordability claim, market optimizer or replacement difficulty rating. It does not change mastery goals, materials, inventory or PJ calculations. Do not introduce an aggregate recommended-spend summary in this slice.
 
+### Mastery threshold in tooltip
+
+Show the ordinary mastery needed before using the lower PJ bound of the applicable recommendation to reach the confirmed target tier, plus the player's mastery gap to that threshold. For a single recommendation such as six PJ, use six; for a range such as 20–24, use 20 for this mastery threshold while retaining midpoint 22 for the sortable column. Label these separately so the different reference points are clear.
+
+Use the existing shared PJ calculation rules to find the minimum eligible starting mastery that reaches the target with that number of PJ, including integer rounding and baseline requirements. Do not approximate by repeated division if that disagrees with the shared forward calculator. Zero PJ means the target mastery itself. Missing tier/condition or unsupported calculations remain unavailable.
+
+Use compact mastery formatting with one decimal place where abbreviated, e.g. `45.2k`, matching the user's example (rather than literally one significant figure). Example tooltip structure: `Lower recommendation: 6 PJ · Mastery needed before PJ: [threshold] · [gap] mastery away`. The example 45.2k is a formatting illustration, not a validated threshold for six PJ. Compare against mastery in the same snapshot as the row; if already reached, report at/past the threshold instead of implying more grind is required. Round only the displayed values, not the threshold calculation, comparison or sorting. Keep the midpoint-based PJ delta unchanged.
+
 ## Replaceable source
 
 Rasbit revises recommendations. Keep the guide as replaceable, dated, reviewed input rather than constants embedded in UI code. Preserve original min/max and qualitative text, conditions and target tier separately from the derived midpoint. Identify the active revision and retain prior source evidence when a newer user-supplied file supersedes it. Missing entries in a replacement must remain missing, not silently inherit old guidance. Never infer numeric zero from missing or qualitative recommendations.
@@ -54,6 +62,7 @@ The guide's author's personal 30-PJ usage is anecdotal, not an alternate recomme
 ## Acceptance boundaries
 
 - Verify exact values, half-point midpoints, numeric sorting and unknowns-last behavior.
+- Verify the lower-bound PJ mastery threshold against the shared forward calculator, including minimality, zero PJ, integer rounding, missing baseline, and already-past cases; verify one-decimal compact mastery/gap formatting.
 - Verify repeated GM/MM targets retain individual estimates without affecting the shared total.
 - Verify target-tier mismatch, conditional applicability, qualitative advice and absent recommendations remain explicit.
 - Verify a replacement revision updates the benchmark and provenance without silently mixing guides or changing player state.
