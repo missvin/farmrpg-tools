@@ -11,6 +11,8 @@ vi.mock('../lib/loadTowerRequirements', () => ({
   loadTowerRequirements: vi.fn(),
 }));
 
+vi.mock('../lib/itemIconManifest', () => ({ getItemIcon: vi.fn(() => null) }));
+
 vi.mock('../lib/storage/masterySnapshots', () => ({
   listSnapshots: vi.fn(),
 }));
@@ -152,5 +154,27 @@ describe('TowerPumpkinJuiceHistoryPage', () => {
     await user.click(screen.getByRole('button', { name: 'T350' }));
     expect(screen.getByRole('alert')).toHaveTextContent('Keep at least one Tower target selected.');
     expect(screen.getByText('Save at least one mastery snapshot to see historical values.')).toBeInTheDocument();
+  });
+
+  it('shows latest item contributions, selectable snapshots, fixed scale and missing-baseline details', async () => {
+    const user = userEvent.setup();
+    renderPage('/tower-pj-history?levels=340,350');
+    const section = await screen.findByRole('region', { name: 'PJ needed by item' });
+    const view = within(section);
+    expect(view.getByLabelText('Item chart snapshot')).toHaveValue('newer');
+    expect(view.getByLabelText('Item chart Tower cutoff')).toHaveValue('350');
+    const goldTile = within(view.getByRole('group', { name: 'Remaining PJ contribution treemap' })).getByRole('button', { name: /Gold Pea.*Target GM/ });
+    await user.click(goldTile);
+    expect(view.getByRole('status')).toHaveTextContent('Snapshot mastery 45,000');
+    await user.click(view.getByLabelText('Fixed scale'));
+    expect(view.getByText(/Fixed area:/)).toHaveTextContent('History includes incomplete totals');
+    await user.selectOptions(view.getByLabelText('Item chart snapshot'), 'older');
+    expect(view.getByRole('note')).toHaveTextContent('Steel Plate');
+    expect(view.getByRole('group', { name: 'Remaining PJ contribution treemap' })).toHaveTextContent('Gold Pea');
+    expect(within(view.getByRole('group', { name: 'Remaining PJ contribution treemap' })).queryByRole('button', { name: /Steel Plate/ })).not.toBeInTheDocument();
+    await user.click(view.getByText('All item contributions (2)'));
+    expect(view.getByRole('button', { name: /Steel Plate.*Unknown PJ/ })).toBeInTheDocument();
+    await user.selectOptions(view.getByLabelText('Item chart Tower cutoff'), '340');
+    expect(view.queryByRole('note')).not.toBeInTheDocument();
   });
 });

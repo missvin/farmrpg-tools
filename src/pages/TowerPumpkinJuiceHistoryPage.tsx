@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { PageIntro } from '../components/PageIntro';
 import { TowerPumpkinJuiceHistoryChart } from '../components/TowerPumpkinJuiceHistoryChart';
+import { TowerPJContribution } from '../components/TowerPJContribution';
 import {
   deriveTowerPumpkinJuiceHistory,
   type TowerPumpkinJuiceHistory,
@@ -312,6 +313,8 @@ export function TowerPumpkinJuiceHistoryPage() {
               startAtZero={startAtZero}
             />
           </section>
+
+          <TowerPJContribution history={history} />
 
           <section className="page-card page-stack" aria-labelledby="tower-pj-history-table-title">
             <div className="section-heading-row">

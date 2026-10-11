@@ -116,4 +116,23 @@ describe('deriveTowerPumpkinJuiceHistory', () => {
     });
     expect(history.series[0].points[0].totalPumpkinJuicesNeeded).toBeGreaterThan(0);
   });
+
+  it('reconciles per-item contributions with totals and keeps only the highest repeated target', () => {
+    const requirements = { ...towerRequirements, entries: [...towerRequirements.entries, {
+      ...towerRequirements.entries[0], towerLevel: 350, masteryLevelNeeded: 'MM' as const,
+    }] };
+    const snapshots = [
+      createSnapshot('partial', '2026-07-01T00:00:00.000Z', { apple: 0, 'gold pea': 10_000 }),
+      createSnapshot('complete', '2026-08-01T00:00:00.000Z', { apple: 1_000_000, 'gold pea': 100_000, 'steel plate': 1_000_000 }),
+    ];
+    const points = deriveTowerPumpkinJuiceHistory(snapshots, requirements, [350]).series[0].points;
+    expect(points[0].items.filter((item) => item.canonicalKey === 'apple')).toHaveLength(1);
+    expect(points[0].items.find((item) => item.canonicalKey === 'apple')?.masteryLevelLabel).toBe('MM');
+    expect(points[0].blockedItemCount).toBe(2);
+    for (const point of points) {
+      expect(point.items.reduce((sum, item) => sum + (item.pumpkinJuiceEstimate.totalPumpkinJuices ?? 0), 0)).toBe(point.totalPumpkinJuicesNeeded);
+    }
+    expect(points[1].totalPumpkinJuicesNeeded).toBe(0);
+    expect(points[1].isLowerBound).toBe(false);
+  });
 });

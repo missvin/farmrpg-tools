@@ -1,4 +1,4 @@
-import { deriveTowerProgress } from './deriveTowerProgress';
+import { deriveTowerProgress, type TowerProgressItem } from './deriveTowerProgress';
 import type { MasteryDifficultyData } from './loadMasteryDifficulty';
 import type { TowerRequirementsData } from './loadTowerRequirements';
 import type { MasterySnapshot } from './storage/masterySnapshots';
@@ -16,6 +16,7 @@ export type TowerPumpkinJuiceHistoryPoint = {
   blockedItemCount: number;
   isLowerBound: boolean;
   changeFromPrevious: number | null;
+  items: TowerProgressItem[];
 };
 
 export type TowerPumpkinJuiceHistorySeries = {
@@ -76,6 +77,7 @@ export function deriveTowerPumpkinJuiceHistory(
           blockedItemCount: progress.pumpkinJuiceBlockedItemCount,
           isLowerBound: progress.pumpkinJuiceBlockedItemCount > 0,
           changeFromPrevious: previousTotal === null ? null : total - previousTotal,
+          items: progress.items,
         };
 
         previousTotal = total;
