@@ -4,6 +4,8 @@ import type { RecipeGraph, RecipeNode } from './loadRecipeGraph';
 import type { DropRateReferenceData, DropRateReferenceEntry } from './loadDropRateReference';
 import { createDefaultCraftingModifierState } from './craftingModifierState';
 import { getCraftingPlanningPolicy } from './craftingPlanningPolicy';
+import { readFileSync } from 'node:fs';
+import { buildBuildingProductionReferenceData, parseBuildingProductionReferenceCsv } from './loadBuildingProductionReference';
 
 // Synthetic recipe graph for recursive matching; Steel Wire does not consume Steel in canonical data.
 export function materialTestGraph(): RecipeGraph {
@@ -15,6 +17,23 @@ export function materialTestGraph(): RecipeGraph {
 }
 
 describe('Tower material relationships', () => {
+  it('follows reviewed Sawmill inputs through recursive crafts without requiring a Pine Board recipe', () => {
+    const buildings = buildBuildingProductionReferenceData({
+      productions: parseBuildingProductionReferenceCsv(readFileSync('data/building_production_reference.csv', 'utf8')), conversions: [],
+    });
+    const graph = materialTestGraph();
+    graph.byOutputCanonicalKey.steel.inputs = [{ itemName: 'Pine Board', canonicalKey: 'pine board', inputOrder: 0, quantity: 2 }];
+    expect(towerMaterialKeys('pine board', null, null, undefined, buildings).has('pine tree')).toBe(true);
+    expect(towerMaterialKeys('propeller hat', graph, null, undefined, buildings).has('pine tree')).toBe(true);
+    expect(towerMaterialKeys('propeller hat', graph, null).has('pine tree')).toBe(false);
+    const policy = getCraftingPlanningPolicy(createDefaultCraftingModifierState());
+    policy.excludedCraftRecipeOutputKeys.add('steel');
+    expect(towerMaterialKeys('propeller hat', graph, null, policy, buildings).has('pine tree')).toBe(false);
+    // A malformed building cycle must terminate without making the root its own ingredient.
+    buildings.byOutputCanonicalKey['pine tree'] = [{ ...buildings.byOutputCanonicalKey['pine board'][0],
+      inputs: [{ itemName: 'Pine Board', canonicalKey: 'pine board', quantity: 1 }] }];
+    expect([...towerMaterialKeys('pine board', null, null, undefined, buildings)]).toEqual(['pine tree']);
+  });
   it('matches crops themselves and recursive crop ingredients without treating harvest drops as crops', () => {
     const graph = materialTestGraph();
     graph.byOutputCanonicalKey['steel'].inputs = [{ itemName: 'Cotton', canonicalKey: 'cotton', inputOrder: 0, quantity: 2 }];

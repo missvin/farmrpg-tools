@@ -7,6 +7,8 @@ import type { TowerRemainingRow } from './towerRemainingRows';
 import type { DropRateReferenceEntry } from './loadDropRateReference';
 import { towerMaterialKeys } from './towerMaterials';
 import { getCraftingPlanningPolicy } from './craftingPlanningPolicy';
+import { readFileSync } from 'node:fs';
+import { buildBuildingProductionReferenceData, parseBuildingProductionReferenceCsv } from './loadBuildingProductionReference';
 
 function graphFrom(inputs: Record<string, Array<[string, number]>>): RecipeGraph {
   const recipes = Object.entries(inputs).map(([key, items]): RecipeNode => ({ outputItemName: key, outputCanonicalKey: key,
@@ -25,6 +27,15 @@ function sources(): TowerEstimateSources {
 }
 
 describe('Tower target material estimates', () => {
+  it('does not report a partial Pine total when Pine Board building inputs contribute', () => {
+    const input = sources();
+    input.buildingProductionReference = buildBuildingProductionReferenceData({
+      productions: parseBuildingProductionReferenceCsv(readFileSync('data/building_production_reference.csv', 'utf8')), conversions: [],
+    });
+    input.recipeGraph = graphFrom({ piano: [['pine tree', 1], ['pine board', 2]] });
+    expect(estimateTowerMaterial(row('piano'), 'pine tree', input)).toMatchObject({ quantity: null, note: expect.stringContaining('partial quantity') });
+    expect(estimateTowerMaterial(row('piano'), 'pine board', input).quantity).toBe(200);
+  });
   it('counts terminal crops in direct, nested, and repeated ingredient paths', () => {
     const input = sources();
     input.recipeGraph = graphFrom({ 'veggie juice': [['tomato', 5], ['paste', 2]], paste: [['mushroom', 3]],

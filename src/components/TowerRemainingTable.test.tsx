@@ -10,6 +10,8 @@ import type { TowerRequirementEntry } from '../lib/loadTowerRequirements';
 import type { MasterySnapshot } from '../lib/storage/masterySnapshots';
 import type { RecipeGraph, RecipeNode } from '../lib/loadRecipeGraph';
 import { CRAFTING_MODIFIER_STATE_STORAGE_KEY, createDefaultCraftingModifierState, saveCraftingModifierState } from '../lib/craftingModifierState';
+import { readFileSync } from 'node:fs';
+import { buildBuildingProductionReferenceData, parseBuildingProductionReferenceCsv } from '../lib/loadBuildingProductionReference';
 
 const snapshot: MasterySnapshot = {
   snapshotId: 'tower-test', createdAt: '2026-09-28', rawText: '',
@@ -43,6 +45,24 @@ function NavigationProbe() {
 beforeEach(() => { clearTowerMaterialPreferences(); clearTowerProductionRates(); });
 
 describe('Tower remaining requirements', () => {
+  it('includes Pine Board crafts in Crops and exposes Pine Tree as a deeper watchable ingredient', async () => {
+    const user = userEvent.setup();
+    const pineRecipe = { ...recipes[0], inputs: [{ itemName: 'Pine Board', canonicalKey: 'pine board', inputOrder: 0, quantity: 2 }] };
+    const pineGraph = { ...graph, recipes: [pineRecipe], byOutputCanonicalKey: { 'propeller hat': pineRecipe } };
+    const buildings = buildBuildingProductionReferenceData({
+      productions: parseBuildingProductionReferenceCsv(readFileSync('data/building_production_reference.csv', 'utf8')), conversions: [],
+    });
+    render(<MemoryRouter><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={pineGraph} buildingProductionReference={buildings} /></MemoryRouter>);
+    await user.click(screen.getByRole('checkbox', { name: 'Crops', exact: true }));
+    expect(screen.getByRole('row', { name: /301 Propeller Hat/ })).toBeInTheDocument();
+    expect(screen.queryByRole('row', { name: /303 Gold Flier/ })).not.toBeInTheDocument();
+    const gmRow = screen.getByRole('row', { name: /301 Propeller Hat/ });
+    expect(within(gmRow).getByRole('link', { name: 'Pine Tree' })).toHaveAttribute('href', '/items/pine%20tree');
+    await user.click(within(gmRow).getByRole('button', { name: 'Materials to watch for Propeller Hat T301' }));
+    expect(within(gmRow).getByRole('checkbox', { name: 'Watch Pine Board for Propeller Hat T301' })).toBeInTheDocument();
+    await user.click(within(gmRow).getByText('Show deeper ingredients · 1'));
+    expect(within(gmRow).getByRole('checkbox', { name: 'Watch Pine Tree for Propeller Hat T301' })).toBeInTheDocument();
+  });
   it('collapses material controls and optionally shows row-target amounts beside linked icons', async () => {
     const user = userEvent.setup();
     render(<MemoryRouter><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={graph} /></MemoryRouter>);

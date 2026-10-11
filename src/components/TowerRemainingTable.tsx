@@ -12,6 +12,7 @@ import { TowerMaterialFilters } from './TowerMaterialFilters';
 import { DEFAULT_TOWER_MATERIAL_KEYS, matchesTowerMaterials, towerMaterialChoices, towerMaterialKeys } from '../lib/towerMaterials';
 import type { RecipeGraph } from '../lib/loadRecipeGraph';
 import type { DropRateReferenceData } from '../lib/loadDropRateReference';
+import type { BuildingProductionReferenceData } from '../lib/loadBuildingProductionReference';
 import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 import { TowerMaterialWatches } from './TowerMaterialWatches';
 import { createDefaultTowerMaterialPreferences, loadTowerMaterialPreferences, saveTowerMaterialPreferences, type TowerMaterialPreferences } from '../lib/towerMaterialPreferences';
@@ -27,17 +28,18 @@ function rowId(row: TowerRemainingRow): string {
   return `tower-remaining-${row.towerLevel}-${row.slotIndex}`;
 }
 
-export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph = null, dropRateReference = null }: {
+export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph = null, dropRateReference = null, buildingProductionReference = null }: {
   rows: TowerRemainingRow[];
   targetItem: string | null;
   targetLevel: number | null;
   recipeGraph?: RecipeGraph | null;
   dropRateReference?: DropRateReferenceData | null;
+  buildingProductionReference?: BuildingProductionReferenceData | null;
 }) {
   const [params, setParams] = useSearchParams();
   const selected = useMemo(() => [...new Set(params.getAll('material').map(toCanonicalItemKey).filter(Boolean))], [params]);
   const mode = params.get('materialMatch') === 'all' ? 'all' : 'any';
-  const choices = useMemo(() => towerMaterialChoices(recipeGraph), [recipeGraph]);
+  const choices = useMemo(() => towerMaterialChoices(recipeGraph, buildingProductionReference), [recipeGraph, buildingProductionReference]);
   const [modifierState] = useState(() => loadCraftingModifierState());
   const [fishingSettings] = useState(() => loadDropRateAcquisitionSettings());
   const [productionRates, setProductionRates] = useState(() => {
@@ -62,11 +64,11 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
       setRateMessage('Unable to save rates in this browser.');
     }
   }
-  const estimateSources = useMemo(() => ({ recipeGraph, dropRateReference, modifierState, fishingSettings }), [recipeGraph, dropRateReference, modifierState, fishingSettings]);
+  const estimateSources = useMemo(() => ({ recipeGraph, dropRateReference, buildingProductionReference, modifierState, fishingSettings }), [recipeGraph, dropRateReference, buildingProductionReference, modifierState, fishingSettings]);
   const modifierTotals = getCraftingModifierTotals(modifierState);
   const recipePolicy = useMemo(() => getCraftingPlanningPolicy(modifierState), [modifierState]);
   const relationships = useMemo(() => new Map(rows.map((row) => [row.canonicalKey,
-    towerMaterialKeys(row.canonicalKey, recipeGraph, dropRateReference, recipePolicy)])), [rows, recipeGraph, dropRateReference, recipePolicy]);
+    towerMaterialKeys(row.canonicalKey, recipeGraph, dropRateReference, recipePolicy, buildingProductionReference)])), [rows, recipeGraph, dropRateReference, recipePolicy, buildingProductionReference]);
   function updateMaterials(keys: string[], match: 'any' | 'all') {
     const next = new URLSearchParams(params);
     next.delete('material'); next.delete('materialMatch');

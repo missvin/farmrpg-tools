@@ -573,7 +573,7 @@ describe('TowerProgressPage', () => {
 
     expect(screen.getByDisplayValue('300')).toBeInTheDocument();
     expect(screen.getByText('Pumpkin Juice needed through Tower 300')).toBeInTheDocument();
-    expect(screen.queryByText('Gold Cucumber')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Gold Cucumber', hidden: true })).not.toBeInTheDocument();
   });
 
   it('updates the top PJ total for shortcuts and manual cutoffs without double-counting repeated item targets', async () => {
@@ -626,7 +626,7 @@ describe('TowerProgressPage', () => {
     await user.click(screen.getByRole('button', { name: 'T300' }));
 
     await waitFor(() => {
-      expect(screen.queryByText('Gold Cucumber')).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Gold Cucumber', hidden: true })).not.toBeInTheDocument();
     });
     expect(screen.getByDisplayValue('300')).toBeInTheDocument();
     expect(screen.getByText('Pumpkin Juice needed through Tower 300')).toBeInTheDocument();

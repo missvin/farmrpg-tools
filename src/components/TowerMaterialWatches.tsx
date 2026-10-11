@@ -1,6 +1,7 @@
 import { useId, useState } from 'react';
 import type { RecipeGraph } from '../lib/loadRecipeGraph';
-import type { TowerMaterial } from '../lib/towerMaterials';
+import { towerDirectMaterialKeys, type TowerMaterial } from '../lib/towerMaterials';
+import { getCraftingPlanningPolicy } from '../lib/craftingPlanningPolicy';
 import type { TowerRemainingRow } from '../lib/towerRemainingRows';
 import type { TowerEstimateSources } from '../lib/towerMaterialEstimates';
 import type { TowerProductionRates } from '../lib/towerProductionRates';
@@ -14,7 +15,7 @@ export function TowerMaterialWatches({ row, materials, watched, graph, sources, 
   const [open, setOpen] = useState(false);
   const [deeperOpen, setDeeperOpen] = useState(false);
   const panelId = useId();
-  const directKeys = new Set(graph?.byOutputCanonicalKey[row.canonicalKey]?.inputs.map((input) => input.canonicalKey) ?? []);
+  const directKeys = towerDirectMaterialKeys(row.canonicalKey, graph, sources.buildingProductionReference, getCraftingPlanningPolicy(sources.modifierState));
   if (!directKeys.size) {
     for (const key of ['large net', 'fishing net', row.canonicalKey]) directKeys.add(key);
   }

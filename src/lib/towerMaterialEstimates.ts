@@ -9,9 +9,11 @@ import { calculateCraftIngredientDemand } from './recursiveIngredientBurden';
 import type { TowerRemainingRow } from './towerRemainingRows';
 import { TOWER_CROPS, towerMaterialKeys } from './towerMaterials';
 import { toCanonicalItemKey } from './normalizeItemKey';
+import type { BuildingProductionReferenceData } from './loadBuildingProductionReference';
 
 export type TowerMaterialEstimate = { quantity: number | null; note: string };
 export type TowerEstimateSources = {
+  buildingProductionReference?: BuildingProductionReferenceData | null;
   recipeGraph: RecipeGraph | null;
   dropRateReference: DropRateReferenceData | null;
   modifierState: UserCraftingModifierState;
@@ -39,7 +41,7 @@ export function estimateTowerMaterial(row: TowerRemainingRow, material: string, 
       const incompletePath = Object.keys(demand.ingredientBurdenByCanonicalKey).some((key) => {
         const recipe = recipeGraph.byOutputCanonicalKey[key];
         return key !== material && (recipe?.recipeType !== 'craft' || policy.excludedCraftRecipeOutputKeys.has(key))
-          && towerMaterialKeys(key, recipeGraph, dropRateReference, policy).has(material);
+          && towerMaterialKeys(key, recipeGraph, dropRateReference, policy, sources.buildingProductionReference).has(material);
       });
       if (incompletePath) return unavailable('A contributing acquisition or recipe path is unsupported; a partial quantity would undercount.');
       const entry = demand.ingredientBurdenByCanonicalKey[material];

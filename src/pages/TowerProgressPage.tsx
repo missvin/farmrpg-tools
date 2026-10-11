@@ -17,6 +17,7 @@ import { loadMasteryDifficulty } from '../lib/loadMasteryDifficulty';
 import { loadPetSourceReference, type PetSourceReferenceData } from '../lib/loadPetSourceReference';
 import { loadQuestReference, type QuestReferenceData } from '../lib/loadQuestReference';
 import { loadRecipeGraph, type RecipeGraph } from '../lib/loadRecipeGraph';
+import { loadBuildingProductionReference, type BuildingProductionReferenceData } from '../lib/loadBuildingProductionReference';
 import { loadTowerRequirements } from '../lib/loadTowerRequirements';
 import {
   createDefaultPumpkinJuicePlannerState,
@@ -190,6 +191,7 @@ export function TowerProgressPage() {
     snapshot: Awaited<ReturnType<typeof getLatestSnapshot>>;
     derivedProgress: ReturnType<typeof deriveTowerProgress> | null;
     requirementRows: TowerRemainingRow[];
+    buildingProductionReference: BuildingProductionReferenceData | null;
     recipeGraph: RecipeGraph | null;
     dropRateReference: DropRateReferenceData | null;
     petSourceReference: PetSourceReferenceData | null;
@@ -202,6 +204,7 @@ export function TowerProgressPage() {
     snapshot: null,
     derivedProgress: null,
     requirementRows: [],
+    buildingProductionReference: null,
     recipeGraph: null,
     dropRateReference: null,
     petSourceReference: null,
@@ -304,6 +307,7 @@ export function TowerProgressPage() {
             snapshot: null,
             derivedProgress: null,
             requirementRows: [],
+            buildingProductionReference: null,
             recipeGraph: null,
             dropRateReference: null,
             petSourceReference: null,
@@ -314,6 +318,7 @@ export function TowerProgressPage() {
 
         try {
           const [
+            buildingProductionReference,
             towerRequirementsData,
             masteryDifficultyData,
             recipeGraph,
@@ -321,6 +326,7 @@ export function TowerProgressPage() {
             petSourceReference,
             questReference,
           ] = await Promise.all([
+            loadBuildingProductionReference().catch(() => null),
             loadTowerRequirements(),
             loadMasteryDifficulty(),
             loadRecipeGraph().catch(() => null),
@@ -344,6 +350,7 @@ export function TowerProgressPage() {
             derivedProgress: deriveTowerProgress(snapshot, towerRequirementsData, masteryDifficultyData, {
               maxTowerLevel: towerTargetLevel,
             }),
+            buildingProductionReference,
             recipeGraph,
             dropRateReference,
             petSourceReference,
@@ -367,6 +374,7 @@ export function TowerProgressPage() {
             snapshot,
             derivedProgress: null,
             requirementRows: [],
+            buildingProductionReference: null,
             recipeGraph: null,
             dropRateReference: null,
             petSourceReference: null,
@@ -387,6 +395,7 @@ export function TowerProgressPage() {
           snapshot: null,
           derivedProgress: null,
           requirementRows: [],
+          buildingProductionReference: null,
           recipeGraph: null,
           dropRateReference: null,
           petSourceReference: null,
@@ -478,8 +487,10 @@ export function TowerProgressPage() {
               ))}
             </div>
           </div>
+          {!progressState.buildingProductionReference ? <p className="subtle-text">Building inputs could not be loaded. Crop matches may omit Pine Board uses.</p> : null}
           <TowerRemainingTable rows={progressState.requirementRows} targetItem={targetCanonicalKey}
             recipeGraph={progressState.recipeGraph} dropRateReference={progressState.dropRateReference}
+            buildingProductionReference={progressState.buildingProductionReference}
             targetLevel={parseTowerTargetLevelInput(searchParams.get('level') ?? '')} />
           <details id="tower-pj-panel" className="tower-secondary-view">
             <summary>PJ planner</summary>
