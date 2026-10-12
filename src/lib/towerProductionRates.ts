@@ -4,10 +4,11 @@ export type TowerProductionRates = {
   schemaVersion: 1;
   steelPerHour: number | null;
   steelWirePerHour: number | null;
+  oakPerHour?: number | null;
 };
 
 export function createDefaultTowerProductionRates(): TowerProductionRates {
-  return { schemaVersion: 1, steelPerHour: null, steelWirePerHour: null };
+  return { schemaVersion: 1, steelPerHour: null, steelWirePerHour: null, oakPerHour: null };
 }
 
 function normalizeRate(value: unknown): number | null {
@@ -23,6 +24,7 @@ export function normalizeTowerProductionRates(value: unknown): TowerProductionRa
     schemaVersion: 1,
     steelPerHour: normalizeRate(record.steelPerHour),
     steelWirePerHour: normalizeRate(record.steelWirePerHour),
+    oakPerHour: normalizeRate(record.oakPerHour),
   };
 }
 
@@ -30,7 +32,17 @@ export function isValidTowerProductionRates(value: unknown): value is TowerProdu
   if (!value || typeof value !== 'object') return false;
   const record = value as TowerProductionRates;
   const validRate = (rate: unknown) => rate === null || (typeof rate === 'number' && Number.isFinite(rate) && rate > 0);
-  return record.schemaVersion === 1 && validRate(record.steelPerHour) && validRate(record.steelWirePerHour);
+  return record.schemaVersion === 1 && validRate(record.steelPerHour) && validRate(record.steelWirePerHour)
+    && (record.oakPerHour === undefined || validRate(record.oakPerHour));
+}
+
+export const HOURLY_PRODUCTION_MATERIALS = ['steel', 'steel wire', 'oak'];
+
+export function getMaterialHourlyProductionRate(canonicalKey: string, rates: TowerProductionRates): number | null {
+  if (canonicalKey === 'steel') return rates.steelPerHour;
+  if (canonicalKey === 'steel wire') return rates.steelWirePerHour;
+  if (canonicalKey === 'oak') return rates.oakPerHour ?? null;
+  return null;
 }
 
 function activeStorage(storage?: Storage): Storage {

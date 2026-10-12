@@ -6,9 +6,9 @@ import {
 
 describe('Tower production rates', () => {
   it('starts unknown, keeps valid independent hourly rates, and rejects invalid backup values', () => {
-    expect(createDefaultTowerProductionRates()).toEqual({ schemaVersion: 1, steelPerHour: null, steelWirePerHour: null });
+    expect(createDefaultTowerProductionRates()).toEqual({ schemaVersion: 1, steelPerHour: null, steelWirePerHour: null, oakPerHour: null });
     expect(normalizeTowerProductionRates({ steelPerHour: 500, steelWirePerHour: '250' }))
-      .toEqual({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 250 });
+      .toEqual({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 250, oakPerHour: null });
     expect(isValidTowerProductionRates({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: null })).toBe(true);
     expect(isValidTowerProductionRates({ schemaVersion: 1, steelPerHour: 0, steelWirePerHour: null })).toBe(false);
   });
@@ -35,5 +35,16 @@ describe('Tower production rates', () => {
     expect(formatTowerProductionHours(25)).toBe('1d 1h');
     expect(formatTowerProductionHours(48)).toBe('2d 0h');
     expect(formatTowerProductionHours(49)).toBe('2d 1h');
+  });
+
+  it('preserves legacy Steel rates and validates Oak without inventing a rate', () => {
+    expect(normalizeTowerProductionRates({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200 }))
+      .toEqual({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200, oakPerHour: null });
+    for (const oakPerHour of [0, -1, Infinity, '750']) {
+      expect(isValidTowerProductionRates({ schemaVersion: 1, steelPerHour: null, steelWirePerHour: null, oakPerHour })).toBe(false);
+    }
+    const rates = normalizeTowerProductionRates({ oakPerHour: 750 });
+    expect(rates.oakPerHour).toBe(750);
+    expect(estimateTowerProductionHours(18001, rates.oakPerHour ?? null)).toBe(25);
   });
 });

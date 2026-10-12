@@ -1,3 +1,4 @@
+import { MaterialProductionTime } from '../components/MaterialProductionTime';
 import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -555,7 +556,7 @@ export function IngredientDemandPage() {
                 </div>
                 <div className="summary-grid__item">
                   <dt>Total recursive burden</dt>
-                  <dd>{formatAmount(selectedBurden.totalRequiredEffectiveOutput)}</dd>
+                  <dd>{formatAmount(selectedBurden.totalRequiredEffectiveOutput)}<MaterialProductionTime canonicalKey={selectedBurden.canonicalKey} quantity={selectedBurden.totalRequiredEffectiveOutput} /></dd>
                 </div>
                 <div className="summary-grid__item">
                   <dt>Craft operations if self-crafted</dt>
@@ -574,7 +575,7 @@ export function IngredientDemandPage() {
                   return (
                     <div key={scope} className="summary-grid__item">
                       <dt>{formatScopeLabel(scope)}</dt>
-                      <dd>{formatAmount(scopeValues?.requiredEffectiveOutput ?? 0)}</dd>
+                      <dd>{formatAmount(scopeValues?.requiredEffectiveOutput ?? 0)}<MaterialProductionTime canonicalKey={selectedBurden.canonicalKey} quantity={scopeValues?.requiredEffectiveOutput ?? 0} /></dd>
                       <p className="subtle-text">
                         Craft ops: {formatAmount(scopeValues?.requiredCraftOperations ?? 0)}
                       </p>
@@ -617,7 +618,7 @@ export function IngredientDemandPage() {
                           />
                           <p className="subtle-text">Scope: {formatScopeLabel(contribution.scope)}</p>
                         </div>
-                        <strong>{formatAmount(contribution.requiredEffectiveOutput)}</strong>
+                        <strong>{formatAmount(contribution.requiredEffectiveOutput)}<MaterialProductionTime canonicalKey={selectedBurden.canonicalKey} quantity={contribution.requiredEffectiveOutput} /></strong>
                       </li>
                     ))}
                 </ul>

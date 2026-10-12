@@ -17,7 +17,7 @@ import { toCanonicalItemKey } from '../lib/normalizeItemKey';
 import { TowerMaterialWatches } from './TowerMaterialWatches';
 import { createDefaultTowerMaterialPreferences, loadTowerMaterialPreferences, saveTowerMaterialPreferences, type TowerMaterialPreferences } from '../lib/towerMaterialPreferences';
 import { totalTowerMaterials } from '../lib/towerMaterialTotals';
-import { createDefaultTowerProductionRates, estimateTowerProductionHours, formatTowerProductionHours, loadTowerProductionRates, saveTowerProductionRates } from '../lib/towerProductionRates';
+import { createDefaultTowerProductionRates, estimateTowerProductionHours, formatTowerProductionHours, getMaterialHourlyProductionRate, HOURLY_PRODUCTION_MATERIALS, loadTowerProductionRates, saveTowerProductionRates } from '../lib/towerProductionRates';
 
 const columns: Array<[TowerRemainingSort, string]> = [
   ['level', 'Level'], ['item', 'Item'], ['tier', 'Tier'], ['remaining', 'Remaining'], ['pj', 'PJ remaining'],
@@ -47,18 +47,20 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
   });
   const [steelRateInput, setSteelRateInput] = useState(() => productionRates.steelPerHour?.toString() ?? '');
   const [wireRateInput, setWireRateInput] = useState(() => productionRates.steelWirePerHour?.toString() ?? '');
+  const [oakRateInput, setOakRateInput] = useState(() => productionRates.oakPerHour?.toString() ?? '');
   const [rateMessage, setRateMessage] = useState('');
   function saveRates(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const parse = (value: string) => value.trim() === '' ? null : Number(value);
     const steelPerHour = parse(steelRateInput);
     const steelWirePerHour = parse(wireRateInput);
-    if ([steelPerHour, steelWirePerHour].some((rate) => rate !== null && (!Number.isFinite(rate) || rate <= 0))) {
+    const oakPerHour = parse(oakRateInput);
+    if ([steelPerHour, steelWirePerHour, oakPerHour].some((rate) => rate !== null && (!Number.isFinite(rate) || rate <= 0))) {
       setRateMessage('Enter a positive hourly rate, or leave it blank when unknown.');
       return;
     }
     try {
-      setProductionRates(saveTowerProductionRates({ schemaVersion: 1, steelPerHour, steelWirePerHour }));
+      setProductionRates(saveTowerProductionRates({ schemaVersion: 1, steelPerHour, steelWirePerHour, oakPerHour }));
       setRateMessage('Hourly rates saved.');
     } catch {
       setRateMessage('Unable to save rates in this browser.');
@@ -165,16 +167,19 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
         <TowerMaterialFilters choices={choices} selected={selected} mode={mode} onChange={updateMaterials} />
       </details>
       {preferenceMessage ? <p className="subtle-text" role="status">{preferenceMessage}</p> : null}
-      <details className="tower-estimate-assumptions"><summary>Assumptions · Resource Saver {(modifierTotals.totalResourceSaverPercent * 100).toLocaleString()}% · Mastery bonus {(modifierTotals.totalMasteryBonusPercent * 100).toLocaleString()}%</summary>
+      <details id="tower-production-rates" open={params.get('productionRates') === 'edit' || undefined} className="tower-estimate-assumptions"><summary>Assumptions · Resource Saver {(modifierTotals.totalResourceSaverPercent * 100).toLocaleString()}% · Mastery bonus {(modifierTotals.totalMasteryBonusPercent * 100).toLocaleString()}%</summary>
         <p className="subtle-text">Total needed from current mastery to each row’s target. Inventory is not subtracted. Rows are independent estimates. Selected-material totals below use the highest visible target per item.</p>
         <form onSubmit={saveRates} className="page-stack page-stack--tight">
-          <p className="subtle-text">Steel and Steel Wire are separate Steelworks outputs. Enter your effective production of each per hour; their time estimates are separate and should not be added.</p>
+          <p className="subtle-text">Enter your effective hourly production for Steel, Steel Wire, and Oak. Material times are separate and should not be added. These saved rates also apply on ingredient and item planning pages.</p>
           <div className="summary-grid">
             <label className="field-label">Steel per hour
               <input className="text-input" type="number" min="0" step="any" value={steelRateInput} onChange={(event) => setSteelRateInput(event.target.value)} placeholder="Unknown" />
             </label>
             <label className="field-label">Steel Wire per hour
               <input className="text-input" type="number" min="0" step="any" value={wireRateInput} onChange={(event) => setWireRateInput(event.target.value)} placeholder="Unknown" />
+            </label>
+            <label className="field-label">Oak per hour
+              <input className="text-input" type="number" min="0" step="any" value={oakRateInput} onChange={(event) => setOakRateInput(event.target.value)} placeholder="Unknown" />
             </label>
           </div>
           <div className="button-row"><button type="submit" className="button button--primary">Save production rates</button></div>
@@ -245,8 +250,8 @@ export function TowerRemainingTable({ rows, targetItem, targetLevel, recipeGraph
                 <span className="subtle-text tower-detail-line">Shown requirements · highest target per item</span>
               </th>
               <td><div className="tower-total-list">{totals.map((total) => {
-                const rate = total.canonicalKey === 'steel' ? productionRates.steelPerHour : productionRates.steelWirePerHour;
-                const showTime = total.canonicalKey === 'steel' || total.canonicalKey === 'steel wire';
+                const rate = getMaterialHourlyProductionRate(total.canonicalKey, productionRates);
+                const showTime = HOURLY_PRODUCTION_MATERIALS.includes(total.canonicalKey);
                 const hours = estimateTowerProductionHours(total.quantity, rate);
                 const partial = total.unavailableItems.length > 0;
                 return <div key={total.canonicalKey}>

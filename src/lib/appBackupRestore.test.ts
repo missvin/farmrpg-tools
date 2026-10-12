@@ -719,14 +719,18 @@ describe('appBackupRestore', () => {
     const previous = loadTowerProductionRates();
     try {
       const withRates = createBackupPayload();
-      withRates.state.preferences.towerProductionRates = { schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200 };
+      withRates.state.preferences.towerProductionRates = { schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200, oakPerHour: 750 };
       await restoreAppBackupPayload(withRates);
       expect(loadTowerProductionRates()).toEqual(withRates.state.preferences.towerProductionRates);
+
+      delete withRates.state.preferences.towerProductionRates.oakPerHour;
+      await restoreAppBackupPayload(withRates);
+      expect(loadTowerProductionRates()).toEqual({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200, oakPerHour: null });
 
       const older = createBackupPayload();
       delete older.state.preferences.towerProductionRates;
       await restoreAppBackupPayload(older);
-      expect(loadTowerProductionRates()).toEqual({ schemaVersion: 1, steelPerHour: null, steelWirePerHour: null });
+      expect(loadTowerProductionRates()).toEqual({ schemaVersion: 1, steelPerHour: null, steelWirePerHour: null, oakPerHour: null });
     } finally {
       clearTowerProductionRates();
       if (previous.steelPerHour !== null || previous.steelWirePerHour !== null) {

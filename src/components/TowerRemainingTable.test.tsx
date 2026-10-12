@@ -45,6 +45,28 @@ function NavigationProbe() {
 beforeEach(() => { clearTowerMaterialPreferences(); clearTowerProductionRates(); });
 
 describe('Tower remaining requirements', () => {
+  it('saves Oak rate and shows row, watched and deduplicated total production hours', async () => {
+    const user = userEvent.setup();
+    const hat = { ...recipes[0], inputs: [{ itemName: 'Oak', canonicalKey: 'oak', quantity: 1, inputOrder: 0 }] };
+    const oakGraph = { ...graph, recipes: [hat], craftRecipes: [hat], byOutputCanonicalKey: { 'propeller hat': hat } };
+    render(<MemoryRouter initialEntries={['/tower?material=oak&productionRates=edit']}><TowerRemainingTable rows={rows} targetItem={null} targetLevel={null} recipeGraph={oakGraph} /></MemoryRouter>);
+    expect(screen.getByLabelText('Oak per hour')).toBeVisible();
+    await user.click(screen.getByRole('checkbox', { name: 'Show material amounts inline' }));
+    const gm = screen.getByRole('row', { name: /301 Propeller Hat/ });
+    expect(gm).toHaveTextContent('hours unknown');
+    await user.type(screen.getByLabelText('Oak per hour'), '750');
+    await user.click(screen.getByRole('button', { name: 'Save production rates' }));
+    expect(gm).toHaveTextContent('18,000 · 24h');
+    await user.hover(within(gm).getByRole('link', { name: 'Oak', exact: true }));
+    expect(screen.getByRole('tooltip')).toHaveTextContent('24 hours at 750/hour');
+    const footer = screen.getByRole('row', { name: /Selected material totals/ });
+    expect(footer).toHaveTextContent('918,000 · 51d 0h');
+    await user.click(within(gm).getByRole('button', { name: 'Materials to watch for Propeller Hat T301' }));
+    await user.click(within(gm).getByRole('checkbox', { name: 'Watch Oak for Propeller Hat T301' }));
+    await user.click(screen.getByRole('button', { name: 'Clear', exact: true }));
+    expect(gm).toHaveTextContent('18,000 · 24h');
+    expect(JSON.parse(localStorage.getItem('farmrpg-tools.towerProductionRates.v1')!)).toMatchObject({ oakPerHour: 750 });
+  });
   it('includes Pine Board crafts in Crops and exposes Pine Tree as a deeper watchable ingredient', async () => {
     const user = userEvent.setup();
     const pineRecipe = { ...recipes[0], inputs: [{ itemName: 'Pine Board', canonicalKey: 'pine board', inputOrder: 0, quantity: 2 }] };

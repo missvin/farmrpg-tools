@@ -53,6 +53,8 @@ vi.mock('../lib/itemIconManifest', () => ({
   getItemIcon: (...args: unknown[]) => getItemIconMock(...args),
 }));
 
+import { saveTowerProductionRates } from '../lib/towerProductionRates';
+
 describe('ItemProfilePage', () => {
   afterEach(() => {
     getLatestSnapshotMock.mockReset();
@@ -416,6 +418,23 @@ describe('ItemProfilePage', () => {
     expect(screen.getByRole('combobox', { name: 'Planning target' })).toHaveValue('custom-quantity');
     expect(screen.getByText('Not masterable')).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Custom mastery' })).not.toBeInTheDocument();
+  });
+
+  it('uses the counted-inventory Oak shortfall for production time', async () => {
+    mockResources();
+    const user = userEvent.setup();
+    loadItemCatalogMock.mockResolvedValue({ entries: [], byCanonicalKey: { oak: { canonicalKey: 'oak', itemName: 'Oak', masteryPossible: 'no' } } });
+    const state = createDefaultAcquisitionPlannerInputState();
+    state.inventory.entries = [{ canonicalItemKey: 'oak', itemName: 'Oak', inventoryCount: 500 }];
+    saveAcquisitionPlannerInputState(state, undefined, true);
+    saveTowerProductionRates({ schemaVersion: 1, steelPerHour: null, steelWirePerHour: null, oakPerHour: 750 });
+    render(<MemoryRouter initialEntries={['/items/oak']}><Routes><Route path="/items/:canonicalKey" element={<ItemProfilePage />} /></Routes></MemoryRouter>);
+    await screen.findByRole('heading', { name: 'Oak' });
+    await user.click(screen.getByRole('button', { name: 'Get more' }));
+    const planner = within(screen.getByRole('region', { name: 'Get more' }));
+    await user.clear(planner.getByLabelText('Total quantity'));
+    await user.type(planner.getByLabelText('Total quantity'), '2000');
+    expect(planner.getByText(/Shortfall:/)).toHaveTextContent('1,500 · ~2h production');
   });
 
   it('marks completed Tower targets clearly', async () => {

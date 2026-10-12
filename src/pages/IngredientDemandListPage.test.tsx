@@ -43,6 +43,7 @@ vi.mock('../lib/recursiveIngredientBurden', () => ({
 }));
 
 import { IngredientDemandListPage } from './IngredientDemandListPage';
+import { saveTowerProductionRates, clearTowerProductionRates } from '../lib/towerProductionRates';
 
 const SNAPSHOT = {
   snapshotId: 'snapshot-1',
@@ -272,6 +273,22 @@ describe('IngredientDemandListPage', () => {
     expect(ingredientSortedRows[3]).toHaveTextContent('Twine');
 
     expect(within(table).getAllByText('Terminal')).toHaveLength(2);
+  });
+
+  it('shows independent scope and total Oak production times from shared burden quantities', async () => {
+    const result = createBurdenResult();
+    const oak = { ...result.ingredientBurdenByCanonicalKey.twine, canonicalKey: 'oak', itemName: 'Oak',
+      totalRequiredEffectiveOutput: 1500,
+      byScope: { ...result.ingredientBurdenByCanonicalKey.twine.byScope,
+        M: { ...result.ingredientBurdenByCanonicalKey.twine.byScope.M, requiredEffectiveOutput: 750 } } };
+    calculateRecursiveIngredientBurden.mockReturnValue({ ...result, ingredientBurdenByCanonicalKey: { oak } });
+    saveTowerProductionRates({ schemaVersion: 1, steelPerHour: null, steelWirePerHour: null, oakPerHour: 750 });
+    try {
+      render(<MemoryRouter><IngredientDemandListPage /></MemoryRouter>);
+      const row = await screen.findByRole('row', { name: /Oak/ });
+      expect(row).toHaveTextContent('750 · ~1h production');
+      expect(row).toHaveTextContent('1,500 · ~2h production');
+    } finally { clearTowerProductionRates(); }
   });
 
   it('wires permanent saver, temporary bonuses, and Iron Depot through the existing modifier pipeline', async () => {

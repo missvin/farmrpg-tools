@@ -1,3 +1,4 @@
+import { MaterialProductionTime } from '../components/MaterialProductionTime';
 import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -472,7 +473,7 @@ function ItemGoalWaitProjectionRows({ result }: { result: ItemGoalCalculatorResu
             <div className="recipe-link-row">
               <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} iconSrc={icon?.src} />
               <span>
-                <strong>{formatPlannerQuantity(row.remainingQuantity)} left</strong>
+                <strong>{formatPlannerQuantity(row.remainingQuantity)} left<MaterialProductionTime canonicalKey={row.canonicalKey} quantity={row.remainingQuantity} /></strong>
                 <span className="subtle-text">
                   {' '}
                   {formatPlannerQuantity(row.grossRequiredQuantity)} needed before counted supply; {row.sourceSummary}
@@ -653,7 +654,7 @@ function ItemGoalCalculatorSection({
       <h2 id="item-goal-calculator-title">Plan materials</h2>
       <ItemCompactSources result={result} canonicalKey={profile.canonicalKey} itemName={profile.itemName} dropRateReference={dropRateReference} recipeGraph={recipeGraph} openableContentsReference={openableContentsReference} />
       <ItemTargetControl target={target} options={targetOptions} onSelect={setSelectedTargetId} onAmount={setCustomAmount} />
-      <p className="item-plan-summary">{goalLabel}: <strong>{formatPlannerQuantity(result.desiredQuantity)}</strong> · Counted supply: <strong>{formatPlannerQuantity(result.totalAvailableQuantity)}</strong> · Shortfall: <strong>{formatPlannerQuantity(result.remainingQuantity)}</strong></p>
+      <p className="item-plan-summary">{goalLabel}: <strong>{formatPlannerQuantity(result.desiredQuantity)}</strong> · Counted supply: <strong>{formatPlannerQuantity(result.totalAvailableQuantity)}</strong> · Shortfall: <strong>{formatPlannerQuantity(result.remainingQuantity)}<MaterialProductionTime canonicalKey={profile.canonicalKey} quantity={result.remainingQuantity} /></strong></p>
       {countedSupplyNotes.length > 0 ? <p className="subtle-text">{countedSupplyNotes.join(', ')}</p> : null}
       <p className="subtle-text">After waiting {waitDays} days: {formatPlannerQuantity(result.waitProjection.projectedRemainingQuantity)} remaining. Future supply is a projection.</p>
       <details className="advanced-details">
@@ -863,7 +864,7 @@ function ItemGoalCalculatorSection({
                 {!entry.direct ? <small className="subtle-text">Whole-plan total · used by {entry.parentKeys.map(key => result.plannerResult.rowsByCanonicalKey[key]?.itemName ?? key).join(', ')}</small> : null}
                 <button className="button item-detail-toggle" type="button" aria-expanded={expandAll || expandedKeys.has(entry.row.canonicalKey)} onClick={() => { if (expandAll) { setExpandAll(false); setExpandedKeys(new Set()); } else setExpandedKeys(keys => { const next = new Set(keys); if (next.has(entry.row.canonicalKey)) next.delete(entry.row.canonicalKey); else next.add(entry.row.canonicalKey); return next; }); }}>Details</button>
               </span>
-              <span role="cell">{formatPlannerQuantity(entry.row.grossRequiredQuantity)}</span><span role="cell">{formatPlannerQuantity(entry.row.availableUsedQuantity)}{entry.row.supply?.breakdowns.some(part => part.timing === 'future' && part.quantity > 0) ? <small className="subtle-text">Includes projected supply</small> : null}</span><strong role="cell">{formatPlannerQuantity(entry.row.remainingQuantity)}</strong>
+              <span role="cell">{formatPlannerQuantity(entry.row.grossRequiredQuantity)}</span><span role="cell">{formatPlannerQuantity(entry.row.availableUsedQuantity)}{entry.row.supply?.breakdowns.some(part => part.timing === 'future' && part.quantity > 0) ? <small className="subtle-text">Includes projected supply</small> : null}</span><strong role="cell">{formatPlannerQuantity(entry.row.remainingQuantity)}<MaterialProductionTime canonicalKey={entry.row.canonicalKey} quantity={entry.row.remainingQuantity} /></strong>
             </div>
             {expandAll || expandedKeys.has(entry.row.canonicalKey) ? <div className="item-material-details"><ItemCompactSources result={result} canonicalKey={entry.row.canonicalKey} itemName={entry.row.itemName} dropRateReference={dropRateReference} recipeGraph={recipeGraph} openableContentsReference={openableContentsReference} /></div> : null}
           </div>

@@ -507,7 +507,7 @@ describe('appBackupExport', () => {
     mockLoadSourceRateAssumptionsState.mockReturnValue(sourceRateAssumptionsState);
     mockLoadBuildingProductionState.mockReturnValue(buildingProductionState);
     mockReadStoredAppTheme.mockReturnValue('dark');
-    saveTowerProductionRates({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200 });
+    saveTowerProductionRates({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200, oakPerHour: 750 });
     saveTowerMaterialPreferences({ schemaVersion: 1, showInlineAmounts: true, watches: { 'fire ant farm': ['fire ant'] } });
 
     const payload = await buildCurrentAppBackupPayload({
@@ -536,7 +536,7 @@ describe('appBackupExport', () => {
     expect(payload.state.preferences.snapshotVelocityPreferences).toEqual(snapshotVelocityPreferences);
     expect(payload.state.preferences.sourceRateAssumptionsState).toEqual(sourceRateAssumptionsState);
     expect(payload.state.preferences.buildingProductionState).toEqual(buildingProductionState);
-    expect(payload.state.preferences.towerProductionRates).toEqual({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200 });
+    expect(payload.state.preferences.towerProductionRates).toEqual({ schemaVersion: 1, steelPerHour: 500, steelWirePerHour: 200, oakPerHour: 750 });
     expect(payload.state.preferences.towerMaterialPreferences).toEqual({ schemaVersion: 1, showInlineAmounts: true, watches: { 'fire ant farm': ['fire ant'] } });
     expect(payload.state.preferences.themePreference).toBe('dark');
   });

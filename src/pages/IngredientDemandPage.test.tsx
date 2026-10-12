@@ -43,6 +43,7 @@ vi.mock('../lib/recursiveIngredientBurden', () => ({
 }));
 
 import { IngredientDemandPage } from './IngredientDemandPage';
+import { saveTowerProductionRates, clearTowerProductionRates } from '../lib/towerProductionRates';
 
 const SNAPSHOT = {
   snapshotId: 'snapshot-1',
@@ -325,6 +326,19 @@ describe('IngredientDemandPage', () => {
     expect(screen.getByText('Rope')).toBeInTheDocument();
     expect(screen.getByText('Fishing Net')).toBeInTheDocument();
     expect(screen.getByText('Large Net')).toBeInTheDocument();
+  });
+
+  it('shows Oak production time beside total and scope demand', async () => {
+    const result = createBurdenResult();
+    const oak = { ...result.ingredientBurdenByCanonicalKey.twine, canonicalKey: 'oak', itemName: 'Oak', totalRequiredEffectiveOutput: 1500 };
+    calculateRecursiveIngredientBurden.mockReturnValue({ ...result, ingredientBurdenByCanonicalKey: { oak } });
+    saveTowerProductionRates({ schemaVersion: 1, steelPerHour: null, steelWirePerHour: null, oakPerHour: 750 });
+    try {
+      render(<MemoryRouter><IngredientDemandPage /></MemoryRouter>);
+      fireEvent.change(await screen.findByLabelText('Ingredient'), { target: { value: 'Oak' } });
+      expect(await screen.findByText(/2h production/)).toBeInTheDocument();
+      expect(screen.getAllByRole('link', { name: 'Edit rate' }).length).toBeGreaterThan(4);
+    } finally { clearTowerProductionRates(); }
   });
 
   it('wires permanent saver, temporary bonuses, and Iron Depot through the shared modifier pipeline', async () => {

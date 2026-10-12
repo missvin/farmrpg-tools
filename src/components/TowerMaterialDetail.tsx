@@ -4,7 +4,7 @@ import { getItemIcon } from '../lib/itemIconManifest';
 import { estimateTowerMaterial, type TowerEstimateSources } from '../lib/towerMaterialEstimates';
 import type { TowerMaterial } from '../lib/towerMaterials';
 import type { TowerRemainingRow } from '../lib/towerRemainingRows';
-import { estimateTowerProductionHours, formatTowerProductionHours, type TowerProductionRates } from '../lib/towerProductionRates';
+import { estimateTowerProductionHours, formatTowerProductionHours, getMaterialHourlyProductionRate, HOURLY_PRODUCTION_MATERIALS, type TowerProductionRates } from '../lib/towerProductionRates';
 
 export function TowerMaterialDetail({ material, row, sources, productionRates, showInlineAmount = false }: {
   material: TowerMaterial; row: TowerRemainingRow; sources: TowerEstimateSources;
@@ -16,9 +16,8 @@ export function TowerMaterialDetail({ material, row, sources, productionRates, s
   const isOpen = Boolean(position);
   const estimate = useMemo(() => isOpen || showInlineAmount ? estimateTowerMaterial(row, material.canonicalKey, sources) : null,
     [isOpen, showInlineAmount, row, material.canonicalKey, sources]); // Calculate only when details or inline amounts are requested.
-  const hourlyRate = material.canonicalKey === 'steel' ? productionRates.steelPerHour
-    : material.canonicalKey === 'steel wire' ? productionRates.steelWirePerHour : null;
-  const showHours = material.canonicalKey === 'steel' || material.canonicalKey === 'steel wire';
+  const hourlyRate = getMaterialHourlyProductionRate(material.canonicalKey, productionRates);
+  const showHours = HOURLY_PRODUCTION_MATERIALS.includes(material.canonicalKey);
   const hours = estimateTowerProductionHours(estimate?.quantity ?? null, hourlyRate);
   const icon = getItemIcon(material.canonicalKey)?.src;
   function open(element: HTMLElement) {

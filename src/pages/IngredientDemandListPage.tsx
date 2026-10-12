@@ -1,3 +1,4 @@
+import { MaterialProductionTime } from '../components/MaterialProductionTime';
 import { usePlayerDataRevision } from '../lib/playerDataNotifications';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -646,9 +647,9 @@ export function IngredientDemandListPage() {
                       <td>
                         <ItemProfileLink canonicalKey={row.canonicalKey} itemName={row.itemName} />
                       </td>
-                      <td>{formatAmount(row.selectedScopeRequiredEffectiveOutput)}</td>
+                      <td>{formatAmount(row.selectedScopeRequiredEffectiveOutput)}<MaterialProductionTime canonicalKey={row.canonicalKey} quantity={row.selectedScopeRequiredEffectiveOutput} /></td>
                       <td>{formatAmount(row.selectedScopeRequiredCraftOperations)}</td>
-                      <td>{formatAmount(row.totalRequiredEffectiveOutput)}</td>
+                      <td>{formatAmount(row.totalRequiredEffectiveOutput)}<MaterialProductionTime canonicalKey={row.canonicalKey} quantity={row.totalRequiredEffectiveOutput} /></td>
                       <td className={row.isCraftable ? undefined : 'summary-table__cell--terminal'}>
                         {row.isCraftable ? 'Craftable' : 'Terminal'}
                       </td>
