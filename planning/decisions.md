@@ -1,5 +1,11 @@
 # Project Decisions
 
+## Passive capture signals — BL-375 (2026-10-14)
+
+Observe only the visible selected game tab's supported, user-visited page. A content script sends a constant `observe-page` hint after a 400ms debounce; the extension background validates its runtime ID, game URL and top frame, then requests its own frame-0 read through the existing 700ms stable extractor. Game hints never supply signed observations or pairing authority. One serialized flight plus a single latest pending tab coordinates concurrent hints; foreground authority and URL are rechecked before saving. Unchanged normalized name/count/target rows preserve the cached observation and confirmed application time, regardless of tab or row order. No polling, game requests, actions or navigation.
+
+Pairing enables automatic capture by default; a persisted pause stops automatic reads while manual Capture/Retry remain available. An already-sent transfer may finish after pause. Partial/unstable reads and timeouts retain good data; bounded retries plus later mutations/visits provide another attempt. Cached captures while the tracker is closed still need manual Retry. Automatic reconnect/background recovery and richer freshness remain BL-376; signed installation remains BL-377. Multiple tracker tabs still require selecting one open receiver by closing extras.
+
 This file records important architectural and product decisions for the project and the rationale behind them. Use [roadmap.md](/C:/Users/liqui/Documents/farmrpg-tools/planning/roadmap.md) for milestone planning and [backlog.csv](/C:/Users/liqui/Documents/farmrpg-tools/planning/backlog.csv) for backlog items.
 
 ## Manual Firefox test companion — BL-374 (2026-10-10)

@@ -48,6 +48,8 @@ try {
   const popupHandle = (await command('WebDriver:GetWindowHandle')).value;
   const setup = await command('WebDriver:ExecuteAsyncScript',{script:`const done = arguments[arguments.length-1]; const capture = {schemaVersion:1,captureId:'firefox-transport-fixture',section:'inventory',scope:'full',sourceUrl:'https://farmrpg.com/index.php',observedAt:new Date().toISOString(),coverage:{activePage:true,settled:true,sections:[{id:'Inventory',loaded:true,expectedRows:1}]},rows:[{itemName:'Steel',count:12,sectionId:'Inventory'}]}; browser.storage.local.set({'companion-v1':{pairingKey:'ab'.repeat(32),captures:{inventory:capture},status:{state:'idle',message:'Synthetic transport fixture only'}}}).then(()=>done(true),e=>done({error:e.message}));`,args:[]});
   if (!setup.value) throw new Error('Could not seed isolated extension fixture');
+  const paused = await command('WebDriver:ExecuteAsyncScript',{script:'const done=arguments[arguments.length-1]; browser.runtime.sendMessage({type:"set-paused",paused:true}).then(done,e=>done({error:e.message}));',args:[]});
+  if (paused.value?.paused !== true) throw new Error('Persisted automatic-capture pause failed');
   const retry = async () => {
     await command('WebDriver:SwitchToWindow',{handle:popupHandle});
     const result = await command('WebDriver:ExecuteAsyncScript',{script:'const done=arguments[arguments.length-1]; browser.runtime.sendMessage({type:"retry",section:"inventory"}).then(done,e=>done({error:e.message}));',args:[]});
@@ -87,6 +89,9 @@ try {
   await command('WebDriver:ExecuteAsyncScript',{script:'const done=arguments[arguments.length-1]; browser.runtime.sendMessage({type:"pair",key:"cd".repeat(32)}).then(done,e=>done({error:e.message}));',args:[]});
   const repaired = await retry();
   if (repaired?.status?.state !== 'duplicate') throw new Error('Re-pairing failed to deliver the saved capture');
+  const resumed = await command('WebDriver:ExecuteAsyncScript',{script:'const done=arguments[arguments.length-1]; browser.runtime.sendMessage({type:"set-paused",paused:false}).then(done,e=>done({error:e.message}));',args:[]});
+  if (resumed.value?.paused !== false) throw new Error('Automatic-capture resume failed');
+  console.log('Pause persists while manual retry works; resume restores automatic capture.');
   console.log('Disconnected tracker cannot confirm application; re-pairing delivers the cached capture without a second save.');
   await command('Addon:Uninstall',{id:'farmrpg-planning-companion@missvin'});
   console.log('Temporary install, real receiver, durable inventory, closed tracker, duplicate and pairing recovery verified; no game account used.');

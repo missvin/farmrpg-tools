@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>FarmRPG capture</title><link rel="stylesheet" href="popup.css"></head>
-<body><h1>FarmRPG capture</h1><p>Manual test companion · no passive capture</p>
+<body><h1>FarmRPG capture</h1><p>Automatic capture on visited Inventory and Mastery pages</p>
 <form id="pair-form"><label for="key">Tracker pairing key</label><input id="key" type="password" autocomplete="off" spellcheck="false" minlength="64" maxlength="64" required><button type="submit">Save pairing key</button></form>
 <p id="paired"></p><button id="disconnect" type="button">Disconnect</button>
+<p id="automatic"></p><button id="pause" type="button">Pause automatic capture</button>
 <hr><button id="capture" type="button">Capture active game page</button>
 <p id="status" role="status" aria-live="polite">Loading status…</p><p id="last"></p><ul id="saved"></ul>
 <p><a href="https://farmrpg-tools.vercel.app/" target="_blank" rel="noreferrer">Open tracker</a> · keep one tracker tab open</p>
-<details><summary>What this reads</summary><p>Only complete My Inventory or full Mastery on the active game page, when you press Capture. Everything is an item catalogue and is not captured as owned inventory. Folded mastery rows must already be loaded. No game actions or extra game requests. Counts and page identity stay in this browser and transfer only to your paired tracker. Signing and live inventory acceptance are still pending.</p></details>
+<details><summary>What this reads</summary><p>Automatically reads complete My Inventory or full Mastery when you visit or update those pages. Pause stops automatic capture; manual Capture and Retry remain available. Everything is a catalogue and is not captured as inventory. Keep one tracker tab open; if it is closed, retry the saved capture after reopening it. Folded mastery rows must already be loaded. No game actions or extra game requests. An in-flight transfer may finish when paused. Signing remains pending.</p></details>
 <script src="popup.js"></script></body></html>

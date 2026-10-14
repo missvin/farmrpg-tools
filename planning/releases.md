@@ -4,6 +4,8 @@ This project uses a lightweight release model. [backlog.csv](/C:/Users/liqui/Doc
 
 ## Versioning
 
+Firefox companion test package 0.2.0 (2026-10-14, BL-375) adds automatic visited-page capture and pause/resume. It remains unsigned, with live automatic acceptance pending. This package version is separate from the tracker app version; no player-data storage/backup format or tracker protocol changes are included. Signed unlisted distribution is BL-377.
+
 - `MAJOR.MINOR.PATCH`
 - Major: breaking data, storage, or model change
 - Minor: new feature, page, or capability

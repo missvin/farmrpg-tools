@@ -3,7 +3,11 @@
   const status = document.getElementById("status");
   const key = document.getElementById("key");
   let busy = false;
+  let paused = false;
   function render(result) {
+    paused = result.paused === true;
+    document.getElementById("automatic").textContent = !result.paired ? "Pair to enable automatic capture." : paused ? "Automatic capture paused." : "Automatic capture enabled.";
+    document.getElementById("pause").textContent = paused ? "Resume automatic capture" : "Pause automatic capture";
     document.getElementById("paired").textContent = result.paired ? "Pairing key saved on this Firefox profile." : "Not paired.";
     status.textContent = (result.status?.message || "No status available.") + (result.status?.warnings?.length ? " Warnings: " + result.status.warnings.join("; ") : "");
     status.setAttribute("role", result.status?.state === "rejected" ? "alert" : "status");
@@ -39,5 +43,6 @@
   });
   document.getElementById("capture").addEventListener("click", () => run({type: "capture"}));
   document.getElementById("disconnect").addEventListener("click", () => run({type: "disconnect"}));
+  document.getElementById("pause").addEventListener("click", () => run({type: "set-paused", paused: !paused}));
   run({type: "status"});
 })();

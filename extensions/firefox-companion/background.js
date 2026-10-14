@@ -4,6 +4,9 @@
   const F = globalThis.FarmCapture;
   const STORE = "companion-v1";
   let tail = Promise.resolve();
+  let passiveBusy = false;
+  let passiveQueued;
+  let pauseRequested = false;
   const serial = action => {
     const next = tail.then(action, action);
     tail = next.catch(() => {});
@@ -17,7 +20,7 @@
     finally { clearTimeout(timer); }
   };
   function safeStatus(state) {
-    return {paired: /^[a-f0-9]{64}$/.test(state.pairingKey || ""), status: state.status, lastAppliedAt: state.lastAppliedAt || null, captures: Object.entries(state.captures).map(([section, capture]) => ({section, observedAt: capture.observedAt, rows: capture.rows.length}))};
+    return {paired: /^[a-f0-9]{64}$/.test(state.pairingKey || ""), paused: state.paused === true, status: state.status, lastAppliedAt: state.lastAppliedAt || null, captures: Object.entries(state.captures).map(([section, capture]) => ({section, observedAt: capture.observedAt, rows: capture.rows.length}))};
   }
   async function deliver(state, capture) {
     F.validate(capture);
@@ -45,13 +48,23 @@
     await save(state);
     return safeStatus(state);
   }
-  async function command(message) {
+  function contentKey(capture) {
+    return JSON.stringify(capture.rows.map(row => [row.itemName.trim().toLowerCase().replace(/\s+/g, " "), row.count, row.targetTier ?? null, row.sectionId]).sort((a, b) => a[0].localeCompare(b[0])));
+  }
+  async function command(message, passiveTabId) {
     const state = await load();
     if (message.type === "status") return safeStatus(state);
+    if (message.type === "set-paused") {
+      if (typeof message.paused !== "boolean") throw new Error("Invalid pause setting.");
+      state.paused = message.paused;
+      state.status = {state: "idle", message: state.paused ? "Automatic capture paused. Manual Capture and Retry remain available." : "Automatic capture enabled. Visit My Inventory or Mastery to capture."};
+      await save(state);
+      return safeStatus(state);
+    }
     if (message.type === "pair") {
       if (typeof message.key !== "string" || !/^[a-f0-9]{64}$/.test(message.key)) throw new Error("Paste the 64-character key from your tracker's Firefox companion control.");
       state.pairingKey = message.key;
-      state.status = {state: "idle", message: "Pairing key saved locally. Capture a full game page to test the connection."};
+      state.status = {state: "idle", message: "Pairing key saved locally. Visit My Inventory or Mastery for automatic capture."};
       await save(state);
       return safeStatus(state);
     }
@@ -66,18 +79,28 @@
       return deliver(state, state.captures[message.section]);
     }
     if (message.type !== "capture") throw new Error("Unsupported companion command.");
+    const automatic = passiveTabId !== undefined;
+    if (automatic && (!state.pairingKey || state.paused || pauseRequested)) return {disabled: true, ...safeStatus(state)};
     if (!state.pairingKey) throw new Error("Pair with your tracker before capturing.");
     const tabs = await browser.tabs.query({active: true, currentWindow: true});
     const tab = tabs[0];
+    if (automatic && tab?.id !== passiveTabId) return {disabled: true, ...safeStatus(state)};
     if (!tab || !F.gameUrl(tab.url)) throw new Error("Select your FarmRPG game tab, open My Inventory or full Mastery, and try again.");
-    state.status = {state: "reading", message: "Reading the active game page. Nothing applied yet."};
-    await save(state);
+    if (!automatic) {
+      state.status = {state: "reading", message: "Reading the active game page. Nothing applied yet."};
+      await save(state);
+    }
     const result = await timeout(browser.tabs.sendMessage(tab.id, {type: "capture-active-page"}, {frameId: 0}));
     if (!result?.ok) throw new Error(result?.error || "Game page reader unavailable. Reload the game tab and retry.");
     const capture = F.validate(result.capture);
     const current = await browser.tabs.get(tab.id);
     if (current.url !== tab.url || capture.sourceUrl !== F.cleanUrl(tab.url)) throw new Error("Game page changed before capture completed. Retry on the settled page.");
+    if (automatic) {
+      const selected = (await browser.tabs.query({active: true, currentWindow: true}))[0];
+      if (pauseRequested || !current.active || selected?.id !== tab.id) return {disabled: true, ...safeStatus(state)};
+    }
     const previous = state.captures[capture.section];
+    if (automatic && previous && contentKey(previous) === contentKey(capture)) return {unchanged: true, ...safeStatus(await load())};
     if (previous && capture.observedAt <= previous.observedAt) throw new Error("Older or simultaneous observation; last good capture retained.");
     state.captures[capture.section] = capture; // Full proven scope: no shrinkage/row-count heuristic.
     state.lastCapturedAt = capture.observedAt;
@@ -85,10 +108,9 @@
     await save(state);
     return deliver(state, capture);
   }
-  browser.runtime.onMessage.addListener((message, sender) => {
-    if (sender.id !== browser.runtime.id || sender.url !== browser.runtime.getURL("popup.html") || (sender.frameId !== undefined && sender.frameId !== 0) || !message || typeof message.type !== "string") return;
+  function run(message, passiveTabId) {
     return serial(async () => {
-      try { return {ok: true, ...await command(message)}; }
+      try { return {ok: true, ...await command(message, passiveTabId)}; }
       catch (error) {
         // Known extractor errors contain no raw page text. Do not log payloads or keys.
         const reason = error instanceof Error ? error.message : "Capture failed. Previous good data retained.";
@@ -100,5 +122,30 @@
         } catch { return {ok: false, paired: false, captures: [], status: {state: "rejected", message: "Extension storage failed. Application is not confirmed; previous tracker data is retained unless a prior save was already acknowledged."}}; }
       }
     });
+  }
+  browser.runtime.onMessage.addListener((message, sender) => {
+    if (sender.id !== browser.runtime.id || !message || typeof message.type !== "string") return;
+    if (message.type === "observe-page") {
+      if (sender.frameId !== 0 || !sender.tab || !Number.isInteger(sender.tab.id) || !F.gameUrl(sender.url) || !F.gameUrl(sender.tab.url) || F.cleanUrl(sender.url) !== F.cleanUrl(sender.tab.url)) return;
+      if (passiveBusy) {
+        passiveQueued = sender.tab.id;
+        return Promise.resolve({ok: true, retry: true});
+      }
+      passiveBusy = true;
+      return run({type: "capture"}, sender.tab.id).finally(async () => {
+        try {
+          while (passiveQueued !== undefined) {
+            const tabId = passiveQueued;
+            passiveQueued = undefined;
+            await run({type: "capture"}, tabId);
+          }
+        } finally { passiveBusy = false; }
+      });
+    }
+    if (sender.url !== browser.runtime.getURL("popup.html") || (sender.frameId !== undefined && sender.frameId !== 0)) return;
+    if (message.type === "set-paused" && typeof message.paused === "boolean") pauseRequested = message.paused;
+    if (message.type === "disconnect") pauseRequested = true;
+    if (message.type === "pair") pauseRequested = false;
+    return run(message);
   });
 })();

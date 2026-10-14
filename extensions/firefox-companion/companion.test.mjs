@@ -221,7 +221,7 @@ function background() {
   const api = {
     runtime: {id: 'test-id', getURL: path => 'moz-extension://test/' + path, onMessage: {addListener: fn => { listener = fn; }}},
     storage: {local: {get: vi.fn(async () => structuredClone(stored)), set: vi.fn(async value => { stored = structuredClone(value); })}},
-    tabs: {query: vi.fn(async query => query.active ? [{id: 1, url: 'https://farmrpg.com/index.php'}] : [{id: 2, url: 'https://farmrpg-tools.vercel.app/'}]), get: vi.fn(async () => ({id:1,url:'https://farmrpg.com/index.php'})), sendMessage: vi.fn()},
+    tabs: {query: vi.fn(async query => query.active ? [{id: 1, url: 'https://farmrpg.com/index.php'}] : [{id: 2, url: 'https://farmrpg-tools.vercel.app/'}]), get: vi.fn(async () => ({id:1,url:'https://farmrpg.com/index.php',active:true})), sendMessage: vi.fn()},
   };
   dom.window.browser = api;
   dom.window.eval(source('background.js'));
@@ -236,6 +236,110 @@ function background() {
 }
 
 describe('background authority, durable cache and acknowledgments', () => {
+  const gameSender = {id:'test-id',url:'https://farmrpg.com/index.php',frameId:0,tab:{id:1,url:'https://farmrpg.com/index.php'}};
+  it('accepts only top-frame game hints and requests its own read, ignoring supplied payloads', async () => {
+    const b = background();
+    for (const sender of [{...gameSender,frameId:1},{...gameSender,id:'foreign'},{...gameSender,url:'https://evil.test/'},{...gameSender,tab:undefined}]) expect(b.listener({type:'observe-page'},sender)).toBeUndefined();
+    await b.call({type:'pair',key:'ab'.repeat(32)});
+    const result = await b.listener({type:'observe-page',capture:{rows:'forged'}},gameSender);
+    expect(result.status.state).toBe('applied');
+    expect(b.api.tabs.sendMessage.mock.calls[0]).toEqual([1,{type:'capture-active-page'},{frameId:0}]);
+    expect(b.state().captures.inventory.rows).toEqual(b.capture.rows);
+    b.dom.window.close();
+  });
+  it('deduplicates unchanged automatic observations across game tabs without retrying delivery', async () => {
+    const b = background();
+    await b.call({type:'pair',key:'ab'.repeat(32)});
+    await b.listener({type:'observe-page'},gameSender);
+    const first = structuredClone(b.state());
+    b.api.tabs.sendMessage.mockClear();
+    b.api.tabs.query.mockImplementation(async query => query.active ? [{id:3,url:'https://farmrpg.com/index.php'}] : [{id:2,url:'https://farmrpg-tools.vercel.app/'}]);
+    b.api.tabs.get.mockResolvedValue({id:3,url:'https://farmrpg.com/index.php',active:true});
+    b.api.tabs.sendMessage.mockResolvedValue({ok:true,capture:{...b.capture,captureId:'later',observedAt:'2026-10-10T02:00:00.000Z',rows:[...b.capture.rows].reverse()}});
+    expect((await b.listener({type:'observe-page'},{...gameSender,tab:{...gameSender.tab,id:3}})).unchanged).toBe(true);
+    expect(b.api.tabs.sendMessage).toHaveBeenCalledOnce();
+    expect(b.state()).toEqual(first);
+    b.dom.window.close();
+  });
+  it('automatically delivers changed data, retains cache on a partial read and stops after losing tab focus', async () => {
+    const b = background();
+    await b.call({type:'pair',key:'ab'.repeat(32)});
+    await b.listener({type:'observe-page'},gameSender);
+    const next = {...b.capture,captureId:'changed',observedAt:'2026-10-10T02:00:00.000Z',rows:b.capture.rows.map(row=>({...row,count:row.count+1}))};
+    b.api.tabs.sendMessage.mockImplementation(async (_id,message)=>message.type==='capture-active-page' ? {ok:true,capture:next} : {state:'applied',message:'Saved',receipt:{captureId:next.captureId,section:next.section,observedAt:next.observedAt}});
+    expect((await b.listener({type:'observe-page'},gameSender)).status.state).toBe('applied');
+    expect(b.state().captures.inventory.captureId).toBe('changed');
+    b.api.tabs.sendMessage.mockResolvedValue({ok:false,error:'Incomplete page'});
+    expect((await b.listener({type:'observe-page'},gameSender)).ok).toBe(false);
+    expect(b.state().captures.inventory.captureId).toBe('changed');
+    b.api.tabs.sendMessage.mockResolvedValue({ok:true,capture:{...next,captureId:'later',observedAt:'2026-10-10T03:00:00.000Z'}});
+    b.api.tabs.get.mockResolvedValue({url:'https://farmrpg.com/index.php',active:false});
+    expect((await b.listener({type:'observe-page'},gameSender)).disabled).toBe(true);
+    expect(b.state().captures.inventory.captureId).toBe('changed');
+    b.dom.window.close();
+  });
+  it('persists pause, keeps manual capture usable and refuses unpaired or inactive automatic reads', async () => {
+    const b = background();
+    expect((await b.listener({type:'observe-page'},gameSender)).disabled).toBe(true);
+    await b.call({type:'pair',key:'ab'.repeat(32)});
+    await b.call({type:'set-paused',paused:true});
+    expect((await b.call({type:'status'})).paused).toBe(true);
+    expect((await b.listener({type:'observe-page'},gameSender)).disabled).toBe(true);
+    expect(b.api.tabs.sendMessage).not.toHaveBeenCalled();
+    expect((await b.call({type:'capture'})).status.state).toBe('applied');
+    await b.call({type:'set-paused',paused:false});
+    b.api.tabs.sendMessage.mockClear();
+    expect((await b.listener({type:'observe-page'},{...gameSender,tab:{...gameSender.tab,id:9}})).disabled).toBe(true);
+    expect(b.api.tabs.sendMessage).not.toHaveBeenCalled();
+    b.dom.window.close();
+  });
+  it('coalesces simultaneous tab hints into one flight and prevents a paused read being saved', async () => {
+    const b = background();
+    await b.call({type:'pair',key:'ab'.repeat(32)});
+    let finish;
+    b.api.tabs.sendMessage.mockImplementation(() => new Promise(resolve => {finish=resolve;}));
+    const first = b.listener({type:'observe-page'},gameSender);
+    await vi.waitFor(() => expect(finish).toBeTypeOf('function'));
+    expect((await b.listener({type:'observe-page'},gameSender)).retry).toBe(true);
+    const pause = b.call({type:'set-paused',paused:true});
+    finish({ok:true,capture:b.capture});
+    expect((await first).disabled).toBe(true);
+    await pause;
+    expect(b.state().captures).toEqual({});
+    expect(b.state().paused).toBe(true);
+    b.dom.window.close();
+  });
+  it('drains one latest hint after a slow delivery instead of losing changed data', async () => {
+    const b = background();
+    await b.call({type:'pair',key:'ab'.repeat(32)});
+    let finish, reads=0;
+    const next={...b.capture,captureId:'queued-change',observedAt:'2026-10-10T02:00:00.000Z',rows:b.capture.rows.map(row=>({...row,count:row.count+1}))};
+    b.api.tabs.sendMessage.mockImplementation(async (_id,message)=>{
+      if (message.type==='capture-active-page') return {ok:true,capture:reads++===0?b.capture:next};
+      if (reads===1) return new Promise(resolve=>{finish=resolve;});
+      return {state:'applied',message:'Saved',receipt:{captureId:next.captureId,section:next.section,observedAt:next.observedAt}};
+    });
+    const first=b.listener({type:'observe-page'},gameSender);
+    await vi.waitFor(()=>expect(finish).toBeTypeOf('function'));
+    await b.listener({type:'observe-page'},gameSender);
+    await b.listener({type:'observe-page'},gameSender);
+    finish({state:'applied',message:'Saved',receipt:{captureId:b.capture.captureId,section:b.capture.section,observedAt:b.capture.observedAt}});
+    await first;
+    expect(reads).toBe(2);
+    expect(b.state().captures.inventory.captureId).toBe('queued-change');
+    b.dom.window.close();
+  });
+  it('retains the last good automatic capture on a read timeout', async () => {
+    const b=background();
+    await b.call({type:'pair',key:'ab'.repeat(32)});
+    await b.listener({type:'observe-page'},gameSender);
+    b.dom.window.setTimeout=fn=>setTimeout(fn,5);
+    b.dom.window.clearTimeout=clearTimeout;
+    b.api.tabs.sendMessage.mockImplementation(()=>new Promise(()=>{}));
+    expect((await b.listener({type:'observe-page'},gameSender)).status.message).toMatch(/timed out/);
+    expect(b.state().captures.inventory.captureId).toBe('fixture');
+    b.dom.window.close();
+  });
   it('ignores game/frame/foreign senders even with a forged popup command', () => {
     const b = background();
     for (const sender of [{id:'other',url:'moz-extension://test/popup.html'}, {id:'test-id',url:'https://farmrpg.com/'}, {id:'test-id',url:'moz-extension://test/popup.html',frameId:1,tab:{id:1}}]) expect(b.listener({type:'capture'},sender)).toBeUndefined();
@@ -423,5 +527,72 @@ describe('exact identity and hidden-page guards', () => {
     expect(() => dom.window.FarmCapture.validate({...capture,captureId:undefined})).toThrow(/identity/);
     expect(() => dom.window.FarmCapture.validate({...capture,rows:[{...capture.rows[0],count:-1}]})).toThrow(/quantity/);
     dom.window.close();
+  });
+});
+
+describe('passive page observation', () => {
+  async function observe(html = inventory()) {
+    vi.useFakeTimers();
+    const dom = fixture(html);
+    dom.window.setTimeout = setTimeout;
+    dom.window.clearTimeout = clearTimeout;
+    const send = vi.fn(async () => ({ok:true}));
+    dom.window.browser = {runtime:{id:'test-id',getURL:path=>'moz-extension://test/'+path,onMessage:{addListener:()=>{}},sendMessage:send}};
+    dom.window.eval(source('farm-content.js'));
+    const advance = async ms => { await Promise.resolve(); await vi.advanceTimersByTimeAsync(ms); };
+    const close = () => { dom.window.dispatchEvent(new dom.window.Event('pagehide')); dom.window.close(); vi.useRealTimers(); };
+    return {dom,send,advance,close};
+  }
+  it.each([inventory(),mastery()])('signals a supported visit without sending data or taking game actions', async html => {
+    const p = await observe(html);
+    try {
+      await p.advance(399); expect(p.send).not.toHaveBeenCalled();
+      await p.advance(1); expect(p.send).toHaveBeenCalledOnce(); expect(p.send).toHaveBeenCalledWith({type:'observe-page'});
+    } finally {p.close();}
+  });
+  it('debounces mutation bursts and ignores unrelated chat changes', async () => {
+    const p = await observe('<aside id="chat">Chat</aside>'+inventory());
+    try {
+      await p.advance(400); p.send.mockClear();
+      p.dom.window.document.querySelector('#chat').textContent='Chat changed';
+      await p.advance(1000); expect(p.send).not.toHaveBeenCalled();
+      for (let i=0;i<10;i++) p.dom.window.document.querySelector('.item-after').textContent=String(i);
+      await p.advance(399); expect(p.send).not.toHaveBeenCalled();
+      await p.advance(1); expect(p.send).toHaveBeenCalledOnce();
+    } finally {p.close();}
+  });
+  it('limits failed/contended attempts and retries on a later visit', async () => {
+    const p = await observe();
+    try {
+      p.send.mockResolvedValue({ok:false});
+      await p.advance(5000); expect(p.send).toHaveBeenCalledTimes(3);
+      p.dom.window.dispatchEvent(new p.dom.window.Event('focus'));
+      p.send.mockResolvedValue({ok:true});
+      await p.advance(400); expect(p.send).toHaveBeenCalledTimes(4);
+    } finally {p.close();}
+  });
+  it('signals changes made while a previous hint is awaiting delivery', async () => {
+    const p=await observe();
+    try {
+      let finish;
+      p.send.mockImplementationOnce(()=>new Promise(resolve=>{finish=resolve;}));
+      await p.advance(400);
+      p.dom.window.document.querySelector('.item-after').textContent='14';
+      await p.advance(400); expect(p.send).toHaveBeenCalledOnce();
+      finish({ok:true});
+      await p.advance(400); expect(p.send).toHaveBeenCalledTimes(2);
+    } finally {p.close();}
+  });
+  it('ignores hidden/unsupported routes and captures a supported route transition', async () => {
+    const p = await observe('<div class="page page-on-center" data-page="everything">Everything</div>');
+    try {
+      await p.advance(400); expect(p.send).not.toHaveBeenCalled();
+      p.dom.window.document.body.innerHTML=inventory();
+      Object.defineProperty(p.dom.window.document,'visibilityState',{configurable:true,value:'hidden'});
+      await p.advance(500); expect(p.send).not.toHaveBeenCalled();
+      Object.defineProperty(p.dom.window.document,'visibilityState',{configurable:true,value:'visible'});
+      p.dom.window.document.dispatchEvent(new p.dom.window.Event('visibilitychange'));
+      await p.advance(400); expect(p.send).toHaveBeenCalledOnce();
+    } finally {p.close();}
   });
 });
