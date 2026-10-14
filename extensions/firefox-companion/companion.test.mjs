@@ -278,6 +278,23 @@ describe('background authority, durable cache and acknowledgments', () => {
     expect((await b.call({type:'retry',section:'inventory'})).status.state).toBe('applied');
     b.dom.window.close();
   });
+  it('disconnects without losing the cached capture and allows manual retry after re-pairing', async () => {
+    const b = background();
+    await b.call({type:'pair',key:'ab'.repeat(32)});
+    await b.call({type:'capture'});
+    const previous = structuredClone(b.state());
+    await b.call({type:'disconnect'});
+    b.api.tabs.sendMessage.mockClear();
+    expect((await b.call({type:'retry',section:'inventory'})).status.message).toMatch(/Pair with the tracker/);
+    expect(b.api.tabs.sendMessage).not.toHaveBeenCalled();
+    expect(b.state().captures).toEqual(previous.captures);
+    expect(b.state().lastAppliedAt).toBe(previous.lastAppliedAt);
+    await b.call({type:'pair',key:'cd'.repeat(32)});
+    b.api.tabs.sendMessage.mockResolvedValue({state:'duplicate',message:'Already saved'});
+    expect((await b.call({type:'retry',section:'inventory'})).status.state).toBe('duplicate');
+    expect(b.state().lastAppliedAt).toBe(previous.lastAppliedAt);
+    b.dom.window.close();
+  });
   it.each(['rejected','duplicate'])('shows %s without fabricating a new successful application', async state => {
     const b = background();
     await b.call({type:'pair',key:'ab'.repeat(32)});

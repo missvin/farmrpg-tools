@@ -1,20 +1,20 @@
 # Firefox companion — manual test build (BL-374)
 
-This is an unsigned, manual-only test companion. BL-374 remains in progress until current-layout, temporary Firefox install and capture/paste parity checks pass. No signed release or passive capture is claimed.
+This is an unsigned, manual-only test companion. BL-374 manual capture acceptance completed on 2026-10-14: Rebecca verified live My Inventory/Mastery application and reload persistence, with recovery/guard checks covered by focused tests and isolated Firefox against the real deployed receiver. BL-375 automatic capture is next; no signed release or passive capture is claimed.
 
 ## Temporary installation
 
 1. In Firefox, open `about:debugging#/runtime/this-firefox`.
 2. Choose **Load Temporary Add-on**, then select this directory's `manifest.json` (or the test XPI produced by `package-test.ps1`). Temporary installs disappear after Firefox restarts.
 3. Reload existing game and tracker tabs so their content scripts are present.
-4. Keep one tracker tab open at **https://farmrpg-tools.vercel.app/**. Its deployed code must include BL-373; the branch's code has not been verified as deployed. If the footer lacks **Firefox companion**, stop: this tracker version cannot receive the capture yet.
-5. In the tracker footer, expand **Firefox companion**, choose **Pair Firefox companion**, and copy its key. In the extension popup paste the key and choose **Save pairing key**. Treat the key as local authority; do not share it or include it in screenshots.
+4. Keep one tracker tab open at **https://farmrpg-tools.vercel.app/**. The deployed receiver was verified for the current Inventory/seven-section Mastery contract on 2026-10-14; hard-refresh stale tracker tabs after updates. If the footer lacks **Firefox companion**, stop: this tracker version cannot receive the capture yet.
+5. In the tracker footer, expand **Firefox companion**, choose **Pair Firefox companion**, and copy its key. Open the companion from Firefox's extensions toolbar menu (pairing in the tracker does not open its popup), then paste the key and choose **Save pairing key**. Treat the key as local authority; do not share it or include it in screenshots.
 6. Select the game tab, manually open the complete My Inventory or full Mastery page, and wait for loading to finish. Press the extension's **Capture active game page**.
 7. Reopen the popup if it closes while working. **Captured locally / Waiting** is not application confirmation. Only **applied** plus a matching tracker receipt updates the last confirmed application time.
 
 The tracker and Firefox companion must be in the same Firefox profile. Chrome's or another profile's local tracker data does not sync across browsers. Export a tracker backup before the first live application; existing data without ordering metadata may require a fresh manual import before capture can replace it. Rejected captures retain the last good data.
 
-## Checks for Rebecca
+## Repeatable acceptance checks
 
 - Capture My Inventory and compare several known counts, including a zero/depleted item when present. Compare the complete captured row count against your ordinary paste import. Counts must agree; no unrelated goal, pet/storehouse supply or settings changes.
 - Capture full Mastery with tiers folded but already loaded. Check counts against ordinary paste import. Empty tiers need explicit loaded-empty evidence; an unloaded fold must reject visibly.
@@ -26,9 +26,9 @@ The tracker and Firefox companion must be in the same Firefox profile. Chrome's 
 
 ## Completeness and trust boundaries
 
-Extraction is deliberately strict and current-layout acceptance is pending. Inventory requires the exact #!/inventory.php route and data-page="inventory", item rows with `img.itemimg`, `strong` name and `.item-after` exact quantity, plus matching unique-positive-item and total-quantity summary counts. Row markup and summary labels were checked against Rebecca's sanitized My Inventory evidence on 2026-10-14. Everything is a separate item catalogue and must never replace owned stock. Filtered routes, missing totals and incomplete row coverage reject. The first live test still needs to verify full capture and application. Do not weaken checks or infer full coverage from a stable row count.
+Extraction is deliberately strict and current-layout acceptance is pending. Inventory requires the exact #!/inventory.php route and data-page="inventory", item rows with `img.itemimg`, `strong` name and `.item-after` exact quantity, plus matching unique-positive-item and total-quantity summary counts. Row markup and summary labels were checked against Rebecca's sanitized My Inventory evidence on 2026-10-14. Everything is a separate item catalogue and must never replace owned stock. Filtered routes, missing totals and incomplete row coverage reject. Rebecca verified normal-page capture/application and reload persistence on 2026-10-14. Do not weaken checks or infer full coverage from a stable row count.
 
-Mastery reuses the pinned upstream parser on the one current page, including folded DOM rows. It requires seven known section headings: No Tier (10), Tier I (100), Tier II (1,000), Tier III (10,000), Tier IV (100,000), Tier V (1,000,000) and Mega Mastered (infinity). Exact progress quantities/targets, explicit loaded-empty tiers, matching heading/target row totals and independent mastered/GM/MM summary counts remain required. Rebecca supplied heading/target layout evidence on 2026-10-14; other layouts remain unsupported and missing headers are not fabricated. Full real-page capture/application acceptance remains pending.
+Mastery reuses the pinned upstream parser on the one current page, including folded DOM rows. It requires seven known section headings: No Tier (10), Tier I (100), Tier II (1,000), Tier III (10,000), Tier IV (100,000), Tier V (1,000,000) and Mega Mastered (infinity). Exact progress quantities/targets, explicit loaded-empty tiers, matching heading/target row totals and independent mastered/GM/MM summary counts remain required. Rebecca supplied heading/target layout evidence on 2026-10-14; other layouts remain unsupported and missing headers are not fabricated. Normal-page live capture/application and reload persistence are accepted; unfamiliar or incomplete layouts still reject.
 
 The background accepts commands only from its own extension popup. Capture responses come only from its direct top-frame request to the selected allowed game tab; navigation before completion rejects. Pairing authority stays in extension storage/background, never in game scripts or page messages. Signed requests relay only to the exact top-level tracker origin, with own-window/source/origin/protocol/request/receipt checks. Actual Firefox page-world messaging is an acceptance gate; failures must not relax tracker source checks.
 
@@ -36,15 +36,15 @@ Permissions: `storage` for local pairing/cache/status; `activeTab` for the expli
 
 ## Verification checkpoint
 
-58 focused tests, extension/repository lint and tracker build passed. Actual Firefox 157.0.1 temporary install and synthetic exact-origin own-window relay passed in a fresh isolated profile. This verifies runtime wiring, not live game extraction or real durable tracker application. See `planning/firefox-manual-capture.md`.
+Completion pass: 135 focused tests and extension lint passed. The rebuilt unsigned package passed an isolated Firefox check against the actual deployed receiver using synthetic data: closed-tracker waiting/manual retry, exact-origin relay, durable inventory after reload, duplicate delivery and disconnect/re-pair recovery. Rebecca separately verified live inventory/mastery extraction and persistence. See `planning/firefox-manual-capture.md` for the evidence matrix. No app build was repeated for this test/docs-only pass; preceding product fixes had passing builds.
 
 ## Development and isolation
 
 - `node node_modules/vitest/vitest.mjs run extensions/firefox-companion/companion.test.mjs`
 - `node node_modules/eslint/bin/eslint.js --config extensions/firefox-companion/eslint.config.mjs extensions/firefox-companion`
 - `powershell -NoProfile -ExecutionPolicy Bypass -File extensions/firefox-companion/package-test.ps1`
-- Optional synthetic runtime check: `powershell -NoProfile -ExecutionPolicy Bypass -File extensions/firefox-companion/verify-firefox-runtime.ps1` (starts its own isolated headless profile; visits the public tracker and sends only synthetic data to a synthetic acknowledgment listener).
+- Optional synthetic runtime check: `powershell -NoProfile -ExecutionPolicy Bypass -File extensions/firefox-companion/verify-firefox-runtime.ps1` (starts its own isolated headless profile; visits the public tracker and applies only synthetic inventory through its real receiver in the fresh profile).
 
 The package command includes an explicit file allowlist, never tests, local data, pairing authority or upstream ZIP. It writes ignored unsigned ZIP/XPI artifacts under `local-data/firefox-companion/`.
 
-Rebecca authorized integrating the parallel tracks on 2026-10-10, Tower first and capture second. The combined code preserves both histories; verify the deployed tracker has BL-373 pairing controls before live application. BL-374 remains in progress pending actual game-page parity and durable end-to-end acceptance. BL-375 (passive triggers), BL-376 (automatic reconnect/recovery) and BL-377 (signed-unlisted acceptance) are separate work.
+Rebecca authorized integrating the parallel tracks on 2026-10-10, Tower first and capture second. The combined code preserves both histories; verify the deployed tracker has BL-373 pairing controls before live application. BL-374 is shipped after the 2026-10-14 manual capture acceptance pass. BL-375 (passive triggers), BL-376 (automatic reconnect/recovery) and BL-377 (signed-unlisted acceptance) are separate work.

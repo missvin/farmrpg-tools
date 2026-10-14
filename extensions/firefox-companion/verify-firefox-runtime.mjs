@@ -1,4 +1,4 @@
-// Synthetic transport only. Run through verify-firefox-runtime.ps1 in an isolated profile.
+// Synthetic data through the real deployed receiver, only in a fresh isolated profile.
 import net from 'node:net';
 import {fileURLToPath} from 'node:url';
 let buffer = Buffer.alloc(0), nextId = 0;
@@ -31,7 +31,7 @@ function command(name,args={}) {
   socket.write(Buffer.concat([Buffer.from(data.length+':'), data]));
   return result;
 }
-const timer = setTimeout(() => { console.error('Isolated Firefox validation timed out'); socket.destroy(); process.exitCode = 1; }, 40000);
+const timer = setTimeout(() => { console.error('Isolated Firefox validation timed out'); socket.destroy(); process.exitCode = 1; }, 120000);
 try {
   await greeting;
   await command('WebDriver:NewSession',{capabilities:{alwaysMatch:{acceptInsecureCerts:true}}});
@@ -48,20 +48,48 @@ try {
   const popupHandle = (await command('WebDriver:GetWindowHandle')).value;
   const setup = await command('WebDriver:ExecuteAsyncScript',{script:`const done = arguments[arguments.length-1]; const capture = {schemaVersion:1,captureId:'firefox-transport-fixture',section:'inventory',scope:'full',sourceUrl:'https://farmrpg.com/index.php',observedAt:new Date().toISOString(),coverage:{activePage:true,settled:true,sections:[{id:'Inventory',loaded:true,expectedRows:1}]},rows:[{itemName:'Steel',count:12,sectionId:'Inventory'}]}; browser.storage.local.set({'companion-v1':{pairingKey:'ab'.repeat(32),captures:{inventory:capture},status:{state:'idle',message:'Synthetic transport fixture only'}}}).then(()=>done(true),e=>done({error:e.message}));`,args:[]});
   if (!setup.value) throw new Error('Could not seed isolated extension fixture');
+  const retry = async () => {
+    await command('WebDriver:SwitchToWindow',{handle:popupHandle});
+    const result = await command('WebDriver:ExecuteAsyncScript',{script:'const done=arguments[arguments.length-1]; browser.runtime.sendMessage({type:"retry",section:"inventory"}).then(done,e=>done({error:e.message}));',args:[]});
+    return result.value;
+  };
+  const closed = await retry();
+  if (closed?.status?.state !== 'waiting' || closed.lastAppliedAt) throw new Error('Closed tracker cache/retry check failed');
+  console.log('Closed tracker: cached capture waits without claiming application.');
   const newWindow = await command('WebDriver:NewWindow',{type:'tab'});
   const trackerHandle = (newWindow.value || newWindow).handle;
   await command('WebDriver:SwitchToWindow',{handle:trackerHandle});
   await command('WebDriver:Navigate',{url:'https://farmrpg-tools.vercel.app/'});
-  await command('WebDriver:ExecuteScript',{script:`window.__transportEvidence = []; window.addEventListener('message', e => { if (e.data?.sender !== 'farmrpg-tools-firefox') return; window.__transportEvidence.push({ownSource:e.source===window,origin:e.origin}); const request=JSON.parse(e.data.body); window.postMessage({channel:'farmrpg-tools.capture',version:1,sender:'farmrpg-tools-tracker',type:'ack',requestId:request.requestId,state:'applied',message:'Synthetic transport acknowledgment, not a tracker save',receipt:{captureId:request.capture.captureId,section:request.capture.section,observedAt:request.capture.observedAt}},location.origin); }); return true;`,args:[]});
-  await command('WebDriver:SwitchToWindow',{handle:popupHandle});
-  const transfer = await command('WebDriver:ExecuteAsyncScript',{script:'const done=arguments[arguments.length-1]; browser.runtime.sendMessage({type:"retry",section:"inventory"}).then(done,e=>done({error:e.message}));',args:[],scriptTimeout:30000});
-  console.log('Synthetic Firefox relay result:',JSON.stringify(transfer));
+  await command('WebDriver:ExecuteScript',{script:'localStorage.setItem("farmrpg-tools.capture-pairing.v1", "ab".repeat(32)); return true;',args:[]});
+  await command('WebDriver:Refresh');
+  await command('WebDriver:ExecuteScript',{script:`window.__transportEvidence = []; window.addEventListener('message', e => { if (e.data?.sender === 'farmrpg-tools-firefox') window.__transportEvidence.push({ownSource:e.source===window,origin:e.origin}); }); return true;`,args:[]});
+  const transfer = await retry();
+  console.log('Real deployed receiver result:',JSON.stringify(transfer));
   await command('WebDriver:SwitchToWindow',{handle:trackerHandle});
   const evidence = await command('WebDriver:ExecuteScript',{script:'return window.__transportEvidence;',args:[]});
   console.log('Actual content-script to page event authority:',JSON.stringify(evidence));
-  if (transfer.value?.status?.state !== 'applied' || !evidence.value?.[0]?.ownSource || evidence.value[0].origin !== 'https://farmrpg-tools.vercel.app') throw new Error('Actual Firefox relay/source/ack test failed');
+  if (transfer?.status?.state !== 'applied' || !evidence.value?.[0]?.ownSource || evidence.value[0].origin !== 'https://farmrpg-tools.vercel.app') throw new Error('Actual Firefox relay/source/ack test failed');
+  await command('WebDriver:Refresh');
+  const stored = await command('WebDriver:ExecuteScript',{script:'const state = JSON.parse(localStorage.getItem("farmrpg-tools.acquisitionPlannerState")); return {count:state?.inventory?.entries?.find(row=>row.itemName==="Steel")?.inventoryCount,captureId:state?.inventory?.observation?.captureId};',args:[]});
+  if (stored.value?.count !== 12 || stored.value.captureId !== 'firefox-transport-fixture') throw new Error('Acknowledged inventory did not survive tracker reload');
+  const duplicate = await retry();
+  if (duplicate?.status?.state !== 'duplicate' || duplicate.lastAppliedAt !== transfer.lastAppliedAt) throw new Error('Duplicate retry incorrectly claimed a new application');
+  console.log('Inventory persists after reload; duplicate retry retains the application timestamp.');
+  await command('WebDriver:SwitchToWindow',{handle:trackerHandle});
+  await command('WebDriver:ExecuteScript',{script:'localStorage.removeItem("farmrpg-tools.capture-pairing.v1"); return true;',args:[]});
+  await command('WebDriver:Refresh');
+  const revoked = await retry();
+  if (!['waiting', 'rejected'].includes(revoked?.status?.state) || revoked.lastAppliedAt !== transfer.lastAppliedAt) throw new Error('Revoked pairing incorrectly claimed application');
+  await command('WebDriver:SwitchToWindow',{handle:trackerHandle});
+  await command('WebDriver:ExecuteScript',{script:'localStorage.setItem("farmrpg-tools.capture-pairing.v1", "cd".repeat(32)); return true;',args:[]});
+  await command('WebDriver:Refresh');
+  await command('WebDriver:SwitchToWindow',{handle:popupHandle});
+  await command('WebDriver:ExecuteAsyncScript',{script:'const done=arguments[arguments.length-1]; browser.runtime.sendMessage({type:"pair",key:"cd".repeat(32)}).then(done,e=>done({error:e.message}));',args:[]});
+  const repaired = await retry();
+  if (repaired?.status?.state !== 'duplicate') throw new Error('Re-pairing failed to deliver the saved capture');
+  console.log('Disconnected tracker cannot confirm application; re-pairing delivers the cached capture without a second save.');
   await command('Addon:Uninstall',{id:'farmrpg-planning-companion@missvin'});
-  console.log('Temporary installation and popup/background messaging verified; no game account used.');
+  console.log('Temporary install, real receiver, durable inventory, closed tracker, duplicate and pairing recovery verified; no game account used.');
 } catch(error) { console.error(error.message); process.exitCode=1; }
 finally {
   try { await command('Marionette:Quit',{flags:['eForceQuit']}); } catch { /* Firefox closes the socket during quit. */ }
