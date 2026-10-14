@@ -24,6 +24,8 @@ Reproduce with `powershell -NoProfile -ExecutionPolicy Bypass -File extensions/f
 
 ## Remaining acceptance
 
+2026-10-14: Rebecca supplied layout-only console evidence showing retained `.page`, `.page.page-on-left` and active `.page.page-on-center` siblings under `.pages`, with no `.page-current`. Added the centered marker to active-page selection, retaining the single-page, inactive/hidden, transition and settling checks. Regression fixtures cover that observed structure for inventory/mastery plus ambiguous, hidden and transitioning pages. This confirms the selector mismatch only; real-page extraction/completeness and durable application remain pending.
+
 2026-10-14: Rebecca's temporary install exposed Firefox's MV3 warning for the unsupported `background.persistent` property. Removed that property and updated the manifest regression check; MV3 supplies nonpersistent background behavior implicitly. Reload the temporary add-on to check the warning is gone. Real-page capture and durable application acceptance remain pending; BL-374 is still in progress.
 
 Rebecca agreed to temporary-install testing. Start with `about:debugging#/runtime/this-firefox` → Load Temporary Add-on → package `manifest.json`. Verify popup opens. Full instructions and failure checks are in `extensions/firefox-companion/README.md`.

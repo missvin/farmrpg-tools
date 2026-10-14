@@ -4,7 +4,7 @@
   const F = globalThis.FarmCapture;
   const U = globalThis.CaptureUpstream;
   function activePage(doc) {
-    const pages = [...doc.querySelectorAll(".page.page-current")].filter(page => !page.closest(".view-inactive, [aria-hidden='true']"));
+    const pages = [...doc.querySelectorAll(".page.page-current, .page.page-on-center")].filter(page => !page.closest(".view-inactive, [aria-hidden='true']"));
     if (pages.length !== 1) throw new Error("Cannot identify one active game page. Open the full page and retry.");
     const page = pages[0];
     for (let el = page; el; el = el.parentElement) {

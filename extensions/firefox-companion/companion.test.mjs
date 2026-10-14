@@ -68,6 +68,40 @@ describe('manual full-page Firefox extraction', () => {
     expect(prepareCaptureImport(capture, {now: time, requiredSections: dom.window.FarmCapture.SECTIONS.mastery, lookup: null}).ok).toBe(true);
     dom.window.close();
   });
+  it.each([inventory, mastery])('reads a centered page alongside the observed retained page layout', makePage => {
+    const html = '<div class="pages"><div class="page">Retained page</div>' +
+      inventory().replace('page page-current', 'page page-on-left') +
+      makePage().replace('page page-current', 'page page-on-center') + '</div>';
+    const dom = fixture(html);
+    const baseline = fixture(makePage());
+    expect(extract(dom)).toEqual(extract(baseline));
+    dom.window.close();
+    baseline.window.close();
+  });
+  it('counts a page bearing both active markers only once', () => {
+    const dom = fixture(inventory().replace('page page-current', 'page page-current page-on-center'));
+    expect(extract(dom).section).toBe('inventory');
+    dom.window.close();
+  });
+  it.each([
+    ['mixed active markers', inventory() + mastery().replace('page page-current', 'page page-on-center')],
+    ['two centered pages', (inventory() + mastery()).replaceAll('page page-current', 'page page-on-center')],
+    ['hidden centered page', inventory().replace('page page-current"', 'page page-on-center" style="display:none"')],
+    ['transitioning centered page', inventory().replace('page page-current', 'page page-on-center page-transitioning')],
+    ['conflicting stale marker', inventory().replace('page page-current', 'page page-on-center page-on-left')],
+  ])('rejects %s', (_label, html) => {
+    const dom = fixture(html);
+    expect(() => extract(dom)).toThrow();
+    dom.window.close();
+  });
+  it('rejects a centered page becoming stale during capture', async () => {
+    const dom = fixture(inventory().replace('page page-current', 'page page-on-center'));
+    await expect(dom.window.FarmExtractor.stableCapture(dom.window.document, dom.window, async () => {
+      dom.window.document.querySelector('.page').className = 'page page-on-left';
+      await Promise.resolve();
+    })).rejects.toThrow(/changed/);
+    dom.window.close();
+  });
   it('rejects unloaded folded rows, absent tiers and bad summary totals', () => {
     for (const html of [mastery().replace('<h2>Tier I</h2>', ''), mastery().replace(/<strong>Apple<\/strong><p>1 \/ 10 Progress<\/p>/, ''), mastery().replace('3 items Mastered','4 items Mastered')]) {
       const dom = fixture(html);
