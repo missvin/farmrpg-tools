@@ -141,7 +141,7 @@ export function prepareCaptureImport(payload: unknown, context: CaptureImportCon
     } else {
       const tier = row.targetTier;
       if (
-        !(tier === 'INF' || (typeof tier === 'number' && [10, 1000, 10000, 100000, 1000000].includes(tier))) ||
+        !(tier === 'INF' || (typeof tier === 'number' && [10, 100, 1000, 10000, 100000, 1000000].includes(tier))) ||
         String(tier) !== row.sectionId
       ) {
         return reject('Invalid mastery tier or tier-section relationship.');

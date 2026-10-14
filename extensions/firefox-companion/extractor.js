@@ -55,7 +55,7 @@
   }
   function mastery(text) {
     const lines = text.split("\n");
-    const headings = {"tier i": "10", "tier ii": "1000", "tier iii (m)": "10000", "tier iv (gm)": "100000", "tier v (mm)": "1000000", "mega mastered": "INF"};
+    const headings = {"no tier": "10", "tier i": "100", "tier ii": "1000", "tier iii (m)": "10000", "tier iv (gm)": "100000", "tier v (mm)": "1000000", "mega mastered": "INF"};
     const blocks = new Map();
     let block;
     for (const line of lines) {
@@ -66,7 +66,7 @@
         blocks.set(block, []);
       } else if (block) blocks.get(block).push(line);
     }
-    if (blocks.size !== 6) throw new Error("All six mastery tiers must be loaded, including empty tiers.");
+    if (blocks.size !== 7) throw new Error("All seven mastery sections must be loaded, including No Tier and empty tiers.");
     const parsed = U.parseMasteryPage(lines, text);
     const progressCount = lines.filter(line => /\/.*Progress$/i.test(line)).length;
     if (!parsed.masteries.length || parsed.masteries.length !== progressCount) throw new Error("Some mastery progress rows could not be read exactly.");

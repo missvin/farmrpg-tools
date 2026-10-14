@@ -30,6 +30,12 @@ function setup(origin = CAPTURE_TRACKER_ORIGIN, framed = false) {
 }
 
 describe('authenticated tracker capture bridge', () => {
+  it('requires all seven reviewed mastery sections when applying an authenticated capture', async () => {
+    const test = setup();
+    test.send(await signed(JSON.stringify({requestId: 'mastery-request', capture: {section: 'mastery', captureId: 'mastery-capture'}})));
+    await vi.waitFor(() => expect(test.apply).toHaveBeenCalledOnce());
+    expect(test.apply.mock.calls[0][1].requiredSections).toEqual(['10', '100', '1000', '10000', '100000', '1000000', 'INF']);
+  });
   it('acknowledges only after persistence completes, then notifies open views', async () => {
     const test = setup();
     let finish!: (value: unknown) => void;

@@ -31,7 +31,7 @@ Reviewed protocol section identifiers are fixed by the tracker, never supplied a
 | Observation | Required coverage IDs |
 | --- | --- |
 | Full Everything inventory | `Everything` |
-| Full mastery | `10`, `1000`, `10000`, `100000`, `1000000`, `INF` |
+| Full mastery | `10` (No Tier), `100` (Tier I), `1000`, `10000`, `100000`, `1000000`, `INF` |
 
 These are adapter contract IDs, not assumptions about DOM headings. BL-374 must map actual reviewed layouts to them and prove every required section loaded, including explicit zero-row sections. No extractor is enabled here. Partial pages and item-page observations remain unsupported.
 

@@ -24,6 +24,8 @@ Reproduce with `powershell -NoProfile -ExecutionPolicy Bypass -File extensions/f
 
 ## Remaining acceptance
 
+2026-10-14: User-supplied heading/target totals confirm seven sections: Tier V→1,000,000, IV→100,000, III→10,000, II→1,000, I→100, No Tier→10, Mega Mastered→infinity. The original synthetic fixture incorrectly assigned Tier I→10 and omitted No Tier, affecting extraction, extension validation, tracker coverage and target validation. Corrected all four boundaries together; seven-section fixtures cover paste parity, tracker preparation, missing sections and wrong heading/target relationships. Existing six-section queued captures now reject without replacing good data and need recapture. No persisted storage/backup format changes. Receiver deployment and full live acceptance remain pending.
+
 2026-10-14: Rebecca supplied layout-only console evidence showing retained `.page`, `.page.page-on-left` and active `.page.page-on-center` siblings under `.pages`, with no `.page-current`. Added the centered marker to active-page selection, retaining the single-page, inactive/hidden, transition and settling checks. Regression fixtures cover that observed structure for inventory/mastery plus ambiguous, hidden and transitioning pages. This confirms the selector mismatch only; real-page extraction/completeness and durable application remain pending.
 
 2026-10-14: Rebecca's temporary install exposed Firefox's MV3 warning for the unsupported `background.persistent` property. Removed that property and updated the manifest regression check; MV3 supplies nonpersistent background behavior implicitly. Reload the temporary add-on to check the warning is gone. Real-page capture and durable application acceptance remain pending; BL-374 is still in progress.

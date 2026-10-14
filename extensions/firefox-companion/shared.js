@@ -2,7 +2,7 @@
   "use strict";
   const TRACKER = "https://farmrpg-tools.vercel.app";
   const CHANNEL = "farmrpg-tools.capture";
-  const SECTIONS = {inventory: ["Everything"], mastery: ["10", "1000", "10000", "100000", "1000000", "INF"]};
+  const SECTIONS = {inventory: ["Everything"], mastery: ["10", "100", "1000", "10000", "100000", "1000000", "INF"]};
   const integer = n => Number.isSafeInteger(n) && n >= 0;
   function gameUrl(raw) {
     try {
@@ -34,7 +34,7 @@
       const key = row.itemName.trim().toLowerCase().replace(/\s+/g, " ");
       if (seen.has(key) || ["__proto__", "constructor", "prototype"].includes(key)) fail("Duplicate or invalid item identity.");
       seen.add(key);
-      if (capture.section === "mastery" && (String(row.targetTier) !== row.sectionId || ![10, 1000, 10000, 100000, 1000000, "INF"].includes(row.targetTier))) fail("Invalid mastery target.");
+      if (capture.section === "mastery" && (String(row.targetTier) !== row.sectionId || ![10, 100, 1000, 10000, 100000, 1000000, "INF"].includes(row.targetTier))) fail("Invalid mastery target.");
       counts.set(row.sectionId, counts.get(row.sectionId) - 1);
     }
     if ([...counts.values()].some(count => count !== 0)) fail("Section row totals do not match.");

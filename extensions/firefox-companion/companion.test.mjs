@@ -5,6 +5,7 @@ import {describe, it, expect, vi} from 'vitest';
 import {parseMasteryPaste} from '../../src/lib/parseMasteryPaste';
 import {parseCurrentInventoryPaste} from '../../src/lib/parseCurrentInventoryPaste';
 import {prepareCaptureImport} from '../../src/lib/captureImportAdapter';
+import {CAPTURE_REQUIRED_SECTIONS} from '../../src/lib/captureBridge';
 
 const source = name => readFileSync(new URL(name, import.meta.url), 'utf8');
 const time = '2026-10-10T01:00:00.000Z';
@@ -17,8 +18,9 @@ function fixture(html) {
 }
 const inventory = (counts = [12, 3]) => `<div class="page page-current"><h1>Everything</h1><p>Inventory contains ${counts.filter(n => n > 0).length} unique items and ${counts.reduce((a,b) => a+b,0)} items in total</p>${counts.map((n,i) => `<li class="item-content"><img class="itemimg"><span class="item-title"><strong>${['Steel', 'Board'][i]}<span class="tw-badge">308</span></strong></span><span class="item-after">${n}</span></li>`).join('')}</div>`;
 const tierRows = [
-  ['Tier I', '10', '1', 'Apple'], ['Tier II', '1000', '11', 'Board'], ['Tier III (M)', '10000', '1234', 'Steel'],
-  ['Tier IV (GM)', '100000', '12345', 'Fancy Violin'], ['Tier V (MM)', '1000000', '234567', 'Corn'], ['Mega Mastered', '∞', '1234567', 'Corn Oil'],
+  ['Tier V (MM)', '1000000', '234567', 'Corn'], ['Tier IV (GM)', '100000', '12345', 'Fancy Violin'],
+  ['Tier III (M)', '10000', '1234', 'Steel'], ['Tier II', '1000', '111', 'Board'], ['Tier I', '100', '11', 'Apple'], ['No Tier', '10', '1', 'Pear'],
+  ['Mega Mastered', '∞', '1234567', 'Corn Oil'],
 ];
 const mastery = () => `<div class="page page-current"><h1>Mastery In-Progress</h1><p>So far, you have 3 items Mastered, 2 items Grand Mastered and 1 items Mega Mastered</p>${tierRows.map(([heading, target,count,name]) => `<h2>${heading}</h2><div style="display:none"><strong>${name}</strong><p>${count} / ${target} Progress</p></div>`).join('')}</div>`;
 function extract(dom, id = 'fixture') { return dom.window.FarmExtractor.extract(dom.window.document, dom.window.location.href, time, id); }
@@ -103,14 +105,35 @@ describe('manual full-page Firefox extraction', () => {
     dom.window.close();
   });
   it('rejects unloaded folded rows, absent tiers and bad summary totals', () => {
-    for (const html of [mastery().replace('<h2>Tier I</h2>', ''), mastery().replace(/<strong>Apple<\/strong><p>1 \/ 10 Progress<\/p>/, ''), mastery().replace('3 items Mastered','4 items Mastered')]) {
+    for (const html of [mastery().replace('<h2>Tier I</h2>', ''), mastery().replace(/<strong>Apple<\/strong><p>11 \/ 100 Progress<\/p>/, ''), mastery().replace('3 items Mastered','4 items Mastered')]) {
       const dom = fixture(html);
       expect(() => extract(dom)).toThrow();
       dom.window.close();
     }
   });
+  it('requires No Tier separately from Tier I and retains both targets through tracker preparation', () => {
+    const dom = fixture(mastery());
+    const capture = extract(dom);
+    expect(dom.window.FarmCapture.SECTIONS.mastery).toEqual(CAPTURE_REQUIRED_SECTIONS.mastery);
+    const prepared = prepareCaptureImport(capture, {now: time, requiredSections: CAPTURE_REQUIRED_SECTIONS.mastery, lookup: null});
+    expect(prepared.ok).toBe(true);
+    expect(prepared.parsed.parsedRows.filter(row => row.targetTier <= 100).map(row => [row.rawItemName, row.targetTier])).toEqual([['Apple', 100], ['Pear', 10]]);
+    for (const change of [
+      html => html.replace('<h2>No Tier</h2>', ''),
+      html => html.replace('11 / 100 Progress', '11 / 10 Progress'),
+      html => html.replace('1 / 10 Progress', '1 / 100 Progress'),
+    ]) {
+      const invalid = fixture(change(mastery()));
+      expect(() => extract(invalid)).toThrow();
+      invalid.window.close();
+    }
+    const legacy = {...capture, coverage: {...capture.coverage, sections: capture.coverage.sections.filter(section => section.id !== '100')}, rows: capture.rows.filter(row => row.sectionId !== '100')};
+    expect(() => dom.window.FarmCapture.validate(legacy, time)).toThrow(/required section/);
+    expect(prepareCaptureImport(legacy, {now: time, requiredSections: CAPTURE_REQUIRED_SECTIONS.mastery, lookup: null}).ok).toBe(false);
+    dom.window.close();
+  });
   it('requires explicit empty-tier evidence; does not infer loaded from an empty accordion', () => {
-    const html = mastery().replace('<strong>Apple</strong><p>1 / 10 Progress</p>', 'No items in this tier');
+    const html = mastery().replace('<strong>Pear</strong><p>1 / 10 Progress</p>', 'No items in this tier');
     const dom = fixture(html);
     expect(extract(dom).coverage.sections.find(section => section.id === '10').expectedRows).toBe(0);
     dom.window.close();
@@ -321,10 +344,10 @@ describe('Firefox content handlers', () => {
     const dom = fixture(inventory());
     let listener;
     dom.window.browser = {runtime:{id:'test-id',getURL:path=>'moz-extension://test/'+path,onMessage:{addListener:fn=>{listener=fn;}}}};
-    dom.window.FarmExtractor.stableCapture = async () => { throw new dom.window.Error('All six mastery tiers must be loaded.'); };
+    dom.window.FarmExtractor.stableCapture = async () => { throw new dom.window.Error('All seven mastery sections must be loaded.'); };
     dom.window.eval(source('farm-content.js'));
     const result = await listener({type:'capture-active-page'},{id:'test-id',url:'moz-extension://test/_generated_background_page.html'});
-    expect(result).toMatchObject({ok:false,error:'All six mastery tiers must be loaded.'});
+    expect(result).toMatchObject({ok:false,error:'All seven mastery sections must be loaded.'});
     dom.window.close();
   });
 });
@@ -332,7 +355,7 @@ describe('Firefox content handlers', () => {
 describe('exact identity and hidden-page guards', () => {
   it('keeps legitimate trailing name digits rather than guessing they are Tower badges', () => {
     const dom = fixture(mastery().replace('Apple</strong>', 'Unknown Item 123</strong>'));
-    expect(extract(dom).rows[0].itemName).toBe('Unknown Item 123');
+    expect(extract(dom).rows.find(row => row.targetTier === 100).itemName).toBe('Unknown Item 123');
     dom.window.close();
   });
   it('rejects a hidden page-current even when the document tab is visible', () => {

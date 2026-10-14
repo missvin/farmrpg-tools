@@ -4,6 +4,8 @@ This file records important architectural and product decisions for the project 
 
 ## Manual Firefox test companion — BL-374 (2026-10-10)
 
+2026-10-14 contract correction from live user layout evidence: require seven mastery coverage IDs (`10`, `100`, `1000`, `10000`, `100000`, `1000000`, `INF`). No Tier targets 10; Tier I targets 100. Both companion and tracker must enforce this corrected complete-page contract. Old six-section queued captures fail closed and must be recaptured; existing saved mastery/backups remain valid. Keep schema/protocol v1 because the envelope/storage shapes are unchanged; deploying the matching receiver is required before live application.
+
 Use Firefox MV3 nonpersistent background scripts, a stable add-on ID, extension-local pairing/cache and only exact game/tracker hosts with storage/activeTab permissions. Reuse the pinned upstream parser subset with explicit attribution. Commands originate only in the own top-level extension popup; the background requests the selected game tab's frame 0, verifies unchanged URL, and signs structured full observations. Never give game scripts the pairing key or accept unsolicited game capture messages.
 
 Require independent page completeness evidence and exact counts; unsupported/currently unverified layouts reject without replacing good state. Manual retry of saved validated captures is included; passive triggers/reconnect automation remain later rows. Temporary unsigned installation and synthetic relay tests are not signed distribution or actual game capture acceptance. Declare websiteContent/browsingActivity conservatively for local transfer outside the add-on, and review consent/distribution terms before BL-377. See `planning/firefox-manual-capture.md` and the package README.
