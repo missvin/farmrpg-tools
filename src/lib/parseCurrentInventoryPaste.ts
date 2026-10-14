@@ -111,7 +111,7 @@ function parseCompactLine(line: string): { itemName: string; inventoryCount: num
 }
 
 function isInventoryCategoryLine(line: string): boolean {
-  return /^(?:Meals|Items|Seeds|Loot & Treasure|Runestones|Books|Cards|Super Rares)\s+chevron_down$/iu.test(line);
+  return /^(?:Meals|Items|Fish & Bait|Crops|Seeds|Loot & Treasure|Runestones|Books|Cards|Super Rares)\s+chevron_(?:down|up)$/iu.test(line);
 }
 
 function isInventoryStopLine(line: string): boolean {

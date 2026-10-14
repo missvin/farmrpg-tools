@@ -23,6 +23,21 @@ function resolveKnownItem(itemName: string): CurrentInventoryResolvedItem {
 }
 
 describe('parseCurrentInventoryPaste', () => {
+  it.each(['down', 'up'])('treats Fish & Bait and Crops chevron_%s as section boundaries, not item names', direction => {
+    const result = parseCurrentInventoryPaste([
+      'My Inventory', 'Meals chevron_down', 'Bone Broth', 'Useful to cook other things', 'Mastered', '8,110',
+      `Fish & Bait chevron_${direction}`, 'Frost Snapper Shell', 'A real item description', 'Grand Mastered', '3',
+      `Crops chevron_${direction}`, 'Mystery Crop', 'Another real item description', '2',
+      'Inventory Stats', 'Your inventory contains', '3', 'unique items and', '8,115', 'items in total.',
+    ].join('\n'), {resolveItem: resolveKnownItem});
+    expect(result.entries.map(row => [row.itemName, row.inventoryCount])).toEqual([
+      ['Bone Broth', 8110], ['Frost Snapper Shell', 3], ['Mystery Crop', 2],
+    ]);
+    expect(result.warnings).toEqual([
+      'Line 13 item "Mystery Crop" was not found in local reference data and was kept as entered.',
+      'Line 13: No local item reference coverage found; keep this visible as a review candidate.',
+    ]);
+  });
   it('parses alternating FarmRPG count and item lines while ignoring surrounding page chrome', () => {
     expect(
       parseCurrentInventoryPaste(
