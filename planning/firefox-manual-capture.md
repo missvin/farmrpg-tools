@@ -24,6 +24,8 @@ Reproduce with `powershell -NoProfile -ExecutionPolicy Bypass -File extensions/f
 
 ## Remaining acceptance
 
+2026-10-14: Rebecca's temporary install exposed Firefox's MV3 warning for the unsupported `background.persistent` property. Removed that property and updated the manifest regression check; MV3 supplies nonpersistent background behavior implicitly. Reload the temporary add-on to check the warning is gone. Real-page capture and durable application acceptance remain pending; BL-374 is still in progress.
+
 Rebecca agreed to temporary-install testing. Start with `about:debugging#/runtime/this-firefox` → Load Temporary Add-on → package `manifest.json`. Verify popup opens. Full instructions and failure checks are in `extensions/firefox-companion/README.md`.
 
 Before live application, verify that the deployed tracker includes BL-373 and its pairing controls are visible. Back up that Firefox profile's tracker state. Test actual Everything/Mastery capture against ordinary paste imports, loaded folded/empty/unloaded sections, genuine depletion, stale retained pages, changed tabs, rejection/duplicate status, and open-view refresh. Retain any safe structural layout evidence needed to adapt selectors rather than weakening completeness checks. Until these gates pass, BL-374 remains in progress and BL-375 remains blocked. Signing/unlisted normal-install acceptance is BL-377.

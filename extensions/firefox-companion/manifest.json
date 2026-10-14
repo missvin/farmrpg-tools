@@ -5,7 +5,7 @@
   "description": "Manually read a complete FarmRPG Inventory or Mastery page into your paired local tracker.",
   "permissions": ["storage", "activeTab"],
   "host_permissions": ["https://farmrpg.com/*", "https://www.farmrpg.com/*", "https://farmrpg-tools.vercel.app/*"],
-  "background": {"scripts": ["shared.js", "background.js"], "persistent": false},
+  "background": {"scripts": ["shared.js", "background.js"]},
   "action": {"default_title": "FarmRPG capture", "default_popup": "popup.html"},
   "content_scripts": [
     {"matches": ["https://farmrpg.com/*", "https://www.farmrpg.com/*"], "js": ["upstream-layout.js", "shared.js", "extractor.js", "farm-content.js"], "run_at": "document_idle", "all_frames": false},

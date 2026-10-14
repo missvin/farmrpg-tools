@@ -101,7 +101,7 @@ describe('manifest and protocol', () => {
   it('has an event page, stable ID, no broad host/download/network permissions', () => {
     const manifest = JSON.parse(source('manifest.json'));
     expect(manifest.background.service_worker).toBeUndefined();
-    expect(manifest.background.persistent).toBe(false);
+    expect(manifest.background.persistent).toBeUndefined();
     expect(manifest.permissions).toEqual(['storage', 'activeTab']);
     expect(manifest.host_permissions).toEqual(['https://farmrpg.com/*', 'https://www.farmrpg.com/*', 'https://farmrpg-tools.vercel.app/*']);
     expect(manifest.browser_specific_settings.gecko.id).toBeTruthy();
