@@ -7,7 +7,7 @@ export const CAPTURE_PAIRING_KEY = 'farmrpg-tools.capture-pairing.v1';
 export const CAPTURE_CHANNEL = 'farmrpg-tools.capture';
 export const CAPTURE_SENDER = 'farmrpg-tools-firefox';
 export const CAPTURE_REQUIRED_SECTIONS = {
-  inventory: ['Everything'],
+  inventory: ['Inventory'],
   mastery: ['10', '100', '1000', '10000', '100000', '1000000', 'INF'],
 } as const;
 export type CaptureBridgeStatus = {

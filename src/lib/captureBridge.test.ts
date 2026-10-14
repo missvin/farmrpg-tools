@@ -48,7 +48,7 @@ describe('authenticated tracker capture bridge', () => {
     finish({ ok: true, receipt: { captureId: 'capture-1', section: 'inventory', observedAt: '2026-10-10T12:00:00.000Z' }, warnings: ['Unknown item retained'] });
     await vi.waitFor(() => expect(test.statuses.at(-1)?.state).toBe('applied'));
     expect(test.target.postMessage).toHaveBeenLastCalledWith(expect.objectContaining({ requestId: 'request-1', state: 'applied', warnings: ['Unknown item retained'] }), CAPTURE_TRACKER_ORIGIN);
-    expect(test.apply.mock.calls[0][1].requiredSections).toEqual(['Everything']);
+    expect(test.apply.mock.calls[0][1].requiredSections).toEqual(['Inventory']);
     expect(test.notify).toHaveBeenCalledOnce();
   });
 

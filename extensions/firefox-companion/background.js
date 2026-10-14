@@ -69,7 +69,7 @@
     if (!state.pairingKey) throw new Error("Pair with your tracker before capturing.");
     const tabs = await browser.tabs.query({active: true, currentWindow: true});
     const tab = tabs[0];
-    if (!tab || !F.gameUrl(tab.url)) throw new Error("Select your FarmRPG game tab, open Everything inventory or full Mastery, and try again.");
+    if (!tab || !F.gameUrl(tab.url)) throw new Error("Select your FarmRPG game tab, open My Inventory or full Mastery, and try again.");
     state.status = {state: "reading", message: "Reading the active game page. Nothing applied yet."};
     await save(state);
     const result = await timeout(browser.tabs.sendMessage(tab.id, {type: "capture-active-page"}, {frameId: 0}));

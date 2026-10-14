@@ -36,10 +36,10 @@
     if (!parsed || parsed.approximate || !Number.isSafeInteger(parsed.value) || parsed.value < 0) throw new Error("Quantity is outside the exact supported range.");
     return parsed.value;
   }
-  function inventory(page, text) {
-    if (!/^Everything$/im.test(text)) throw new Error("Open the full Everything inventory, not a filtered category.");
+  function inventory(page, text, sourceUrl) {
+    if (page.getAttribute("data-page") !== "inventory" || new URL(sourceUrl).hash !== "#!/inventory.php") throw new Error("Open My Inventory, not the Everything catalogue or a filtered category.");
     const summary = text.match(/inventory contains\s*([\d,]+)\s*unique items and\s*([\d,]+)\s*items in total/i);
-    if (!summary) throw new Error("Everything totals are missing; full inventory coverage cannot be proven.");
+    if (!summary) throw new Error("Inventory Stats totals are missing; full inventory coverage cannot be proven.");
     const rows = [];
     for (const entry of page.querySelectorAll(".item-content")) {
       if (!entry.querySelector("img.itemimg")) continue;
@@ -48,10 +48,10 @@
       if (!title || !quantity) throw new Error("An inventory row is missing its name or quantity.");
       const copy = title.cloneNode(true);
       copy.querySelectorAll(".tw-badge, i").forEach(badge => badge.remove());
-      rows.push({itemName: copy.textContent.trim(), count: exactCount(quantity.textContent), sectionId: "Everything"});
+      rows.push({itemName: copy.textContent.trim(), count: exactCount(quantity.textContent), sectionId: "Inventory"});
     }
     if (rows.filter(row => row.count > 0).length !== exactCount(summary[1]) || rows.reduce((sum, row) => sum + row.count, 0) !== exactCount(summary[2])) throw new Error("Inventory rows disagree with full-page totals. Nothing was replaced.");
-    return {section: "inventory", rows, sections: [{id: "Everything", loaded: true, expectedRows: rows.length}]};
+    return {section: "inventory", rows, sections: [{id: "Inventory", loaded: true, expectedRows: rows.length}]};
   }
   function mastery(text) {
     const lines = text.split("\n");
@@ -91,7 +91,7 @@
     if (!F.gameUrl(sourceUrl)) throw new Error("Unsupported game origin.");
     const page = activePage(doc);
     const text = pageText(page);
-    const data = /^Mastery(?: In-Progress| Progress)$/im.test(text) ? mastery(text) : inventory(page, text);
+    const data = /^Mastery(?: In-Progress| Progress)$/im.test(text) ? mastery(text) : inventory(page, text, sourceUrl);
     return F.validate({schemaVersion: 1, captureId, scope: "full", section: data.section, sourceUrl: F.cleanUrl(sourceUrl), observedAt, coverage: {activePage: true, settled: true, sections: data.sections}, rows: data.rows});
   }
   async function stableCapture(doc, win, delay = ms => new Promise(resolve => setTimeout(resolve, ms))) {

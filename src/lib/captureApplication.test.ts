@@ -1,5 +1,6 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { applyCapture } from './captureApplication';
+import { CAPTURE_REQUIRED_SECTIONS } from './captureBridge';
 import { PLAYER_DATA_LOCK, withPlayerDataLock } from './playerDataLock';
 import { ACQUISITION_PLANNER_STATE_STORAGE_KEY, createDefaultAcquisitionPlannerInputState, loadAcquisitionPlannerInputState, saveAcquisitionPlannerInputState, upsertCurrentInventoryItemInput } from './acquisitionPlannerState';
 import { createMasteryImportSnapshot, persistInventoryImport, persistManualInventoryState, persistMasteryImport, prepareInventoryPaste } from './playerDataImports';
@@ -67,6 +68,27 @@ beforeEach(() => {
 afterEach(() => { vi.restoreAllMocks(); localStorage.clear(); Object.defineProperty(navigator, 'locks', { configurable: true, value: undefined }); });
 
 describe('serialized capture application', () => {
+  it('replaces complete My Inventory, clears depleted absent items and preserves separate supplies after reload', async () => {
+    const state = createDefaultAcquisitionPlannerInputState();
+    state.explore.availableStamina = 1234;
+    state.pets.storedInventoryEntries = [{canonicalItemKey: 'steel', itemName: 'Steel', storedCount: 90}];
+    state.ownedNow.entries = [{canonicalItemKey: 'steel', itemName: 'Steel', ownedCount: 80, sourceCategory: 'stockpile'}];
+    saveAcquisitionPlannerInputState(state, localStorage, true);
+    await persistInventoryImport(state, prepareInventoryPaste('Steel, 20\nPine, 8', null), undefined, baseline);
+    const payload = {...inventory(), coverage: {activePage: true, settled: true, sections: [{id: 'Inventory', loaded: true, expectedRows: 1}]}, rows: [{itemName: 'Steel', count: 2, sectionId: 'Inventory'}]};
+    const reviewed = {...context, requiredSections: CAPTURE_REQUIRED_SECTIONS.inventory};
+    expect(await applyCapture(payload, reviewed)).toMatchObject({ok: true});
+    const reloaded = loadAcquisitionPlannerInputState();
+    expect(reloaded.inventory.entries.map(row => [row.itemName, row.inventoryCount])).toEqual([['Steel', 2]]);
+    expect(reloaded.explore.availableStamina).toBe(1234);
+    expect(reloaded.pets.storedInventoryEntries).toEqual(state.pets.storedInventoryEntries);
+    expect(reloaded.ownedNow.entries).toEqual(state.ownedNow.entries);
+    const saved = localStorage.getItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY);
+    const partial = {...payload, captureId: 'partial', observedAt: now, coverage: {...payload.coverage, sections: [{id: 'Inventory', loaded: true, expectedRows: 2}]}};
+    expect(await applyCapture(partial, reviewed)).toMatchObject({ok: false});
+    expect(localStorage.getItem(ACQUISITION_PLANNER_STATE_STORAGE_KEY)).toBe(saved);
+    expect(await applyCapture(payload, reviewed)).toMatchObject({ok: false, reason: expect.stringContaining('Duplicate')});
+  });
   it('checks bridge authorization again after waiting for the cross-tab lock', async () => {
     let release!: () => void;
     const held = withPlayerDataLock(() => new Promise<void>((resolve) => { release = resolve; }));

@@ -2,7 +2,7 @@
   "use strict";
   const TRACKER = "https://farmrpg-tools.vercel.app";
   const CHANNEL = "farmrpg-tools.capture";
-  const SECTIONS = {inventory: ["Everything"], mastery: ["10", "100", "1000", "10000", "100000", "1000000", "INF"]};
+  const SECTIONS = {inventory: ["Inventory"], mastery: ["10", "100", "1000", "10000", "100000", "1000000", "INF"]};
   const integer = n => Number.isSafeInteger(n) && n >= 0;
   function gameUrl(raw) {
     try {

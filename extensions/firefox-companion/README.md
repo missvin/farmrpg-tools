@@ -9,14 +9,14 @@ This is an unsigned, manual-only test companion. BL-374 remains in progress unti
 3. Reload existing game and tracker tabs so their content scripts are present.
 4. Keep one tracker tab open at **https://farmrpg-tools.vercel.app/**. Its deployed code must include BL-373; the branch's code has not been verified as deployed. If the footer lacks **Firefox companion**, stop: this tracker version cannot receive the capture yet.
 5. In the tracker footer, expand **Firefox companion**, choose **Pair Firefox companion**, and copy its key. In the extension popup paste the key and choose **Save pairing key**. Treat the key as local authority; do not share it or include it in screenshots.
-6. Select the game tab, manually open the complete Everything inventory or full Mastery page, and wait for loading to finish. Press the extension's **Capture active game page**.
+6. Select the game tab, manually open the complete My Inventory or full Mastery page, and wait for loading to finish. Press the extension's **Capture active game page**.
 7. Reopen the popup if it closes while working. **Captured locally / Waiting** is not application confirmation. Only **applied** plus a matching tracker receipt updates the last confirmed application time.
 
 The tracker and Firefox companion must be in the same Firefox profile. Chrome's or another profile's local tracker data does not sync across browsers. Export a tracker backup before the first live application; existing data without ordering metadata may require a fresh manual import before capture can replace it. Rejected captures retain the last good data.
 
 ## Checks for Rebecca
 
-- Capture Everything inventory and compare several known counts, including a zero/depleted item when present. Compare the complete captured row count against your ordinary paste import. Counts must agree; no unrelated goal, pet/storehouse supply or settings changes.
+- Capture My Inventory and compare several known counts, including a zero/depleted item when present. Compare the complete captured row count against your ordinary paste import. Counts must agree; no unrelated goal, pet/storehouse supply or settings changes.
 - Capture full Mastery with tiers folded but already loaded. Check counts against ordinary paste import. Empty tiers need explicit loaded-empty evidence; an unloaded fold must reject visibly.
 - With a tracker item page already open, capture changed inventory/mastery: displayed saved values should refresh without resetting its selected view/target.
 - Visit a filtered inventory, an item page or another game page and press Capture. It must reject, leaving saved capture and tracker data unchanged.
@@ -26,7 +26,7 @@ The tracker and Firefox companion must be in the same Firefox profile. Chrome's 
 
 ## Completeness and trust boundaries
 
-Extraction is deliberately strict and current-layout acceptance is pending. Inventory requires the Everything label, item rows with `img.itemimg`, `strong` name and `.item-after` exact quantity, plus matching unique-positive-item and total-quantity summary counts. The first live test may reject if the page uses another quantity/layout location or lacks those independent totals. Do not weaken checks or infer full coverage from a stable row count.
+Extraction is deliberately strict and current-layout acceptance is pending. Inventory requires the exact #!/inventory.php route and data-page="inventory", item rows with `img.itemimg`, `strong` name and `.item-after` exact quantity, plus matching unique-positive-item and total-quantity summary counts. Row markup and summary labels were checked against Rebecca's sanitized My Inventory evidence on 2026-10-14. Everything is a separate item catalogue and must never replace owned stock. Filtered routes, missing totals and incomplete row coverage reject. The first live test still needs to verify full capture and application. Do not weaken checks or infer full coverage from a stable row count.
 
 Mastery reuses the pinned upstream parser on the one current page, including folded DOM rows. It requires seven known section headings: No Tier (10), Tier I (100), Tier II (1,000), Tier III (10,000), Tier IV (100,000), Tier V (1,000,000) and Mega Mastered (infinity). Exact progress quantities/targets, explicit loaded-empty tiers, matching heading/target row totals and independent mastered/GM/MM summary counts remain required. Rebecca supplied heading/target layout evidence on 2026-10-14; other layouts remain unsupported and missing headers are not fabricated. Full real-page capture/application acceptance remains pending.
 

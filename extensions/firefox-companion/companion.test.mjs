@@ -10,13 +10,14 @@ import {CAPTURE_REQUIRED_SECTIONS} from '../../src/lib/captureBridge';
 const source = name => readFileSync(new URL(name, import.meta.url), 'utf8');
 const time = '2026-10-10T01:00:00.000Z';
 function fixture(html) {
-  const dom = new JSDOM(html, {url: 'https://farmrpg.com/index.php?token=private', runScripts: 'outside-only', pretendToBeVisual: true});
+  const dom = new JSDOM(html, {url: 'https://farmrpg.com/index.php?token=private#!/inventory.php', runScripts: 'outside-only', pretendToBeVisual: true});
   Object.defineProperty(dom.window, 'TextEncoder', {value: TextEncoder});
   Object.defineProperty(dom.window, 'crypto', {value: webcrypto});
   for (const file of ['upstream-layout.js', 'shared.js', 'extractor.js']) dom.window.eval(source(file));
   return dom;
 }
-const inventory = (counts = [12, 3]) => `<div class="page page-current"><h1>Everything</h1><p>Inventory contains ${counts.filter(n => n > 0).length} unique items and ${counts.reduce((a,b) => a+b,0)} items in total</p>${counts.map((n,i) => `<li class="item-content"><img class="itemimg"><span class="item-title"><strong>${['Steel', 'Board'][i]}<span class="tw-badge">308</span></strong></span><span class="item-after">${n}</span></li>`).join('')}</div>`;
+// Row structure follows Rebecca's sanitized My Inventory DOM evidence (2026-10-14).
+const inventory = (counts = [12, 3]) => `<div class="page page-current" data-page="inventory"><h1>My Inventory</h1>${counts.map((n,i) => `<li><div class="item-content"><div class="item-media"><img class="itemimg"></div><div class="item-inner"><div class="item-title"><strong>${['Steel', 'Board'][i]}<span class="tw-badge">308</span></strong><br><span>Item description<br><div class="chip inv-mastery-chip inv-mastery-m"><div class="chip-label">Mastered</div></div></span></div><div class="item-after">${n}</div></div></div></li>`).join('')}<div class="content-block-title">Inventory Stats</div><p>Your inventory contains <strong>${counts.filter(n => n > 0).length}</strong> unique items and <strong>${counts.reduce((a,b) => a+b,0)}</strong> items in total.</p></div>`;
 const tierRows = [
   ['Tier V (MM)', '1000000', '234567', 'Corn'], ['Tier IV (GM)', '100000', '12345', 'Fancy Violin'],
   ['Tier III (M)', '10000', '1234', 'Steel'], ['Tier II', '1000', '111', 'Board'], ['Tier I', '100', '11', 'Apple'], ['No Tier', '10', '1', 'Pear'],
@@ -33,7 +34,8 @@ describe('manual full-page Firefox extraction', () => {
     expect(capture.rows.map(row => [row.itemName,row.count]).sort()).toEqual(paste.entries.map(row => [row.itemName,row.inventoryCount]).sort());
     expect(capture.sourceUrl).toBe('https://farmrpg.com/index.php');
     expect(JSON.stringify(capture)).not.toMatch(/private|Chat|308/);
-    expect(prepareCaptureImport(capture, {now: time, requiredSections: ['Everything'], lookup: null}).ok).toBe(true);
+    expect(dom.window.FarmCapture.SECTIONS.inventory).toEqual(CAPTURE_REQUIRED_SECTIONS.inventory);
+    expect(prepareCaptureImport(capture, {now: time, requiredSections: CAPTURE_REQUIRED_SECTIONS.inventory, lookup: null}).ok).toBe(true);
     dom.window.close();
   });
   it('accepts genuine depletion and explicit zero without row-shrink heuristics', () => {
@@ -41,10 +43,45 @@ describe('manual full-page Firefox extraction', () => {
     expect(extract(dom).rows.map(row => row.count)).toEqual([0,1]);
     dom.window.close();
   });
+  it('reads the supplied My Inventory row shape and split summary text with exact comma quantities', () => {
+    const dom = fixture(inventory([8110, 1]).replace('Steel', 'Bone Broth').replace('Board', 'Pig Collar').replace('>8110<', '>8,110<').replace('>8111<', '>8,111<'));
+    expect(extract(dom).rows.map(row => [row.itemName, row.count])).toEqual([['Bone Broth', 8110], ['Pig Collar', 1]]);
+    expect(extract(dom).coverage.sections).toEqual([{id: 'Inventory', loaded: true, expectedRows: 2}]);
+    dom.window.close();
+  });
+  it.each(['#!/everything.php', '#!/inventory.php?category=meals', '#!/item.php?id=1', ''])('rejects inventory-like rows on unsupported route %s', route => {
+    const dom = fixture(inventory());
+    dom.window.location.hash = route;
+    expect(() => extract(dom)).toThrow(/Open My Inventory/);
+    dom.window.close();
+  });
+  it('ignores retained catalogue rows and checks only owned inventory totals', () => {
+    const catalogue = '<div class="page page-on-left" data-page="everything"><h1>Everything</h1>Every single item (1,573)<img class="itemimg"></div>';
+    const dom = fixture(catalogue + inventory().replace('page page-current', 'page page-on-center'));
+    expect(extract(dom).rows).toHaveLength(2);
+    dom.window.close();
+  });
   it.each([
-    ['wrong category', html => html.replace('Everything', 'Crops')],
-    ['missing totals', html => html.replace(/Inventory contains.*?<\/p>/, '</p>')],
-    ['unloaded row', html => html.replace(/<li class="item-content">.*?<\/li>/, '')],
+    html => html.replace('>15<', '>16<'),
+    html => html.replace('>2<', '>3<'),
+    html => html.replace('data-page="inventory"', ''),
+  ])('rejects inconsistent Inventory Stats or missing page identity', change => {
+    const dom = fixture(change(inventory()));
+    expect(() => extract(dom)).toThrow();
+    dom.window.close();
+  });
+  it('rejects old catalogue-labelled cached inventory at both boundaries', () => {
+    const dom = fixture(inventory());
+    const capture = extract(dom);
+    const legacy = {...capture, coverage: {...capture.coverage, sections: [{id: 'Everything', loaded: true, expectedRows: 2}]}, rows: capture.rows.map(row => ({...row, sectionId: 'Everything'}))};
+    expect(() => dom.window.FarmCapture.validate(legacy, time)).toThrow(/section/);
+    expect(prepareCaptureImport(legacy, {now: time, requiredSections: CAPTURE_REQUIRED_SECTIONS.inventory, lookup: null}).ok).toBe(false);
+    dom.window.close();
+  });
+  it.each([
+    ['wrong category', html => html.replace('data-page="inventory"', 'data-page="crops"')],
+    ['missing totals', html => html.replace(/Your inventory contains.*?<\/p>/, '</p>')],
+    ['unloaded row', html => html.replace(/<li>.*?<\/li>/, '')],
     ['malformed count', html => html.replace('>12<', '>1.2K<')],
     ['loading', html => html.replace('<h1>', '<span class="preloader"></span><h1>')],
     ['duplicate active page', html => html + html],
@@ -283,7 +320,7 @@ describe('Firefox content handlers', () => {
     dom.reconfigure({url:'https://farmrpg-tools.vercel.app/'});
     dom.window.eval(source('tracker-content.js'));
     const sender = {id:'test-id',url:'moz-extension://test/_generated_background_page.html'};
-    const capture = {schemaVersion:1,captureId:'fixture',section:'inventory',scope:'full',observedAt:time,sourceUrl:'https://farmrpg.com/index.php',coverage:{activePage:true,settled:true,sections:[{id:'Everything',loaded:true,expectedRows:1}]},rows:[{itemName:'Steel',count:12,sectionId:'Everything'}]};
+    const capture = {schemaVersion:1,captureId:'fixture',section:'inventory',scope:'full',observedAt:time,sourceUrl:'https://farmrpg.com/index.php',coverage:{activePage:true,settled:true,sections:[{id:'Inventory',loaded:true,expectedRows:1}]},rows:[{itemName:'Steel',count:12,sectionId:'Inventory'}]};
     const envelope = {channel:'farmrpg-tools.capture',version:1,sender:'farmrpg-tools-firefox',signature:'ab'.repeat(32),body:JSON.stringify({requestId:'relay-test',capture})};
     const ack = {channel:'farmrpg-tools.capture',version:1,sender:'farmrpg-tools-tracker',type:'ack',requestId:'relay-test',state:'applied',message:'Committed',receipt:{captureId:'fixture',section:'inventory',observedAt:time}};
     const send = (data=ack, origin='https://farmrpg-tools.vercel.app', eventSource=dom.window) => dom.window.dispatchEvent(new dom.window.MessageEvent('message',{data,origin,source:eventSource}));
