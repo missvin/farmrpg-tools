@@ -1,8 +1,9 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ComparePage } from './ComparePage';
+import { notifyPlayerDataChanged } from '../lib/playerDataNotifications';
 
 const listSnapshotSummariesMock = vi.fn();
 const getSnapshotMock = vi.fn();
@@ -49,6 +50,23 @@ describe('ComparePage', () => {
   beforeEach(() => {
     listSnapshotSummariesMock.mockReset();
     getSnapshotMock.mockReset();
+  });
+
+  it('reloads updated daily values and labels without changing selected snapshot IDs', async () => {
+    const old = createSnapshot('manual-old', '2026-10-13T12:00:00.000Z', {apple: 10});
+    let latest = createSnapshot('capture-history-2026-10-14', '2026-10-14T08:00:00.000Z', {apple: 14});
+    listSnapshotSummariesMock.mockImplementation(async () => [latest, old].map(snapshot => ({snapshotId: snapshot.snapshotId, createdAt: snapshot.createdAt, savedAt: snapshot.savedAt, importedAt: snapshot.importedAt, itemCount: 1, parsedRowsCount: 1})));
+    getSnapshotMock.mockImplementation(async (id: string) => id === old.snapshotId ? old : latest);
+    render(<ComparePage />);
+    expect((await screen.findAllByText('+4')).length).toBeGreaterThan(0);
+    const selections = screen.getAllByRole('combobox') as HTMLSelectElement[];
+    const selected = selections.map(select => select.value);
+    latest = createSnapshot(latest.snapshotId, '2026-10-14T15:00:00.000Z', {apple: 25});
+    act(() => notifyPlayerDataChanged());
+    expect((await screen.findAllByText('+15')).length).toBeGreaterThan(0);
+    await waitFor(() => expect(selections[1].selectedOptions[0].textContent).toContain(new Date(latest.savedAt).toLocaleString()));
+    expect(selections.map(select => select.value)).toEqual(selected);
+    expect(screen.queryAllByText('+4')).toHaveLength(0);
   });
 
   it('shows an empty state when there are fewer than two saved snapshots', async () => {

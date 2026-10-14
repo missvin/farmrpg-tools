@@ -151,7 +151,7 @@ export function ComparePage() {
     return () => {
       isMounted = false;
     };
-  }, [compareState.fromSnapshotId, compareState.toSnapshotId]);
+  }, [compareState.fromSnapshotId, compareState.toSnapshotId, playerDataRevision]);
 
   const comparison = useMemo(() => {
     if (!compareState.fromSnapshot || !compareState.toSnapshot) {

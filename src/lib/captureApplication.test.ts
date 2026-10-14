@@ -192,18 +192,42 @@ describe('serialized capture application', () => {
 });
 
 describe('live mastery and bounded history', () => {
-  it('updates live values on every newer capture but creates only one checkpoint per changed UTC day', async () => {
+  it('keeps one checkpoint per changed UTC day with the latest accepted values and timestamp', async () => {
     expect(await applyCapture(mastery(), masteryContext)).toMatchObject({ ok: true, historySaved: true });
-    expect(await applyCapture(mastery('second', now, 200), masteryContext)).toMatchObject({ ok: true, historySaved: false });
+    expect(await applyCapture(mastery('second', now, 200), masteryContext)).toMatchObject({ ok: true, historySaved: true });
     expect(db.values.get(LIVE_CAPTURE_MASTERY_ID)?.masteryByItem).toEqual({ steel: 200 });
-    expect(db.values.get('capture-history-2026-10-09')?.masteryByItem).toEqual({ steel: 100 });
+    expect(db.values.get('capture-history-2026-10-09')).toMatchObject({masteryByItem: {steel: 200}, createdAt: now, observation: {captureId: 'second', observedAt: now}});
     now = '2026-10-10T12:00:00.000Z';
-    expect(await applyCapture(mastery('unchanged-live', now, 200), masteryContext)).toMatchObject({ ok: true, historySaved: true });
+    expect(await applyCapture(mastery('unchanged-live', now, 200), masteryContext)).toMatchObject({ ok: true, historySaved: false });
     now = '2026-10-10T13:00:00.000Z';
-    expect(await applyCapture(mastery('changed', now, 0), masteryContext)).toMatchObject({ ok: true, historySaved: false });
+    expect(await applyCapture(mastery('changed', now, 0), masteryContext)).toMatchObject({ ok: true, historySaved: true });
     expect(db.values.size).toBe(3);
     expect(db.values.get(LIVE_CAPTURE_MASTERY_ID)?.masteryByItem).toEqual({ steel: 0 });
+    expect(db.values.get('capture-history-2026-10-09')?.masteryByItem).toEqual({steel: 200});
+    expect(db.values.get('capture-history-2026-10-10')?.masteryByItem).toEqual({steel: 0});
     expect(await applyCapture(mastery('changed', now, 0), masteryContext)).toMatchObject({ ok: false });
+  });
+
+  it('refreshes accepted same-day timestamps while preserving manual history and rejecting older/duplicate captures', async () => {
+    const manual = createMasteryImportSnapshot(parseMasteryPaste('Corn\n55 / 1,000 Progress'), 'manual paste', baseline, 'manual-history');
+    db.values.set(manual.snapshotId, structuredClone(manual));
+    await applyCapture(mastery(), masteryContext);
+    expect(await applyCapture(mastery('latest', now), masteryContext)).toMatchObject({ok: true, historySaved: true});
+    const latest = structuredClone(db.values.get('capture-history-2026-10-09'));
+    expect(latest).toMatchObject({createdAt: now, observation: {captureId: 'latest', observedAt: now}});
+    expect(await applyCapture(mastery('latest', now), masteryContext)).toMatchObject({ok: false});
+    expect(await applyCapture(mastery('old', observed, 1), masteryContext)).toMatchObject({ok: false});
+    expect(db.values.get('capture-history-2026-10-09')).toEqual(latest);
+    expect(db.values.get(manual.snapshotId)).toEqual(manual);
+    expect(db.values.size).toBe(3);
+  });
+
+  it('keeps the previous live and daily checkpoint when a same-day transaction fails', async () => {
+    await applyCapture(mastery(), masteryContext);
+    const retained = structuredClone([...db.values.entries()]);
+    db.save.mockRejectedValueOnce(new Error('Transaction aborted'));
+    expect(await applyCapture(mastery('failed', now, 300), masteryContext)).toMatchObject({ok: false, reason: 'Transaction aborted'});
+    expect([...db.values.entries()]).toEqual(retained);
   });
 
   it('does not duplicate unchanged historical content on a new day', async () => {

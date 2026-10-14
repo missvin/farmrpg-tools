@@ -89,10 +89,10 @@ export async function applyCapture(payload: unknown, context: ApplicationContext
         };
         const historyId = `capture-history-${observation.observedAt.slice(0, 10)}`;
         const history = await getSnapshot(historyId);
-        // Compare with retained history, not the rapidly changing live value:
-        // yesterday's later progress must still earn today's checkpoint.
+        // Refresh today's checkpoint to the latest accepted capture. On a new day,
+        // skip identical retained history rather than creating a duplicate row.
         const previousHistory = (await listSnapshots())[0] ?? null;
-        historySaved = !history && !sameMastery(previousHistory, snapshot);
+        historySaved = Boolean(history) || !sameMastery(previousHistory, snapshot);
         authorize();
         await saveSnapshots(historySaved ? [snapshot, {
           ...snapshot, snapshotId: historyId, createdAt: observation.observedAt, importedAt: now,
