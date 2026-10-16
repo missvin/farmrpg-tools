@@ -1,6 +1,8 @@
-# Firefox companion — capture and recovery test build (BL-376)
+# Firefox companion — signed package preparation (BL-377)
 
-This is an unsigned test companion with automatic capture (version 0.3.0). BL-374 manual capture acceptance completed on 2026-10-14: Rebecca verified live My Inventory/Mastery application and reload persistence, with recovery/guard checks covered by focused tests and isolated Firefox against the real deployed receiver. Rebecca accepted automatic capture and pause/resume on 2026-10-16 (BL-375 shipped). BL-376 reconnect recovery and per-section confirmation acceptance also completed on 2026-10-16; signing remains BL-377.
+Version 0.4.0 is prepared for Mozilla unlisted signing. **It is not signed yet.** Follow [SIGNING.md](SIGNING.md) to create the developer account, upload the package, install Mozilla's signed XPI and verify restart/update persistence. [PRIVACY.md](PRIVACY.md) describes local storage and transfer. Normal installation cannot be accepted until Mozilla returns a signed package; temporary installation below remains a development option.
+
+This is an unsigned companion with automatic capture. BL-374 manual capture acceptance completed on 2026-10-14: Rebecca verified live My Inventory/Mastery application and reload persistence, with recovery/guard checks covered by focused tests and isolated Firefox against the real deployed receiver. Rebecca accepted automatic capture and pause/resume on 2026-10-16 (BL-375 shipped). BL-376 reconnect recovery and per-section confirmation acceptance also completed on 2026-10-16; signing remains BL-377.
 
 ## Temporary installation
 
