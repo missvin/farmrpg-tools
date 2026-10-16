@@ -1,6 +1,6 @@
 # Firefox companion — capture and recovery test build (BL-376)
 
-This is an unsigned test companion with automatic capture (version 0.3.0). BL-374 manual capture acceptance completed on 2026-10-14: Rebecca verified live My Inventory/Mastery application and reload persistence, with recovery/guard checks covered by focused tests and isolated Firefox against the real deployed receiver. Rebecca accepted automatic capture and pause/resume on 2026-10-16 (BL-375 shipped). BL-376 adds automatic reconnect recovery and per-section confirmation status; signing remains BL-377.
+This is an unsigned test companion with automatic capture (version 0.3.0). BL-374 manual capture acceptance completed on 2026-10-14: Rebecca verified live My Inventory/Mastery application and reload persistence, with recovery/guard checks covered by focused tests and isolated Firefox against the real deployed receiver. Rebecca accepted automatic capture and pause/resume on 2026-10-16 (BL-375 shipped). BL-376 reconnect recovery and per-section confirmation acceptance also completed on 2026-10-16; signing remains BL-377.
 
 ## Temporary installation
 
@@ -20,7 +20,7 @@ The tracker and Firefox companion must be in the same Firefox profile. Chrome's 
 - Capture full Mastery with tiers folded but already loaded. Check counts against ordinary paste import. Empty tiers need explicit loaded-empty evidence; an unloaded fold must reject visibly.
 - With a tracker item page already open, capture changed inventory/mastery: displayed saved values should refresh without resetting its selected view/target.
 - Visit a filtered inventory, an item page or another game page and press Capture. It must reject, leaving saved capture and tracker data unchanged.
-- Close the tracker, capture a valid page, then reopen it and press **Retry saved inventory/mastery**. Waiting is expected while closed; application must be acknowledged after the retry. Retrying the same applied capture should say duplicate rather than save another history entry.
+- Close the tracker and capture a valid page, then reopen the paired tracker. Waiting is expected while closed; reopening should automatically acknowledge application without Retry (unless paused). Manual retry of an applied capture reports duplicate rather than creating another history entry.
 - Disconnect pairing in the tracker and retry: the extension must not claim applied; timeout/no acknowledgment is visible. Generate a new key, save it in the popup, and retry manually.
 - For a rejection, report the status text and which page was open. Do not send pairing keys, account text or credentials. If selectors do not match your current game layout, stop live capture and use manual imports until reviewed fixture evidence is added.
 
@@ -68,3 +68,5 @@ Validated captures are cached while the tracker is closed. Reopening the paired 
 The popup refreshes on extension-storage changes while open. Each section shows captured time, cached/queued/applying/applied/duplicate/rejected state, delivery diagnostics, last confirmed save time and that confirmed data's observation time. A queued capture never advances confirmation. Duplicate acknowledgment means the tracker already has that capture, but does not invent a save time if its original receipt was lost. Old companion caches start with unknown per-section confirmation and recover safely.
 
 Isolated acceptance command: powershell -NoProfile -ExecutionPolicy Bypass -File extensions/firefox-companion/verify-firefox-runtime.ps1 -Reconnect. It uses synthetic data and a fresh profile with the real hosted receiver; no game account or normal profile is used. The extended mode requires the BL-376 tracker readiness deployment.
+
+BL-376 acceptance (2026-10-16): 150 focused extension/receiver/pairing/application/backup tests, repository and extension lint, and production build passed. The deployed receiver readiness marker was verified. The extended isolated Firefox run passed actual tracker close/reopen automatic delivery, reload persistence and real background event-page termination/wakeup recovery, alongside existing pause, duplicate and pairing checks. No normal profile or game account was used. BL-375 user acceptance is recorded separately; BL-377 remains the signed-installation gate.

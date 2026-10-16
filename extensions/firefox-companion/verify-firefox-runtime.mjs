@@ -95,7 +95,7 @@ try {
   console.log('Disconnected tracker cannot confirm application; re-pairing delivers the cached capture without a second save.');
   if (process.argv.includes('--reconnect')) {
     await command('WebDriver:SwitchToWindow',{handle:trackerHandle});
-    await command('WebDriver:Close');
+    await command('WebDriver:CloseWindow');
     await command('WebDriver:SwitchToWindow',{handle:popupHandle});
     await command('WebDriver:ExecuteAsyncScript',{script:`const done=arguments[arguments.length-1]; browser.storage.local.get('companion-v1').then(async result=>{const s=result['companion-v1']; const c={...s.captures.inventory,captureId:'firefox-reconnect-fixture',observedAt:new Date().toISOString(),rows:[{itemName:'Steel',count:17,sectionId:'Inventory'}]}; s.captures.inventory=c; s.deliveries.inventory={captureId:c.captureId,state:'queued',message:'Isolated reconnect fixture'}; await browser.storage.local.set({'companion-v1':s}); done(true);}).catch(e=>done({error:e.message}));`,args:[]});
     const reopened=await command('WebDriver:NewWindow',{type:'tab'});
