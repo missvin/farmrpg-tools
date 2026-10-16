@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([string]$Firefox = 'C:\Program Files\Mozilla Firefox\firefox.exe')
+param([string]$Firefox = 'C:\Program Files\Mozilla Firefox\firefox.exe', [switch]$Reconnect)
 $ErrorActionPreference = 'Stop'
 if (!(Test-Path -LiteralPath $Firefox)) { throw 'Firefox executable was not found.' }
 & (Join-Path $PSScriptRoot package-test.ps1)
@@ -28,7 +28,9 @@ try {
     if ($taskReady) { break }
   }
   if (!$taskReady) { throw 'Isolated Firefox did not start its test listener.' }
-  & node (Join-Path $PSScriptRoot verify-firefox-runtime.mjs) $taskPort
+  $taskRuntimeOptions = @()
+  if ($Reconnect) { $taskRuntimeOptions += '--reconnect' }
+  & node (Join-Path $PSScriptRoot verify-firefox-runtime.mjs) $taskPort @taskRuntimeOptions
   if ($LASTEXITCODE -ne 0) { throw 'Firefox runtime check failed. See the diagnostic output above.' }
 } finally {
   # Only this command's new headless browser process; never enumerate/kill normal Firefox.

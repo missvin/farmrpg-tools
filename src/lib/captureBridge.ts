@@ -69,6 +69,12 @@ export function startCaptureBridge(target: Window, options: BridgeOptions): () =
     if (!active || event.origin !== CAPTURE_TRACKER_ORIGIN || event.source !== target || target.top !== target) return;
     const envelope = event.data;
     if (!envelope || envelope.channel !== CAPTURE_CHANNEL || envelope.sender === 'farmrpg-tools-tracker') return;
+    if (envelope.type === 'receiver-probe') {
+      if (envelope.version === 1 && envelope.sender === CAPTURE_SENDER && readKey()) {
+        target.postMessage({channel: CAPTURE_CHANNEL, version: 1, sender: 'farmrpg-tools-tracker', type: 'ready'}, CAPTURE_TRACKER_ORIGIN);
+      }
+      return;
+    }
     if (envelope.version !== 1 || envelope.sender !== CAPTURE_SENDER || typeof envelope.body !== 'string' ||
       envelope.body.length > 5_000_000 || new TextEncoder().encode(envelope.body).length > 5_000_000 ||
       typeof envelope.signature !== 'string' || !/^[a-f0-9]{64}$/.test(envelope.signature)) {

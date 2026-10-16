@@ -232,8 +232,110 @@ function background() {
   const capture = extract(captureDom);
   captureDom.window.close();
   api.tabs.sendMessage.mockImplementation(async (_tab,message) => message.type === 'capture-active-page' ? {ok:true,capture} : {state:'applied',message:'Saved',receipt:{captureId:capture.captureId,section:capture.section,observedAt:capture.observedAt}});
-  return {dom,api,call,listener,state,capture};
+  return {dom,api,call,listener,state,capture,
+    receive:(message,from)=>listener(message,from),
+    restart:()=>{ api.runtime.onStartup={addListener:vi.fn()}; dom.window.eval(source('background.js')); }};
 }
+
+describe('reconnect recovery and section freshness', () => {
+  const tracker={id:'test-id',url:'https://farmrpg-tools.vercel.app/',frameId:0,tab:{id:2,url:'https://farmrpg-tools.vercel.app/'}};
+  async function queued() {
+    const b=background();
+    await b.call({type:'pair',key:'ab'.repeat(32)});
+    b.api.tabs.query.mockImplementation(async query=>query.active?[{id:1,url:'https://farmrpg.com/index.php'}]:[]);
+    await b.call({type:'capture'});
+    const delivered=vi.fn();
+    b.api.tabs.query.mockImplementation(async query=>query.active?[{id:1,url:'https://farmrpg.com/index.php'}]:[{id:2,url:tracker.url}]);
+    b.api.tabs.sendMessage.mockImplementation(async (_tab,message)=>{
+      if (message.type==='probe-tracker') return {ready:true,sessionId:'receiver-one'};
+      const {capture}=JSON.parse(message.envelope.body);
+      delivered(capture);
+      return {state:'applied',message:'Saved',receipt:{captureId:capture.captureId,section:capture.section,observedAt:capture.observedAt}};
+    });
+    return {...b,delivered};
+  }
+  it('delivers queued captures on validated tracker readiness once and exposes section confirmation separately', async () => {
+    const b=await queued();
+    expect((await b.call({type:'status'})).captures[0]).toMatchObject({state:'queued',confirmedAt:null});
+    for (const sender of [{...tracker,frameId:1},{...tracker,id:'other'},{...tracker,url:'https://evil.test/'}]) expect(b.receive({type:'tracker-ready'},sender)).toBeUndefined();
+    await b.receive({type:'tracker-ready'},tracker);
+    const applied=await b.call({type:'status'});
+    expect(applied.captures[0]).toMatchObject({state:'applied',confirmedObservedAt:time,confirmedAt:expect.any(String),lastAttemptAt:expect.any(String)});
+    await b.receive({type:'tracker-ready'},tracker);
+    expect(b.delivered).toHaveBeenCalledOnce();
+    expect((await b.call({type:'status'})).lastAppliedAt).toBe(applied.lastAppliedAt);
+    expect(JSON.stringify(applied)).not.toContain('ab'.repeat(32));
+    b.dom.window.close();
+  });
+  it('restores interrupted delivery after event-page restart without inventing a prior confirmation', async () => {
+    const b=await queued();
+    b.state().deliveries.inventory={captureId:b.capture.captureId,state:'applying',message:'Waiting',attemptSession:'previous-background'};
+    expect((await b.call({type:'status'})).captures[0]).toMatchObject({state:'queued',confirmedAt:null});
+    b.restart();
+    await vi.waitFor(()=>expect(b.state().deliveries.inventory.state).toBe('applied'));
+    expect(b.delivered).toHaveBeenCalledOnce();
+    expect(b.api.runtime.onStartup.addListener).toHaveBeenCalledOnce();
+    b.dom.window.close();
+  });
+  it('respects pause/disconnect while retaining cached data, then recovers after resume or re-pair', async () => {
+    const b=await queued();
+    await b.call({type:'set-paused',paused:true});
+    await b.receive({type:'tracker-ready'},tracker);
+    expect(b.delivered).not.toHaveBeenCalled();
+    await b.call({type:'set-paused',paused:false});
+    await b.receive({type:'tracker-ready'},tracker);
+    expect(b.delivered).toHaveBeenCalledOnce();
+    await b.call({type:'disconnect'});
+    b.delivered.mockClear();
+    await b.receive({type:'tracker-ready'},tracker);
+    expect(b.delivered).not.toHaveBeenCalled();
+    expect(b.state().captures.inventory.captureId).toBe(b.capture.captureId);
+    await b.call({type:'pair',key:'cd'.repeat(32)});
+    await b.receive({type:'tracker-ready'},tracker);
+    expect(b.delivered).toHaveBeenCalledOnce();
+    b.dom.window.close();
+  });
+  it('does not spin on rejection, and duplicate acknowledgment never fabricates a confirmed save time', async () => {
+    const b=await queued();
+    b.api.tabs.sendMessage.mockImplementation(async (_tab,message)=>message.type==='probe-tracker'?{ready:true,sessionId:'receiver-one'}:{state:'rejected',message:'Older observation'});
+    await b.receive({type:'tracker-ready'},tracker);
+    expect((await b.call({type:'status'})).captures[0]).toMatchObject({state:'rejected',confirmedAt:null,message:'Older observation'});
+    const calls=b.api.tabs.sendMessage.mock.calls.filter(call=>call[1].type==='deliver-capture').length;
+    await b.receive({type:'tracker-ready'},tracker);
+    expect(b.api.tabs.sendMessage.mock.calls.filter(call=>call[1].type==='deliver-capture')).toHaveLength(calls);
+    b.api.tabs.sendMessage.mockResolvedValue({state:'duplicate',message:'Already saved'});
+    expect((await b.call({type:'retry',section:'inventory'})).captures[0]).toMatchObject({state:'duplicate',confirmedAt:null});
+    expect(b.state().lastAppliedAt).toBeUndefined();
+    b.dom.window.close();
+  });
+  it('keeps independent per-section capture and receipt times and rejects mismatched receipts', async () => {
+    const b=await queued();
+    const m=fixture(mastery()); const capture=extract(m,'mastery-cached'); m.window.close();
+    b.state().captures.mastery=capture;
+    await b.receive({type:'tracker-ready'},tracker);
+    expect(b.delivered).toHaveBeenCalledTimes(2);
+    expect((await b.call({type:'status'})).captures.map(row=>[row.section,row.state])).toEqual([['inventory','applied'],['mastery','applied']]);
+    const previous=b.state().confirmed.inventory;
+    b.api.tabs.sendMessage.mockResolvedValue({state:'applied',message:'Saved',receipt:{...previous,section:'mastery'}});
+    expect((await b.call({type:'retry',section:'inventory'})).ok).toBe(false);
+    expect(b.state().confirmed.inventory).toEqual(previous);
+    expect(b.state().deliveries.inventory.state).toBe('queued');
+    b.dom.window.close();
+  });
+  it('does not restore revoked pairing authority when a pending receipt arrives', async () => {
+    const b=await queued();
+    let finish;
+    b.api.tabs.sendMessage.mockImplementation(async (_tab,message)=>message.type==='probe-tracker'?{ready:true,sessionId:'receiver-one'}:new Promise(resolve=>{finish=resolve;}));
+    const pending=b.receive({type:'tracker-ready'},tracker);
+    await vi.waitFor(()=>expect(finish).toBeTypeOf('function'));
+    b.state().pairingKey='cd'.repeat(32);
+    finish({state:'applied',message:'Saved',receipt:{captureId:b.capture.captureId,section:'inventory',observedAt:time}});
+    await pending;
+    expect(b.state().pairingKey).toBe('cd'.repeat(32));
+    expect(b.state().confirmed?.inventory).toBeUndefined();
+    b.dom.window.close();
+  });
+});
 
 describe('background authority, durable cache and acknowledgments', () => {
   const gameSender = {id:'test-id',url:'https://farmrpg.com/index.php',frameId:0,tab:{id:1,url:'https://farmrpg.com/index.php'}};
@@ -447,6 +549,17 @@ describe('Firefox content handlers', () => {
     const send = (data=ack, origin='https://farmrpg-tools.vercel.app', eventSource=dom.window) => dom.window.dispatchEvent(new dom.window.MessageEvent('message',{data,origin,source:eventSource}));
     return {dom,listener,sender,envelope,ack,send};
   }
+  it('announces validated receiver readiness without exposing data and answers a background probe', async () => {
+    const r=relay();
+    r.dom.window.browser.runtime.sendMessage=vi.fn(async()=>({ok:true}));
+    const ready={channel:'farmrpg-tools.capture',version:1,sender:'farmrpg-tools-tracker',type:'ready'};
+    r.send(ready,'https://evil.test'); r.send(ready,'https://farmrpg-tools.vercel.app',null);
+    expect(r.dom.window.browser.runtime.sendMessage).not.toHaveBeenCalled();
+    r.send(ready);
+    expect(r.dom.window.browser.runtime.sendMessage).toHaveBeenCalledWith({type:'tracker-ready'});
+    expect(await r.listener({type:'probe-tracker'},r.sender)).toMatchObject({ready:true,sessionId:expect.any(String)});
+    r.dom.window.close();
+  });
   it('publishes only to exact tracker origin and waits through applying for a bound receipt', async () => {
     const r = relay();
     const post = vi.spyOn(r.dom.window,'postMessage').mockImplementation(()=>{});
@@ -594,5 +707,26 @@ describe('passive page observation', () => {
       p.dom.window.document.dispatchEvent(new p.dom.window.Event('visibilitychange'));
       await p.advance(400); expect(p.send).toHaveBeenCalledOnce();
     } finally {p.close();}
+  });
+});
+
+describe('popup recovery status', () => {
+  it('updates per-section queued/applied/rejected state from storage hints without rendering pairing authority', async () => {
+    const dom=fixture(source('popup.html'));
+    let changed;
+    let status={ok:true,paired:true,paused:false,status:{state:'waiting',message:'Waiting for tracker'},captures:[{section:'inventory',rows:2,observedAt:time,state:'queued',message:'Waiting for tracker',confirmedAt:null}]};
+    dom.window.browser={runtime:{sendMessage:vi.fn(async()=>structuredClone(status))},storage:{onChanged:{addListener:fn=>{changed=fn;}}}};
+    dom.window.eval(source('popup.js'));
+    await vi.waitFor(()=>expect(dom.window.document.querySelector('#saved').textContent).toContain('queued'));
+    expect(dom.window.document.querySelector('#saved').textContent).toContain('No per-section save confirmation');
+    status={...status,lastAppliedAt:time,status:{state:'applied',message:'Saved'},captures:[{...status.captures[0],state:'applied',message:'Saved',confirmedAt:time,confirmedObservedAt:time}]};
+    changed({'companion-v1':{newValue:{pairingKey:'ab'.repeat(32)}}},'local');
+    await vi.waitFor(()=>expect(dom.window.document.querySelector('#saved').textContent).toContain('Last confirmed save:'));
+    expect(dom.window.document.body.textContent).not.toContain('ab'.repeat(32));
+    status={...status,status:{state:'rejected',message:'Older observation'},captures:[{...status.captures[0],state:'rejected',message:'Older observation'}]};
+    changed({'companion-v1':{}},'local');
+    await vi.waitFor(()=>expect(dom.window.document.querySelector('#status').getAttribute('role')).toBe('alert'));
+    expect(dom.window.document.querySelector('#saved').textContent).toContain('Older observation');
+    dom.window.close();
   });
 });

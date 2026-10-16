@@ -30,6 +30,16 @@ function setup(origin = CAPTURE_TRACKER_ORIGIN, framed = false) {
 }
 
 describe('authenticated tracker capture bridge', () => {
+  it('answers a same-window readiness probe without applying data or exposing pairing authority', async () => {
+    const test=setup();
+    test.send({channel:CAPTURE_CHANNEL,version:1,sender:CAPTURE_SENDER,type:'receiver-probe'});
+    await vi.waitFor(()=>expect(test.target.postMessage).toHaveBeenCalledWith({channel:CAPTURE_CHANNEL,version:1,sender:'farmrpg-tools-tracker',type:'ready'},CAPTURE_TRACKER_ORIGIN));
+    expect(test.apply).not.toHaveBeenCalled();
+    expect(JSON.stringify(test.target.postMessage.mock.calls)).not.toContain(secret);
+    test.target.postMessage.mockClear();
+    test.send({channel:CAPTURE_CHANNEL,version:1,sender:CAPTURE_SENDER,type:'receiver-probe'},'https://evil.example');
+    expect(test.target.postMessage).not.toHaveBeenCalled();
+  });
   it('requires all seven reviewed mastery sections when applying an authenticated capture', async () => {
     const test = setup();
     test.send(await signed(JSON.stringify({requestId: 'mastery-request', capture: {section: 'mastery', captureId: 'mastery-capture'}})));

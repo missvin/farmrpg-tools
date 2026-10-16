@@ -49,4 +49,10 @@ Untrusted/malformed envelopes never receive an applied acknowledgment. Authentic
 
 Only successful application publishes a shared refresh hint. Same-tab subscriptions and `BroadcastChannel` notify active pages without sending player data or keys. Data-loading effects rerun without remounting page controls; inventory-only subscriptions preserve draft assumptions, and comparison selections remain selected while valid. Failed and duplicate captures do not publish refresh hints. Manual imports remain available.
 
-No Firefox package, passive observation, signed install, live Firefox transport or hosted deployment verification is claimed by this tracker-side slice.
+The original tracker-side slice did not include a Firefox package. BL-374 manual acceptance and BL-375 passive acceptance are now complete; signed install remains BL-377.
+
+## Receiver readiness — BL-376
+
+A same-top-window, exact-origin message with this channel, version 1, sender `farmrpg-tools-firefox` and type `receiver-probe` may receive `{channel, version: 1, sender: 'farmrpg-tools-tracker', type: 'ready'}` while pairing is enabled. Receiver mount also announces ready. This unsigned readiness exchange carries no key or player data and cannot apply observations; every capture still requires its normal signed envelope and durable acknowledgment.
+
+The content relay validates ready source/origin/channel/version/sender before notifying its extension background. The background validates runtime sender ID, tracker origin and frame 0, probes the one tracker tab and recovers cached sections serially. Per-document/background attempts prevent repeated readiness from creating a resend loop; durable applied/duplicate records suppress further automatic delivery. Restarted in-flight records remain unconfirmed until a new valid acknowledgment. Manual Retry, Resume and re-pair remain explicit retry opportunities. Pause/disconnect gate automatic recovery.

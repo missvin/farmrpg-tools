@@ -3,8 +3,30 @@
   const F = globalThis.FarmCapture;
   const terminal = new Set(["applied", "duplicate", "rejected"]);
   let pending = false;
+  let ready = false;
+  const sessionId = crypto.randomUUID();
+  let announced = false;
+  function announce() {
+    if (!ready || announced) return;
+    announced = true;
+    browser.runtime.sendMessage({type: "tracker-ready"}).catch(() => { announced = false; });
+  }
+  function probe() {
+    window.postMessage({channel: F.CHANNEL, version: 1, sender: "farmrpg-tools-firefox", type: "receiver-probe"}, F.TRACKER);
+  }
+  window.addEventListener("message", event => {
+    const value = event.data;
+    if (event.source !== window || event.origin !== F.TRACKER || value?.channel !== F.CHANNEL || value.version !== 1 || value.sender !== "farmrpg-tools-tracker" || value.type !== "ready") return;
+    ready = true;
+    announce();
+  });
+  window.addEventListener("pageshow", () => { announced = false; probe(); });
+  window.addEventListener("focus", () => { announced = false; probe(); });
+  probe();
   browser.runtime.onMessage.addListener((message, sender) => {
-    if (sender.id !== browser.runtime.id || sender.url !== browser.runtime.getURL("_generated_background_page.html") || window.top !== window || location.origin !== F.TRACKER || message?.type !== "deliver-capture") return;
+    if (sender.id !== browser.runtime.id || sender.url !== browser.runtime.getURL("_generated_background_page.html") || window.top !== window || location.origin !== F.TRACKER) return;
+    if (message?.type === "probe-tracker") { probe(); return Promise.resolve({ready, sessionId}); }
+    if (message?.type !== "deliver-capture") return;
     if (pending) return Promise.resolve({state: "waiting", message: "Another transfer is still pending in this tracker tab."});
     const envelope = message.envelope;
     let requestId;

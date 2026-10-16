@@ -1,6 +1,6 @@
-# Firefox companion — automatic capture test build (BL-375)
+# Firefox companion — capture and recovery test build (BL-376)
 
-This is an unsigned test companion with automatic capture (version 0.2.0). BL-374 manual capture acceptance completed on 2026-10-14: Rebecca verified live My Inventory/Mastery application and reload persistence, with recovery/guard checks covered by focused tests and isolated Firefox against the real deployed receiver. BL-375 automatic capture is implemented and awaiting normal-profile visit/pause acceptance; signing remains BL-377.
+This is an unsigned test companion with automatic capture (version 0.3.0). BL-374 manual capture acceptance completed on 2026-10-14: Rebecca verified live My Inventory/Mastery application and reload persistence, with recovery/guard checks covered by focused tests and isolated Firefox against the real deployed receiver. Rebecca accepted automatic capture and pause/resume on 2026-10-16 (BL-375 shipped). BL-376 adds automatic reconnect recovery and per-section confirmation status; signing remains BL-377.
 
 ## Temporary installation
 
@@ -51,10 +51,20 @@ Rebecca authorized integrating the parallel tracks on 2026-10-10, Tower first an
 
 ## Automatic capture — BL-375
 
-Reload the temporary add-on and reload your game tab after updating to 0.2.0. Existing pairing is retained; paired profiles enable automatic capture unless paused. Visit My Inventory or full Mastery normally, wait for loading to finish, then open/reopen the popup to inspect cached rows and the last confirmed application time. Do not press Capture for the automatic-visit test. Keep one tracker tab open.
+Reload the temporary add-on and reload your game tab after updating to 0.3.0. Existing pairing is retained; paired profiles enable automatic capture unless paused. Visit My Inventory or full Mastery normally, wait for loading to finish, then open/reopen the popup to inspect cached rows and the last confirmed application time. Do not press Capture for the automatic-visit test. Keep one tracker tab open.
 
-The popup's Pause automatic capture / Resume automatic capture control persists across background reloads. Manual Capture and Retry still work while paused. Closing the popup returns focus to the game and permits a fresh observation after resume. An already-sent transfer may finish after pause.
+The popup's Pause automatic capture / Resume automatic capture control persists across background reloads and pauses both capture and automatic delivery. Manual Capture and Retry still work while paused. Closing the popup returns focus to the game and permits a fresh observation after resume. An already-sent transfer may finish after pause.
 
-Observation is debounced, bounded and confined to visible supported pages. Unchanged rows do not create a new capture or application timestamp, including when another game tab shows the same data. Partial/unstable reads retain previous data and retry at most twice until a new page change/visit. If the tracker is closed, captures are cached; reopen it and use Retry saved inventory/mastery. Automatic reconnect is BL-376. Everything catalogue capture is separate future scope; multiple tracker tabs still require closing extras.
+Observation is debounced, bounded and confined to visible supported pages. Unchanged rows do not create a new capture or application timestamp, including when another game tab shows the same data. Partial/unstable reads retain previous data and retry at most twice until a new page change/visit. If the tracker is closed, captures are cached and automatically delivered when the paired tracker becomes ready again (unless paused or disconnected). Manual Retry remains available after errors. Everything catalogue capture is separate future scope; multiple tracker tabs still require closing extras.
 
-Live acceptance: without clicking Capture, visit Inventory then Mastery and confirm saved counts; change normal game stock/progress and revisit to confirm updates; revisit unchanged pages to confirm no new capture; pause and verify no automatic update, then resume. Reload the tracker to check persistence. These normal-profile automatic checks remain pending.
+Live acceptance 2026-10-16: Rebecca confirmed automatic capture and pause/resume work. BL-375 is shipped.
+
+## Reconnect and freshness — BL-376
+
+After updating to 0.3.0, reload the temporary add-on and game tab, and hard-refresh the tracker to load receiver readiness support. Pairing is retained. Keep exactly one tracker tab open; multiple tracker tabs remain a visible delivery blocker. The temporary add-on still disappears after a full Firefox restart until signed distribution (BL-377).
+
+Validated captures are cached while the tracker is closed. Reopening the paired tracker automatically sends pending captures once; acknowledged applied/duplicate captures are not resent. Startup recovery also handles a stopped/restarted background event page. Repeated readiness events do not spin on a rejection. Pause/disconnect stops automatic recovery; Resume, re-pair or manual Retry can retry cached data. Older captures may reject after a newer manual import; make a fresh capture rather than forcing stale data.
+
+The popup refreshes on extension-storage changes while open. Each section shows captured time, cached/queued/applying/applied/duplicate/rejected state, delivery diagnostics, last confirmed save time and that confirmed data's observation time. A queued capture never advances confirmation. Duplicate acknowledgment means the tracker already has that capture, but does not invent a save time if its original receipt was lost. Old companion caches start with unknown per-section confirmation and recover safely.
+
+Isolated acceptance command: powershell -NoProfile -ExecutionPolicy Bypass -File extensions/firefox-companion/verify-firefox-runtime.ps1 -Reconnect. It uses synthetic data and a fresh profile with the real hosted receiver; no game account or normal profile is used. The extended mode requires the BL-376 tracker readiness deployment.

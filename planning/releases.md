@@ -4,6 +4,8 @@ This project uses a lightweight release model. [backlog.csv](/C:/Users/liqui/Doc
 
 ## Versioning
 
+Firefox companion test package 0.3.0 (2026-10-16, BL-376) adds automatic cached delivery on tracker readiness/background recovery and live per-section delivery/confirmation status. Existing extension-local captures and pairing are retained; no player backup/schema or permission changes. The tracker readiness update must deploy with this version. BL-375 live acceptance is complete; signed persistent installation remains BL-377.
+
 Firefox companion test package 0.2.0 (2026-10-14, BL-375) adds automatic visited-page capture and pause/resume. It remains unsigned, with live automatic acceptance pending. This package version is separate from the tracker app version; no player-data storage/backup format or tracker protocol changes are included. Signed unlisted distribution is BL-377.
 
 - `MAJOR.MINOR.PATCH`

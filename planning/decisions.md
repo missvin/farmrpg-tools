@@ -1,5 +1,11 @@
 # Project Decisions
 
+## Capture reconnect recovery — BL-376 (2026-10-16)
+
+The companion keeps optional delivery/confirmation metadata alongside its existing extension-local captures. Each section distinguishes cached, queued, applying, applied, duplicate and rejected; capture time and last confirmed observation/save time remain separate. Old caches retain unknown section confirmation rather than inheriting the global timestamp. Interrupted applying state is presented as unconfirmed/queued after event-page restart. Player backups and storage schemas are unchanged; pairing authority remains extension-local and outside player backups.
+
+Exact-origin top-frame tracker content scripts announce receiver readiness. The tracker bridge answers a same-window receiver-probe with a nonpersonal ready signal; this is scheduling only, not capture authority, and exposes no key. Synchronous extension startup listeners and one startup scan recover current cached sections, probing the one eligible tracker tab. Per-background/per-document attempt identities bound automatic attempts; acknowledged applied/duplicate captures are not resent. Explicit Retry, Resume or re-pair can retry pending data. Pause/disconnect stop automatic recovery, while an already-sent transfer may finish. Wrong/older captures and malformed receipts never become confirmed; failed delivery retains the cache. Repeated readiness hints coalesce. No polling, game requests/actions, backend, additional permissions or multi-tracker selection are introduced. Signed installation remains BL-377.
+
 ## Passive capture signals — BL-375 (2026-10-14)
 
 Observe only the visible selected game tab's supported, user-visited page. A content script sends a constant `observe-page` hint after a 400ms debounce; the extension background validates its runtime ID, game URL and top frame, then requests its own frame-0 read through the existing 700ms stable extractor. Game hints never supply signed observations or pairing authority. One serialized flight plus a single latest pending tab coordinates concurrent hints; foreground authority and URL are rechecked before saving. Unchanged normalized name/count/target rows preserve the cached observation and confirmed application time, regardless of tab or row order. No polling, game requests, actions or navigation.

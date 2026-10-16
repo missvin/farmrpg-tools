@@ -13,7 +13,9 @@ export function CaptureCompanion() {
 
   useEffect(() => {
     if (!key) return;
-    return startCaptureBridge(window, { onStatus: setStatus });
+    const stop = startCaptureBridge(window, { onStatus: setStatus });
+    window.postMessage({channel: 'farmrpg-tools.capture', version: 1, sender: 'farmrpg-tools-tracker', type: 'ready'}, CAPTURE_TRACKER_ORIGIN);
+    return stop;
   }, [key]);
   useEffect(() => {
     const update = (event: StorageEvent) => {

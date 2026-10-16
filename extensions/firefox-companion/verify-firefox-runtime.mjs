@@ -93,6 +93,39 @@ try {
   if (resumed.value?.paused !== false) throw new Error('Automatic-capture resume failed');
   console.log('Pause persists while manual retry works; resume restores automatic capture.');
   console.log('Disconnected tracker cannot confirm application; re-pairing delivers the cached capture without a second save.');
+  if (process.argv.includes('--reconnect')) {
+    await command('WebDriver:SwitchToWindow',{handle:trackerHandle});
+    await command('WebDriver:Close');
+    await command('WebDriver:SwitchToWindow',{handle:popupHandle});
+    await command('WebDriver:ExecuteAsyncScript',{script:`const done=arguments[arguments.length-1]; browser.storage.local.get('companion-v1').then(async result=>{const s=result['companion-v1']; const c={...s.captures.inventory,captureId:'firefox-reconnect-fixture',observedAt:new Date().toISOString(),rows:[{itemName:'Steel',count:17,sectionId:'Inventory'}]}; s.captures.inventory=c; s.deliveries.inventory={captureId:c.captureId,state:'queued',message:'Isolated reconnect fixture'}; await browser.storage.local.set({'companion-v1':s}); done(true);}).catch(e=>done({error:e.message}));`,args:[]});
+    const reopened=await command('WebDriver:NewWindow',{type:'tab'});
+    const reopenedHandle=(reopened.value||reopened).handle;
+    await command('WebDriver:SwitchToWindow',{handle:reopenedHandle});
+    await command('WebDriver:Navigate',{url:'https://farmrpg-tools.vercel.app/'});
+    await command('WebDriver:SwitchToWindow',{handle:popupHandle});
+    const recovered=await command('WebDriver:ExecuteAsyncScript',{script:`const done=arguments[arguments.length-1],deadline=Date.now()+12000; const check=()=>browser.storage.local.get('companion-v1').then(result=>{const s=result['companion-v1']; if(s.deliveries?.inventory?.captureId==='firefox-reconnect-fixture'&&s.deliveries.inventory.state==='applied') done({appliedAt:s.confirmed.inventory.appliedAt}); else if(Date.now()<deadline) setTimeout(check,100); else done({error:'Automatic reconnect did not apply',state:s.deliveries?.inventory?.state});}).catch(e=>done({error:e.message})); check();`,args:[]});
+    if (!recovered.value?.appliedAt) throw new Error(JSON.stringify(recovered.value));
+    await command('WebDriver:SwitchToWindow',{handle:reopenedHandle});
+    await command('WebDriver:Refresh');
+    const afterReconnect=await command('WebDriver:ExecuteScript',{script:'return JSON.parse(localStorage.getItem("farmrpg-tools.acquisitionPlannerState"))?.inventory?.entries?.find(row=>row.itemName==="Steel")?.inventoryCount;',args:[]});
+    if (afterReconnect.value!==17) throw new Error('Automatically recovered inventory did not survive reload');
+    console.log('Automatic reconnect: reopening the real tracker delivered queued data without Retry; value survived reload.');
+    await command('WebDriver:SwitchToWindow',{handle:popupHandle});
+    // Stop work in the old instance while constructing the interrupted persisted fixture.
+    await command('WebDriver:ExecuteAsyncScript',{script:'const done=arguments[arguments.length-1]; browser.runtime.sendMessage({type:"set-paused",paused:true}).then(done,e=>done({error:e.message}));',args:[]});
+    await command('WebDriver:ExecuteAsyncScript',{script:`const done=arguments[arguments.length-1]; browser.storage.local.get('companion-v1').then(async result=>{const s=result['companion-v1']; s.paused=false; const c={...s.captures.inventory,captureId:'firefox-restart-fixture',observedAt:new Date().toISOString(),rows:[{itemName:'Steel',count:18,sectionId:'Inventory'}]}; s.captures.inventory=c; s.deliveries.inventory={...s.deliveries.inventory,captureId:c.captureId,state:'applying',message:'Interrupted isolated transfer'}; await browser.storage.local.set({'companion-v1':s}); done(true);}).catch(e=>done({error:e.message}));`,args:[]});
+    // Firefox's testing termination hook is confined to this isolated add-on/profile.
+    // https://github.com/mozilla-firefox/firefox/blob/main/toolkit/components/extensions/parent/ext-backgroundPage.js
+    await command('Marionette:SetContext',{value:'chrome'});
+    const stopped=await command('WebDriver:ExecuteAsyncScript',{script:`const done=arguments[arguments.length-1]; const extension=WebExtensionPolicy.getByID('farmrpg-planning-companion@missvin').extension; extension.terminateBackground({disableResetIdleForTest:true}).then(()=>done(extension.backgroundState),e=>done({error:e.message}));`,args:[]});
+    if (stopped.value!=='stopped') throw new Error('Isolated background did not stop: '+JSON.stringify(stopped.value));
+    await command('Marionette:SetContext',{value:'content'});
+    await command('WebDriver:SwitchToWindow',{handle:popupHandle});
+    await command('WebDriver:ExecuteAsyncScript',{script:'const done=arguments[arguments.length-1]; browser.runtime.sendMessage({type:"status"}).then(done,e=>done({error:e.message}));',args:[]});
+    const restarted=await command('WebDriver:ExecuteAsyncScript',{script:`const done=arguments[arguments.length-1],deadline=Date.now()+12000; const check=()=>browser.storage.local.get('companion-v1').then(result=>{const s=result['companion-v1']; if(s.deliveries?.inventory?.captureId==='firefox-restart-fixture'&&s.deliveries.inventory.state==='applied') done({appliedAt:s.confirmed.inventory.appliedAt}); else if(Date.now()<deadline) setTimeout(check,100); else done({error:'Background restart did not recover',state:s.deliveries?.inventory?.state});}).catch(e=>done({error:e.message})); check();`,args:[]});
+    if (!restarted.value?.appliedAt) throw new Error(JSON.stringify(restarted.value));
+    console.log('Actual Firefox event-page termination and wakeup recovered interrupted cached delivery.');
+  }
   await command('Addon:Uninstall',{id:'farmrpg-planning-companion@missvin'});
   console.log('Temporary install, real receiver, durable inventory, closed tracker, duplicate and pairing recovery verified; no game account used.');
 } catch(error) { console.error(error.message); process.exitCode=1; }
