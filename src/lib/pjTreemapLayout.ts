@@ -7,14 +7,34 @@ export type PJTreemapTile = {
   height: number;
 };
 
-// Ordered binary partition: retain canonical ordering, splitting along the longer
+export type PJTreemapSort = 'pj-desc' | 'pj-asc' | 'name' | 'tower';
+
+export function comparePJContributions(
+  left: { key: string; value: number | null; towerLevel?: number },
+  right: { key: string; value: number | null; towerLevel?: number },
+  sort: PJTreemapSort,
+): number {
+  if (sort === 'tower') {
+    const difference = (left.towerLevel ?? Number.MAX_SAFE_INTEGER) - (right.towerLevel ?? Number.MAX_SAFE_INTEGER);
+    if (difference !== 0) return difference;
+  } else if (sort !== 'name') {
+    if (left.value === null && right.value !== null) return 1;
+    if (right.value === null && left.value !== null) return -1;
+    const difference = (left.value ?? 0) - (right.value ?? 0);
+    if (difference !== 0) return sort === 'pj-desc' ? -difference : difference;
+  }
+  return left.key.localeCompare(right.key);
+}
+
+// Ordered binary partition: retain the selected ordering, splitting along the longer
 // side. Coordinates are percentages; empty fixed-scale space is a real weight.
 export function layoutPJTreemap(
-  entries: { key: string; value: number }[],
+  entries: { key: string; value: number; towerLevel?: number }[],
   baseline: number,
+  sort: PJTreemapSort = 'name',
 ): PJTreemapTile[] {
   const weights = entries.filter((entry) => Number.isFinite(entry.value) && entry.value > 0)
-    .sort((left, right) => left.key.localeCompare(right.key));
+    .sort((left, right) => comparePJContributions(left, right, sort));
   const total = weights.reduce((sum, entry) => sum + entry.value, 0);
   const scale = Math.max(total, Number.isFinite(baseline) ? baseline : 0);
   if (scale <= 0) return [];

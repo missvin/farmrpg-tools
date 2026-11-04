@@ -2,17 +2,18 @@ import { useMemo, useState } from 'react';
 import type { TowerPumpkinJuiceHistory } from '../lib/deriveTowerPumpkinJuiceHistory';
 import type { TowerProgressItem } from '../lib/deriveTowerProgress';
 import { getItemIcon } from '../lib/itemIconManifest';
-import { layoutPJTreemap, pjItemColor } from '../lib/pjTreemapLayout';
+import { comparePJContributions, layoutPJTreemap, pjItemColor, type PJTreemapSort } from '../lib/pjTreemapLayout';
 
 function itemDetails(item: TowerProgressItem): string {
   const pj = item.pumpkinJuiceEstimate.totalPumpkinJuices;
-  return `${item.itemName} · ${pj === null ? 'Unknown PJ (needs baseline)' : `${pj.toLocaleString()} PJ`} · Target ${item.masteryLevelLabel} · Snapshot mastery ${item.matchedSnapshotRow ? item.currentMastery.toLocaleString() : 'missing'}`;
+  return `${item.itemName} · ${pj === null ? 'Unknown PJ (needs baseline)' : `${pj.toLocaleString()} PJ`} · T${item.towerLevel} · Target ${item.masteryLevelLabel} · Snapshot mastery ${item.matchedSnapshotRow ? item.currentMastery.toLocaleString() : 'missing'}`;
 }
 
 export function TowerPJContribution({ history }: { history: TowerPumpkinJuiceHistory }) {
   const [targetLevel, setTargetLevel] = useState<number | null>(null);
   const [snapshotId, setSnapshotId] = useState<string | null>(null);
   const [fixedScale, setFixedScale] = useState(false);
+  const [sort, setSort] = useState<PJTreemapSort>('pj-desc');
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const series = history.series.find((candidate) => candidate.targetLevel === targetLevel)
     ?? history.series[history.series.length - 1];
@@ -20,10 +21,14 @@ export function TowerPJContribution({ history }: { history: TowerPumpkinJuiceHis
     ?? series?.points[series.points.length - 1];
   const baseline = Math.max(0, ...(series?.points.map((candidate) => candidate.totalPumpkinJuicesNeeded) ?? []));
   const partialHistory = series?.points.some((candidate) => candidate.isLowerBound) ?? false;
-  const items = useMemo(() => [...(point?.items ?? [])].sort((a, b) => a.canonicalKey.localeCompare(b.canonicalKey)), [point]);
+  const items = useMemo(() => [...(point?.items ?? [])].sort((a, b) => comparePJContributions(
+    { key: a.canonicalKey, value: a.pumpkinJuiceEstimate.totalPumpkinJuices, towerLevel: a.towerLevel },
+    { key: b.canonicalKey, value: b.pumpkinJuiceEstimate.totalPumpkinJuices, towerLevel: b.towerLevel },
+    sort,
+  )), [point, sort]);
   const tiles = useMemo(() => layoutPJTreemap(items.map((item) => ({
-    key: item.canonicalKey, value: item.pumpkinJuiceEstimate.totalPumpkinJuices ?? 0,
-  })), fixedScale ? baseline : (point?.totalPumpkinJuicesNeeded ?? 0)), [items, fixedScale, baseline, point]);
+    key: item.canonicalKey, value: item.pumpkinJuiceEstimate.totalPumpkinJuices ?? 0, towerLevel: item.towerLevel,
+  })), fixedScale ? baseline : (point?.totalPumpkinJuicesNeeded ?? 0), sort), [items, fixedScale, baseline, point, sort]);
   const itemsByKey = new Map(items.map((item) => [item.canonicalKey, item]));
   const activeItem = itemsByKey.get(activeKey ?? '');
   const activeIcon = activeItem ? getItemIcon(activeItem.canonicalKey) : null;
@@ -50,6 +55,15 @@ export function TowerPJContribution({ history }: { history: TowerPumpkinJuiceHis
             {[...series.points].reverse().map((candidate) => <option key={candidate.snapshotId} value={candidate.snapshotId}>{new Date(candidate.savedAt).toLocaleString()}</option>)}
           </select>
         </div>
+        <div>
+          <label className="field-label" htmlFor="pj-contribution-sort">Sort items</label>
+          <select id="pj-contribution-sort" className="text-input" value={sort} onChange={(event) => setSort(event.target.value as PJTreemapSort)}>
+            <option value="pj-desc">Most PJ first</option>
+            <option value="pj-asc">Fewest PJ first</option>
+            <option value="name">Item name (A–Z)</option>
+            <option value="tower">Tower level (lowest first)</option>
+          </select>
+        </div>
         <label className="check-row">
           <input type="checkbox" checked={fixedScale} onChange={(event) => setFixedScale(event.target.checked)} /> Fixed scale
         </label>
@@ -58,7 +72,7 @@ export function TowerPJContribution({ history }: { history: TowerPumpkinJuiceHis
       {unknownItems.length > 0 ? <p className="status-message" role="note">Incomplete total: {unknownItems.map((item) => item.itemName).join(', ')} need a mastery baseline. Their unknown PJ is outside the tile area.</p> : null}
       <p className="subtle-text">{fixedScale
         ? `Fixed area: ${baseline.toLocaleString()} PJ, the largest known total across saved snapshots for T${series.targetLevel}. Empty space is the difference from that baseline.${partialHistory ? ' History includes incomplete totals; empty space cannot be read as confirmed completion.' : ''}`
-        : 'Proportional area: the selected snapshot fills the chart.'} Item colors and ordering stay consistent; tile positions can change with values.</p>
+        : 'Proportional area: the selected snapshot fills the chart.'} Item colors stay consistent; tiles and the item list follow the selected sort. Use item-name order for consistent ordering across snapshots.</p>
       {point.totalPumpkinJuicesNeeded === 0 ? <p className="empty-state">{point.isLowerBound ? 'No calculable PJ yet; missing baselines prevent a complete total.' : 'All included Tower mastery targets are complete.'}</p> : null}
       <div className="pj-treemap" role="group" aria-label="Remaining PJ contribution treemap">
         {tiles.map((tile) => {
