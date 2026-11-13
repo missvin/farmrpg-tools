@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Farm RPG Workshop Filters
 // @namespace    https://github.com/liquidthex/farmrpg-tools
-// @version      1.0.1
+// @version      1.0.2
 // @description  Filter Workshop recipes and sort by craftable quantity or full-batch silver.
 // @match        https://farmrpg.com/*
 // @match        https://www.farmrpg.com/*
@@ -48,10 +48,29 @@
       craftable,
       max: craftable ? max : 0,
       cost: craftable && unitPrice !== null && Number.isSafeInteger(cost) ? cost : null,
-      ingredients: new Set(Array.from(row.querySelectorAll('.item-title span[data-amt]'), amount =>
-        amount.nextSibling?.textContent.trim().toLowerCase()
-      )),
+      ingredients: readIngredients(row),
     };
+  }
+
+  function readIngredients(row) {
+    const block = row.querySelector('.item-title > br + span');
+    const names = new Set();
+    let line = '';
+    function addIngredient() {
+      const match = line.trim().match(/^[\d,]+\s*\/\s*[\d,]+\s+(.+)$/);
+      if (match) names.add(match[1].trim().toLowerCase());
+    }
+    // Both normal and shortage ingredients occupy one line. Shortages wrap the entire line.
+    for (const node of block?.childNodes ?? []) {
+      if (node.nodeName === 'BR') {
+        addIngredient();
+        line = '';
+      } else {
+        line += node.textContent;
+      }
+    }
+    addIngredient();
+    return names;
   }
 
   function readInteger(value) {

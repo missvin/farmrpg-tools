@@ -15,7 +15,9 @@ afterEach(() => {
 function row(name, ingredient, max, price, control) {
   return `<li data-name="${name}">
     <div class="item-title"><strong>${name}</strong>
-      <span>20 / <span data-amt="1">10</span> ${ingredient}<br></span>
+      <br><span>${max === 0
+        ? `<span style="color:red">0 / 4 ${ingredient}</span><br>34,820 / <span data-amt="2">2</span> Stone`
+        : `20 / <span data-amt="1">10</span> ${ingredient}`}</span>
       <input class="qty" type="number" value="1" data-max="${max}" data-price="${price}">
     </div>
     <div class="item-after">${control ?? '<button class="btngreen">10 Silver</button>'}</div>
@@ -30,7 +32,7 @@ function openWorkshop() {
     <div class="favcraftitems"><ul>${row('Favorite', 'Steel', 5, 6)}</ul></div>
     <div class="craftitems"><ul>
       ${row('Low quantity', 'Steel Wire', 2, 30)}
-      ${row('Missing', 'Steel', 0, 1, '<button disabled>Missing Res</button>')}
+      ${row('Missing', 'Oak', 0, 1, '<button disabled>Missing Res</button>')}
       ${row('High quantity', 'Board', 9, 3)}
       ${row('Full', 'Steel', 5, 1, '<button>Inv Full</button>')}
       ${row('Craftworks', 'Oak', 4, 1, '<a href="craftworks.php">In Craftworks</a>')}
@@ -108,7 +110,9 @@ test('sorts existing rows by maximum and full-batch price and restores Workshop 
 test('combines exact ingredient matches with craftability and rechecks redrawn rows', async () => {
   const { window, find, names, settle, change } = openWorkshop();
   await change('[value="steel"]', true);
-  expect(names('.craftitems', true)).toEqual(['Missing', 'Full']);
+  expect(names('.craftitems', true)).toEqual(['Full']);
+  await change('[value="oak"]', true);
+  expect(names('.craftitems', true)).toEqual(['Missing', 'Full', 'Craftworks']);
   await change('[value="board"]', true);
   await change('[name="craftable"]', true);
   expect(names('.craftitems', true)).toEqual(['High quantity']);
