@@ -4,6 +4,8 @@
 
 Open [`farmrpg-workshop-filters.user.js`](./farmrpg-workshop-filters.user.js), copy the entire file into a new Tampermonkey script, and save it with **Ctrl+S**. Reload Farm RPG and open **My Workshop**. The controls appear below the Workshop search.
 
+To update from version 1.0.0, edit one existing entry using the pencil icon in the Tampermonkey dashboard. Replace its entire contents with the current script and save. Enable that entry, turn off any other copies, and reload the Farm RPG tab.
+
 - **Craftable now** shows recipes with an available manual craft button and a positive Workshop quantity limit.
 - **Most craftable** sorts by that limit. **Batch silver** sorts by the limit multiplied by the game's per-craft silver price, regardless of the quantity currently entered.
 - **Uses any selected ingredient** matches exact recipe ingredient names. Select multiple ingredients to show recipes using any of them.

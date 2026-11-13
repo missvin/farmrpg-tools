@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Farm RPG Workshop Filters
 // @namespace    https://github.com/liquidthex/farmrpg-tools
-// @version      1.0.0
+// @version      1.0.1
 // @description  Filter Workshop recipes and sort by craftable quantity or full-batch silver.
 // @match        https://farmrpg.com/*
 // @match        https://www.farmrpg.com/*
@@ -13,6 +13,11 @@
 
 (function workshopFilters() {
   'use strict';
+
+  // The DOM is shared even if the userscript manager gives each copy its own scope.
+  const instanceMarker = 'data-frpg-workshop-filters-running';
+  if (document.documentElement.hasAttribute(instanceMarker)) return;
+  document.documentElement.setAttribute(instanceMarker, '');
 
   const pageSelector = '.page[data-page="workshop"]:is(.page-on-center, .page-current)';
   const listSelector = '.favcraftitems > ul, .craftitems > ul';
@@ -62,7 +67,7 @@
     element.innerHTML = `
       <style>
         .${hiddenClass} { display: none !important; }
-        #frpg-workshop-filters { margin: 12px 16px; }
+        #frpg-workshop-filters { padding: 12px 16px; }
         #frpg-workshop-filters .frpg-controls {
           display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px;
         }
@@ -152,10 +157,11 @@
         activePage = page;
       }
       if (!page) return;
-      const search = page.querySelector('form.searchbar:has(.workshopsearch)');
-      if (!search) return;
+      const content = page.querySelector(':scope > .page-content');
+      if (!content) return;
       if (!panel) panel = createPanel();
-      if (search.nextElementSibling !== panel) search.after(panel);
+      // The fixed searchbar overlays the page. Its offset is built into .page-content.
+      if (content.firstElementChild !== panel) content.prepend(panel);
 
       const lists = Array.from(page.querySelectorAll(listSelector));
       for (const list of originalOrders.keys()) {

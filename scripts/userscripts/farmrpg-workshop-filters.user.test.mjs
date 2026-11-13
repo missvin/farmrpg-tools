@@ -25,6 +25,8 @@ function row(name, ingredient, max, price, control) {
 function openWorkshop() {
   dom = new JSDOM(`<div class="page page-on-center" data-page="workshop">
     <form class="searchbar"><input class="workshopsearch"></form>
+    <div class="searchbar-overlay"></div>
+    <div class="page-content">
     <div class="favcraftitems"><ul>${row('Favorite', 'Steel', 5, 6)}</ul></div>
     <div class="craftitems"><ul>
       ${row('Low quantity', 'Steel Wire', 2, 30)}
@@ -33,6 +35,7 @@ function openWorkshop() {
       ${row('Full', 'Steel', 5, 1, '<button>Inv Full</button>')}
       ${row('Craftworks', 'Oak', 4, 1, '<a href="craftworks.php">In Craftworks</a>')}
     </ul></div>
+    </div>
   </div>`, {
     url: 'https://farmrpg.com/#!/workshop.php',
     runScripts: 'outside-only',
@@ -66,6 +69,20 @@ function openWorkshop() {
   }
   return { window, gameRequest, find, names, settle, change };
 }
+
+test('mounts inside the Workshop scroll area and ignores a second copy', async () => {
+  const { window, find, settle, change, names } = openWorkshop();
+  const panel = find('#frpg-workshop-filters');
+  expect(panel).toBe(find('.page-content').firstElementChild);
+  expect(find('.searchbar').nextElementSibling).toBe(find('.searchbar-overlay'));
+  const firstObserver = observer;
+  window.eval(source);
+  await settle();
+  expect(observer).toBe(firstObserver);
+  expect(window.document.querySelectorAll('#frpg-workshop-filters')).toHaveLength(1);
+  await change('[name="craftable"]', true);
+  expect(names('.craftitems', true)).toEqual(['Low quantity', 'High quantity']);
+});
 
 test('sorts existing rows by maximum and full-batch price and restores Workshop order', async () => {
   const { gameRequest, find, names, settle, change } = openWorkshop();
